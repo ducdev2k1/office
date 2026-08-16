@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Roadmap MVP — OneMail Workspace (Solo dev + AI)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #151b23;
+        --surface-2: #1c232d;
+        --border: #2b3440;
+        --border-soft: #1f2731;
+        --text: #e6edf3;
+        --text-muted: #8b949e;
+        --text-faint: #5b6472;
+        --green: #3fb950;
+        --green-dim: #1a3320;
+        --amber: #d29922;
+        --amber-dim: #332711;
+        --purple: #a371f7;
+        --purple-dim: #261b3b;
+        --red: #f85149;
+        --red-dim: #3a1618;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Be Vietnam Pro', sans-serif;
+        line-height: 1.6;
+        padding-bottom: 80px;
+      }
+      .mono {
+        font-family: 'IBM Plex Mono', monospace;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* header */
+      header {
+        border-bottom: 1px solid var(--border-soft);
+        padding: 40px 0 28px;
+        background:
+          radial-gradient(ellipse 700px 200px at 20% 0%, rgba(63, 185, 80, 0.08), transparent),
+          radial-gradient(ellipse 700px 200px at 80% 0%, rgba(163, 113, 247, 0.06), transparent);
+      }
+      .eyebrow {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        color: var(--green);
+        text-transform: uppercase;
+        margin: 0 0 10px;
+      }
+      h1 {
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0 0 8px;
+        letter-spacing: -0.01em;
+      }
+      .subtitle {
+        color: var(--text-muted);
+        font-size: 15px;
+        margin: 0 0 28px;
+        max-width: 60ch;
+      }
+
+      /* ruler */
+      .ruler-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px 20px 16px;
+      }
+      .ruler-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .ruler-status {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 13px;
+        color: var(--text);
+      }
+      .ruler-status .num {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .ruler-hint {
+        font-size: 12px;
+        color: var(--text-faint);
+      }
+      #ruler {
+        position: relative;
+        height: 34px;
+        border-radius: 6px;
+        overflow: hidden;
+        cursor: pointer;
+        display: flex;
+      }
+      .ruler-seg {
+        height: 100%;
+        position: relative;
+      }
+      .ruler-seg.p1 {
+        background: linear-gradient(180deg, #1a3320, #152a1b);
+        flex: 35;
+      }
+      .ruler-seg.p2 {
+        background: linear-gradient(180deg, #332711, #2a2010);
+        flex: 30;
+      }
+      .ruler-seg.p3 {
+        background: linear-gradient(180deg, #261b3b, #1f1732);
+        flex: 25;
+      }
+      .ruler-seg::after {
+        content: attr(data-label);
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11px;
+        color: var(--text-faint);
+      }
+      #today-marker {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        width: 2px;
+        background: var(--text);
+        box-shadow: 0 0 0 3px rgba(230, 237, 243, 0.15);
+      }
+      #today-marker::after {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid var(--text);
+      }
+
+      /* progress */
+      .progress-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .progress-bar {
+        flex: 1;
+        height: 6px;
+        background: var(--surface-2);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--green);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .progress-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+
+      /* assumption note */
+      .note {
+        margin-top: 16px;
+        padding: 12px 14px;
+        background: var(--surface-2);
+        border-left: 2px solid var(--amber);
+        border-radius: 0 8px 8px 0;
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .note b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* phases */
+      main {
+        padding-top: 32px;
+      }
+      .phase {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .phase-head {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 22px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .phase-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .p1 .phase-dot {
+        background: var(--green);
+      }
+      .p2 .phase-dot {
+        background: var(--amber);
+      }
+      .p3 .phase-dot {
+        background: var(--purple);
+      }
+      .phase-head-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .phase-range {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11px;
+        color: var(--text-faint);
+        margin-bottom: 2px;
+      }
+      .phase-title {
+        font-size: 17px;
+        font-weight: 600;
+      }
+      .phase-count {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .chevron {
+        width: 16px;
+        height: 16px;
+        color: var(--text-faint);
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      .phase.open .chevron {
+        transform: rotate(90deg);
+      }
+      .phase-body {
+        display: none;
+        padding: 0 22px 22px;
+      }
+      .phase.open .phase-body {
+        display: block;
+      }
+
+      .week {
+        margin-top: 18px;
+      }
+      .week-title {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        color: var(--text-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 6px 0;
+        font-size: 14px;
+      }
+      .item input[type='checkbox'] {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--surface-2);
+        flex-shrink: 0;
+        margin-top: 2px;
+        cursor: pointer;
+        position: relative;
+      }
+      .item input[type='checkbox']:checked {
+        background: var(--green);
+        border-color: var(--green);
+      }
+      .item input[type='checkbox']:checked::after {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 1px;
+        width: 4px;
+        height: 8px;
+        border: solid var(--bg);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .item label {
+        cursor: pointer;
+        color: var(--text);
+      }
+      .item.checked label {
+        color: var(--text-faint);
+        text-decoration: line-through;
+      }
+
+      .milestone {
+        margin-top: 16px;
+        padding: 14px 16px;
+        background: var(--surface-2);
+        border: 1px dashed var(--border);
+        border-radius: 8px;
+        font-size: 13px;
+      }
+      .milestone b {
+        color: var(--green);
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      /* risks */
+      .risks-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 36px 0 4px;
+      }
+      .risks-sub {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin: 0 0 18px;
+      }
+      .risk {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .risk-level {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 20px;
+        flex-shrink: 0;
+        margin-top: 2px;
+        white-space: nowrap;
+      }
+      .risk-level.high {
+        background: var(--red-dim);
+        color: var(--red);
+      }
+      .risk-level.mid {
+        background: var(--amber-dim);
+        color: var(--amber);
+      }
+      .risk-body b {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 3px;
+      }
+      .risk-body span {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      footer {
+        text-align: center;
+        padding: 32px 24px 0;
+        color: var(--text-faint);
+        font-size: 12px;
+        font-family: 'IBM Plex Mono', monospace;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .progress-fill {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <p class="eyebrow">Build log · OneMail Workspace MVP</p>
+        <h1>Roadmap 90 ngày — Hệ sinh thái quanh OneMail</h1>
+        <p class="subtitle">
+          Docs (TipTap+Yjs) · Sheet (Univer+chart tự build) · Slides (pptx-viewer+Yjs) — đăng nhập
+          dùng chung tài khoản OneMail, storage tự build riêng.
+          <b style="color: var(--text)">Tầm nhìn dài hạn: thay thế hoàn toàn Collabora</b>
+          — 90 ngày đầu chạy song song, sau đó nâng dần độ tương thích Office format để tiếp quản
+          toàn bộ. Tuần tự từng module vì làm một mình — AI hỗ trợ tăng tốc boilerplate và review,
+          không thay thế được thời gian ra quyết định kiến trúc.
+        </p>
+
+        <div class="ruler-card">
+          <div class="ruler-top">
+            <span class="ruler-status"
+              >Ngày <span class="num" id="day-now">1</span>/90 ·
+              <span id="phase-now">Phase 1</span> · <span id="days-left">89</span> ngày còn
+              lại</span
+            >
+            <span class="ruler-hint">Bấm vào thanh để đặt ngày hiện tại</span>
+          </div>
+          <div id="ruler">
+            <div class="ruler-seg p1" data-label="1"></div>
+            <div class="ruler-seg p2" data-label="36"></div>
+            <div class="ruler-seg p3" data-label="66"></div>
+            <div id="today-marker"></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <span class="progress-label" id="progress-label">0 / 0 việc đã xong</span>
+          </div>
+        </div>
+
+        <div class="note">
+          <b>Giả định:</b> 1 dev full-time + AI pair-programming (Claude Code). Không chạy song song
+          3 module — làm lần lượt để giữ chất lượng, dồn AI vào phần lặp lại (CRUD, boilerplate,
+          test) để tiết kiệm thời gian cho phần khó (đồng bộ realtime, kiến trúc).
+        </div>
+        <div class="note" style="border-left-color: var(--green)">
+          <b style="color: var(--green)">Đã chốt:</b> dùng luôn hệ thống Auth chung của OneMail
+          (Mail + Drive đã dùng chung 1 tài khoản) — Workspace không tự xây Auth riêng, chỉ tích hợp
+          vào hệ thống có sẵn.
+        </div>
+        <div class="note" style="border-left-color: var(--amber)">
+          <b style="color: var(--amber)">Chiến lược 2 giai đoạn:</b> Drive hiện dùng Collabora để
+          xem/sửa file Office đã upload —
+          <b style="color: var(--text)">giữ nguyên trong 90 ngày MVP</b> (chạy song song với engine
+          mới) để không phá vỡ trải nghiệm hiện tại. Mục tiêu dài hạn (sau MVP): nâng độ tương thích
+          Office format của engine tự build đến mức đủ để
+          <b style="color: var(--text)">thay thế hoàn toàn Collabora</b>, không chỉ dùng cho file
+          native.
+        </div>
+        <div class="note">
+          <b>Đã chốt:</b> tự build storage riêng (MinIO/S3-compatible) làm nền tảng lưu trữ cho
+          Workspace, không phụ thuộc Drive API của iNET — để tự chủ công nghệ và kiểm soát toàn bộ
+          core dữ liệu. Đăng nhập vẫn dùng chung Auth OneMail (tiện UX cho người dùng) — tách biệt
+          rõ giữa "tài khoản dùng chung" và "core lưu trữ/xử lý tự build".
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap" id="phases"></main>
+
+    <div class="wrap">
+      <div
+        class="milestone"
+        style="border-color: var(--purple); background: var(--purple-dim); margin-bottom: 24px"
+      >
+        <b style="color: var(--purple)">Sau ngày 90 · Lộ trình thay thế Collabora</b>
+        <p style="margin: 8px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.7">
+          MVP chỉ là bước 1. Để thay thế hoàn toàn Collabora, engine tự build cần đạt độ tương thích
+          Office format (.docx/.xlsx/.pptx) đủ cao cho mọi file cũ trong Drive, không chỉ file
+          native tạo mới. Việc này thường mất nhiều tháng sau MVP: mở rộng import/export fidelity,
+          xử lý các định dạng phức tạp (macro, pivot table nâng cao, animation slide), rồi mới tính
+          đến việc di chuyển dần người dùng khỏi Collabora và cuối cùng gỡ bỏ nó. Không đặt mục tiêu
+          này vào 90 ngày đầu — MVP ưu tiên chứng minh trải nghiệm mới tốt trước khi tính chuyện
+          thay thế.
+        </p>
+      </div>
+
+      <p class="risks-title">Rủi ro cần theo dõi</p>
+      <p class="risks-sub">Đặc thù solo dev — không có ai review chéo, không parallel work.</p>
+      <div id="risks"></div>
+    </div>
+
+    <footer class="wrap">tiến độ lưu tự động trong trình duyệt này</footer>
+
+    <script>
+      const DATA = [
+        {
+          id: 'p1',
+          cls: 'p1',
+          range: 'Ngày 1 – 35',
+          title: 'Nền tảng & Docs',
+          weeks: [
+            {
+              title: 'Tuần 1 · Ngày 1–7 · Tích hợp Auth OneMail + Hạ tầng',
+              items: [
+                'Làm việc với team backend iNET: lấy spec/API xác thực của hệ thống Auth chung OneMail+Drive',
+                'Tích hợp đăng nhập Workspace qua Auth OneMail (không tự xây hệ thống auth riêng)',
+                'Test luồng: 1 tài khoản OneMail đăng nhập được cả Mail, Drive, và Workspace mới',
+                'Phác thảo UX: cách phân biệt file mở bằng Collabora (file Office cũ) và file mở bằng engine mới (Docs/Sheet/Slides native)',
+                'Tự dựng storage layer riêng (MinIO/S3-compatible) làm nền tảng lưu trữ core cho Workspace — không phụ thuộc Drive API, tự chủ hoàn toàn công nghệ',
+                'Setup monorepo (Turborepo/Nx) + CI/CD cơ bản',
+                'Thiết kế DB schema: users (liên kết OneMail account id), files, folders, permissions, snapshots',
+                'Dùng AI scaffold nhanh boilerplate CRUD để rút ngắn tuần này',
+              ],
+            },
+            {
+              title: 'Tuần 2 · Ngày 8–14 · PoC Docs + Sheet',
+              items: [
+                'PoC: TipTap + Yjs + Hocuspocus, test merge 2 tab',
+                'PoC: Univer Sheet + cơ chế collaboration built-in',
+                'Đánh giá: cần viết adapter Yjs cho Univer hay dùng cơ chế riêng của nó',
+                'Nhờ AI review code PoC, tìm edge case merge conflict',
+              ],
+            },
+            {
+              title: 'Tuần 3 · Ngày 15–21 · PoC Slides + chốt kiến trúc',
+              items: [
+                'PoC: pptx-viewer + Yjs, test round-trip export .pptx',
+                'Chốt kiến trúc realtime cuối cùng cho cả 3 module',
+                'Nếu PoC nào trễ hạn → chuyển ngay phương án dự phòng, không kéo dài',
+              ],
+            },
+            {
+              title: 'Tuần 4–5 · Ngày 22–35 · Drive UI + Docs hoàn chỉnh',
+              items: [
+                'Backend API CRUD file/folder',
+                'Frontend Drive: danh sách file, tạo folder, breadcrumb',
+                'Tích hợp TipTap vào Drive: tạo/mở/sửa file, autosave',
+                'Hocuspocus server thật, lưu snapshot vào PostgreSQL',
+                'Test realtime 2+ người sửa đồng thời',
+              ],
+            },
+          ],
+          milestone:
+            'Đăng nhập bằng tài khoản OneMail (chung với Mail, Drive), file lưu trên hạ tầng storage tự build, soạn thảo Docs real-time với autosave.',
+        },
+        {
+          id: 'p2',
+          cls: 'p2',
+          range: 'Ngày 36 – 65',
+          title: 'Sheet & Chart',
+          weeks: [
+            {
+              title: 'Tuần 6–7 · Ngày 36–49 · Tích hợp Sheet',
+              items: [
+                'Tích hợp Univer Sheet vào Drive theo kiến trúc đã chốt tuần 2',
+                'Kết nối snapshot storage cho Sheet',
+                'Test collaboration thật (không chỉ PoC) với 2+ người',
+                'Autosave + version tối thiểu cho Sheet',
+              ],
+            },
+            {
+              title: 'Tuần 8–9 · Ngày 50–63 · Chart tự build',
+              items: [
+                'Chọn Chart.js hoặc ECharts',
+                'Data binding: lấy dữ liệu từ vùng cell Univer',
+                'Lắng nghe sự kiện thay đổi cell → cập nhật chart realtime',
+                'UI chọn loại chart (bar/line/pie) cơ bản',
+              ],
+            },
+            {
+              title: 'Ngày 64–65 · Sharing cơ bản',
+              items: [
+                'Share link (view/edit)',
+                'Phân quyền cơ bản theo file/folder',
+                'Chia sẻ trực tiếp cho người trong cùng tổ chức/tên miền OneMail (tận dụng danh bạ có sẵn thay vì tự xây)',
+              ],
+            },
+          ],
+          milestone: 'Docs + Sheet hoạt động độc lập trong Drive, có chart cơ bản và chia sẻ link.',
+        },
+        {
+          id: 'p3',
+          cls: 'p3',
+          range: 'Ngày 66 – 90',
+          title: 'Slides & Launch',
+          weeks: [
+            {
+              title: 'Tuần 10–11 · Ngày 66–77 · Tích hợp Slides',
+              items: [
+                'Tích hợp pptx-viewer vào Drive',
+                'Bật Yjs collaboration cho Slides',
+                'Test export/import .pptx round-trip trong PowerPoint/LibreOffice',
+                'Nếu pptx-viewer không ổn định → chuyển sang Univer Slide module (dự phòng)',
+              ],
+            },
+            {
+              title: 'Tuần 12 · Ngày 78–84 · Export & version history',
+              items: [
+                'Version history cơ bản: snapshot theo mốc thời gian, restore',
+                'Export .docx/.xlsx/.pptx qua LibreOffice headless / Gotenberg',
+                'Export PDF cho cả 3 loại tài liệu',
+              ],
+            },
+            {
+              title: 'Tuần 13 · Ngày 85–90 · Testing & launch',
+              items: [
+                'Nhờ AI viết test case, review security (kiểm tra bypass permission)',
+                'Load test WebSocket với nhiều connection giả lập',
+                'Deploy production, mời nhóm nhỏ user thật vào beta',
+                'Thu thập feedback, lên danh sách fix ưu tiên',
+              ],
+            },
+          ],
+          milestone:
+            'MVP hoàn chỉnh: 3 module realtime + sharing + version history + export Office, sẵn sàng closed beta.',
+        },
+      ];
+
+      const RISKS = [
+        {
+          level: 'high',
+          title: 'Độ tương thích Office format để thay thế Collabora là bài toán dài hơi',
+          body: 'Collabora (nền LibreOffice) đã mất nhiều năm để đạt độ trung thực .docx/.xlsx/.pptx cao. Engine tự build (TipTap/Univer/pptx-viewer) khó đạt ngay mức đó — đừng hứa mốc thời gian cụ thể cho việc thay thế hoàn toàn, coi đây là mục tiêu dài hạn liên tục cải thiện sau MVP.',
+        },
+        {
+          level: 'mid',
+          title: '2 hệ thống editor chạy song song có thể gây nhầm lẫn',
+          body: 'File cũ (.docx/.xlsx/.pptx upload) mở bằng Collabora, file mới tạo trong Workspace mở bằng engine riêng — cần UI phân biệt rõ ràng (icon, badge "định dạng gốc") để người dùng không nhầm giữa 2 trải nghiệm khác nhau.',
+        },
+        {
+          level: 'mid',
+          title: 'Tự build storage nghĩa là tự lo toàn bộ vận hành',
+          body: 'Backup, scale, bảo mật, uptime cho MinIO/S3 giờ là trách nhiệm của bạn thay vì dựa vào hạ tầng Drive đã vận hành sẵn của iNET — cần tính chi phí server và thời gian DevOps ngay từ đầu, không chỉ chi phí code.',
+        },
+        {
+          level: 'mid',
+          title: 'Phụ thuộc vào team backend iNET để tích hợp Auth',
+          body: 'Dù đã chốt dùng chung tài khoản, việc lấy đúng spec/API xác thực và test luồng SSO thực tế vẫn cần phối hợp — không nằm hoàn toàn trong tay solo dev, nên chủ động đặt lịch làm việc sớm ở tuần 1.',
+        },
+        {
+          level: 'high',
+          title: 'Univer không native hỗ trợ Yjs',
+          body: 'Nếu adapter khó hơn dự kiến ở tuần 2, chuyển ngay sang cơ chế collaboration riêng của Univer thay vì cố ép về Yjs.',
+        },
+        {
+          level: 'mid',
+          title: 'pptx-viewer chưa production-ready',
+          body: 'Dự án còn mới. Có phương án dự phòng: Univer Slide module, ít rủi ro hơn nhưng ít tính năng hơn.',
+        },
+        {
+          level: 'mid',
+          title: 'Solo dev không có người review chéo',
+          body: 'Dùng AI (Claude Code) làm reviewer thường trực: yêu cầu review diff, viết test tự động trước khi merge.',
+        },
+        {
+          level: 'high',
+          title: 'Không thể chạy song song 3 module',
+          body: 'Khác với team 3 người, roadmap này đã sắp tuần tự — đừng cố làm Sheet và Slides cùng lúc, sẽ vỡ tiến độ.',
+        },
+        {
+          level: 'mid',
+          title: 'Kỳ vọng AI quá cao',
+          body: 'AI tăng tốc phần lặp lại (CRUD, boilerplate, test) nhưng không rút ngắn được thời gian debug logic đồng bộ realtime phức tạp — giữ buffer thời gian cho phần này.',
+        },
+      ];
+
+      const phasesEl = document.getElementById('phases');
+      DATA.forEach((phase, pi) => {
+        const el = document.createElement('div');
+        el.className = 'phase ' + phase.cls + (pi === 0 ? ' open' : '');
+        el.innerHTML = `
+    <div class="phase-head" data-toggle>
+      <span class="phase-dot"></span>
+      <div class="phase-head-text">
+        <div class="phase-range mono">${phase.range}</div>
+        <div class="phase-title">${phase.title}</div>
+      </div>
+      <span class="phase-count mono" data-count></span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div class="phase-body">
+      ${phase.weeks
+        .map(
+          (w, wi) => `
+        <div class="week">
+          <div class="week-title">${w.title}</div>
+          ${w.items
+            .map((it, ii) => {
+              const id = `${phase.id}-${wi}-${ii}`;
+              return `<div class="item" data-item="${id}">
+              <input type="checkbox" id="${id}">
+              <label for="${id}">${it}</label>
+            </div>`;
+            })
+            .join('')}
+        </div>
+      `,
+        )
+        .join('')}
+      <div class="milestone"><b>Milestone</b>${phase.milestone}</div>
+    </div>
+  `;
+        phasesEl.appendChild(el);
+      });
+
+      const risksEl = document.getElementById('risks');
+      RISKS.forEach((r) => {
+        const el = document.createElement('div');
+        el.className = 'risk';
+        el.innerHTML = `
+    <span class="risk-level ${r.level}">${r.level === 'high' ? 'Cao' : 'Trung bình'}</span>
+    <div class="risk-body"><b>${r.title}</b><span>${r.body}</span></div>
+  `;
+        risksEl.appendChild(el);
+      });
+
+      // storage helpers (safe fallback if localStorage unavailable)
+      let memStore = {};
+      function storeGet(k) {
+        try {
+          return localStorage.getItem(k);
+        } catch (e) {
+          return memStore[k] ?? null;
+        }
+      }
+      function storeSet(k, v) {
+        try {
+          localStorage.setItem(k, v);
+        } catch (e) {
+          memStore[k] = v;
+        }
+      }
+
+      // checkbox state + progress
+      function updateProgress() {
+        const boxes = document.querySelectorAll('.item input[type=checkbox]');
+        let checked = 0;
+        boxes.forEach((b) => {
+          if (b.checked) checked++;
+        });
+        const total = boxes.length;
+        document.getElementById('progress-fill').style.width = total
+          ? (checked / total) * 100 + '%'
+          : '0%';
+        document.getElementById('progress-label').textContent =
+          `${checked} / ${total} việc đã xong`;
+
+        DATA.forEach((phase) => {
+          const phaseEl = document.querySelector('.phase.' + phase.cls);
+          const phaseBoxes = phaseEl.querySelectorAll('.item input[type=checkbox]');
+          let pc = 0;
+          phaseBoxes.forEach((b) => {
+            if (b.checked) pc++;
+          });
+          phaseEl.querySelector('[data-count]').textContent = `${pc}/${phaseBoxes.length}`;
+        });
+      }
+
+      document.querySelectorAll('.item input[type=checkbox]').forEach((box) => {
+        const saved = storeGet('mvp-' + box.id);
+        if (saved === '1') {
+          box.checked = true;
+          box.closest('.item').classList.add('checked');
+        }
+        box.addEventListener('change', () => {
+          box.closest('.item').classList.toggle('checked', box.checked);
+          storeSet('mvp-' + box.id, box.checked ? '1' : '0');
+          updateProgress();
+        });
+      });
+      updateProgress();
+
+      // collapsible phases
+      document.querySelectorAll('[data-toggle]').forEach((head) => {
+        head.addEventListener('click', () => head.closest('.phase').classList.toggle('open'));
+      });
+
+      // day ruler
+      const ruler = document.getElementById('ruler');
+      const marker = document.getElementById('today-marker');
+      function phaseForDay(d) {
+        if (d <= 35) return { name: 'Phase 1 · Docs', idx: 0 };
+        if (d <= 65) return { name: 'Phase 2 · Sheet', idx: 1 };
+        return { name: 'Phase 3 · Slides', idx: 2 };
+      }
+      function setDay(d) {
+        d = Math.max(1, Math.min(90, d));
+        const pct = ((d - 1) / 89) * 100;
+        marker.style.left = pct + '%';
+        document.getElementById('day-now').textContent = d;
+        document.getElementById('days-left').textContent = 90 - d;
+        document.getElementById('phase-now').textContent = phaseForDay(d).name;
+        storeSet('mvp-today', String(d));
+      }
+      ruler.addEventListener('click', (e) => {
+        const rect = ruler.getBoundingClientRect();
+        const pct = (e.clientX - rect.left) / rect.width;
+        setDay(Math.round(1 + pct * 89));
+      });
+      setDay(parseInt(storeGet('mvp-today') || '1', 10));
+    </script>
+  </body>
+</html>

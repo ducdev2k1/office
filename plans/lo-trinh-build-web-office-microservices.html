@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lộ trình Build Web Office - Phiên bản 6.1</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --surface-2: #334155;
+        --text: #e2e8f0;
+        --text-muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #818cf8;
+        --success: #34d399;
+        --border: #475569;
+        --radius: 12px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          'Segoe UI',
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 48px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border);
+      }
+      header h1 {
+        font-size: 1.85rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 12px;
+      }
+      header .subtitle {
+        color: var(--text-muted);
+        font-size: 1.05rem;
+      }
+      header .meta {
+        margin-top: 16px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+      nav.toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px 28px;
+        margin-bottom: 48px;
+      }
+      nav.toc h2 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+        color: var(--accent);
+      }
+      nav.toc ol {
+        padding-left: 20px;
+      }
+      nav.toc li {
+        margin-bottom: 8px;
+      }
+      nav.toc a {
+        color: var(--text);
+        text-decoration: none;
+      }
+      nav.toc a:hover {
+        color: var(--accent);
+      }
+      section {
+        margin-bottom: 56px;
+      }
+      h2 {
+        font-size: 1.35rem;
+        color: var(--accent);
+        margin-bottom: 20px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--surface-2);
+      }
+      h3 {
+        font-size: 1.1rem;
+        color: var(--accent-2);
+        margin: 20px 0 10px;
+      }
+      p {
+        margin-bottom: 14px;
+      }
+      ul,
+      ol {
+        margin: 12px 0 16px 24px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 24px;
+        margin: 16px 0;
+      }
+      .architecture {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px;
+        font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+        font-size: 0.76rem;
+        line-height: 1.4;
+        overflow-x: auto;
+        white-space: pre;
+        color: #a5f3fc;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0 24px;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--border);
+        padding: 10px 12px;
+        text-align: left;
+      }
+      th {
+        background: var(--surface-2);
+        color: var(--accent);
+        font-weight: 600;
+      }
+      tr:nth-child(even) {
+        background: rgba(30, 41, 59, 0.5);
+      }
+      .phase {
+        background: var(--surface);
+        border-left: 4px solid var(--accent);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        padding: 16px 20px;
+        margin: 16px 0;
+      }
+      .phase h3 {
+        margin-top: 0;
+        color: var(--accent);
+      }
+      .tag {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-right: 6px;
+      }
+      .tag-must {
+        background: #065f46;
+        color: #6ee7b7;
+      }
+      .tag-should {
+        background: #854d0e;
+        color: #fde68a;
+      }
+      .tag-nice {
+        background: #1e3a5f;
+        color: #93c5fd;
+      }
+      .checklist {
+        list-style: none;
+        margin-left: 0;
+      }
+      .checklist li {
+        padding: 8px 0 8px 32px;
+        position: relative;
+      }
+      .checklist li::before {
+        content: '☐';
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 1.1rem;
+      }
+      .note {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin: 16px 0;
+        font-size: 0.95rem;
+      }
+      footer {
+        margin-top: 64px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+      code {
+        background: var(--surface-2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.88em;
+      }
+      @media (max-width: 640px) {
+        header h1 {
+          font-size: 1.4rem;
+        }
+        .container {
+          padding: 24px 16px 60px;
+        }
+        table {
+          font-size: 0.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Lộ trình Build Web Office</h1>
+        <p class="subtitle">
+          NestJS Microservices · Web Cloud-first · Desktop Offline-first · Có AI hỗ trợ
+        </p>
+        <p class="meta">Phiên bản 6.1 &nbsp;|&nbsp; Cập nhật 14/08/2026</p>
+      </header>
+
+      <nav class="toc">
+        <h2>Mục lục</h2>
+        <ol>
+          <li><a href="#muc-tieu">Mục tiêu tổng thể</a></li>
+          <li><a href="#du-lieu">Chiến lược dữ liệu</a></li>
+          <li><a href="#kien-truc">Kiến trúc Microservices</a></li>
+          <li><a href="#service">Danh sách Service</a></li>
+          <li><a href="#tech">Tech Stack</a></li>
+          <li><a href="#lo-trinh">Lộ trình triển khai</a></li>
+          <li><a href="#uu-tien">Thứ tự ưu tiên</a></li>
+          <li><a href="#thoi-gian">Ước lượng thời gian (có AI)</a></li>
+          <li><a href="#frontend">Tổ chức code</a></li>
+          <li><a href="#checklist">Checklist bắt đầu</a></li>
+        </ol>
+      </nav>
+
+      <section id="muc-tieu">
+        <h2>1. Mục tiêu tổng thể</h2>
+        <div class="card">
+          <ul>
+            <li>Bộ Office Web (Docs + Sheets + Slides) tương tự Google Workspace.</li>
+            <li>Backend: <strong>NestJS + Microservices từ đầu</strong>.</li>
+            <li>
+              <strong>Web = Cloud-first</strong> ·
+              <strong>Desktop (Tauri) = Offline-first</strong> + tùy chọn sync Cloud.
+            </li>
+            <li>Mobile ngắn hạn: PWA · Dài hạn: React Native.</li>
+            <li>Có <strong>AI hỗ trợ code</strong> → effort giảm rõ rệt so với code thuần.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="du-lieu">
+        <h2>2. Chiến lược dữ liệu theo nền tảng</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Nền tảng</th>
+              <th>Chiến lược</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Web</strong></td>
+              <td>Cloud-first</td>
+              <td>PostgreSQL + S3. IndexedDB chỉ cache.</td>
+            </tr>
+            <tr>
+              <td><strong>Desktop (Tauri)</strong></td>
+              <td>Offline-first</td>
+              <td>SQLite là nguồn chân lý. Sync Cloud tùy chọn.</td>
+            </tr>
+            <tr>
+              <td><strong>Mobile PWA</strong></td>
+              <td>Cloud-oriented</td>
+              <td>Ngắn hạn.</td>
+            </tr>
+            <tr>
+              <td><strong>React Native</strong></td>
+              <td>Có thể Offline-first</td>
+              <td>Dài hạn, viết lại UI.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="kien-truc">
+        <h2>3. Kiến trúc Microservices (từ đầu)</h2>
+        <div class="architecture">
+          ┌─────────────────────┐ │ API Gateway │ (NestJS) │ Auth + Rate Limit │
+          └─────────┬───────────┘ │
+          ┌────────────┬────────────┼────────────┬────────────┬────────────┐ ▼ ▼ ▼ ▼ ▼ ▼
+          ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ │ Auth │ │
+          File │ │ Docs │ │ Sheets │ │ Slides │ │ AI │ │ Service │ │ Service │ │ Service │ │ Service
+          │ │ Service │ │ Service │ └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘
+          └──────────┘ │ ┌──────────────┼──────────────┐ ▼ ▼ ▼ PostgreSQL S3 (iNET) Redis / NATS
+          (per service) (binary) (cache + event)
+        </div>
+        <p style="margin-top: 14px">
+          Mỗi service là một NestJS app độc lập. Frontend chỉ gọi qua API Gateway. Bắt đầu với ít
+          service.
+        </p>
+      </section>
+
+      <section id="service">
+        <h2>4. Danh sách Service</h2>
+        <p><strong>Khởi đầu:</strong> api-gateway · auth-service · file-service · docs-service</p>
+        <p>
+          <strong>Thêm dần:</strong> sheets-service · slides-service · ai-service · sync-service ·
+          collaboration-service
+        </p>
+      </section>
+
+      <section id="tech">
+        <h2>5. Tech Stack</h2>
+        <div class="card">
+          <p>
+            <strong>Web:</strong> React 19 + Vite 6 + TypeScript + Tailwind + TipTap + Univer + PWA
+          </p>
+          <p><strong>Desktop:</strong> Tauri 2.0 + SQLite (Offline-first)</p>
+          <p><strong>Mobile:</strong> PWA (ngắn hạn) → React Native (dài hạn)</p>
+          <p>
+            <strong>Backend:</strong> NestJS Microservices + NATS + PostgreSQL + Redis + S3 iNET
+          </p>
+          <p><strong>DevOps:</strong> Docker → Kubernetes + GitHub Actions + OpenTelemetry</p>
+        </div>
+      </section>
+
+      <section id="lo-trinh">
+        <h2>6. Lộ trình triển khai</h2>
+        <div class="phase">
+          <h3>Giai đoạn 0 — Chuẩn bị (1.5–2.5 tuần)</h3>
+          <p>
+            Monorepo, NestJS services cơ bản, Docker Compose, Vite + React, CI/CD, tách docx-engine.
+          </p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 1 — Core Services (3–5 tuần)</h3>
+          <p>Auth + File Service (pre-signed S3) + API Gateway. Dashboard Cloud-first.</p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 2 — Docs Service (6–10 tuần)</h3>
+          <p>docs-service + TipTap + auto-save Cloud + tính năng cơ bản.</p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 3 — Sheets Service (8–12 tuần)</h3>
+          <p>sheets-service + Univer + formula + chart. Scale độc lập.</p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 4 — Slides + Suite (5–8 tuần)</h3>
+          <p>slides-service, Dashboard chung, theme, PWA.</p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 5 — AI Service (4–7 tuần)</h3>
+          <p>ai-service + queue job + scale worker.</p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 6 — Desktop Tauri Offline-first (5–8 tuần)</h3>
+          <p>Tauri 2.0 + SQLite, làm việc offline, tùy chọn sync Cloud.</p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 7 — Sync Service (4–7 tuần)</h3>
+          <p>Đồng bộ 2 chiều Desktop ↔ Cloud + conflict resolution.</p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 8 — Realtime Collaboration (sau)</h3>
+          <p>Yjs / PartyKit / Liveblocks.</p>
+        </div>
+        <div class="phase">
+          <h3>Giai đoạn 9 — Mobile Native React Native</h3>
+          <p>Viết lại UI/UX. Effort +3–6 tháng (có AI hỗ trợ).</p>
+        </div>
+      </section>
+
+      <section id="uu-tien">
+        <h2>7. Thứ tự ưu tiên tính năng</h2>
+        <p>
+          <span class="tag tag-must">Must-have (MVP)</span> Docs + Sheets Web (Cloud-first) · Auth ·
+          File manager · Pre-signed S3 · Auto-save
+        </p>
+        <p>
+          <span class="tag tag-should">Should-have</span> Slides · Version history · PWA · Desktop
+          Tauri Offline-first · Export PDF
+        </p>
+        <p>
+          <span class="tag tag-nice">Nice-to-have / Dài hạn</span> Sync Desktop↔Cloud · Realtime ·
+          AI agent · React Native · Template
+        </p>
+      </section>
+
+      <section id="thoi-gian">
+        <h2>8. Ước lượng thời gian (đã tính AI hỗ trợ code)</h2>
+        <div class="note">
+          <strong>Lưu ý:</strong> Các con số đã giảm so với code thuần thủ công nhờ AI hỗ trợ viết
+          code, generate boilerplate, debug, refactor… Phần khó (tích hợp engine, conflict sync, UX
+          editor) vẫn cần người có kinh nghiệm review kỹ.
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Team</th>
+              <th>MVP (Web Docs+Sheets)</th>
+              <th>Có Desktop Offline</th>
+              <th>+ React Native</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1 người fullstack + AI</td>
+              <td>5–8 tháng</td>
+              <td>10–14 tháng</td>
+              <td>+3–6 tháng</td>
+            </tr>
+            <tr>
+              <td>2–3 người + AI</td>
+              <td>3.5–5.5 tháng</td>
+              <td>7–10 tháng</td>
+              <td>+2.5–4.5 tháng</td>
+            </tr>
+            <tr>
+              <td>4–6 người + AI</td>
+              <td>2.5–4 tháng</td>
+              <td>5–8 tháng</td>
+              <td>+2–3.5 tháng</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="frontend">
+        <h2>9. Tổ chức code</h2>
+        <div class="architecture">
+          apps/ api-gateway/ # NestJS auth-service/ # NestJS file-service/ # NestJS docs-service/ #
+          NestJS sheets-service/ # NestJS web/ # React + Vite desktop/ # Tauri mobile/ # React
+          Native (dài hạn) packages/ shared-types/ shared-utils/ config/ infra/ docker-compose.yml
+          k8s/
+        </div>
+      </section>
+
+      <section id="checklist">
+        <h2>10. Checklist khi bắt đầu</h2>
+        <ul class="checklist">
+          <li>Setup monorepo (Turborepo + pnpm)</li>
+          <li>Tạo api-gateway, auth-service, file-service (NestJS)</li>
+          <li>Docker Compose (PostgreSQL, Redis, NATS)</li>
+          <li>Khởi tạo Frontend Vite + React</li>
+          <li>Pre-signed URL S3 hoạt động</li>
+          <li>Làm Docs Service + TipTap (Cloud-first)</li>
+          <li>Sau đó đến Sheets Service</li>
+          <li>Thiết kế API versioning + logging + tracing</li>
+          <li>Khi Web ổn → tích hợp Tauri Desktop (Offline-first)</li>
+          <li>Mobile native (React Native) để giai đoạn dài hạn</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Lời kết</h2>
+        <div class="card">
+          <p>Thứ tự ưu tiên:</p>
+          <ol>
+            <li>Web (Cloud-first) – Docs + Sheets với NestJS Microservices</li>
+            <li>Desktop App (Tauri) – Offline-first + tùy chọn sync Cloud</li>
+            <li>PWA tạm cho mobile</li>
+            <li>Sync Desktop ↔ Cloud</li>
+            <li>Realtime collaboration</li>
+            <li>React Native mobile</li>
+          </ol>
+          <p style="margin-top: 16px">
+            Bắt đầu với ít service, thêm dần khi cần. Có AI hỗ trợ thì nhanh hơn code thuần đáng kể,
+            nhưng vẫn cần chuyên môn review phần cốt lõi.
+          </p>
+          <p style="margin-top: 14px; color: var(--success); font-weight: 600">
+            Chúc bạn xây dựng thành công!
+          </p>
+        </div>
+      </section>
+
+      <footer>Lộ trình Build Web Office · Phiên bản 6.1 (đã tính AI hỗ trợ) · 14/08/2026</footer>
+    </div>
+  </body>
+</html>

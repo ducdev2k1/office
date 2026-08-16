@@ -1,0 +1,312 @@
+================================================================================
+LỘ TRÌNH BUILD WEB OFFICE (DOCS + SHEETS + SLIDES)
+KIẾN TRÚC MICROSERVICES TỪ ĐẦU
+================================================================================
+
+Ngày tạo          : 14/08/2026
+Cập nhật lần cuối : 14/08/2026
+Phiên bản         : 6.1
+
+Định hướng chính:
+- Frontend Web      : React + Vite (Desktop-first, Cloud-first)
+- Desktop App       : Tauri 2.0 (Offline-first + tùy chọn đồng bộ Cloud)
+- Mobile ngắn hạn   : PWA
+- Mobile dài hạn    : React Native (viết lại UI/UX)
+- Backend           : NestJS + Microservices từ đầu
+- Database          : PostgreSQL (metadata) + S3 iNET (file binary)
+- Realtime collab   : Để giai đoạn sau
+- Hỗ trợ AI         : Có AI hỗ trợ code → effort giảm rõ rệt so với code thuần
+
+
+1. MỤC TIÊU TỔNG THỂ
+--------------------------------------------------------------------------------
+- Xây dựng bộ Office chạy trên Web (Docs, Sheets, Slides) tương tự Google Workspace.
+- Ưu tiên chất lượng mở / sửa / lưu file .docx, .xlsx, .pptx cao.
+- Backend dùng NestJS và triển khai Microservices ngay từ đầu.
+- Web: Cloud-first (dữ liệu nằm trên Cloud).
+- Desktop (Tauri): Offline-first, có tùy chọn đồng bộ lên Cloud.
+- Mobile ngắn hạn dùng PWA, dài hạn dùng React Native.
+- Realtime collaboration để giai đoạn sau.
+- Có thể tái sử dụng engine từ GenOffice (Apache-2.0).
+- Có AI hỗ trợ lập trình → rút ngắn thời gian phát triển đáng kể.
+
+
+2. CHIẾN LƯỢC DỮ LIỆU THEO NỀN TẢNG
+--------------------------------------------------------------------------------
+
+Web (Cloud-first):
+- Dữ liệu nằm trên PostgreSQL + S3.
+- IndexedDB chỉ dùng để cache.
+- User cần online để làm việc đầy đủ.
+
+Desktop - Tauri (Offline-first):
+- SQLite là nguồn chân lý khi offline.
+- Có thể làm việc hoàn toàn không cần mạng.
+- Đồng bộ lên Cloud là tính năng tùy chọn.
+
+Mobile:
+- PWA ngắn hạn: Cloud-oriented.
+- React Native dài hạn: có thể Offline-first.
+
+Lưu trữ:
+- File binary (.docx, .xlsx, .pptx...) → S3 (iNET)
+- Metadata (tên, folder, owner, version…) → PostgreSQL
+- Desktop offline content → SQLite (Tauri)
+
+
+3. KIẾN TRÚC MICROSERVICES (TỪ ĐẦU)
+--------------------------------------------------------------------------------
+
+                         ┌─────────────────────┐
+                         │   API Gateway       │  (NestJS)
+                         │   Auth + Rate Limit │
+                         └─────────┬───────────┘
+                                   │
+         ┌────────────┬────────────┼────────────┬────────────┬────────────┐
+         │            │            │            │            │            │
+         ▼            ▼            ▼            ▼            ▼            ▼
+   ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+   │  Auth    │ │  File    │ │  Docs    │ │  Sheets  │ │  Slides  │ │   AI     │
+   │ Service  │ │ Service  │ │ Service  │ │ Service  │ │ Service  │ │ Service  │
+   └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘
+         │            │            │            │            │            │
+         └────────────┴────────────┴────────────┴────────────┴────────────┘
+                                   │
+                    ┌──────────────┼──────────────┐
+                    │              │              │
+                    ▼              ▼              ▼
+             PostgreSQL      Object Storage   Redis / NATS
+             (per service)   (S3 iNET)        (cache + event bus)
+
+Nguyên tắc:
+- Mỗi service là một NestJS app độc lập.
+- Database per Service (hoặc schema riêng).
+- Frontend chỉ gọi qua API Gateway.
+- Giao tiếp bất đồng bộ dùng NATS JetStream.
+- Bắt đầu với ít service, thêm dần khi cần.
+
+
+4. DANH SÁCH SERVICE
+--------------------------------------------------------------------------------
+
+Service khởi đầu (ưu tiên):
+- api-gateway
+- auth-service
+- file-service
+- docs-service
+
+Service thêm dần:
+- sheets-service
+- slides-service
+- ai-service
+- sync-service (Desktop ↔ Cloud)
+- collaboration-service (Realtime sau này)
+
+
+5. TECH STACK
+--------------------------------------------------------------------------------
+
+Frontend Web:
+- React 19 + TypeScript + Vite 6
+- React Router / TanStack Router
+- Tailwind CSS + shadcn/ui
+- TipTap → Docs
+- Univer → Sheets
+- Zustand + TanStack Query
+- vite-plugin-pwa
+
+Desktop:
+- Tauri 2.0 + SQLite (Offline-first)
+
+Mobile:
+- Ngắn hạn: PWA
+- Dài hạn: React Native
+
+Backend:
+- NestJS (TypeScript) — Microservices từ đầu
+- API Gateway: NestJS
+- Message Broker: NATS JetStream
+- Database: PostgreSQL (Prisma / Drizzle)
+- Cache: Redis
+- Object Storage: S3 (iNET)
+- Auth: JWT
+
+Deploy:
+- Docker + Docker Compose → Kubernetes
+- CI/CD: GitHub Actions
+- Observability: OpenTelemetry + Grafana
+
+
+6. LỘ TRÌNH TRIỂN KHAI
+--------------------------------------------------------------------------------
+
+### GIAI ĐOẠN 0: Chuẩn bị (1.5–2.5 tuần)
+- Setup monorepo (Turborepo + pnpm)
+- Khởi tạo các NestJS service: api-gateway, auth-service, file-service
+- Docker Compose (PostgreSQL, Redis, NATS)
+- Frontend Vite + React
+- CI/CD cơ bản
+- Fork GenOffice, tách docx-engine
+
+### GIAI ĐOẠN 1: Core Services (3–5 tuần)
+- Hoàn thiện auth-service
+- Hoàn thiện file-service (pre-signed URL S3)
+- API Gateway routing + JWT
+- Frontend: Đăng nhập + Dashboard file (Cloud-first)
+
+### GIAI ĐOẠN 2: Docs Service (6–10 tuần)
+- Tạo docs-service (NestJS)
+- Tích hợp docx-engine
+- Frontend TipTap + auto-save Cloud
+- Tính năng cơ bản (text, heading, list, table, format…)
+
+### GIAI ĐOẠN 3: Sheets Service (8–12 tuần)
+- Tạo sheets-service
+- Tích hợp Univer
+- Formula, format, chart cơ bản
+- Scale độc lập
+
+### GIAI ĐOẠN 4: Slides + Suite (5–8 tuần)
+- slides-service
+- Dashboard chung
+- Theme, PWA
+
+### GIAI ĐOẠN 5: AI Service (4–7 tuần)
+- ai-service độc lập
+- Queue job AI
+- Scale worker
+
+### GIAI ĐOẠN 6: Desktop App Tauri (Offline-first) (5–8 tuần)
+- Tích hợp Tauri 2.0
+- SQLite local
+- Làm việc offline
+- Tùy chọn đồng bộ Cloud
+
+### GIAI ĐOẠN 7: Sync Service (4–7 tuần)
+- Đồng bộ 2 chiều Desktop ↔ Cloud
+- Conflict resolution
+
+### GIAI ĐOẠN 8: Realtime Collaboration (sau)
+- collaboration-service (Yjs / PartyKit / Liveblocks)
+
+### GIAI ĐOẠN 9: Mobile Native (React Native)
+- Viết lại UI/UX
+- Tái sử dụng logic + API Client
+- Effort ước lượng: +3 đến 6 tháng (có AI hỗ trợ)
+
+
+7. THỨ TỰ ƯU TIÊN TÍNH NĂNG
+--------------------------------------------------------------------------------
+
+Must-have (MVP):
+- Docs + Sheets trên Web (Cloud-first)
+- Auth + File manager
+- Pre-signed URL S3
+- Auto-save Cloud
+
+Should-have:
+- Slides
+- Version history
+- PWA
+- Desktop Tauri Offline-first
+- Export PDF
+
+Nice-to-have / Dài hạn:
+- Sync Desktop ↔ Cloud
+- Realtime collaboration
+- AI agent
+- React Native mobile
+- Template, Advanced permission
+
+
+8. ƯỚC LƯỢNG THỜI GIAN (ĐÃ TÍNH AI HỖ TRỢ CODE)
+--------------------------------------------------------------------------------
+Lưu ý: Các con số dưới đây đã giảm so với code thuần thủ công,
+vì có AI hỗ trợ viết code, generate boilerplate, debug, refactor...
+
+Quy mô team                  | MVP (Web Docs+Sheets) | Có Desktop Offline | + React Native
+-----------------------------|-----------------------|--------------------|----------------
+1 người fullstack + AI       | 5–8 tháng             | 10–14 tháng        | +3–6 tháng
+2–3 người + AI               | 3.5–5.5 tháng         | 7–10 tháng         | +2.5–4.5 tháng
+4–6 người + AI               | 2.5–4 tháng           | 5–8 tháng          | +2–3.5 tháng
+
+Ghi chú:
+- AI giúp mạnh ở phần boilerplate, CRUD, test, refactor, viết tài liệu.
+- Phần khó (docx-engine tích hợp, formula engine, conflict sync, UX editor)
+  vẫn cần người có kinh nghiệm quyết định và review kỹ.
+- Effort thực tế phụ thuộc rất nhiều vào chất lượng prompt và khả năng review code của team.
+
+
+9. TỔ CHỨC CODE
+--------------------------------------------------------------------------------
+
+Monorepo:
+
+apps/
+  api-gateway/               # NestJS
+  auth-service/              # NestJS
+  file-service/              # NestJS
+  docs-service/              # NestJS
+  sheets-service/            # NestJS
+  slides-service/            # NestJS
+  ai-service/                # NestJS
+  web/                       # React + Vite
+  desktop/                   # Tauri
+  mobile/                    # React Native (dài hạn)
+
+packages/
+  shared-types/
+  shared-utils/
+  config/
+
+infra/
+  docker-compose.yml
+  k8s/
+
+
+10. LÝ DO CÁC LỰA CHỌN
+--------------------------------------------------------------------------------
+- NestJS + Microservices từ đầu : Phù hợp định hướng modules + scale.
+- Web = Cloud-first             : Đơn giản, phù hợp môi trường online.
+- Desktop = Offline-first       : Giá trị rõ ràng của app native.
+- Tauri 2.0                     : Nhẹ, ít RAM.
+- React Native dài hạn          : Responsive không đủ cho Office.
+- PostgreSQL + S3 iNET          : Phù hợp metadata + binary.
+- Có AI hỗ trợ                  : Rút ngắn đáng kể thời gian phát triển.
+
+
+11. CHECKLIST KHI BẮT ĐẦU
+--------------------------------------------------------------------------------
+[ ] Setup monorepo (Turborepo + pnpm)
+[ ] Tạo api-gateway, auth-service, file-service (NestJS)
+[ ] Docker Compose (PostgreSQL, Redis, NATS)
+[ ] Khởi tạo Frontend Vite + React
+[ ] Pre-signed URL S3 hoạt động
+[ ] Làm Docs Service + TipTap (Cloud-first)
+[ ] Sau đó đến Sheets Service
+[ ] Thiết kế API versioning + logging + tracing
+[ ] Khi Web ổn → tích hợp Tauri Desktop (Offline-first)
+[ ] Mobile native (React Native) để giai đoạn dài hạn
+
+
+12. LỜI KẾT
+--------------------------------------------------------------------------------
+Thứ tự ưu tiên:
+
+1. Web (Cloud-first) – Docs + Sheets chất lượng cao với NestJS Microservices
+2. Desktop App (Tauri) – Offline-first + tùy chọn sync Cloud
+3. PWA tạm cho mobile
+4. Sync Desktop ↔ Cloud
+5. Realtime collaboration
+6. React Native mobile
+
+Bắt đầu với ít service (Gateway + Auth + File + Docs), thêm dần khi cần.
+Có AI hỗ trợ thì tốc độ sẽ nhanh hơn code thuần đáng kể, nhưng vẫn cần
+người có chuyên môn review các phần cốt lõi (editor, sync, permission).
+
+Chúc bạn xây dựng thành công!
+
+
+================================================================================
+Hết file - Phiên bản 6.1 (đã tính AI hỗ trợ)
+================================================================================
