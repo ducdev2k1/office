@@ -1,6 +1,6 @@
 import { EditorContent } from '@tiptap/react';
 import { useTranslation } from '@office/i18n';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SearchAndReplace } from '@/components/tiptap-ui/search-and-replace';
@@ -44,7 +44,10 @@ export const EditorPage = () => {
   } = useDocs();
   const { theme, toggleTheme } = useTheme();
   const [query, setQuery] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    const saved = localStorage.getItem('docs-sidebar-open');
+    return saved !== null ? saved === 'true' : true;
+  });
   const [findOpen, setFindOpen] = useState(false);
   const [pageSetupOpen, setPageSetupOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -56,6 +59,26 @@ export const EditorPage = () => {
   const colorPickerRef = useRef<HTMLInputElement>(null);
   const paperWrapRef = useRef<HTMLElement>(null);
   const indicatorTimerRef = useRef<number | null>(null);
+
+  const handleToggleSidebar = () => {
+    setSidebarOpen((prev) => {
+      const next = !prev;
+      localStorage.setItem('docs-sidebar-open', String(next));
+      return next;
+    });
+  };
+
+  const handleCloseSidebar = () => {
+    setSidebarOpen(false);
+    localStorage.setItem('docs-sidebar-open', 'false');
+  };
+
+  const handleSelectDoc = (docId: string) => {
+    setActiveId(docId);
+    if (window.innerWidth < 768) {
+      handleCloseSidebar();
+    }
+  };
 
   const editor = useDocsEditor(activeDoc?.content ?? '', updateContent);
   const { viewMode, pageCount, isOverLimit, viewportStyle, setViewMode, schedulePagination } =
@@ -150,7 +173,7 @@ export const EditorPage = () => {
         <Header
           title={activeDoc?.title ?? ''}
           onTitleChange={updateTitle}
-          onMenuToggle={() => setSidebarOpen((value) => !value)}
+          onMenuToggle={handleToggleSidebar}
           theme={theme}
           onToggleTheme={toggleTheme}
           menuActions={{
@@ -160,7 +183,7 @@ export const EditorPage = () => {
             wordCount,
             charCount: editor?.state.doc.textContent.length ?? 0,
             onNewDoc: addDoc,
-            onToggleSidebar: () => setSidebarOpen((value) => !value),
+            onToggleSidebar: handleToggleSidebar,
             onToggleFind: () => setFindOpen((value) => !value),
             onPageSetup: () => setPageSetupOpen((value) => !value),
             onViewModeChange: setViewMode,
@@ -206,13 +229,21 @@ export const EditorPage = () => {
             outline={outline}
             sidebarOpen={sidebarOpen}
             onQueryChange={setQuery}
-            onSelect={(docId) => {
-              setActiveId(docId);
-              setSidebarOpen(false);
-            }}
+            onSelect={handleSelectDoc}
             onAdd={addDoc}
-            onClose={() => setSidebarOpen(false)}
+            onClose={handleCloseSidebar}
           />
+          {!sidebarOpen && (
+            <button
+              type="button"
+              className="sidebar-open-floating-btn"
+              title={t('docs.header.toggleSidebar')}
+              aria-label={t('docs.header.toggleSidebar')}
+              onClick={handleToggleSidebar}
+            >
+              <Icon name="menu" />
+            </button>
+          )}
           <section
             ref={paperWrapRef}
             onScroll={handlePaperScroll}
@@ -260,7 +291,7 @@ export const EditorPage = () => {
             {t('common.status.quotaWarning', { used: (storageBytes / (1024 * 1024)).toFixed(1), total: '5' })}
           </span>
           <span>
-            <InetIcon name="check" aria-hidden="true" /> {saveState}
+            <Icon name="check" aria-hidden="true" /> {saveState}
           </span>
         </footer>
         {editor && (

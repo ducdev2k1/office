@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import type { FileHomeActions, FileRecord, FileTab } from '../types';
 import { KIND_ICON } from '../lib/icons';
 import { FileRowMenu } from './FileRowMenu';
@@ -51,7 +51,7 @@ export const FileGrid = ({ files, accentVar, tab, actions }: FileGridProps) => {
                 aria-label={t('fileActions.open')}
                 onClick={() => actions.onOpen(file.id)}
               >
-                <InetIcon name={KIND_ICON[file.kind]} size={48} className="text-muted-foreground" aria-hidden="true" />
+                <Icon name={KIND_ICON[file.kind]} size={48} className="text-muted-foreground" aria-hidden="true" />
               </button>
               <div className="flex items-center gap-2 p-2">
                 <span
@@ -59,7 +59,7 @@ export const FileGrid = ({ files, accentVar, tab, actions }: FileGridProps) => {
                   style={{ backgroundColor: accentVar }}
                   aria-hidden="true"
                 >
-                  <InetIcon name={KIND_ICON[file.kind]} size={14} />
+                  <Icon name={KIND_ICON[file.kind]} size={14} />
                 </span>
                 <div className="min-w-0 flex-1">
                   {editingId === file.id ? (
@@ -98,7 +98,7 @@ export const FileGrid = ({ files, accentVar, tab, actions }: FileGridProps) => {
                       }`}
                       onClick={() => actions.onStar(file.id)}
                     >
-                      <InetIcon name="star" size={14} preferDuotone={file.starred} aria-hidden="true" />
+                      <Icon name="star" size={14} preferDuotone={file.starred} aria-hidden="true" />
                     </button>
                   )}
                   <FileRowMenu

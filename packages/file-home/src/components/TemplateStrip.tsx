@@ -1,6 +1,6 @@
 import type { ProductConfig } from '../types';
 import { KIND_ICON } from '../lib/icons';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 
 interface TemplateStripProps {
   config: ProductConfig;
@@ -30,7 +30,7 @@ export const TemplateStrip = ({ config, onCreate }: TemplateStripProps) => {
             className="flex h-28 items-center justify-center"
             style={{ backgroundColor: config.accentVar }}
           >
-            <InetIcon name="add" size={32} className="text-white" aria-hidden="true" />
+            <Icon name="add" size={32} className="text-white" aria-hidden="true" />
           </span>
           <span className="truncate px-2 py-2 text-sm text-foreground">{config.blankLabel}</span>
         </button>
@@ -40,7 +40,7 @@ export const TemplateStrip = ({ config, onCreate }: TemplateStripProps) => {
             className="flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm"
           >
             <span className="flex h-28 items-center justify-center bg-muted">
-              <InetIcon name={IconName} size={40} className="text-muted-foreground" aria-hidden="true" />
+              <Icon name={IconName} size={40} className="text-muted-foreground" aria-hidden="true" />
             </span>
             <span className="truncate px-2 py-2 text-sm text-foreground">{template.label}</span>
           </div>

@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  InetIcon,
+  Icon,
 } from '@office/ui-kit';
 import { useMemo, useRef } from 'react';
 
@@ -52,7 +52,7 @@ export interface HeaderMenuActions {
 const MenuItemRow = ({ item }: { item: MenuAction }) => (
   <span className="flex w-full items-center gap-2">
     <span className="flex w-4 shrink-0 items-center justify-center">
-      {item.checked && <InetIcon name="check" className="size-3.5" />}
+      {item.checked && <Icon name="check" className="size-3.5" />}
     </span>
     <span className={item.danger ? 'text-destructive' : undefined}>{item.label}</span>
     {item.shortcut && <kbd className="menu-shortcut ml-auto">{item.shortcut}</kbd>}
@@ -240,7 +240,7 @@ export const MenuBar = ({
         <DropdownMenu key={menu.label}>
           <DropdownMenuTrigger className="menu-trigger" render={<Button variant="ghost" size="sm" />}>
             {menu.label}
-            <InetIcon name="chevron-down" className="menu-chevron" />
+            <Icon name="chevron-down" className="menu-chevron" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" sideOffset={2}>
             {menu.items.map((item, index) =>
@@ -261,7 +261,7 @@ export const MenuBar = ({
         </DropdownMenu>
       ))}
       <Button className="gemini-menu" variant="ghost" size="sm" type="button">
-        <InetIcon name="sparkles" /> Gemini
+        <Icon name="sparkles" /> Gemini
       </Button>
       <input
         ref={imageInputRef}

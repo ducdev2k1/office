@@ -2,12 +2,12 @@ import { loadIcons, type IconEntry } from '@inet/icons';
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { cn } from './cn';
 
-export type InetIconVariant = 'outline' | 'duotone';
+export type IconVariant = 'outline' | 'duotone';
 
-export interface InetIconProps {
+export interface IconProps {
   /** Ten icon theo payload iNET (field `n`), vd: 'chevron-down', 'od-check-circle'. */
   name: string;
-  variant?: InetIconVariant;
+  variant?: IconVariant;
   size?: number;
   className?: string;
   style?: CSSProperties;
@@ -32,14 +32,14 @@ const getPayload = (): Promise<IconPayloadCache> => {
  * Icon iNET Design System (@inet/icons), render truc tiep SVG string tu payload.
  * Lazy-load 1 lan roi cache; mau theo `currentColor`.
  */
-export const InetIcon = ({
+export const Icon = ({
   name,
   variant = 'outline',
   size = 20,
   className,
   style,
   preferDuotone,
-}: InetIconProps) => {
+}: IconProps) => {
   const [entry, setEntry] = useState<IconEntry | undefined>(undefined);
 
   useEffect(() => {

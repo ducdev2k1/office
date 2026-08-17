@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import { useState, type KeyboardEvent } from 'react';
 import type { FileHomeActions, FileRecord, FileTab } from '../types';
 import { KIND_ICON } from '../lib/icons';
@@ -75,7 +75,7 @@ export const FileList = ({ files, accentVar, tab, actions }: FileListProps) => {
                       style={{ backgroundColor: accentVar }}
                       aria-hidden="true"
                     >
-                      <InetIcon name={KIND_ICON[file.kind]} size={16} />
+                      <Icon name={KIND_ICON[file.kind]} size={16} />
                     </span>
                     {editingId === file.id ? (
                       <input
@@ -124,7 +124,7 @@ export const FileList = ({ files, accentVar, tab, actions }: FileListProps) => {
                       }`}
                       onClick={() => actions.onStar(file.id)}
                     >
-                      <InetIcon name="star" size={16} preferDuotone={file.starred} aria-hidden="true" />
+                      <Icon name="star" size={16} preferDuotone={file.starred} aria-hidden="true" />
                     </button>
                   )}
                 </td>

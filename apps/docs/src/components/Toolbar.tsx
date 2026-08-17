@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import type { RefObject } from 'react';
 import type { ViewMode } from '@/editor/use-pagination';
 import { ToolbarButton } from '@/components/ToolbarButton';
@@ -56,10 +56,10 @@ export const Toolbar = ({
   return (
     <div className="toolbar" aria-label="Toolbar">
       <ToolbarButton label={t('toolbar.undo')} onClick={() => editor.chain().focus().undo().run()}>
-        <InetIcon name="undo" />
+        <Icon name="undo" />
       </ToolbarButton>
       <ToolbarButton label={t('toolbar.redo')} onClick={() => editor.chain().focus().redo().run()}>
-        <InetIcon name="redo" />
+        <Icon name="redo" />
       </ToolbarButton>
       <span className="toolbar-separator" />
       <ToolbarButton
@@ -67,21 +67,21 @@ export const Toolbar = ({
         label={t('toolbar.normalText')}
         onClick={() => editor.chain().focus().setParagraph().run()}
       >
-        <InetIcon name="pilcrow" />
+        <Icon name="pilcrow" />
       </ToolbarButton>
       <ToolbarButton
         active={editor.isActive('heading', { level: 1 })}
         label={t('toolbar.heading1')}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
       >
-        <InetIcon name="heading-1" />
+        <Icon name="heading-1" />
       </ToolbarButton>
       <ToolbarButton
         active={editor.isActive('heading', { level: 2 })}
         label={t('toolbar.heading2')}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
       >
-        <InetIcon name="heading-2" />
+        <Icon name="heading-2" />
       </ToolbarButton>
       <span className="toolbar-separator" />
       <TextStyleTools editor={editor} onSetLink={onSetLink} />

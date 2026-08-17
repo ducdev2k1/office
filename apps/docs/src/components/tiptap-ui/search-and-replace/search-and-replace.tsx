@@ -5,7 +5,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useComposedRef } from '@/hooks/use-composed-ref';
 
 // --- Icons ---
-import { Button, InetIcon, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
+import { Button, Icon, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
 import { Input, Separator, Switch } from '@office/ui-kit';
 import { cn } from '@/lib/tiptap-utils';
 
@@ -80,7 +80,7 @@ const ToolbarIconButton = ({
           data-search-replace-action={dataAction}
           onClick={onClick}
         >
-          <InetIcon name={icon} size={ICON_SIZE} />
+          <Icon name={icon} size={ICON_SIZE} />
         </Button>
       }
     />
@@ -107,7 +107,7 @@ function RegexExampleButton({
       size="sm"
     >
       <span className="tiptap-button-text">{children}</span>
-      <InetIcon name="arrow-right" size={ICON_SIZE} className="tiptap-button-icon" />
+      <Icon name="arrow-right" size={ICON_SIZE} className="tiptap-button-icon" />
     </Button>
   );
 }
@@ -125,7 +125,7 @@ export const SearchAndReplaceButton = forwardRef<HTMLButtonElement, React.Compon
         ref={ref}
         {...props}
       >
-        {children || <InetIcon name="search" size={ICON_SIZE} className="tiptap-button-icon" />}
+        {children || <Icon name="search" size={ICON_SIZE} className="tiptap-button-icon" />}
       </Button>
     );
   },
@@ -457,7 +457,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                 onClick={toggleCaseSensitive}
                 className={cn(caseSensitive && 'bg-accent text-accent-foreground')}
               >
-                <InetIcon name="case-sensitive" size={ICON_SIZE} className="tiptap-button-icon" />
+                <Icon name="case-sensitive" size={ICON_SIZE} className="tiptap-button-icon" />
                 <span className="tiptap-button-text">Match case</span>
               </Button>
 
@@ -471,7 +471,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                 onClick={toggleWholeWord}
                 className={cn(wholeWord && 'bg-accent text-accent-foreground')}
               >
-                <InetIcon name="whole-word" size={ICON_SIZE} className="tiptap-button-icon" />
+                <Icon name="whole-word" size={ICON_SIZE} className="tiptap-button-icon" />
                 <span className="tiptap-button-text">Whole words</span>
               </Button>
             </div>
@@ -537,7 +537,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                     rel="noopener noreferrer"
                   >
                     Learn about regular expressions
-                    <InetIcon
+                    <Icon
                       name="external-link"
                       size={ICON_SIZE}
                       className="tiptap-search-replace-regex-docs-link-icon"

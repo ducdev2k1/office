@@ -1,5 +1,9 @@
 export { cn } from './cn';
-export { InetIcon, type InetIconProps, type InetIconVariant } from './icons';
+export {
+  Icon,
+  type IconProps,
+  type IconVariant,
+} from './icons';
 export {
   applyTheme,
   DEFAULT_THEME,

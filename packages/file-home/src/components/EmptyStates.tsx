@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { Button, InetIcon } from '@office/ui-kit';
+import { Button, Icon } from '@office/ui-kit';
 
 interface EmptyStatesProps {
   variant: 'no-files' | 'no-results' | 'empty-trash';
@@ -41,7 +41,7 @@ export const EmptyStates = ({ variant, onCreate, onClearQuery }: EmptyStatesProp
 
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-      <InetIcon name={content.icon} size={40} className="text-muted-foreground/60" aria-hidden="true" />
+      <Icon name={content.icon} size={40} className="text-muted-foreground/60" aria-hidden="true" />
       <div>
         <p className="text-sm font-medium text-foreground">{content.title}</p>
         <p className="mt-1 text-sm text-muted-foreground">{content.description}</p>

@@ -4,7 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  InetIcon,
+  Icon,
 } from '@office/ui-kit';
 import type { FileSort, FileView } from './../types';
 
@@ -35,7 +35,7 @@ export const FileToolbar = ({ sort, view, onSortChange, onViewChange }: FileTool
             />
           }
         >
-          <InetIcon name="arrow-up-down" size={16} aria-hidden="true" />
+          <Icon name="arrow-up-down" size={16} aria-hidden="true" />
           {t('home.sortBy')}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" sideOffset={4}>
@@ -45,7 +45,7 @@ export const FileToolbar = ({ sort, view, onSortChange, onViewChange }: FileTool
               onSelect={() => onSortChange(option.value)}
             >
               {t(option.labelKey)}
-              {sort === option.value && <InetIcon name="check" size={16} className="ml-auto" aria-hidden="true" />}
+              {sort === option.value && <Icon name="check" size={16} className="ml-auto" aria-hidden="true" />}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -60,7 +60,7 @@ export const FileToolbar = ({ sort, view, onSortChange, onViewChange }: FileTool
             view === 'list' ? 'bg-active text-active-foreground' : 'text-muted-foreground hover:bg-hover'
           }`}
         >
-          <InetIcon name="list" size={16} aria-hidden="true" />
+          <Icon name="list" size={16} aria-hidden="true" />
         </button>
         <button
           type="button"
@@ -71,7 +71,7 @@ export const FileToolbar = ({ sort, view, onSortChange, onViewChange }: FileTool
             view === 'grid' ? 'bg-active text-active-foreground' : 'text-muted-foreground hover:bg-hover'
           }`}
         >
-          <InetIcon name="grid-2x2" size={16} aria-hidden="true" />
+          <Icon name="grid-2x2" size={16} aria-hidden="true" />
         </button>
       </div>
     </div>

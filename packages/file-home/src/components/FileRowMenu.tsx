@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  InetIcon,
+  Icon,
 } from '@office/ui-kit';
 import type { FileRecord, FileHomeActions, FileTab } from '../types';
 
@@ -40,39 +40,39 @@ export const FileRowMenu = ({
           />
         }
       >
-        <InetIcon name="more-vertical" size={16} aria-hidden="true" />
+        <Icon name="more-vertical" size={16} aria-hidden="true" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={4}>
         {isTrash ? (
           <>
             <DropdownMenuItem onSelect={() => actions.onRestore(file.id)}>
-              <InetIcon name="rotate-ccw" size={16} className="mr-2" aria-hidden="true" />
+              <Icon name="rotate-ccw" size={16} className="mr-2" aria-hidden="true" />
               {t('fileActions.restore')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive" onSelect={onRequestDeleteForever}>
-              <InetIcon name="x-circle" size={16} className="mr-2" aria-hidden="true" />
+              <Icon name="x-circle" size={16} className="mr-2" aria-hidden="true" />
               {t('fileActions.deletePermanently')}
             </DropdownMenuItem>
           </>
         ) : (
           <>
             <DropdownMenuItem onSelect={onRequestRename}>
-              <InetIcon name="pencil" size={16} className="mr-2" aria-hidden="true" />
+              <Icon name="pencil" size={16} className="mr-2" aria-hidden="true" />
               {t('fileActions.rename')}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => actions.onDuplicate(file.id)}>
-              <InetIcon name="copy" size={16} className="mr-2" aria-hidden="true" />
+              <Icon name="copy" size={16} className="mr-2" aria-hidden="true" />
               {t('fileActions.duplicate')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => actions.onStar(file.id)}>
-              <InetIcon name="star" size={16} className="mr-2" aria-hidden="true" />
+              <Icon name="star" size={16} className="mr-2" aria-hidden="true" />
               {file.starred ? t('fileActions.unstar') : t('fileActions.star')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => actions.onTrash(file.id)}>
-              <InetIcon name="trash-2" size={16} className="mr-2" aria-hidden="true" />
+              <Icon name="trash-2" size={16} className="mr-2" aria-hidden="true" />
               {t('fileActions.moveToTrash')}
             </DropdownMenuItem>
           </>

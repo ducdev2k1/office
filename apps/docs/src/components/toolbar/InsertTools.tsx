@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import { useRef } from 'react';
 import { ToolbarButton } from '@/components/ToolbarButton';
 
@@ -33,7 +33,7 @@ export const InsertTools = ({
         aria-label={t('toolbar.insertImage')}
         onClick={() => imageInputRef.current?.click()}
       >
-        <InetIcon name="image-plus" />
+        <Icon name="image-plus" />
       </button>
       <input
         ref={imageInputRef}
@@ -46,16 +46,16 @@ export const InsertTools = ({
         }}
       />
       <ToolbarButton label={t('toolbar.insertTable')} onClick={onInsertTable}>
-        <InetIcon name="table" />
+        <Icon name="table" />
       </ToolbarButton>
       <ToolbarButton
         label={t('toolbar.insertHorizontalRule')}
         onClick={() => editor.chain().focus().setHorizontalRule().run()}
       >
-        <InetIcon name="minus" />
+        <Icon name="minus" />
       </ToolbarButton>
       <ToolbarButton label={t('toolbar.insertPageBreak')} onClick={onInsertPageBreak}>
-        <InetIcon name="separator-horizontal" />
+        <Icon name="separator-horizontal" />
       </ToolbarButton>
       {inTable && (
         <>
@@ -64,28 +64,28 @@ export const InsertTools = ({
             label={t('toolbar.addRowBelow')}
             onClick={() => editor.chain().focus().addRowAfter().run()}
           >
-            <InetIcon name="rows-3" />
+            <Icon name="rows-3" />
           </ToolbarButton>
           <ToolbarButton label={t('toolbar.deleteRow')} onClick={() => editor.chain().focus().deleteRow().run()}>
-            <InetIcon name="trash-2" />
+            <Icon name="trash-2" />
           </ToolbarButton>
           <ToolbarButton
             label={t('toolbar.addColumnRight')}
             onClick={() => editor.chain().focus().addColumnAfter().run()}
           >
-            <InetIcon name="columns-3" />
+            <Icon name="columns-3" />
           </ToolbarButton>
           <ToolbarButton
             label={t('toolbar.deleteColumn')}
             onClick={() => editor.chain().focus().deleteColumn().run()}
           >
-            <InetIcon name="columns-3" />
+            <Icon name="columns-3" />
           </ToolbarButton>
           <ToolbarButton
             label={t('toolbar.deleteTable')}
             onClick={() => editor.chain().focus().deleteTable().run()}
           >
-            <InetIcon name="table" />
+            <Icon name="table" />
           </ToolbarButton>
         </>
       )}

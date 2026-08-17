@@ -1,11 +1,11 @@
+import { useTranslation } from '@office/i18n';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  InetIcon,
+  Icon,
 } from '@office/ui-kit';
-import { useTranslation } from '@office/i18n';
 import type { ShellKind } from './types';
 
 const PRODUCTS: { kind: ShellKind; available: boolean; icon: string }[] = [
@@ -39,17 +39,24 @@ export const ProductSwitcher = ({ current, accentVar }: ProductSwitcherProps) =>
           style={{ backgroundColor: accentVar }}
           aria-hidden="true"
         >
-          <InetIcon name={active.icon} size={16} />
+          <Icon name={active.icon} size={16} />
         </span>
         {t(`nav.${active.kind}`)}
-        <InetIcon name="chevron-down" size={16} className="text-muted-foreground" aria-hidden="true" />
+        <Icon name="chevron-down" size={16} className="text-muted-foreground" aria-hidden="true" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" sideOffset={6}>
         {PRODUCTS.map((p) => (
           <DropdownMenuItem key={p.kind} disabled={!p.available}>
-            <InetIcon name={p.icon} size={16} className="mr-2 text-muted-foreground" aria-hidden="true" />
+            <Icon
+              name={p.icon}
+              size={16}
+              className="mr-2 text-muted-foreground"
+              aria-hidden="true"
+            />
             {t(`nav.${p.kind}`)}
-            {p.kind === current && <InetIcon name="check" size={16} className="ml-auto" aria-hidden="true" />}
+            {p.kind === current && (
+              <Icon name="check" size={16} className="ml-auto" aria-hidden="true" />
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

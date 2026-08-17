@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import type { OutlineItem } from '@/lib/utils';
 import type { DocRecord } from '@/types';
 
@@ -57,7 +57,7 @@ export const DocsSidebar = ({
         </button>
       </div>
       <label className="search-box">
-        <InetIcon name="search" aria-hidden="true" />
+        <Icon name="search" aria-hidden="true" />
         <input
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
@@ -73,7 +73,7 @@ export const DocsSidebar = ({
               onClick={() => onSelect(doc.id)}
               type="button"
             >
-              <InetIcon name="file-text" aria-hidden="true" />
+              <Icon name="file-text" aria-hidden="true" />
               <span>
                 <strong>{doc.title}</strong>
                 <small>{formatDateTime(doc.updatedAt)}</small>
@@ -88,8 +88,18 @@ export const DocsSidebar = ({
       <div className="outline-section">
         <div className="outline-label">{t('sidebar.outlineTitle')}</div>
         {outline.length ? (
-          outline.map((item) => (
-            <button className={`outline-row level-${item.level}`} key={item.id} type="button">
+          outline.map((item, index) => (
+            <button
+              className={`outline-row level-${item.level}`}
+              key={item.id}
+              type="button"
+              onClick={() => {
+                const headings = document.querySelectorAll('.tiptap h1, .tiptap h2, .tiptap h3');
+                if (headings[index]) {
+                  headings[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }}
+            >
               {item.text}
             </button>
           ))

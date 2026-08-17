@@ -81,7 +81,7 @@ export function DocumentList() {
 - **Ưu tiên sử dụng Shadcn UI & Base UI Primitives**: Tận dụng tối đa các UI component có sẵn từ `@office/ui-kit` (Button, Dialog, Dropdown Menu, Tooltip, Popover, Input, Switch, Tabs, Card, ScrollArea, v.v.).
 - **Hạn chế viết lại từ đầu**: Không tự code HTML/CSS thô khi đã có component tương đương từ design system.
 - **Tùy biến linh hoạt**: Tùy biến style component qua `className`, `cva` (Class Variance Authority), Tailwind/SCSS tokens mà vẫn giữ nguyên cấu trúc chuẩn và headless logic.
-- **Icons**: Sử dụng icon chuẩn iNET Design System (`<InetIcon name="..." />` từ `@office/ui-kit`) hoặc `lucide-react` cho các app shell controls.
+- **Icons**: Sử dụng icon chuẩn iNET Design System (`<Icon name="..." />` từ `@office/ui-kit`) hoặc `lucide-react` cho các app shell controls.
 
 ---
 

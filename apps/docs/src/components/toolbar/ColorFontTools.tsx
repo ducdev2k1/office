@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import { useRef, type RefObject } from 'react';
 
 const FONT_FAMILIES = ['Arial', 'Roboto', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana'];
@@ -27,7 +27,7 @@ export const ColorFontTools = ({ editor, fontPickerRef, colorPickerRef }: ColorF
           aria-label={t('toolbar.textColor')}
           onClick={() => colorPickerRef.current?.click()}
         >
-          <InetIcon name="baseline" />
+          <Icon name="baseline" />
         </button>
         <input
           ref={colorPickerRef}
@@ -44,7 +44,7 @@ export const ColorFontTools = ({ editor, fontPickerRef, colorPickerRef }: ColorF
           aria-label={t('toolbar.highlightColor')}
           onClick={() => colorHighlightRef.current?.click()}
         >
-          <InetIcon name="highlighter" />
+          <Icon name="highlighter" />
         </button>
         <input
           ref={colorHighlightRef}

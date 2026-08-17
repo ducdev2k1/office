@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { Button, InetIcon } from '@office/ui-kit';
+import { Button, Icon } from '@office/ui-kit';
 import { MenuBar, type HeaderMenuActions } from '@/components/header/MenuBar';
 
 interface HeaderProps {
@@ -36,10 +36,10 @@ export const Header = ({
           variant="ghost"
           size="icon"
         >
-          <InetIcon name="menu" />
+          <Icon name="menu" />
         </Button>
         <div className="docs-file-icon">
-          <InetIcon name="file-text" />
+          <Icon name="file-text" />
         </div>
         <div className="file-heading-copy">
           <div className="title-line">
@@ -58,7 +58,7 @@ export const Header = ({
               variant="ghost"
               size="icon"
             >
-              <InetIcon name="star" />
+              <Icon name="star" />
             </Button>
             <Button
               className="plain-icon-button"
@@ -68,10 +68,10 @@ export const Header = ({
               variant="ghost"
               size="icon"
             >
-              <InetIcon name="folder-closed" />
+              <Icon name="folder-closed" />
             </Button>
             <span className="cloud-state" title={t('common.status.savedToDevice')}>
-              <InetIcon name="cloud" />
+              <Icon name="cloud" />
             </span>
           </div>
           <MenuBar {...menuActions} />
@@ -105,7 +105,7 @@ export const Header = ({
           variant="ghost"
           size="icon"
         >
-          {theme === 'dark' ? <InetIcon name="sun" /> : <InetIcon name="moon" />}
+          {theme === 'dark' ? <Icon name="sun" /> : <Icon name="moon" />}
         </Button>
         <Button
           className="header-icon-button"
@@ -115,7 +115,7 @@ export const Header = ({
           variant="ghost"
           size="icon"
         >
-          <InetIcon name="history" />
+          <Icon name="history" />
         </Button>
         <Button
           className="header-icon-button"
@@ -125,7 +125,7 @@ export const Header = ({
           variant="ghost"
           size="icon"
         >
-          <InetIcon name="message-square" />
+          <Icon name="message-square" />
         </Button>
         <Button
           className="header-icon-button"
@@ -135,11 +135,11 @@ export const Header = ({
           variant="ghost"
           size="icon"
         >
-          <InetIcon name="video" />
-          <InetIcon name="chevron-down" className="tiny-chevron" />
+          <Icon name="video" />
+          <Icon name="chevron-down" className="tiny-chevron" />
         </Button>
         <Button className="share-button" type="button">
-          <InetIcon name="share-2" /> {t('common.actions.share')} <InetIcon name="chevron-down" />
+          <Icon name="share-2" /> {t('common.actions.share')} <Icon name="chevron-down" />
         </Button>
         <div className="avatar" aria-label={t('docs.header.account', { name: 'Duc' })}>
           D

@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { InetIcon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import type { FileRecord } from '../types';
 
 interface StatsCardsProps {
@@ -39,7 +39,7 @@ export const StatsCards = ({ files, storageMB }: StatsCardsProps) => {
           key={label}
           className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3"
         >
-          <InetIcon name={icon} size={20} className="shrink-0 text-muted-foreground" aria-hidden="true" />
+          <Icon name={icon} size={20} className="shrink-0 text-muted-foreground" aria-hidden="true" />
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-foreground" title={value}>
               {value}
