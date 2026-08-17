@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web Office Suite · Bản chốt trình lãnh đạo · iNET</title>
+<meta name="description" content="Đề xuất xây dựng bộ Office web của iNET: Docs, Sheets, Slides chạy trên trình duyệt, thay thế Collabora, hoàn thiện OneMail và Drive thành Workspace.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   iNET Web Office Suite · Executive Brief
+   Brand token: primary #024799 · accent #cc0e0e (logo only)
+   Radius system: card 12px · control 8px · chip 999px
+   ============================================================ */
+
+:root {
+  --bg:            #ffffff;
+  --surface:       #f5f8fc;
+  --surface-2:     #eaf1f9;
+  --border:        #dbe4ef;
+  --border-strong: #c3d2e3;
+  --text:          #0e1a29;
+  --text-2:        #4a5b70;
+  --text-3:        #64758c;
+  --primary:       #024799;
+  --primary-ink:   #ffffff;
+  --primary-soft:  rgba(2, 71, 153, 0.07);
+  --primary-line:  rgba(2, 71, 153, 0.22);
+  --accent:        #cc0e0e;
+  --success:       #0b7d57;
+  --warning:       #9c5806;
+  --danger:        #b91c1c;
+  --shadow:        0 1px 2px rgba(14, 26, 41, .04), 0 8px 28px rgba(14, 26, 41, .06);
+  --r:             12px;
+  --r-sm:          8px;
+  --maxw:          1180px;
+  --ease:          cubic-bezier(.16, 1, .3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:            #0a0f16;
+    --surface:       #111a24;
+    --surface-2:     #17222f;
+    --border:        #25323f;
+    --border-strong: #35455666;
+    --text:          #e9eff6;
+    --text-2:        #a6b6c8;
+    --text-3:        #8fa2b8;
+    --primary:       #5ba3f0;
+    --primary-ink:   #05121f;
+    --primary-soft:  rgba(91, 163, 240, 0.11);
+    --primary-line:  rgba(91, 163, 240, 0.28);
+    --accent:        #ff5c5c;
+    --success:       #3fbf90;
+    --warning:       #e0a44a;
+    --danger:        #f0716f;
+    --shadow:        0 1px 2px rgba(0, 0, 0, .3), 0 10px 34px rgba(0, 0, 0, .34);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+/* ---------- Navigation ---------- */
+.nav {
+  position: sticky; top: 0; z-index: 40;
+  height: 66px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-in { height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: var(--text); white-space: nowrap; }
+.brand-mark { font-weight: 800; font-size: 19px; letter-spacing: -.02em; }
+.brand-mark .i { color: var(--accent); }
+.brand-sep { width: 1px; height: 16px; background: var(--border-strong); align-self: center; }
+.brand-sub { font-size: 13.5px; color: var(--text-2); font-weight: 500; }
+.nav-links { display: flex; align-items: center; gap: 26px; }
+.nav-links a {
+  font-size: 14px; color: var(--text-2); text-decoration: none; font-weight: 500;
+  transition: color .2s var(--ease);
+}
+.nav-links a:hover { color: var(--primary); }
+.nav-links a:focus-visible, .btn:focus-visible, .brand:focus-visible {
+  outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px;
+}
+@media (max-width: 900px) { .nav-links { display: none; } .brand-sep, .brand-sub { display: none; } }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  white-space: nowrap;
+  padding: 13px 22px; border-radius: var(--r-sm);
+  font-size: 15px; font-weight: 600; text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform .16s var(--ease), background .2s var(--ease), border-color .2s var(--ease);
+}
+.btn-primary { background: var(--primary); color: var(--primary-ink); }
+.btn-primary:hover { background: color-mix(in srgb, var(--primary) 88%, #000); }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--border-strong); }
+.btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+.btn:active { transform: translateY(1px); }
+@media (prefers-reduced-motion: reduce) { .btn:active { transform: none; } }
+
+/* ---------- Typography ---------- */
+h1, h2, h3 { margin: 0; letter-spacing: -.025em; line-height: 1.12; font-weight: 700; }
+h1 { font-size: clamp(38px, 5.2vw, 62px); font-weight: 800; }
+h2 { font-size: clamp(27px, 3.4vw, 38px); }
+h3 { font-size: 18px; line-height: 1.35; letter-spacing: -.01em; }
+p  { margin: 0; }
+.lede { font-size: clamp(16.5px, 1.6vw, 19px); color: var(--text-2); line-height: 1.62; max-width: 62ch; }
+
+section { padding: clamp(64px, 8vw, 108px) 0; }
+.sec-head { max-width: 68ch; margin-bottom: clamp(36px, 4vw, 54px); }
+.sec-head p { margin-top: 16px; }
+
+.rule { height: 1px; background: var(--border); border: 0; margin: 0; }
+
+/* ---------- Hero ---------- */
+.hero { padding-top: clamp(56px, 6vw, 88px); padding-bottom: clamp(56px, 6vw, 90px); }
+.hero-grid { display: grid; grid-template-columns: 1.28fr 1fr; gap: clamp(36px, 5vw, 72px); align-items: center; }
+.hero h1 { max-width: 13ch; }
+.hero .lede { margin-top: 22px; max-width: 46ch; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+
+.figures {
+  border: 1px solid var(--border); border-radius: var(--r);
+  background: var(--surface); box-shadow: var(--shadow); overflow: hidden;
+}
+.fig { padding: 22px 26px; }
+.fig + .fig { border-top: 1px solid var(--border); }
+.fig-val { font-size: clamp(30px, 3.6vw, 40px); font-weight: 800; letter-spacing: -.03em; line-height: 1; color: var(--primary); }
+.fig-val small { font-size: .5em; font-weight: 700; letter-spacing: -.01em; }
+.fig-lab { margin-top: 8px; font-size: 14px; color: var(--text-2); line-height: 1.45; }
+
+@media (max-width: 860px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero h1 { max-width: 100%; }
+}
+
+/* ---------- Reason blocks ---------- */
+.reasons { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+.reason {
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 30px; background: var(--bg);
+}
+.reason-lead { grid-row: span 2; background: var(--surface); }
+.reason-lead h3 { font-size: 22px; }
+.reason p { margin-top: 12px; color: var(--text-2); font-size: 15.2px; }
+.reason .note { margin-top: 14px; font-size: 13.5px; color: var(--text-3); font-style: italic; }
+@media (max-width: 860px) { .reasons { grid-template-columns: 1fr; } .reason-lead { grid-row: auto; } }
+
+/* ---------- Timeline ---------- */
+.tl { position: relative; padding-left: 0; }
+.tl-row {
+  display: grid; grid-template-columns: 116px 1fr 1fr; gap: 28px;
+  padding: 26px 0; border-top: 1px solid var(--border); align-items: start;
+}
+.tl-row:last-of-type { border-bottom: 1px solid var(--border); }
+.tl-key { display: flex; flex-direction: column; gap: 6px; }
+.tl-m {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 1.5px solid var(--primary-line); color: var(--primary);
+  font-weight: 800; font-size: 15px; letter-spacing: -.01em;
+  background: var(--primary-soft);
+}
+.tl-row.is-goal .tl-m { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+.tl-when { font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+.tl-what { font-size: 17px; font-weight: 600; letter-spacing: -.01em; line-height: 1.4; }
+.tl-why { font-size: 15px; color: var(--text-2); }
+.tl-row.is-goal .tl-what { color: var(--primary); }
+@media (max-width: 860px) {
+  .tl-row { grid-template-columns: 1fr; gap: 12px; }
+  .tl-key { flex-direction: row; align-items: center; gap: 14px; }
+}
+
+.callout {
+  margin-top: 34px; border-left: 3px solid var(--primary);
+  background: var(--primary-soft); border-radius: 0 var(--r) var(--r) 0;
+  padding: 24px 28px;
+}
+.callout strong { color: var(--primary); }
+.callout p { color: var(--text-2); font-size: 15.5px; }
+.callout p + p { margin-top: 10px; }
+
+.after-mvp {
+  margin-top: 20px; padding: 20px 24px; border: 1px dashed var(--border-strong);
+  border-radius: var(--r); font-size: 15px; color: var(--text-2);
+}
+.after-mvp b { color: var(--text); font-weight: 600; }
+
+/* ---------- Tech stack groups ---------- */
+.stack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.stack-group {
+  border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+  background: var(--bg);
+}
+.stack-group > header {
+  padding: 18px 22px; background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px; font-weight: 700; letter-spacing: -.005em;
+}
+.stack-item { padding: 18px 22px; }
+.stack-item + .stack-item { border-top: 1px solid var(--border); }
+.stack-name { font-weight: 700; font-size: 15.5px; letter-spacing: -.01em; }
+.stack-item p { margin-top: 6px; font-size: 14.2px; color: var(--text-2); line-height: 1.55; }
+.free {
+  display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600;
+  color: var(--success); border: 1px solid color-mix(in srgb, var(--success) 34%, transparent);
+  padding: 2px 9px; border-radius: 999px;
+}
+@media (max-width: 980px) { .stack { grid-template-columns: 1fr; } }
+
+/* ---------- Resource scenarios ---------- */
+.res { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.res-card {
+  border: 1px solid var(--border); border-radius: var(--r); padding: 26px;
+  background: var(--bg); display: flex; flex-direction: column; gap: 16px;
+}
+.res-card.is-now { background: var(--surface); border-color: var(--primary-line); }
+.res-who { font-size: 15.5px; font-weight: 700; letter-spacing: -.01em; }
+.res-tag { font-size: 12.5px; font-weight: 600; color: var(--primary); }
+.res-big { font-size: 34px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.res-sub { font-size: 13.5px; color: var(--text-2); margin-top: 6px; }
+.bar { height: 6px; border-radius: 999px; background: var(--primary); opacity: .82; }
+.res-full { font-size: 14px; color: var(--text-2); }
+.res-full b { color: var(--text); font-weight: 600; }
+.res-note { margin-top: 22px; font-size: 14.5px; color: var(--text-3); }
+@media (max-width: 980px) { .res { grid-template-columns: 1fr; } }
+
+/* ---------- Risks ---------- */
+.risk { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; padding: 28px 0; border-top: 1px solid var(--border); }
+.risk:last-of-type { border-bottom: 1px solid var(--border); }
+.risk-head { display: flex; gap: 14px; align-items: flex-start; }
+.risk-ico { flex: 0 0 auto; margin-top: 2px; }
+.risk-title { font-size: 17px; font-weight: 600; letter-spacing: -.01em; line-height: 1.4; }
+.risk-title span { display: block; margin-top: 6px; font-size: 14.5px; font-weight: 400; color: var(--text-2); }
+.sev { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+.sev-high { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, transparent); }
+.sev-mid  { color: var(--warning); background: color-mix(in srgb, var(--warning) 14%, transparent); }
+.risk-fix { font-size: 15px; color: var(--text-2); }
+.risk-fix b { color: var(--text); font-weight: 600; }
+@media (max-width: 860px) { .risk { grid-template-columns: 1fr; gap: 14px; } }
+
+/* ---------- Migration phases ---------- */
+.phases { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.phase {
+  border: 1px solid var(--border); border-radius: var(--r); padding: 22px;
+  background: var(--bg); display: flex; flex-direction: column; gap: 14px;
+}
+.phase-when { font-size: 13px; font-weight: 700; color: var(--primary); letter-spacing: -.005em; }
+.phase p { font-size: 14.5px; color: var(--text-2); line-height: 1.55; }
+.meter { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--text-3); }
+.meter i { display: block; height: 5px; border-radius: 999px; background: var(--primary); }
+@media (max-width: 980px) { .phases { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .phases { grid-template-columns: 1fr; } }
+
+.criteria { margin-top: 28px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); padding: 26px 28px; }
+.criteria h3 { margin-bottom: 16px; }
+.criteria ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 28px; }
+.criteria li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: var(--text-2); }
+.criteria li svg { flex: 0 0 auto; margin-top: 4px; color: var(--success); }
+@media (max-width: 720px) { .criteria ul { grid-template-columns: 1fr; } }
+
+/* ---------- Levers ---------- */
+.levers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.lever { border: 1px solid var(--border); border-radius: var(--r); background: var(--bg); overflow: hidden; }
+.lever > div { padding: 24px 26px; }
+.lever > div + div { border-top: 1px solid var(--border); }
+.lever-h { font-size: 17px; font-weight: 700; letter-spacing: -.015em; line-height: 1.4; }
+.kv-k { font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); }
+.kv-v { margin-top: 8px; font-size: 15px; color: var(--text-2); }
+.kv-v strong { color: var(--primary); font-weight: 700; }
+@media (max-width: 860px) { .levers { grid-template-columns: 1fr; } }
+
+/* ---------- Footer ---------- */
+footer { border-top: 1px solid var(--border); padding: 40px 0 56px; background: var(--surface); }
+.foot { display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; align-items: center; }
+.foot p { font-size: 14px; color: var(--text-3); }
+.foot a { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; }
+.foot a:hover { text-decoration: underline; }
+
+/* ---------- Scroll reveal ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .rv { opacity: 0; transform: translateY(14px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+  .rv.in { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><span class="i">i</span>NET</span>
+      <span class="brand-sep"></span>
+      <span class="brand-sub">Web Office Suite</span>
+    </a>
+    <div class="nav-links">
+      <a href="#vi-sao">Vì sao</a>
+      <a href="#lo-trinh">Lộ trình</a>
+      <a href="#cong-nghe">Công nghệ</a>
+      <a href="#nguon-luc">Nguồn lực</a>
+      <a href="#rui-ro">Rủi ro</a>
+      <a href="#don-bay">Đòn bẩy</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Bộ Office web của riêng iNET</h1>
+        <p class="lede">Docs, Sheets, Slides chạy hoàn toàn trên trình duyệt. Thay thế Collabora, hoàn thiện OneMail và Drive thành Workspace.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#lo-trinh">Xem lộ trình</a>
+          <a class="btn btn-ghost" href="#rui-ro">Ba rủi ro chính</a>
+        </div>
+      </div>
+      <div class="figures">
+        <div class="fig">
+          <div class="fig-val">0<small>đ</small></div>
+          <div class="fig-lab">Chi phí bản quyền. Toàn bộ dùng mã nguồn mở giấy phép tự do, không phải công khai mã nguồn sản phẩm.</div>
+        </div>
+        <div class="fig">
+          <div class="fig-val">Ngày 60</div>
+          <div class="fig-lab">Mốc triển khai thật đầu tiên: xem file Word trong OneMail không cần Collabora.</div>
+        </div>
+        <div class="fig">
+          <div class="fig-val">6<small>-</small>9 <small>tháng</small></div>
+          <div class="fig-lab">Docs MVP nghiệm thu với nguồn lực hiện tại là một kỹ sư cùng AI.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- VÌ SAO -->
+  <section id="vi-sao">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Vì sao phải làm</h2>
+        <p class="lede">Ba lý do độc lập, mỗi lý do đủ sức đứng một mình.</p>
+      </div>
+
+      <div class="reasons">
+        <article class="reason reason-lead rv">
+          <h3>Ta không kiểm soát được sản phẩm của chính mình</h3>
+          <p>Collabora là phần mềm chạy trên máy chủ, nhúng vào sản phẩm qua một khung cửa sổ. Ta không đổi được giao diện, không nhúng sâu vào OneMail và Drive.</p>
+          <p>Cũng không thêm được tính năng riêng như mẫu tài liệu, ký số, luồng duyệt hay trợ lý AI, và không tự vá được lỗi khi khách báo.</p>
+        </article>
+
+        <article class="reason rv">
+          <h3>Đây là mảnh ghép còn thiếu để có Workspace</h3>
+          <p>OneMail cấp tài khoản, Drive cấp dung lượng đã có sẵn trong gói, Office lo phần soạn thảo. Ba thứ cộng lại thành bộ sản phẩm cạnh tranh trực tiếp Google Workspace ở phân khúc doanh nghiệp Việt Nam, với lợi thế dữ liệu lưu trong nước.</p>
+        </article>
+
+        <article class="reason rv">
+          <h3>Chi phí máy chủ giảm mạnh</h3>
+          <p>Collabora tính toán ở máy chủ nên chi phí tăng theo số người dùng. Hướng mới đẩy tính toán xuống trình duyệt, chi phí máy chủ gần như không tăng dù bao nhiêu người dùng.</p>
+          <p class="note">Chưa có số liệu Collabora hiện tại để định lượng.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- LỘ TRÌNH -->
+  <section id="lo-trinh">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Lộ trình 5 mốc</h2>
+        <p class="lede">Mỗi mốc giao được một thứ dùng thật, không phải một bản demo nội bộ.</p>
+      </div>
+
+      <div class="tl">
+        <div class="tl-row rv">
+          <div class="tl-key"><span class="tl-m">M1</span><span class="tl-when">Ngày 30</span></div>
+          <div class="tl-what">Docs offline chạy được, cài như ứng dụng, mất mạng vẫn soạn thảo</div>
+          <div class="tl-why">Demo được, dùng nội bộ cho tài liệu mới.</div>
+        </div>
+
+        <div class="tl-row rv">
+          <div class="tl-key"><span class="tl-m">M2</span><span class="tl-when">Ngày 60</span></div>
+          <div class="tl-what">Xem file Word .docx, mở ra chuẩn xác, lưu lại không sai một byte</div>
+          <div class="tl-why"><b>Triển khai thật.</b> Xem file đính kèm trong OneMail không cần Collabora.</div>
+        </div>
+
+        <div class="tl-row rv">
+          <div class="tl-key"><span class="tl-m">M3</span><span class="tl-when">Tháng 2 tới 4</span></div>
+          <div class="tl-what">Sửa được file Word trong trình soạn thảo</div>
+          <div class="tl-why">Dùng thử nội bộ, đo chất lượng.</div>
+        </div>
+
+        <div class="tl-row rv">
+          <div class="tl-key"><span class="tl-m">M4</span><span class="tl-when">Tháng 4 tới 6</span></div>
+          <div class="tl-what">Mở, sửa, lưu file Word không hỏng định dạng</div>
+          <div class="tl-why">Thay Collabora cho tài liệu thường dùng.</div>
+        </div>
+
+        <div class="tl-row is-goal rv">
+          <div class="tl-key"><span class="tl-m">M5</span><span class="tl-when">Tháng 6 tới 9</span></div>
+          <div class="tl-what">MVP nghiệm thu</div>
+          <div class="tl-why">Đủ điều kiện chuyển đổi chính thức.</div>
+        </div>
+      </div>
+
+      <div class="callout rv">
+        <p><strong>M2 ở ngày 60 là điểm đáng chú ý nhất.</strong> Phần lớn lượt mở Collabora thực tế chỉ là xem file, không sửa.</p>
+        <p>Chiếm được luồng xem từ tháng thứ hai đã giảm tải Collabora ngay và cho số liệu thật để báo cáo, trong khi phần khó vẫn đang làm.</p>
+      </div>
+
+      <div class="after-mvp rv">
+        <b>Sau MVP:</b> ghép OneMail SSO, Drive và cộng tác nhiều người (thêm 2 tháng), tiếp đến Sheets, rồi Slides. Bộ hoàn chỉnh trong 15 tới 20 tháng.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- CÔNG NGHỆ -->
+  <section id="cong-nghe">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Công nghệ sử dụng</h2>
+        <p class="lede">Toàn bộ giấy phép tự do. Không có khoản bản quyền nào phải trả và không phải công khai mã nguồn sản phẩm.</p>
+      </div>
+
+      <div class="stack">
+        <div class="stack-group rv">
+          <header>Nền giao diện</header>
+          <div class="stack-item">
+            <div class="stack-name">React + TypeScript</div>
+            <p>Nền dựng giao diện. Phổ biến nhất hiện nay, dễ tuyển người.</p>
+            <span class="free">Miễn phí</span>
+          </div>
+          <div class="stack-item">
+            <div class="stack-name">shadcn/ui</div>
+            <p>Bộ nút, menu, hộp thoại. Là mã nguồn chép thẳng vào dự án nên iNET sở hữu hoàn toàn, không phụ thuộc bên ngoài.</p>
+            <span class="free">Miễn phí</span>
+          </div>
+          <div class="stack-item">
+            <div class="stack-name">Bảng màu thương hiệu iNET</div>
+            <p>Để bộ Office trông đúng là một phần của OneMail.</p>
+          </div>
+        </div>
+
+        <div class="stack-group rv">
+          <header>Động cơ tài liệu</header>
+          <div class="stack-item">
+            <div class="stack-name">TipTap</div>
+            <p>Động cơ soạn thảo văn bản, vai trò tương đương phần lõi của Word. Đã có và đang chạy tốt.</p>
+            <span class="free">Miễn phí</span>
+          </div>
+          <div class="stack-item">
+            <div class="stack-name">docx-preview</div>
+            <p>Hiển thị file Word chính xác cao. Tiết kiệm nhiều tháng so với tự viết.</p>
+            <span class="free">Miễn phí</span>
+          </div>
+          <div class="stack-item">
+            <div class="stack-name">Univer + ExcelJS + pptx-viewer</div>
+            <p>Bảng tính cho Sheets, đọc ghi file Excel, và đọc hiển thị sửa file PowerPoint.</p>
+            <span class="free">Miễn phí</span>
+          </div>
+        </div>
+
+        <div class="stack-group rv">
+          <header>Hạ tầng và cộng tác</header>
+          <div class="stack-item">
+            <div class="stack-name">Yjs</div>
+            <p>Cho phép nhiều người sửa cùng lúc và làm việc khi mất mạng.</p>
+            <span class="free">Miễn phí</span>
+          </div>
+          <div class="stack-item">
+            <div class="stack-name">NestJS + S3</div>
+            <p>Máy chủ chỉ lo xác thực và cấp quyền. File đi thẳng trình duyệt tới Drive, không qua máy chủ.</p>
+            <span class="free">Miễn phí</span>
+          </div>
+          <div class="stack-item">
+            <div class="stack-name">Bộ đo chất lượng tự động</div>
+            <p>Chạy từ tháng thứ hai trên bộ file mẫu thật để chứng minh chất lượng mở và lưu file.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout rv">
+        <p><strong>Điểm mấu chốt về chất lượng file:</strong> ta giữ nguyên vẹn file gốc của khách và chỉ sửa đúng chỗ người dùng chạm vào. Phần nào hệ thống chưa hiểu thì hiển thị dạng chỉ đọc và giữ nguyên khi lưu, thay vì xóa mất.</p>
+        <p>Cam kết là <strong>không bao giờ làm mất dữ liệu của khách</strong>, không phải sửa được mọi thứ. Đây là điểm đa số sản phẩm cạnh tranh làm sai.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- NGUỒN LỰC -->
+  <section id="nguon-luc">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Nguồn lực và thời gian</h2>
+        <p class="lede">Con số dựa trên bóc tách chi tiết 111 tới 171 ngày làm việc, đã tính phần hỗ trợ của AI.</p>
+      </div>
+
+      <div class="res">
+        <div class="res-card is-now rv">
+          <div>
+            <div class="res-tag">Hiện tại</div>
+            <div class="res-who" style="margin-top:6px">1 kỹ sư + AI</div>
+          </div>
+          <div>
+            <div class="res-big">6<span style="font-size:.55em">-</span>9</div>
+            <div class="res-sub">tháng tới Docs MVP</div>
+          </div>
+          <div class="bar" style="width:100%"></div>
+          <div class="res-full">Bộ hoàn chỉnh <b>15 tới 20 tháng</b></div>
+        </div>
+
+        <div class="res-card rv">
+          <div>
+            <div class="res-tag" style="color:var(--text-3)">Đề xuất</div>
+            <div class="res-who" style="margin-top:6px">2 tới 3 kỹ sư + AI</div>
+          </div>
+          <div>
+            <div class="res-big">4<span style="font-size:.55em">-</span>5</div>
+            <div class="res-sub">tháng tới Docs MVP</div>
+          </div>
+          <div class="bar" style="width:58%"></div>
+          <div class="res-full">Bộ hoàn chỉnh <b>9 tới 13 tháng</b></div>
+        </div>
+
+        <div class="res-card rv">
+          <div>
+            <div class="res-tag" style="color:var(--text-3)">Tối đa</div>
+            <div class="res-who" style="margin-top:6px">4 tới 6 kỹ sư + AI</div>
+          </div>
+          <div>
+            <div class="res-big">3<span style="font-size:.55em">-</span>4</div>
+            <div class="res-sub">tháng tới Docs MVP</div>
+          </div>
+          <div class="bar" style="width:44%"></div>
+          <div class="res-full">Bộ hoàn chỉnh <b>7 tới 9 tháng</b></div>
+        </div>
+      </div>
+
+      <p class="res-note rv">Thêm người thứ hai vừa rút ngắn tiến độ, vừa xóa rủi ro phụ thuộc một người. Đây là hai lợi ích của cùng một quyết định.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- RỦI RO -->
+  <section id="rui-ro">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Ba rủi ro chính</h2>
+        <p class="lede">Mỗi rủi ro đi kèm cách xử lý cụ thể, không để trống.</p>
+      </div>
+
+      <div class="risk rv">
+        <div class="risk-head">
+          <svg class="risk-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--danger)" aria-hidden="true">
+            <path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"/><path d="M12 16h.01"/>
+          </svg>
+          <div>
+            <span class="sev sev-high">Nghiêm trọng</span>
+            <div class="risk-title">Toàn bộ dự án phụ thuộc một kỹ sư trong 7 tháng
+              <span>Một đợt ốm hai tuần là trượt tiến độ.</span>
+            </div>
+          </div>
+        </div>
+        <div class="risk-fix">Bổ sung người thứ hai từ tháng 2. Quyết định này <b>cũng đưa MVP về 4 tới 5 tháng</b>, nên nó vừa là biện pháp phòng rủi ro vừa là đòn bẩy tiến độ.</div>
+      </div>
+
+      <div class="risk rv">
+        <div class="risk-head">
+          <svg class="risk-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--danger)" aria-hidden="true">
+            <path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"/><path d="M12 16h.01"/>
+          </svg>
+          <div>
+            <span class="sev sev-high">Nghiêm trọng</span>
+            <div class="risk-title">Chất lượng mở và lưu file không đạt
+              <span>Rủi ro cốt lõi của mọi dự án xử lý định dạng Office.</span>
+            </div>
+          </div>
+        </div>
+        <div class="risk-fix">Bộ đo tự động chạy từ tháng 2. Mốc ngày 60 là <b>điểm dừng an toàn</b>: không đạt thì dừng xem xét khi mới tiêu hai tháng.</div>
+      </div>
+
+      <div class="risk rv">
+        <div class="risk-head">
+          <svg class="risk-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--warning)" aria-hidden="true">
+            <path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"/><path d="M12 16h.01"/>
+          </svg>
+          <div>
+            <span class="sev sev-mid">Trung bình</span>
+            <div class="risk-title">Thư viện PowerPoint mới 5 tháng tuổi, một tác giả
+              <span>Nền tảng chưa đủ trưởng thành để cam kết sớm.</span>
+            </div>
+          </div>
+        </div>
+        <div class="risk-fix">Xếp cuối lộ trình. Khảo sát hai tuần bằng file thật của khách trước khi cam kết bất cứ điều gì về Slides.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- CHUYỂN ĐỔI -->
+  <section id="chuyen-doi">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Chiến lược chuyển đổi, không thay một lần</h2>
+        <p class="lede">Collabora là phần mềm có hàng chục năm xử lý định dạng Office. Cam kết vài tháng thay xong là cách chắc chắn nhất để mất uy tín khi khách mở một file phức tạp.</p>
+      </div>
+
+      <div class="phases">
+        <div class="phase rv">
+          <div class="phase-when">Tháng 0 tới 2</div>
+          <p>Collabora vẫn là chính. Ta thu thập file mẫu để dựng bộ đo.</p>
+          <div class="meter"><i style="width:100%"></i><span>Collabora 100%</span></div>
+        </div>
+        <div class="phase rv">
+          <div class="phase-when">Tháng 2 tới 7</div>
+          <p>Nền tảng mới chiếm luồng xem file. Collabora chỉ còn phục vụ sửa.</p>
+          <div class="meter"><i style="width:62%"></i><span>Collabora 62%</span></div>
+        </div>
+        <div class="phase rv">
+          <div class="phase-when">Tháng 7 tới 11</div>
+          <p>Nền tảng mới thành mặc định. File phức tạp tự động chuyển sang Collabora, người dùng không thấy khác biệt.</p>
+          <div class="meter"><i style="width:24%"></i><span>Collabora 24%</span></div>
+        </div>
+        <div class="phase rv">
+          <div class="phase-when">Tháng 11 trở đi</div>
+          <p>Thu hẹp Collabora theo số liệu thực tế đo được, không theo cảm tính.</p>
+          <div class="meter"><i style="width:8%"></i><span>Collabora thu hẹp dần</span></div>
+        </div>
+      </div>
+
+      <div class="criteria rv">
+        <h3>Tiêu chí tắt hẳn Collabora, phải đạt đồng thời cả bốn</h3>
+        <ul>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10"/></svg>
+            <span>Bộ file mẫu đạt từ 95% trở lên</span>
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10"/></svg>
+            <span>Tỉ lệ phải chuyển sang Collabora dưới 5% liên tục 60 ngày</span>
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10"/></svg>
+            <span>Không có sự cố mất dữ liệu nào trong 90 ngày</span>
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10"/></svg>
+            <span>Tốc độ mở file không chậm hơn hiện tại</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ĐÒN BẨY -->
+  <section id="don-bay">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Hai đòn bẩy rút ngắn tiến độ</h2>
+        <p class="lede">Cả hai đều nằm ngoài thẩm quyền kỹ thuật. Ghi ra để lãnh đạo biết nút bấm ở đâu nếu có áp lực tiến độ.</p>
+      </div>
+
+      <div class="levers">
+        <article class="lever rv">
+          <div><div class="lever-h">Cho phép dùng thư viện mã nguồn mở loại buộc công khai mã</div></div>
+          <div>
+            <div class="kv-k">Kết quả</div>
+            <div class="kv-v">MVP <strong>3 tới 5 tháng</strong>, chất lượng cao hơn ngay từ đầu.</div>
+          </div>
+          <div>
+            <div class="kv-k">Đánh đổi</div>
+            <div class="kv-v">Phải công khai mã nguồn phần giao diện Docs. Máy chủ, tài khoản và dữ liệu khách không bị ảnh hưởng.</div>
+          </div>
+        </article>
+
+        <article class="lever rv">
+          <div><div class="lever-h">Cấp ngân sách mua bản quyền thương mại</div></div>
+          <div>
+            <div class="kv-k">Kết quả</div>
+            <div class="kv-v">MVP <strong>3 tới 5 tháng</strong>, chất lượng cao hơn ngay từ đầu.</div>
+          </div>
+          <div>
+            <div class="kv-k">Đánh đổi</div>
+            <div class="kv-v">Chi phí bản quyền, thường rẻ hơn 3 tới 4 tháng lương kỹ sư.</div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <p>Bản chốt trình lãnh đạo, ngày 17/08/2026. Đơn vị đề xuất: iNET.</p>
+    <a href="roadmap-web-office.md">Xem bản chi tiết đầy đủ</a>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal: chỉ chạy khi người dùng không yêu cầu giảm chuyển động.
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var nodes = document.querySelectorAll('.rv');
+  if (reduce || !('IntersectionObserver' in window)) {
+    nodes.forEach(function (n) { n.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+  nodes.forEach(function (n) { io.observe(n); });
+})();
+</script>
+
+</body>
+</html>

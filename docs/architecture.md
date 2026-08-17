@@ -2,7 +2,9 @@
 
 ## Current Scope
 
-This repository now focuses on a single web Docs product, not the full Office suite.
+This repository targets a full web Office suite (Docs, Sheets, Slides). See `roadmap-web-office.md` for the phased plan, architecture decisions, and MVP scope contract.
+
+**Currently implemented: Docs only.** Sheets and Slides start after the Docs MVP (day 90). The sections below describe what exists today.
 
 The current app is a browser-first Docs editor:
 
@@ -23,10 +25,13 @@ The current app is a browser-first Docs editor:
 
 ## Next Backend Boundary
 
-When moving beyond local MVP, add only the Docs backend needed for:
+MVP (day 90) needs **no backend** — offline-first, IndexedDB, files opened from disk.
+
+From month 4, add **one** NestJS app with clear module boundaries (not microservices):
 
 1. OneMail SSO session mapping.
 2. Document metadata and permissions.
-3. Document snapshot persistence.
-4. Optional realtime collaboration with Yjs/Hocuspocus.
-5. Export pipeline for `.docx` and PDF.
+3. Pre-signed URL minting for Drive/S3 — file bytes go browser↔S3 directly, never through the server.
+4. Realtime collaboration via Hocuspocus (Yjs).
+
+`.docx` read/write runs entirely client-side in `packages/docx-io`; there is no server-side export pipeline.
