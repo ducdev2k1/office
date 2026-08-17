@@ -1,7 +1,16 @@
 import type { ViewMode } from '@/editor/use-pagination';
 import type { Editor } from '@tiptap/core';
-import { ChevronDown, Sparkles } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from '@office/i18n';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  InetIcon,
+} from '@office/ui-kit';
+import { useMemo, useRef } from 'react';
 
 export interface MenuAction {
   label: string;
@@ -40,6 +49,16 @@ export interface HeaderMenuActions {
   onHelp: () => void;
 }
 
+const MenuItemRow = ({ item }: { item: MenuAction }) => (
+  <span className="flex w-full items-center gap-2">
+    <span className="flex w-4 shrink-0 items-center justify-center">
+      {item.checked && <InetIcon name="check" className="size-3.5" />}
+    </span>
+    <span className={item.danger ? 'text-destructive' : undefined}>{item.label}</span>
+    {item.shortcut && <kbd className="menu-shortcut ml-auto">{item.shortcut}</kbd>}
+  </span>
+);
+
 export const MenuBar = ({
   editor,
   viewMode,
@@ -60,232 +79,190 @@ export const MenuBar = ({
   onInsertPageBreak,
   onHelp,
 }: HeaderMenuActions) => {
-  const [openLabel, setOpenLabel] = useState<string | null>(null);
-  const barRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation('docs');
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!openLabel) return;
-    const onPointerDown = (event: MouseEvent) => {
-      if (barRef.current && !barRef.current.contains(event.target as Node)) setOpenLabel(null);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpenLabel(null);
-    };
-    window.addEventListener('mousedown', onPointerDown);
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      window.removeEventListener('mousedown', onPointerDown);
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [openLabel]);
-
-  const close = (): void => setOpenLabel(null);
-  const run = (action: () => void): void => {
-    action();
-    close();
-  };
-
   const menus = useMemo<MenuSpec[]>(() => {
-    const toggleMark = (name: string, shortcut: string): MenuAction => ({
-      label: name,
+    const toggleMark = (name: string, label: string, shortcut: string): MenuAction => ({
+      label,
       shortcut,
       checked: editor?.isActive(name) ?? false,
-      onClick: () => run(() => editor?.chain().focus().toggleMark(name).run()),
+      onClick: () => editor?.chain().focus().toggleMark(name).run(),
     });
 
     return [
       {
-        label: 'File',
+        label: t('menu.file.label'),
         items: [
-          { label: 'Tai lieu moi', onClick: () => run(onNewDoc) },
-          { label: 'Mo danh sach tai lieu', onClick: () => run(onToggleSidebar) },
+          { label: t('menu.file.newDoc'), onClick: onNewDoc },
+          { label: t('menu.file.openList'), onClick: onToggleSidebar },
           'separator',
-          { label: 'Cau hinh trang', onClick: () => run(onPageSetup) },
-          { label: 'In tai lieu', shortcut: 'Ctrl+P', onClick: () => run(onPrint) },
+          { label: t('menu.file.pageSetup'), onClick: onPageSetup },
+          { label: t('menu.file.print'), shortcut: 'Ctrl+P', onClick: onPrint },
           'separator',
-          { label: 'Export HTML', onClick: () => run(onExportHtml) },
-          { label: 'Export TXT', onClick: () => run(onExportText) },
+          { label: t('menu.file.exportHtml'), onClick: onExportHtml },
+          { label: t('menu.file.exportTxt'), onClick: onExportText },
           'separator',
           {
-            label: 'Xoa tai lieu',
+            label: t('menu.file.deleteDoc'),
             danger: true,
             disabled: !canDelete,
-            onClick: () => run(onDelete),
+            onClick: onDelete,
           },
         ],
       },
       {
-        label: 'Edit',
+        label: t('menu.edit.label'),
         items: [
           {
-            label: 'Undo',
+            label: t('menu.edit.undo'),
             shortcut: 'Ctrl+Z',
-            onClick: () => run(() => editor?.chain().focus().undo().run()),
+            onClick: () => editor?.chain().focus().undo().run(),
           },
           {
-            label: 'Redo',
+            label: t('menu.edit.redo'),
             shortcut: 'Ctrl+Y',
-            onClick: () => run(() => editor?.chain().focus().redo().run()),
+            onClick: () => editor?.chain().focus().redo().run(),
           },
           'separator',
-          { label: 'Tim kiem va thay the', shortcut: 'Ctrl+H', onClick: () => run(onToggleFind) },
+          { label: t('menu.edit.findAndReplace'), shortcut: 'Ctrl+H', onClick: onToggleFind },
         ],
       },
       {
-        label: 'View',
+        label: t('menu.view.label'),
         items: [
           {
-            label: viewMode === 'paged' ? 'Che do lien tuc' : 'Che do phan trang',
+            label: viewMode === 'paged' ? t('menu.view.continuousMode') : t('menu.view.pagedMode'),
             checked: viewMode === 'paged',
-            onClick: () =>
-              run(() => onViewModeChange(viewMode === 'paged' ? 'continuous' : 'paged')),
+            onClick: () => onViewModeChange(viewMode === 'paged' ? 'continuous' : 'paged'),
           },
-          { label: 'Cau hinh trang', onClick: () => run(onPageSetup) },
+          { label: t('menu.file.pageSetup'), onClick: onPageSetup },
         ],
       },
       {
-        label: 'Insert',
+        label: t('menu.insert.label'),
         items: [
-          { label: 'Chen anh', onClick: () => run(() => imageInputRef.current?.click()) },
-          { label: 'Chen bang', onClick: () => run(onInsertTable) },
+          { label: t('menu.insert.image'), onClick: () => imageInputRef.current?.click() },
+          { label: t('menu.insert.table'), onClick: onInsertTable },
           {
-            label: 'Chen duong ke ngang',
-            onClick: () => run(() => editor?.chain().focus().setHorizontalRule().run()),
+            label: t('menu.insert.horizontalRule'),
+            onClick: () => editor?.chain().focus().setHorizontalRule().run(),
           },
           {
-            label: 'Chen page break',
+            label: t('menu.insert.pageBreak'),
             shortcut: 'Ctrl+Enter',
-            onClick: () => run(onInsertPageBreak),
+            onClick: onInsertPageBreak,
           },
         ],
       },
       {
-        label: 'Format',
+        label: t('menu.format.label'),
         items: [
           {
-            label: 'Doan van',
+            label: t('toolbar.normalText'),
             checked: editor?.isActive('paragraph') ?? false,
-            onClick: () => run(() => editor?.chain().focus().setParagraph().run()),
+            onClick: () => editor?.chain().focus().setParagraph().run(),
           },
           {
-            label: 'Heading 1',
+            label: t('toolbar.heading1'),
             shortcut: 'Ctrl+Alt+1',
             checked: editor?.isActive('heading', { level: 1 }) ?? false,
-            onClick: () => run(() => editor?.chain().focus().toggleHeading({ level: 1 }).run()),
+            onClick: () => editor?.chain().focus().toggleHeading({ level: 1 }).run(),
           },
           {
-            label: 'Heading 2',
+            label: t('toolbar.heading2'),
             shortcut: 'Ctrl+Alt+2',
             checked: editor?.isActive('heading', { level: 2 }) ?? false,
-            onClick: () => run(() => editor?.chain().focus().toggleHeading({ level: 2 }).run()),
+            onClick: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
           },
           'separator',
-          toggleMark('bold', 'Ctrl+B'),
-          toggleMark('italic', 'Ctrl+I'),
-          toggleMark('underline', 'Ctrl+U'),
-          toggleMark('strike', 'Ctrl+Shift+X'),
+          toggleMark('bold', t('format.bold'), 'Ctrl+B'),
+          toggleMark('italic', t('format.italic'), 'Ctrl+I'),
+          toggleMark('underline', t('format.underline'), 'Ctrl+U'),
+          toggleMark('strike', t('format.strikethrough'), 'Ctrl+Shift+X'),
           'separator',
           {
-            label: 'Chi so duoi',
-            onClick: () => run(() => editor?.chain().focus().toggleSubscript().run()),
+            label: t('format.subscript'),
+            onClick: () => editor?.chain().focus().toggleSubscript().run(),
           },
           {
-            label: 'Chi so tren',
-            onClick: () => run(() => editor?.chain().focus().toggleSuperscript().run()),
+            label: t('format.superscript'),
+            onClick: () => editor?.chain().focus().toggleSuperscript().run(),
           },
           'separator',
           {
-            label: 'Danh sach gach dau dau',
+            label: t('format.bulletList'),
             checked: editor?.isActive('bulletList') ?? false,
-            onClick: () => run(() => editor?.chain().focus().toggleBulletList().run()),
+            onClick: () => editor?.chain().focus().toggleBulletList().run(),
           },
           {
-            label: 'Danh sach danh so',
+            label: t('format.orderedList'),
             checked: editor?.isActive('orderedList') ?? false,
-            onClick: () => run(() => editor?.chain().focus().toggleOrderedList().run()),
+            onClick: () => editor?.chain().focus().toggleOrderedList().run(),
           },
           'separator',
           {
-            label: 'Can trai',
+            label: t('format.alignLeft'),
             checked: editor?.isActive({ textAlign: 'left' }) ?? false,
-            onClick: () => run(() => editor?.chain().focus().setTextAlign('left').run()),
+            onClick: () => editor?.chain().focus().setTextAlign('left').run(),
           },
           {
-            label: 'Can giua',
+            label: t('format.alignCenter'),
             checked: editor?.isActive({ textAlign: 'center' }) ?? false,
-            onClick: () => run(() => editor?.chain().focus().setTextAlign('center').run()),
+            onClick: () => editor?.chain().focus().setTextAlign('center').run(),
           },
           {
-            label: 'Can phai',
+            label: t('format.alignRight'),
             checked: editor?.isActive({ textAlign: 'right' }) ?? false,
-            onClick: () => run(() => editor?.chain().focus().setTextAlign('right').run()),
+            onClick: () => editor?.chain().focus().setTextAlign('right').run(),
           },
         ],
       },
       {
-        label: 'Tools',
+        label: t('menu.tools.label'),
         items: [
-          { label: `So tu: ${wordCount}`, disabled: true, onClick: () => undefined },
-          { label: `So ky tu: ${charCount}`, disabled: true, onClick: () => undefined },
+          { label: `${t('menu.tools.wordCount')}: ${wordCount}`, disabled: true, onClick: () => undefined },
+          { label: `Ký tự: ${charCount}`, disabled: true, onClick: () => undefined },
           'separator',
-          { label: 'Bang phim tat', onClick: () => run(onHelp) },
+          { label: t('menu.tools.shortcuts'), onClick: onHelp },
         ],
       },
       {
-        label: 'Help',
-        items: [{ label: 'Bang phim tat', shortcut: 'F1', onClick: () => run(onHelp) }],
+        label: t('menu.help.label'),
+        items: [{ label: t('menu.help.shortcuts'), shortcut: 'F1', onClick: onHelp }],
       },
     ];
-  }, [editor, viewMode, canDelete, wordCount, charCount]);
+  }, [editor, viewMode, canDelete, wordCount, charCount, onNewDoc, onToggleSidebar, onPageSetup, onPrint, onExportHtml, onExportText, onDelete, onToggleFind, onViewModeChange, onInsertTable, onInsertPageBreak, onHelp, t]);
 
   return (
-    <div ref={barRef} className="menu-row" role="menubar" aria-label="Menu tai lieu">
+    <div className="menu-row" role="menubar" aria-label="Menu bar">
       {menus.map((menu) => (
-        <div className="dropdown-root" role="none" key={menu.label}>
-          <button
-            type="button"
-            role="menuitem"
-            aria-haspopup="menu"
-            aria-expanded={openLabel === menu.label}
-            onClick={() => setOpenLabel(openLabel === menu.label ? null : menu.label)}
-          >
+        <DropdownMenu key={menu.label}>
+          <DropdownMenuTrigger className="menu-trigger" render={<Button variant="ghost" size="sm" />}>
             {menu.label}
-            <ChevronDown aria-hidden="true" className="menu-chevron" />
-          </button>
-          {openLabel === menu.label && (
-            <div className="dropdown-panel" role="menu">
-              {menu.items.map((item, index) =>
-                item === 'separator' ? (
-                  <div className="dropdown-separator" key={`sep-${index}`} />
-                ) : (
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={`dropdown-item${item.danger ? ' danger' : ''}`}
-                    disabled={item.disabled}
-                    key={item.label}
-                    onClick={item.onClick}
-                  >
-                    <span className="dropdown-item-label">
-                      {item.checked && (
-                        <span className="dropdown-check" aria-hidden="true">
-                          ✓
-                        </span>
-                      )}
-                      {item.label}
-                    </span>
-                    {item.shortcut && <kbd className="menu-shortcut">{item.shortcut}</kbd>}
-                  </button>
-                ),
-              )}
-            </div>
-          )}
-        </div>
+            <InetIcon name="chevron-down" className="menu-chevron" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" sideOffset={2}>
+            {menu.items.map((item, index) =>
+              item === 'separator' ? (
+                <DropdownMenuSeparator key={`sep-${index}`} />
+              ) : (
+                <DropdownMenuItem
+                  key={item.label}
+                  disabled={item.disabled}
+                  onClick={item.onClick}
+                  className={item.danger ? 'text-destructive focus:text-destructive' : undefined}
+                >
+                  <MenuItemRow item={item} />
+                </DropdownMenuItem>
+              ),
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       ))}
-      <button className="gemini-menu" type="button">
-        <Sparkles aria-hidden="true" /> Gemini
-      </button>
+      <Button className="gemini-menu" variant="ghost" size="sm" type="button">
+        <InetIcon name="sparkles" /> Gemini
+      </Button>
       <input
         ref={imageInputRef}
         className="hidden-file-input"

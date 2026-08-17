@@ -17,8 +17,13 @@ export interface PageSetup {
 export interface DocRecord {
   id: string;
   title: string;
-  content: string;
+  kind: 'docs';
+  createdAt: string;
   updatedAt: string;
+  lastOpenedAt: string;
+  starred: boolean;
+  deletedAt: string | null;
+  content: string;
   pageSetup?: PageSetup;
 }
 

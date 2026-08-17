@@ -1,5 +1,12 @@
 import type { Editor } from '@tiptap/core';
-import { useEffect, useRef } from 'react';
+import { useTranslation } from '@office/i18n';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+} from '@office/ui-kit';
+import { useRef } from 'react';
 
 export interface ContextMenuPosition {
   x: number;
@@ -20,9 +27,6 @@ type CtxItem =
   | { label: string; shortcut?: string; danger?: boolean; onClick: () => void }
   | 'separator';
 
-const MENU_WIDTH = 250;
-const MENU_HEIGHT = 440;
-
 export const EditorContextMenu = ({
   editor,
   position,
@@ -32,119 +36,92 @@ export const EditorContextMenu = ({
   onInsertPageBreak,
   onToggleFind,
 }: EditorContextMenuProps) => {
-  const menuRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation('docs');
   const imageInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!position) return;
-    const onPointerDown = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) onClose();
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    const onScroll = (): void => onClose();
-    window.addEventListener('mousedown', onPointerDown);
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('scroll', onScroll, true);
-    window.addEventListener('resize', onScroll);
-    return () => {
-      window.removeEventListener('mousedown', onPointerDown);
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('scroll', onScroll, true);
-      window.removeEventListener('resize', onScroll);
-    };
-  }, [position, onClose]);
 
   if (!position || !editor) return null;
 
-  const x = Math.min(position.x, window.innerWidth - MENU_WIDTH);
-  const y = Math.min(position.y, window.innerHeight - MENU_HEIGHT);
-
   const items: CtxItem[] = [
-    { label: 'Undo', shortcut: 'Ctrl+Z', onClick: () => editor.chain().focus().undo().run() },
-    { label: 'Redo', shortcut: 'Ctrl+Y', onClick: () => editor.chain().focus().redo().run() },
+    { label: t('contextMenu.undo'), shortcut: 'Ctrl+Z', onClick: () => editor.chain().focus().undo().run() },
+    { label: t('contextMenu.redo'), shortcut: 'Ctrl+Y', onClick: () => editor.chain().focus().redo().run() },
     'separator',
-    { label: 'Cat', shortcut: 'Ctrl+X', onClick: () => document.execCommand('cut') },
-    { label: 'Sao chep', shortcut: 'Ctrl+C', onClick: () => document.execCommand('copy') },
-    { label: 'Dan', shortcut: 'Ctrl+V', onClick: () => document.execCommand('paste') },
+    { label: t('contextMenu.cut'), shortcut: 'Ctrl+X', onClick: () => document.execCommand('cut') },
+    { label: t('contextMenu.copy'), shortcut: 'Ctrl+C', onClick: () => document.execCommand('copy') },
+    { label: t('contextMenu.paste'), shortcut: 'Ctrl+V', onClick: () => document.execCommand('paste') },
     'separator',
-    { label: 'Doan van', onClick: () => editor.chain().focus().setParagraph().run() },
+    { label: t('contextMenu.paragraph'), onClick: () => editor.chain().focus().setParagraph().run() },
     {
-      label: 'Heading 1',
+      label: t('contextMenu.heading1'),
       onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
     },
     {
-      label: 'Heading 2',
+      label: t('contextMenu.heading2'),
       onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     'separator',
-    { label: 'Bold', shortcut: 'Ctrl+B', onClick: () => editor.chain().focus().toggleBold().run() },
+    { label: t('contextMenu.bold'), shortcut: 'Ctrl+B', onClick: () => editor.chain().focus().toggleBold().run() },
     {
-      label: 'Italic',
+      label: t('contextMenu.italic'),
       shortcut: 'Ctrl+I',
       onClick: () => editor.chain().focus().toggleItalic().run(),
     },
     {
-      label: 'Underline',
+      label: t('contextMenu.underline'),
       shortcut: 'Ctrl+U',
       onClick: () => editor.chain().focus().toggleUnderline().run(),
     },
     {
-      label: 'Gach ngang',
+      label: t('contextMenu.strikethrough'),
       shortcut: 'Ctrl+Shift+X',
       onClick: () => editor.chain().focus().toggleStrike().run(),
     },
     'separator',
     {
-      label: 'Danh sach gach dau dau',
+      label: t('contextMenu.bulletList'),
       onClick: () => editor.chain().focus().toggleBulletList().run(),
     },
     {
-      label: 'Danh sach danh so',
+      label: t('contextMenu.orderedList'),
       onClick: () => editor.chain().focus().toggleOrderedList().run(),
     },
     'separator',
-    { label: 'Can trai', onClick: () => editor.chain().focus().setTextAlign('left').run() },
-    { label: 'Can giua', onClick: () => editor.chain().focus().setTextAlign('center').run() },
-    { label: 'Can phai', onClick: () => editor.chain().focus().setTextAlign('right').run() },
+    { label: t('contextMenu.alignLeft'), onClick: () => editor.chain().focus().setTextAlign('left').run() },
+    { label: t('contextMenu.alignCenter'), onClick: () => editor.chain().focus().setTextAlign('center').run() },
+    { label: t('contextMenu.alignRight'), onClick: () => editor.chain().focus().setTextAlign('right').run() },
     'separator',
-    { label: 'Chen anh', onClick: () => imageInputRef.current?.click() },
-    { label: 'Chen bang', onClick: onInsertTable },
-    { label: 'Chen page break', onClick: onInsertPageBreak },
+    { label: t('contextMenu.insertImage'), onClick: () => imageInputRef.current?.click() },
+    { label: t('contextMenu.insertTable'), onClick: onInsertTable },
+    { label: t('contextMenu.insertPageBreak'), onClick: onInsertPageBreak },
     'separator',
-    { label: 'Tim kiem va thay the', shortcut: 'Ctrl+H', onClick: onToggleFind },
+    { label: t('contextMenu.findAndReplace'), shortcut: 'Ctrl+H', onClick: onToggleFind },
   ];
 
+  const runItem = (item: Extract<CtxItem, { label: string }>) => {
+    item.onClick();
+    onClose();
+  };
+
   return (
-    <div
-      ref={menuRef}
-      className="context-menu"
-      role="menu"
-      aria-label="Menu chuot phai"
-      style={{ left: x, top: y }}
-      onContextMenu={(event) => event.preventDefault()}
-    >
-      {items.map((item, index) =>
-        item === 'separator' ? (
-          <div className="dropdown-separator" key={`sep-${index}`} />
-        ) : (
-          <button
-            type="button"
-            role="menuitem"
-            className={`dropdown-item${item.danger ? ' danger' : ''}`}
-            key={item.label}
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => {
-              item.onClick();
-              onClose();
-            }}
-          >
-            <span className="dropdown-item-label">{item.label}</span>
-            {item.shortcut && <kbd className="menu-shortcut">{item.shortcut}</kbd>}
-          </button>
-        ),
-      )}
+    <ContextMenu open onOpenChange={(open) => !open && onClose()}>
+      <ContextMenuContent className="w-60">
+        {items.map((item, index) =>
+          item === 'separator' ? (
+            <ContextMenuSeparator key={`sep-${index}`} />
+          ) : (
+            <ContextMenuItem
+              key={item.label}
+              className={item.danger ? 'text-destructive focus:text-destructive' : undefined}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => runItem(item)}
+            >
+              <span className="flex w-full items-center gap-2">
+                <span className={item.danger ? 'text-destructive' : undefined}>{item.label}</span>
+                {item.shortcut && <kbd className="menu-shortcut ml-auto">{item.shortcut}</kbd>}
+              </span>
+            </ContextMenuItem>
+          ),
+        )}
+      </ContextMenuContent>
       <input
         ref={imageInputRef}
         className="hidden-file-input"
@@ -156,6 +133,6 @@ export const EditorContextMenu = ({
           event.target.value = '';
         }}
       />
-    </div>
+    </ContextMenu>
   );
 };

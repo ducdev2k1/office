@@ -11,9 +11,11 @@ Tai lieu lo trinh:
 ## Stack
 
 - Web: React 19 + Vite + TypeScript
+- Routing: react-router-dom (`/` home, `/edit/:id` editor)
 - Editor: TipTap/ProseMirror
+- UI: Base UI + shadcn-style components (`@office/ui-kit`)
 - Icons: lucide-react
-- Storage MVP: localStorage autosave
+- Storage MVP: IndexedDB autosave (`@office/storage-adapter`)
 
 ## Chay local
 
@@ -26,29 +28,35 @@ pnpm dev:docs
 
 ```text
 apps/
-  docs/             React Docs editor (TipTap)
+  docs/             React Docs editor (TipTap) + home dashboard
 packages/
   ooxml-core/       giai nen/nen giu nguyen byte OOXML, so dang ky phan
   docx-io/          docx <-> TipTap (T1 — preserve-and-patch)
   xlsx-io/          xlsx <-> Univer (ExcelJS) — Giai doan 6
   pptx-io/          bao quanh ban fork pptx-viewer — Giai doan 7
   storage-adapter/  driver: IndexedDB | FileSystemAccess | Drive
+  app-shell/        shell dung chung: TopBar + ProductSwitcher + ShellLayout
+  file-home/        home quan ly file dung chung (FileHome, list/grid, trash)
+  i18n/             i18n dung chung: tu dien locale + formatter
   collab-core/      Y.Doc + doi provider — Giai doan 3
   auth-sdk/         OneMail SSO — Giai doan 4
   ui-kit/           design token + component dung chung
   fidelity-harness/ bo do chat luong round-trip, chay trong CI
 docs/
-  architecture.md   Docs-only architecture notes
+  architecture.md   Architecture notes
 ```
+
+## Home dashboard (Docs, tai dung cho Sheets/Slides)
+
+Trang `/` la home kieu Google Workspace: template strip, thong ke, tabs (Gần đây / Có gắn dấu sao / Thùng rác), list/grid, sort, tim kiem, rename inline, duplicate, trash soft-delete + xoa vinh vien (dialog xac nhan). Dong goi thanh `@office/app-shell` + `@office/file-home`; Sheets/Slides chi can truyen `ProductConfig` (xem `docs/architecture.md`). Route demo dev-only: `/demo/sheets`.
 
 ## Tinh nang hien co
 
-- Tao / xoa tai lieu.
-- Doi ten tai lieu.
-- Tim kiem tai lieu.
+- Trang home quan ly file: tao, xoa (soft-delete -> Thung rac), khoi phuc, xoa vinh vien, duplicate, doi ten inline, gan dau sao.
+- Tim kiem tai lieu; che do xem list/grid; loc Gần đây / Có gắn dấu sao / Thùng rác.
 - Editor rich text bang TipTap.
 - Toolbar: paragraph, heading, bold, italic, underline, link, bullet list, numbered list, align left/center/right.
-- Autosave local.
+- Autosave IndexedDB.
 - Word count, character count.
 - Export HTML va TXT.
 

@@ -1,3 +1,11 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@office/ui-kit';
+
 interface HelpModalProps {
   open: boolean;
   onClose: () => void;
@@ -45,31 +53,26 @@ const SHORTCUT_GROUPS: { title: string; items: [string, string][] }[] = [
   },
 ];
 
-export const HelpModal = ({ open, onClose }: HelpModalProps) => {
-  if (!open) return null;
-  return (
-    <div className="help-modal" role="dialog" aria-label="Phim tat" onClick={onClose}>
-      <div className="help-modal-body" onClick={(event) => event.stopPropagation()}>
-        <div className="panel-title">
-          Phim tat ban phim{' '}
-          <button className="find-btn close" type="button" onClick={onClose} aria-label="Dong">
-            ×
-          </button>
-        </div>
-        <div className="help-grid">
-          {SHORTCUT_GROUPS.map((group) => (
-            <div key={group.title} className="help-group">
-              <div className="help-group-title">{group.title}</div>
-              {group.items.map(([key, label]) => (
-                <div className="help-row" key={key}>
-                  <kbd>{key}</kbd>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+export const HelpModal = ({ open, onClose }: HelpModalProps) => (
+  <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Phim tat ban phim</DialogTitle>
+        <DialogDescription>Danh sach phim tat thao tac nhanh</DialogDescription>
+      </DialogHeader>
+      <div className="help-grid">
+        {SHORTCUT_GROUPS.map((group) => (
+          <div key={group.title} className="help-group">
+            <div className="help-group-title">{group.title}</div>
+            {group.items.map(([key, label]) => (
+              <div className="help-row" key={key}>
+                <kbd>{key}</kbd>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
-    </div>
-  );
-};
+    </DialogContent>
+  </Dialog>
+);

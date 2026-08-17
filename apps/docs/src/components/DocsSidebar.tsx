@@ -1,6 +1,7 @@
-import { FileText, Search } from 'lucide-react';
-import type { OutlineItem } from '../lib/utils';
-import type { DocRecord } from '../types';
+import { useTranslation } from '@office/i18n';
+import { InetIcon } from '@office/ui-kit';
+import type { OutlineItem } from '@/lib/utils';
+import type { DocRecord } from '@/types';
 
 interface DocsSidebarProps {
   docs: DocRecord[];
@@ -14,14 +15,6 @@ interface DocsSidebarProps {
   onClose: () => void;
 }
 
-const formatTime = (value: string): string =>
-  new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value));
-
 export const DocsSidebar = ({
   docs,
   activeId,
@@ -33,6 +26,7 @@ export const DocsSidebar = ({
   onAdd,
   onClose,
 }: DocsSidebarProps) => {
+  const { t, formatDateTime } = useTranslation('docs');
   const normalized = query.trim().toLowerCase();
   const filtered = normalized
     ? docs.filter((doc) => doc.title.toLowerCase().includes(normalized))
@@ -41,33 +35,33 @@ export const DocsSidebar = ({
   return (
     <aside
       className={`docs-sidebar ${sidebarOpen ? 'is-open' : ''}`}
-      aria-label="Document tabs va muc luc"
+      aria-label={t('sidebar.title')}
     >
       <div className="sidebar-topline">
         <button
           className="back-button"
           type="button"
-          aria-label="Dong document tabs"
+          aria-label={t('sidebar.closeAria')}
           onClick={onClose}
         >
           ‹
         </button>
-        <span>Document tabs</span>
+        <span>{t('sidebar.title')}</span>
         <button
           className="add-tab-button"
           type="button"
-          aria-label="Tao document moi"
+          aria-label={t('sidebar.addAria')}
           onClick={onAdd}
         >
           +
         </button>
       </div>
       <label className="search-box">
-        <Search aria-hidden="true" />
+        <InetIcon name="search" aria-hidden="true" />
         <input
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Tim tai lieu..."
+          placeholder={t('sidebar.searchPlaceholder')}
         />
       </label>
       <div className="doc-list">
@@ -79,20 +73,20 @@ export const DocsSidebar = ({
               onClick={() => onSelect(doc.id)}
               type="button"
             >
-              <FileText aria-hidden="true" />
+              <InetIcon name="file-text" aria-hidden="true" />
               <span>
                 <strong>{doc.title}</strong>
-                <small>{formatTime(doc.updatedAt)}</small>
+                <small>{formatDateTime(doc.updatedAt)}</small>
               </span>
               <span className="doc-more">⋮</span>
             </button>
           ))
         ) : (
-          <p className="empty-docs">Khong tim thay tai lieu.</p>
+          <p className="empty-docs">{t('sidebar.emptyDocs')}</p>
         )}
       </div>
       <div className="outline-section">
-        <div className="outline-label">Outline</div>
+        <div className="outline-label">{t('sidebar.outlineTitle')}</div>
         {outline.length ? (
           outline.map((item) => (
             <button className={`outline-row level-${item.level}`} key={item.id} type="button">
@@ -100,7 +94,7 @@ export const DocsSidebar = ({
             </button>
           ))
         ) : (
-          <p className="outline-empty">Them heading de tao muc luc.</p>
+          <p className="outline-empty">{t('sidebar.emptyOutline')}</p>
         )}
       </div>
     </aside>

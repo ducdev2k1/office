@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core';
-import { compressImage, MAX_IMAGE_DATA_URL_LENGTH } from '../editor/image-utils';
-import { downloadFile } from '../lib/utils';
-import type { DocRecord } from '../types';
+import { compressImage, MAX_IMAGE_DATA_URL_LENGTH } from '@/editor/image-utils';
+import { downloadFile } from '@/lib/utils';
+import type { DocRecord } from '@/types';
 
 export interface EditorActions {
   setLink: () => void;

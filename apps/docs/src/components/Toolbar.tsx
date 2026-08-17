@@ -1,13 +1,14 @@
 import type { Editor } from '@tiptap/core';
-import { Heading1, Heading2, Pilcrow, Redo2, Undo2 } from 'lucide-react';
+import { useTranslation } from '@office/i18n';
+import { InetIcon } from '@office/ui-kit';
 import type { RefObject } from 'react';
-import type { ViewMode } from '../editor/use-pagination';
-import { ToolbarButton } from './ToolbarButton';
-import { ColorFontTools } from './toolbar/ColorFontTools';
-import { DocTools } from './toolbar/DocTools';
-import { InsertTools } from './toolbar/InsertTools';
-import { ListAlignTools } from './toolbar/ListAlignTools';
-import { TextStyleTools } from './toolbar/TextStyleTools';
+import type { ViewMode } from '@/editor/use-pagination';
+import { ToolbarButton } from '@/components/ToolbarButton';
+import { ColorFontTools } from '@/components/toolbar/ColorFontTools';
+import { DocTools } from '@/components/toolbar/DocTools';
+import { InsertTools } from '@/components/toolbar/InsertTools';
+import { ListAlignTools } from '@/components/toolbar/ListAlignTools';
+import { TextStyleTools } from '@/components/toolbar/TextStyleTools';
 
 export interface ToolbarProps {
   editor: Editor | null;
@@ -48,37 +49,39 @@ export const Toolbar = ({
   onPageSetup,
   onViewModeChange,
 }: ToolbarProps) => {
-  if (!editor) return <div className="toolbar" aria-label="Thanh cong cu" />;
+  const { t } = useTranslation('docs');
+
+  if (!editor) return <div className="toolbar" aria-label="Toolbar" />;
 
   return (
-    <div className="toolbar" aria-label="Thanh cong cu">
-      <ToolbarButton label="Undo" onClick={() => editor.chain().focus().undo().run()}>
-        <Undo2 aria-hidden="true" />
+    <div className="toolbar" aria-label="Toolbar">
+      <ToolbarButton label={t('toolbar.undo')} onClick={() => editor.chain().focus().undo().run()}>
+        <InetIcon name="undo" />
       </ToolbarButton>
-      <ToolbarButton label="Redo" onClick={() => editor.chain().focus().redo().run()}>
-        <Redo2 aria-hidden="true" />
+      <ToolbarButton label={t('toolbar.redo')} onClick={() => editor.chain().focus().redo().run()}>
+        <InetIcon name="redo" />
       </ToolbarButton>
       <span className="toolbar-separator" />
       <ToolbarButton
         active={editor.isActive('paragraph')}
-        label="Normal text"
+        label={t('toolbar.normalText')}
         onClick={() => editor.chain().focus().setParagraph().run()}
       >
-        <Pilcrow aria-hidden="true" />
+        <InetIcon name="pilcrow" />
       </ToolbarButton>
       <ToolbarButton
         active={editor.isActive('heading', { level: 1 })}
-        label="Heading 1"
+        label={t('toolbar.heading1')}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
       >
-        <Heading1 aria-hidden="true" />
+        <InetIcon name="heading-1" />
       </ToolbarButton>
       <ToolbarButton
         active={editor.isActive('heading', { level: 2 })}
-        label="Heading 2"
+        label={t('toolbar.heading2')}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
       >
-        <Heading2 aria-hidden="true" />
+        <InetIcon name="heading-2" />
       </ToolbarButton>
       <span className="toolbar-separator" />
       <TextStyleTools editor={editor} onSetLink={onSetLink} />

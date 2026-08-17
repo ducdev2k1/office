@@ -1,5 +1,6 @@
+import { useTranslation } from '@office/i18n';
 import { useEffect, useState } from 'react';
-import { PAPER_SIZES, type PageSetup } from '../types';
+import { PAPER_SIZES, type PageSetup } from '@/types';
 
 interface PageSetupPanelProps {
   setup: PageSetup;
@@ -8,6 +9,7 @@ interface PageSetupPanelProps {
 }
 
 export const PageSetupPanel = ({ setup, onApply, onClose }: PageSetupPanelProps) => {
+  const { t } = useTranslation('docs');
   const [draft, setDraft] = useState<PageSetup>(setup);
 
   useEffect(() => {
@@ -26,11 +28,18 @@ export const PageSetupPanel = ({ setup, onApply, onClose }: PageSetupPanelProps)
     }));
   };
 
+  const marginLabels: Record<keyof PageSetup['margins'], string> = {
+    top: t('pageSetup.marginTop'),
+    bottom: t('pageSetup.marginBottom'),
+    left: t('pageSetup.marginLeft'),
+    right: t('pageSetup.marginRight'),
+  };
+
   return (
-    <div className="page-setup-panel" role="dialog" aria-label="Cau hinh trang">
-      <div className="panel-title">Cau hinh trang</div>
+    <div className="page-setup-panel" role="dialog" aria-label={t('pageSetup.title')}>
+      <div className="panel-title">{t('pageSetup.title')}</div>
       <label className="panel-field">
-        <span>Kho giay</span>
+        <span>{t('pageSetup.paperSize')}</span>
         <select
           value={draft.paperSize}
           onChange={(event) =>
@@ -46,7 +55,7 @@ export const PageSetupPanel = ({ setup, onApply, onClose }: PageSetupPanelProps)
         </select>
       </label>
       <label className="panel-field">
-        <span>Huong</span>
+        <span>{t('pageSetup.orientation')}</span>
         <select
           value={draft.orientation}
           onChange={(event) =>
@@ -56,16 +65,16 @@ export const PageSetupPanel = ({ setup, onApply, onClose }: PageSetupPanelProps)
             }))
           }
         >
-          <option value="portrait">Doc (Portrait)</option>
-          <option value="landscape">Ngang (Landscape)</option>
+          <option value="portrait">{t('pageSetup.portrait')}</option>
+          <option value="landscape">{t('pageSetup.landscape')}</option>
         </select>
       </label>
       <div className="panel-field">
-        <span>Le (mm)</span>
+        <span>{t('pageSetup.margins')}</span>
         <div className="margin-grid">
           {(['top', 'right', 'bottom', 'left'] as const).map((side) => (
             <label key={side} className="margin-input">
-              <span>{side}</span>
+              <span>{marginLabels[side]}</span>
               <input
                 type="number"
                 min={0}
@@ -82,10 +91,10 @@ export const PageSetupPanel = ({ setup, onApply, onClose }: PageSetupPanelProps)
       </div>
       <div className="panel-actions">
         <button type="button" onClick={() => onApply(draft)}>
-          Ap dung
+          {t('pageSetup.apply')}
         </button>
         <button type="button" onClick={onClose}>
-          Huy
+          {t('pageSetup.cancel')}
         </button>
       </div>
     </div>

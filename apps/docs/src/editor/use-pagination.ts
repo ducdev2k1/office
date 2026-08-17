@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { Editor } from '@tiptap/core';
-import { computePageBreaks, MAX_PAGES, PAGE_GAP } from './pagination';
-import { DEFAULT_PAGE_SETUP, getPaperSizePx, mmToPx, type DocRecord } from '../types';
+import { computePageBreaks, MAX_PAGES, PAGE_GAP } from '@/editor/pagination';
+import { DEFAULT_PAGE_SETUP, getPaperSizePx, mmToPx, type DocRecord } from '@/types';
 
 export type ViewMode = 'paged' | 'continuous';
 
@@ -20,7 +20,7 @@ export const usePagination = (
 ): PaginationState => {
   const [viewMode, setViewMode] = useState<ViewMode>('paged');
   const [pageCount, setPageCount] = useState(1);
-  const timerRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
   const lastBreaksRef = useRef<number[]>([]);
   const activeDocRef = useRef(activeDoc);
 
@@ -28,25 +28,44 @@ export const usePagination = (
     activeDocRef.current = activeDoc;
   }, [activeDoc]);
 
-  const schedulePagination = (immediate = false): void => {
-    if (timerRef.current) window.clearTimeout(timerRef.current);
-    const run = () => {
-      if (!editor || editor.isDestroyed) return;
-      const setup = activeDocRef.current?.pageSetup ?? DEFAULT_PAGE_SETUP();
-      const result = computePageBreaks(editor.view, setup);
-      const prev = lastBreaksRef.current;
-      if (
-        result.breaks.length !== prev.length ||
-        result.breaks.some((breakPos, i) => breakPos !== prev[i])
-      ) {
-        lastBreaksRef.current = result.breaks;
-        editor.view.dispatch(editor.view.state.tr.setMeta('paginationBreaks', result));
-      }
-      setPageCount(result.breaks.length + 1);
-    };
-    if (immediate) run();
-    else timerRef.current = window.setTimeout(run, 150);
+  const runPagination = (): void => {
+    rafRef.current = null;
+    if (!editor || editor.isDestroyed || !editor.view) return;
+    if (editor.view.composing) {
+      schedulePagination();
+      return;
+    }
+    const setup = activeDocRef.current?.pageSetup ?? DEFAULT_PAGE_SETUP();
+    const result = computePageBreaks(editor.view, setup);
+    const prev = lastBreaksRef.current;
+    if (
+      result.breaks.length !== prev.length ||
+      result.breaks.some((breakPos, i) => breakPos !== prev[i])
+    ) {
+      lastBreaksRef.current = result.breaks;
+      editor.view.dispatch(editor.view.state.tr.setMeta('paginationBreaks', result));
+    }
+    setPageCount(result.breaks.length + 1);
   };
+
+  const schedulePagination = (immediate = false): void => {
+    if (rafRef.current !== null) {
+      window.cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    if (immediate) {
+      runPagination();
+      return;
+    }
+    rafRef.current = window.requestAnimationFrame(runPagination);
+  };
+
+  useEffect(
+    () => () => {
+      if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!editor) return;

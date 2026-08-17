@@ -1,45 +1,102 @@
-# Coding Rules
+# Project & Coding Rules
 
-## Ngôn ngữ & Cú pháp
+## 1. Cấu trúc Dự án (Monorepo Layout)
 
-- Code phải viết theo chuẩn **ES7** (ECMAScript 2016) trở lên, sử dụng các tính năng hiện đại: `async/await`, spread/rest operator, destructuring, template literals, optional chaining, nullish coalescing.
+Dự án được tổ chức theo mô hình **Turborepo + pnpm workspace**:
 
-## Hàm (Functions)
+```text
+├── apps/
+│   ├── docs/                 # Ứng dụng Docs Web (React 19 + Vite + TipTap + Tailwind CSS)
+│   ├── sheets/               # Ứng dụng Sheets Web (Giai đoạn 6)
+│   └── slides/               # Ứng dụng Slides Web (Giai đoạn 7)
+│
+├── packages/
+│   ├── app-shell/            # Shell dùng chung: TopBar, ProductSwitcher, ShellLayout
+│   ├── auth-sdk/             # OneMail SSO integration (Giai đoạn 4)
+│   ├── collab-core/          # Y.Doc & Realtime Collaboration (Giai đoạn 3)
+│   ├── docx-io/              # docx ↔ TipTap converter (preserve-and-patch)
+│   ├── fidelity-harness/     # Bộ đo chất lượng round-trip OOXML, chạy trong CI
+│   ├── file-home/            # File Manager Home dùng chung (FileHome, list/grid, trash, stats)
+│   ├── i18n/                 # Đa ngôn ngữ (JSON locales VI/EN, I18nProvider, useTranslation, formatters)
+│   ├── ooxml-core/           # Byte-preserving OOXML unpack/repack & part registry
+│   ├── pptx-io/              # Fork pptx-viewer wrapper (Giai đoạn 7)
+│   ├── storage-adapter/      # Storage driver abstraction (IndexedDB, FileSystemAccess, Drive)
+│   ├── ui-kit/               # Design tokens, Icons (iNET), Base UI + shadcn components (Button, Skeleton, Dialog...)
+│   └── xlsx-io/              # xlsx ↔ Univer converter qua ExcelJS (Giai đoạn 6)
+│
+├── docs/                     # Tài liệu kiến trúc, roadmap, báo cáo kỹ thuật
+└── plans/                    # Kế hoạch phát triển, implementation plans
+```
 
-- **Bắt buộc dùng arrow function** `() => {}` cho tất cả hàm (kể cả hàm callback, hàm trong object, hàm truyền vào component).
-- Cấm dùng `function` keyword trừ khi bất khả kháng (ví dụ: cần hoist hoặc `this` binding riêng).
-- Arrow function không có body phức tạp thì dùng dạng ngắn gọn: `const fn = () => value`.
+### Quy tắc Import & Path Alias
 
-### Ví dụ
+- **Trong `apps/docs` (và các apps khác)**:
+  - **Bắt buộc dùng Path Alias `@/*`** (trỏ tới `apps/<app-name>/src/*`).
+  - **Tuyệt đối không dùng relative import** (`./`, `../`) trong tầng `apps/`.
+  - Ví dụ: `import { Header } from '@/components/Header';`, `import type { DocRecord } from '@/types';`.
+- **Trong `packages/*`**:
+  - Dùng **relative import nội bộ** (`./`, `../`) bên trong mỗi package nhằm đảm bảo tính độc lập và tương thích đa ứng dụng khi các app import source trực tiếp qua workspace exports.
+
+---
+
+## 2. Ngôn ngữ & Cú pháp
+
+- Code viết theo chuẩn **ES7** (ECMAScript 2016) trở lên, sử dụng các tính năng hiện đại: `async/await`, spread/rest operator, destructuring, template literals, optional chaining (`?.`), nullish coalescing (`??`).
+
+---
+
+## 3. Hàm (Functions)
+
+- **Bắt buộc dùng arrow function `() => {}`** cho tất cả các hàm (bao gồm React component, callback, hàm trong object, helper utils).
+- **Cấm dùng `function` keyword** trừ khi bất khả kháng (ví dụ: generator function hoặc cần hoist / `this` binding đặc thù).
+- Arrow function không có logic phức tạp ưu tiên dạng ngắn gọn: `const fn = () => value;`.
 
 ```ts
 // Đúng
-const handleClick = () => {
-  console.log('clicked');
+export const DocumentList = () => {
+  const handleClick = () => console.log('clicked');
+  return <div onClick={handleClick} />;
 };
 
-const doubled = items.map((item) => item * 2);
-
-useEffect(() => {
-  fetchData();
-}, []);
-
 // Sai
-function handleClick() {
-  console.log('clicked');
+export function DocumentList() {
+  function handleClick() {
+    console.log('clicked');
+  }
+  return <div onClick={handleClick} />;
 }
-
-items.map(function (item) {
-  return item * 2;
-});
 ```
 
-## Bất biến (Immutable)
+---
 
-- Không gán lại biến đã khai báo với `let` khi có thể dùng `const`.
+## 4. Tính Bất biến (Immutability)
 
-## UI Components & Shadcn UI
+- Luôn khai báo biến bằng `const`. Không dùng `let` khi không có nhu cầu gán lại giá trị.
+- Không mutate trực tiếp object/array, sử dụng immutability update pattern (`...spread`, `map`, `filter`).
 
-- **Ưu tiên sử dụng Shadcn UI & Tiptap UI Primitives**: Tận dụng tối đa các UI component có sẵn từ **shadcn/ui** (Button, Dialog/Modal, Dropdown Menu, Tooltip, Popover, Input, Switch, Tabs, Card, v.v.) để đẩy nhanh tiến độ phát triển, đảm bảo tính thẩm mỹ, đồng bộ và chuẩn accessibility (a11y).
-- **Hạn chế viết lại từ đầu**: Tránh tự code lại các component UI phức tạp từ HTML/CSS thuần khi đã có component tương đương từ shadcn/ui hoặc thư viện UI primitives của dự án.
+---
+
+## 5. UI Components & Design System
+
+- **Ưu tiên sử dụng Shadcn UI & Base UI Primitives**: Tận dụng tối đa các UI component có sẵn từ `@office/ui-kit` (Button, Dialog, Dropdown Menu, Tooltip, Popover, Input, Switch, Tabs, Card, ScrollArea, v.v.).
+- **Hạn chế viết lại từ đầu**: Không tự code HTML/CSS thô khi đã có component tương đương từ design system.
 - **Tùy biến linh hoạt**: Tùy biến style component qua `className`, `cva` (Class Variance Authority), Tailwind/SCSS tokens mà vẫn giữ nguyên cấu trúc chuẩn và headless logic.
+- **Icons**: Sử dụng icon chuẩn iNET Design System (`<InetIcon name="..." />` từ `@office/ui-kit`) hoặc `lucide-react` cho các app shell controls.
+
+---
+
+## 6. Trạng thái Loading & Skeleton UI
+
+- **Bắt buộc ưu tiên sử dụng Skeleton loader**:
+  - Đối với tất cả các trạng thái tải dữ liệu bất đồng bộ (data fetch, danh sách tài liệu, bảng dữ liệu, card preview, sidebar, modal content, panel chi tiết...), **bắt buộc ưu tiên sử dụng Skeleton loader** thay vì dùng spinner tròn hoặc để màn hình trống.
+  - Sử dụng component `Skeleton` có sẵn từ `@office/ui-kit` (chuẩn shadcn/ui + Tailwind `animate-pulse`).
+  - Skeleton phải mô phỏng chính xác cấu trúc layout, chiều cao (`h-*`), chiều rộng (`w-*`) và khoảng cách (`gap-*`, `padding`) của giao diện thực tế nhằm loại bỏ hiện tượng giật giật/dịch chuyển bố cục (Cumulative Layout Shift - CLS).
+
+---
+
+## 7. Đa ngôn ngữ & i18n
+
+- **Package dùng chung**: Sử dụng `@office/i18n` cho toàn bộ các text giao diện.
+- **Dữ liệu dịch**: Lưu dưới dạng file JSON thuần theo namespace (`common.json`, `docs.json`, `app-shell.json`) trong `packages/i18n/src/locales/vi/` và `en/`.
+- **Tự động suy diễn type**: Type schema suy diễn trực tiếp 100% từ cấu trúc JSON; đảm bảo mọi key mới thêm vào file Tiếng Việt (`vi`) bắt buộc phải có mặt tương ứng ở Tiếng Anh (`en`).
+- **Sử dụng Hook**: Dùng `const { t } = useTranslation('namespace')` trong các React component.

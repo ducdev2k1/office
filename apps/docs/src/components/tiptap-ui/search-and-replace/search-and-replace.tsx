@@ -5,16 +5,8 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useComposedRef } from '@/hooks/use-composed-ref';
 
 // --- Icons ---
-import { ArrowRightIcon } from '@/components/tiptap-icons/arrow-right-icon';
-import { CaseSensitiveIcon } from '@/components/tiptap-icons/case-sensitive-icon';
-import { ChevronDownIcon } from '@/components/tiptap-icons/chevron-down-icon';
-import { ChevronUpIcon } from '@/components/tiptap-icons/chevron-up-icon';
-import { CloseIcon } from '@/components/tiptap-icons/close-icon';
-import { ExternalLinkIcon } from '@/components/tiptap-icons/external-link-icon';
-import { SearchIcon } from '@/components/tiptap-icons/search-icon';
-import { WholeWordIcon } from '@/components/tiptap-icons/whole-word-icon';
-
-// --- Lib ---
+import { Button, InetIcon, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
+import { Input, Separator, Switch } from '@office/ui-kit';
 import { cn } from '@/lib/tiptap-utils';
 
 // --- Tiptap UI ---
@@ -26,56 +18,15 @@ import {
   useSearchAndReplace,
 } from '@/components/tiptap-ui/search-and-replace';
 
-// --- UI Primitives ---
-import type { ButtonProps } from '@/components/tiptap-ui-primitive/button';
-import { Button } from '@/components/tiptap-ui-primitive/button';
-import { ButtonGroup } from '@/components/tiptap-ui-primitive/button-group';
-import { Card, CardBody, CardFooter, CardHeader } from '@/components/tiptap-ui-primitive/card';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/tiptap-ui-primitive/input-group';
-import { Separator } from '@/components/tiptap-ui-primitive/separator';
-import { Switch } from '@/components/tiptap-ui-primitive/switch';
-
 // --- Styles ---
 import '@/components/tiptap-ui/search-and-replace/search-and-replace.scss';
 
 export interface SearchAndReplaceProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>, UseSearchAndReplaceConfig {
-  /**
-   * Whether the panel is active. While `false` the panel stays mounted but
-   * hidden: highlights are cleared and the entered terms are kept, so
-   * toggling back on restores the previous search. Unmounting the panel
-   * instead clears the search entirely.
-   * @default true
-   */
   open?: boolean;
-  /**
-   * Called when the panel requests to close (close button or Escape). The
-   * panel does not position or dismiss itself — rendering, placement and
-   * open state are owned by the consumer.
-   */
   onClose?: () => void;
-  /**
-   * Called when the built-in Mod+F shortcut fires while the panel is hidden.
-   * Wire it to your open state and the shortcut works out of the box;
-   * without it the shortcut only refocuses the search input while the panel
-   * is already open.
-   */
   onOpen?: () => void;
-  /**
-   * Whether the built-in Mod+F shortcut is bound. While bound (and `onOpen`
-   * is wired), it replaces the browser's find-in-page everywhere on the
-   * page — an app with its own search should never surface the native one.
-   * @default true
-   */
   enableShortcut?: boolean;
-  /**
-   * Whether the search input focuses itself when the panel becomes open.
-   * @default true
-   */
   autoFocusSearch?: boolean;
 }
 
@@ -99,11 +50,44 @@ const REGEX_REPLACE_EXAMPLES = [
   { pattern: '(cat|tiptap)', replacement: '"$1"' },
 ];
 
-/**
- * Example row for the regex explanation box. Deliberately local to this
- * box — a small ghost-style button whose label mixes plain text with code
- * chips is too specific to become a shared primitive.
- */
+const ICON_SIZE = 16;
+
+interface ToolbarIconButtonProps {
+  label: string;
+  disabled?: boolean;
+  onClick: () => void;
+  icon: string;
+  dataAction?: string;
+}
+
+const ToolbarIconButton = ({
+  label,
+  disabled = false,
+  onClick,
+  icon,
+  dataAction,
+}: ToolbarIconButtonProps) => (
+  <Tooltip>
+    <TooltipTrigger
+      render={
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          disabled={disabled}
+          aria-label={label}
+          data-search-replace-action={dataAction}
+          onClick={onClick}
+        >
+          <InetIcon name={icon} size={ICON_SIZE} />
+        </Button>
+      }
+    />
+    <TooltipContent>{label}</TooltipContent>
+  </Tooltip>
+);
+
 function RegexExampleButton({
   pattern,
   onApply,
@@ -114,28 +98,21 @@ function RegexExampleButton({
   children: React.ReactNode;
 }) {
   return (
-    <ButtonGroup className="tiptap-search-replace-regex-example-row" orientation="horizontal">
-      <Button
-        type="button"
-        className="tiptap-search-replace-regex-example-button"
-        data-regex-example={pattern}
-        onClick={onApply}
-        variant="ghost"
-        size="small"
-      >
-        <span className="tiptap-button-text">{children}</span>
-        <ArrowRightIcon className="tiptap-button-icon" aria-hidden="true" />
-      </Button>
-    </ButtonGroup>
+    <Button
+      type="button"
+      className="tiptap-search-replace-regex-example-button justify-start"
+      data-regex-example={pattern}
+      onClick={onApply}
+      variant="ghost"
+      size="sm"
+    >
+      <span className="tiptap-button-text">{children}</span>
+      <InetIcon name="arrow-right" size={ICON_SIZE} className="tiptap-button-icon" />
+    </Button>
   );
 }
 
-/**
- * Search and replace trigger button for toolbars. Purely presentational —
- * wire `onClick` to show the `SearchAndReplace` panel wherever your layout
- * places it (the panel itself binds Mod+F via its `onOpen` prop).
- */
-export const SearchAndReplaceButton = forwardRef<HTMLButtonElement, ButtonProps>(
+export const SearchAndReplaceButton = forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
   ({ className, children, ...props }, ref) => {
     return (
       <Button
@@ -145,12 +122,10 @@ export const SearchAndReplaceButton = forwardRef<HTMLButtonElement, ButtonProps>
         role="button"
         tabIndex={-1}
         aria-label="Search and replace"
-        tooltip="Search and replace"
-        shortcutKeys={SEARCH_AND_REPLACE_SHORTCUT_KEY}
         ref={ref}
         {...props}
       >
-        {children || <SearchIcon className="tiptap-button-icon" />}
+        {children || <InetIcon name="search" size={ICON_SIZE} className="tiptap-button-icon" />}
       </Button>
     );
   },
@@ -158,15 +133,6 @@ export const SearchAndReplaceButton = forwardRef<HTMLButtonElement, ButtonProps>
 
 SearchAndReplaceButton.displayName = 'SearchAndReplaceButton';
 
-/**
- * Search and replace panel for Tiptap editors.
- *
- * Deliberately unpositioned: render it inside a popover, docked in a corner
- * (Notion-style), inline in a collapsed mobile toolbar — the wrapper is up to
- * you. The panel only manages the search itself.
- *
- * For fully custom UIs, use the `useSearchAndReplace` hook instead.
- */
 export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps>(
   (
     {
@@ -225,8 +191,6 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
       input.select();
     }, []);
 
-    // Example buttons fill the inputs so the pattern can be tested right
-    // away; the extension debounce then applies the search.
     const applyRegexExample = useCallback(
       (pattern: string, replacement?: string) => {
         setSearchTerm(pattern);
@@ -238,11 +202,6 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
       [setSearchTerm, setReplaceTerm, focusSearchInput],
     );
 
-    // Built-in Mod+F: with a custom search present, the browser's
-    // find-in-page is replaced everywhere on the page, no matter where
-    // focus sits. Opens the panel via `onOpen` when hidden, refocuses the
-    // search input while already open. Only an unwired `onOpen` falls back
-    // to the native find.
     useHotkeys(
       SEARCH_AND_REPLACE_SHORTCUT_KEY,
       (event) => {
@@ -265,11 +224,6 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
       [open, onOpen, focusSearchInput],
     );
 
-    // While search mode is on, plain arrow keys navigate results even when
-    // focus sits outside the panel (e.g. on the page body right after
-    // load). Form fields and the editor itself are excluded by default, so
-    // the caret and other inputs keep their arrows; inside the panel the
-    // panel's own key handler takes over.
     useHotkeys(
       'up,down',
       (event) => {
@@ -287,9 +241,6 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
       [goToNext, goToPrevious],
     );
 
-    // Re-apply the stored terms when the panel becomes open and clear
-    // highlights (keeping the values) when it hides. Refs keep the effect
-    // from re-firing on every keystroke.
     const applySearchRef = useRef(applySearch);
     const suspendSearchRef = useRef(suspendSearch);
     useEffect(() => {
@@ -309,9 +260,6 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
       }
     }, [open]);
 
-    // Focus the search input once per open, waiting until the editor is
-    // ready — on a freshly loaded page the input is still disabled for a
-    // moment, and focusing a disabled input is a no-op.
     const focusedForOpenRef = useRef(false);
     useEffect(() => {
       if (!open) {
@@ -335,10 +283,6 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
           return;
         }
 
-        // Arrow up/down step through the results from anywhere inside the
-        // panel — inputs, nav buttons, options — like Notion's find bar.
-        // Handled at the panel so a focused button navigates too (and the
-        // page doesn't scroll instead).
         if (
           (event.key === 'ArrowDown' || event.key === 'ArrowUp') &&
           !event.shiftKey &&
@@ -356,9 +300,6 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
           return;
         }
 
-        // Navigation shortcuts are scoped to the open panel on purpose, so
-        // they never compete with shortcuts elsewhere in the app (e.g. the
-        // image download button also uses Mod+Shift+D).
         if (isModKey(event) && event.shiftKey && !event.altKey) {
           const key = event.key.toLowerCase();
 
@@ -416,7 +357,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
     }
 
     return (
-      <Card
+      <div
         className={cn('tiptap-search-replace', className)}
         data-open={open ? 'true' : 'false'}
         role="dialog"
@@ -425,67 +366,39 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
         ref={composedPanelRef}
         {...divProps}
       >
-        <CardHeader className="tiptap-search-replace-header">
+        <div className="tiptap-search-replace-header">
           <span className="tiptap-search-replace-count" aria-live="polite">
             {resultCountLabel}
           </span>
 
           <div className="tiptap-search-replace-nav-group">
-            <ButtonGroup className="button-group" orientation="horizontal">
-              <ButtonGroup>
-                <Button
-                  type="button"
-                  data-search-replace-action="prev"
-                  variant="ghost"
-                  size="small"
-                  disabled={!canNavigate}
-                  aria-label="Previous result"
-                  tooltip="Previous result"
-                  shortcutKeys={PREVIOUS_RESULT_SHORTCUT_KEY}
-                  onClick={goToPrevious}
-                >
-                  <ChevronUpIcon className="tiptap-button-icon" />
-                </Button>
-              </ButtonGroup>
-              <ButtonGroup>
-                <Button
-                  type="button"
-                  data-search-replace-action="next"
-                  variant="ghost"
-                  size="small"
-                  disabled={!canNavigate}
-                  aria-label="Next result"
-                  tooltip="Next result"
-                  shortcutKeys={NEXT_RESULT_SHORTCUT_KEY}
-                  onClick={goToNext}
-                >
-                  <ChevronDownIcon className="tiptap-button-icon" />
-                </Button>
-              </ButtonGroup>
-            </ButtonGroup>
-
-            <ButtonGroup className="button-group" orientation="horizontal">
-              <Button
-                type="button"
-                data-search-replace-action="close"
-                variant="ghost"
-                size="small"
-                aria-label="Close"
-                tooltip="Close"
-                shortcutKeys="esc"
-                onClick={onClose}
-              >
-                <CloseIcon className="tiptap-button-icon" />
-              </Button>
-            </ButtonGroup>
+            <div className="button-group">
+              <ToolbarIconButton
+                label="Previous result"
+                disabled={!canNavigate}
+                onClick={goToPrevious}
+                icon="chevron-up"
+                dataAction="prev"
+              />
+              <ToolbarIconButton
+                label="Next result"
+                disabled={!canNavigate}
+                onClick={goToNext}
+                icon="chevron-down"
+                dataAction="next"
+              />
+            </div>
+            <div className="button-group">
+              <ToolbarIconButton label="Close" onClick={() => onClose?.()} icon="x" dataAction="close" />
+            </div>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardBody className="tiptap-search-replace-body">
+        <div className="tiptap-search-replace-body">
           <div className="tiptap-search-replace-query-controls">
             <div className="tiptap-search-replace-inputs">
-              <InputGroup className="tiptap-search-replace-input-group">
-                <InputGroupInput
+              <div className="tiptap-search-replace-input-group relative">
+                <Input
                   data-field="search-query"
                   placeholder="Search"
                   aria-label="Search"
@@ -499,19 +412,18 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                   onChange={(event) => setSearchTerm(event.target.value)}
                   onKeyDown={handleSearchKeyDown}
                   ref={searchInputRef}
+                  className="pr-8"
                 />
-                <InputGroupAddon
-                  align="inline-end"
-                  className="tiptap-search-replace-keyboard-hint-addon"
+                <kbd
+                  className="tiptap-search-replace-keyboard-hint pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
+                  aria-hidden="true"
                 >
-                  <kbd className="tiptap-search-replace-keyboard-hint" aria-hidden="true">
-                    ↵
-                  </kbd>
-                </InputGroupAddon>
-              </InputGroup>
+                  ↵
+                </kbd>
+              </div>
 
-              <InputGroup className="tiptap-search-replace-input-group">
-                <InputGroupInput
+              <div className="tiptap-search-replace-input-group relative">
+                <Input
                   data-field="replace-query"
                   placeholder="Replace"
                   aria-label="Replace"
@@ -523,40 +435,43 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                   disabled={!canSearch}
                   onChange={(event) => setReplaceTerm(event.target.value)}
                   onKeyDown={handleReplaceKeyDown}
+                  className="pr-8"
                 />
-                <InputGroupAddon
-                  align="inline-end"
-                  className="tiptap-search-replace-keyboard-hint-addon"
+                <kbd
+                  className="tiptap-search-replace-keyboard-hint pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
+                  aria-hidden="true"
                 >
-                  <kbd className="tiptap-search-replace-keyboard-hint" aria-hidden="true">
-                    ↵
-                  </kbd>
-                </InputGroupAddon>
-              </InputGroup>
+                  ↵
+                </kbd>
+              </div>
             </div>
 
             <div className="tiptap-search-replace-options">
               <Button
                 type="button"
                 data-option="match-case"
-                variant="check"
-                aria-checked={caseSensitive}
+                variant="ghost"
+                size="sm"
+                aria-pressed={caseSensitive}
                 disabled={!canSearch}
                 onClick={toggleCaseSensitive}
+                className={cn(caseSensitive && 'bg-accent text-accent-foreground')}
               >
-                <CaseSensitiveIcon className="tiptap-button-icon" aria-hidden="true" />
+                <InetIcon name="case-sensitive" size={ICON_SIZE} className="tiptap-button-icon" />
                 <span className="tiptap-button-text">Match case</span>
               </Button>
 
               <Button
                 type="button"
                 data-option="whole-words"
-                variant="check"
-                aria-checked={wholeWord}
+                variant="ghost"
+                size="sm"
+                aria-pressed={wholeWord}
                 disabled={!canSearch}
                 onClick={toggleWholeWord}
+                className={cn(wholeWord && 'bg-accent text-accent-foreground')}
               >
-                <WholeWordIcon className="tiptap-button-icon" aria-hidden="true" />
+                <InetIcon name="whole-word" size={ICON_SIZE} className="tiptap-button-icon" />
                 <span className="tiptap-button-text">Whole words</span>
               </Button>
             </div>
@@ -579,10 +494,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                     Try a search pattern
                   </span>
 
-                  <ButtonGroup
-                    orientation="vertical"
-                    className="tiptap-search-replace-regex-example-list"
-                  >
+                  <div className="tiptap-search-replace-regex-example-list">
                     {REGEX_SEARCH_EXAMPLES.map(({ label, pattern }) => (
                       <RegexExampleButton
                         key={pattern}
@@ -592,7 +504,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                         {label} <code>{pattern}</code>
                       </RegexExampleButton>
                     ))}
-                  </ButtonGroup>
+                  </div>
                 </div>
 
                 <Separator
@@ -605,10 +517,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                     Try search and replace
                   </span>
 
-                  <ButtonGroup
-                    orientation="vertical"
-                    className="tiptap-search-replace-regex-example-list"
-                  >
+                  <div className="tiptap-search-replace-regex-example-list">
                     {REGEX_REPLACE_EXAMPLES.map(({ pattern, replacement }) => (
                       <RegexExampleButton
                         key={pattern}
@@ -618,7 +527,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                         <code>{pattern}</code> to <code>{replacement}</code>
                       </RegexExampleButton>
                     ))}
-                  </ButtonGroup>
+                  </div>
 
                   <a
                     className="tiptap-search-replace-regex-docs-link"
@@ -628,9 +537,10 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                     rel="noopener noreferrer"
                   >
                     Learn about regular expressions
-                    <ExternalLinkIcon
+                    <InetIcon
+                      name="external-link"
+                      size={ICON_SIZE}
                       className="tiptap-search-replace-regex-docs-link-icon"
-                      aria-hidden="true"
                     />
                   </a>
                 </div>
@@ -639,45 +549,37 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
           </div>
 
           <Separator orientation="horizontal" />
-        </CardBody>
+        </div>
 
-        <CardFooter className="tiptap-search-replace-actions">
-          <ButtonGroup className="button-group" orientation="horizontal">
-            <ButtonGroup>
-              <Button
-                type="button"
-                data-search-replace-action="replace"
-                disabled={!canReplace}
-                aria-label="Replace current result"
-                onClick={replaceCurrent}
-              >
-                Replace
-              </Button>
-            </ButtonGroup>
-            <ButtonGroup>
-              <Button
-                type="button"
-                data-search-replace-action="replace-all"
-                disabled={!canReplaceAll}
-                aria-label="Replace all results"
-                onClick={replaceAll}
-              >
-                Replace all
-              </Button>
-            </ButtonGroup>
-          </ButtonGroup>
-        </CardFooter>
-      </Card>
+        <div className="tiptap-search-replace-actions">
+          <div className="button-group">
+            <Button
+              type="button"
+              data-search-replace-action="replace"
+              disabled={!canReplace}
+              aria-label="Replace current result"
+              onClick={replaceCurrent}
+            >
+              Replace
+            </Button>
+            <Button
+              type="button"
+              data-search-replace-action="replace-all"
+              disabled={!canReplaceAll}
+              aria-label="Replace all results"
+              onClick={replaceAll}
+            >
+              Replace all
+            </Button>
+          </div>
+        </div>
+      </div>
     );
   },
 );
 
 SearchAndReplace.displayName = 'SearchAndReplace';
 
-/**
- * Alias of `SearchAndReplace` for contexts where the panel is embedded as
- * plain content (e.g. inside a collapsed mobile toolbar).
- */
 export const SearchAndReplaceContent = SearchAndReplace;
 
 export default SearchAndReplace;

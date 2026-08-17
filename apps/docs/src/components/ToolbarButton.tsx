@@ -1,3 +1,5 @@
+import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
+import { cn } from '@office/ui-kit';
 import type { ReactNode } from 'react';
 
 interface ToolbarButtonProps {
@@ -17,14 +19,22 @@ export const ToolbarButton = ({
   children,
   onClick,
 }: ToolbarButtonProps) => (
-  <button
-    aria-label={label}
-    className={`tool-button ${active ? 'active' : ''} ${tone === 'danger' ? 'danger' : ''}`}
-    disabled={disabled}
-    onClick={onClick}
-    title={label}
-    type="button"
-  >
-    {children}
-  </button>
+  <Tooltip>
+    <TooltipTrigger
+      render={
+        <Button
+          aria-label={label}
+          title={tone === 'danger' ? label : undefined}
+          variant={tone === 'danger' ? 'destructive' : 'ghost'}
+          size="icon"
+          disabled={disabled}
+          onClick={onClick}
+          className={cn('h-8 w-8', active && 'bg-accent text-accent-foreground')}
+        />
+      }
+    >
+      <span className="flex items-center justify-center [&>svg]:size-4">{children}</span>
+    </TooltipTrigger>
+    <TooltipContent>{label}</TooltipContent>
+  </Tooltip>
 );

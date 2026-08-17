@@ -15,10 +15,10 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import Underline from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { pagination } from './pagination';
-import { FontSize } from './extensions/font-size';
-import { keyboardShortcuts } from './extensions/keyboard-shortcuts';
-import { PageBreak } from './extensions/page-break';
+import { pagination } from '@/editor/pagination';
+import { FontSize } from '@/editor/extensions/font-size';
+import { keyboardShortcuts } from '@/editor/extensions/keyboard-shortcuts';
+import { PageBreak } from '@/editor/extensions/page-break';
 import FindAndReplace from '@tiptap/extension-find-and-replace';
 
 export const useDocsEditor = (content: string, onUpdate: (html: string) => void) =>

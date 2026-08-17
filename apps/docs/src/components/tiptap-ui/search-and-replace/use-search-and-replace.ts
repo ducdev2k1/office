@@ -8,9 +8,6 @@ import type { FindAndReplaceStorage } from '@tiptap/extension-find-and-replace';
 // --- Hooks ---
 import { useTiptapEditor } from '@/hooks/use-tiptap-editor';
 
-// --- Icons ---
-import { SearchIcon } from '@/components/tiptap-icons/search-icon';
-
 // --- Lib ---
 import { isExtensionAvailable } from '@/lib/tiptap-utils';
 
@@ -501,7 +498,6 @@ export function useSearchAndReplace(config?: UseSearchAndReplaceConfig) {
     clearSearch,
     label: 'Search and replace',
     shortcutKeys: SEARCH_AND_REPLACE_SHORTCUT_KEY,
-    Icon: SearchIcon,
   };
 }
 

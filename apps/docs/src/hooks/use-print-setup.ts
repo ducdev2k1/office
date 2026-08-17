@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DEFAULT_PAGE_SETUP, PAPER_SIZES, type DocRecord } from '../types';
+import { DEFAULT_PAGE_SETUP, PAPER_SIZES, type DocRecord } from '@/types';
 
 export const usePrintSetup = (activeDoc: DocRecord | undefined): void => {
   useEffect(() => {

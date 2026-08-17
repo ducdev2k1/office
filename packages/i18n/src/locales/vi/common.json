@@ -1,0 +1,67 @@
+{
+  "actions": {
+    "save": "Lưu",
+    "saved": "Đã lưu",
+    "saving": "Đang lưu...",
+    "saveError": "Lỗi khi lưu",
+    "cancel": "Hủy",
+    "apply": "Áp dụng",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "rename": "Đổi tên",
+    "duplicate": "Tạo bản sao",
+    "search": "Tìm kiếm",
+    "confirm": "Xác nhận",
+    "restore": "Khôi phục",
+    "share": "Chia sẻ",
+    "print": "In",
+    "download": "Tải xuống",
+    "upload": "Tải lên",
+    "refresh": "Làm mới",
+    "reset": "Đặt lại",
+    "copy": "Sao chép",
+    "cut": "Cắt",
+    "paste": "Dán",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "help": "Trợ giúp",
+    "settings": "Cài đặt",
+    "more": "Thêm"
+  },
+  "theme": {
+    "light": "Giao diện sáng",
+    "dark": "Giao diện tối",
+    "system": "Theo hệ thống",
+    "switchToLight": "Chuyển sang giao diện sáng",
+    "switchToDark": "Chuyển sang giao diện tối"
+  },
+  "language": {
+    "vi": "Tiếng Việt",
+    "en": "English",
+    "switchLanguage": "Đổi ngôn ngữ"
+  },
+  "status": {
+    "savedToDevice": "Đã lưu trên thiết bị",
+    "savingToDevice": "Đang lưu trên thiết bị...",
+    "offline": "Đang ngoại tuyến",
+    "online": "Đã kết nối",
+    "quotaWarning": "~{used} MB / {total} MB",
+    "wordsCount": "{count} từ",
+    "charsCount": "{count} ký tự",
+    "pagesCount": "{count} trang",
+    "pageOf": "{current} / {total}"
+  },
+  "dialog": {
+    "confirmTitle": "Xác nhận hành động",
+    "confirmDeleteDoc": "Bạn có chắc chắn muốn xóa tài liệu \"{title}\" không? Hành động này không thể hoàn tác.",
+    "delete": "Xóa",
+    "cancel": "Hủy"
+  },
+  "errors": {
+    "generic": "Đã xảy ra lỗi, vui lòng thử lại.",
+    "notFound": "Không tìm thấy dữ liệu.",
+    "storageFull": "Dung lượng lưu trữ cục bộ đã gần đầy."
+  }
+}

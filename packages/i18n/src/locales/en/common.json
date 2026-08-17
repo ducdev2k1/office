@@ -1,0 +1,67 @@
+{
+  "actions": {
+    "save": "Save",
+    "saved": "Saved",
+    "saving": "Saving...",
+    "saveError": "Save error",
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "close": "Close",
+    "back": "Back",
+    "delete": "Delete",
+    "edit": "Edit",
+    "rename": "Rename",
+    "duplicate": "Make a copy",
+    "search": "Search",
+    "confirm": "Confirm",
+    "restore": "Restore",
+    "share": "Share",
+    "print": "Print",
+    "download": "Download",
+    "upload": "Upload",
+    "refresh": "Refresh",
+    "reset": "Reset",
+    "copy": "Copy",
+    "cut": "Cut",
+    "paste": "Paste",
+    "undo": "Undo",
+    "redo": "Redo",
+    "help": "Help",
+    "settings": "Settings",
+    "more": "More"
+  },
+  "theme": {
+    "light": "Light theme",
+    "dark": "Dark theme",
+    "system": "System theme",
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
+  "language": {
+    "vi": "Tiếng Việt",
+    "en": "English",
+    "switchLanguage": "Switch language"
+  },
+  "status": {
+    "savedToDevice": "Saved to device",
+    "savingToDevice": "Saving to device...",
+    "offline": "Offline",
+    "online": "Connected",
+    "quotaWarning": "~{used} MB / {total} MB",
+    "wordsCount": "{count} words",
+    "charsCount": "{count} characters",
+    "pagesCount": "{count} pages",
+    "pageOf": "{current} of {total}"
+  },
+  "dialog": {
+    "confirmTitle": "Confirm Action",
+    "confirmDeleteDoc": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "generic": "An error occurred, please try again.",
+    "notFound": "Data not found.",
+    "storageFull": "Local storage quota is almost full."
+  }
+}

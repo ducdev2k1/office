@@ -1,7 +1,7 @@
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
-import { getPaperSizePx, mmToPx, type PageSetup } from '../types';
+import { getPaperSizePx, mmToPx, type PageSetup } from '@/types';
 
 export const PAGE_GAP = 24;
 export const MAX_PAGES = 50;
@@ -39,41 +39,56 @@ export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreak
   const root = view.dom as HTMLElement;
   if (!root.offsetHeight) return { breaks: [], spacers: [], forced: [] };
 
-  const { usable, marginT, marginB } = computeMetrics(setup);
-  let remaining = usable;
+  const { paperH, usable, marginT, marginB } = computeMetrics(setup);
   const breaks: number[] = [];
   const spacers: number[] = [];
   const forced: boolean[] = [];
-  const spacerAt = (pos: number) => (pos === 0 ? 0 : remaining + marginT + marginB + PAGE_GAP);
+  let y = 0;
+  let pageTop = 0;
+  let prevMb = 0;
+  let hasPrev = false;
+
+  const readBox = (dom: Node | null) => {
+    const el = dom as HTMLElement | null;
+    if (!el) return { height: 0, marginTop: 0, marginBottom: 0 };
+    const style = getComputedStyle(el);
+    return {
+      height: el.offsetHeight,
+      marginTop: parseFloat(style.marginTop) || 0,
+      marginBottom: parseFloat(style.marginBottom) || 0,
+    };
+  };
 
   doc.forEach((node, offset) => {
     if (breaks.length >= MAX_PAGES - 1) return;
-    const dom = view.nodeDOM(offset);
-    const height = dom ? (dom as HTMLElement).offsetHeight : 0;
+    const { height, marginTop: mt, marginBottom: mb } = readBox(view.nodeDOM(offset));
 
     if (node.type.name === 'pageBreak') {
       breaks.push(offset);
-      spacers.push(spacerAt(offset));
+      spacers.push(hasPrev ? pageTop + paperH + PAGE_GAP - y - prevMb : 0);
       forced.push(true);
-      remaining = usable;
+      y = pageTop + paperH + PAGE_GAP;
+      pageTop = y;
+      prevMb = 0;
+      hasPrev = false;
       return;
     }
 
-    if (height > usable) {
-      breaks.push(offset);
-      spacers.push(spacerAt(offset));
-      forced.push(false);
-      remaining = 0;
-      return;
-    }
+    const gap = hasPrev ? Math.max(prevMb, mt) : mt;
+    const bottom = y + gap + height;
 
-    if (height > remaining) {
+    if (bottom - pageTop > usable) {
       breaks.push(offset);
-      spacers.push(spacerAt(offset));
-      forced.push(false);
-      remaining = usable - height;
+      spacers.push(Math.max(0, pageTop + paperH + PAGE_GAP - y - prevMb));
+      pageTop += paperH + PAGE_GAP;
+      y = pageTop + mt + height;
+      while (y > pageTop + usable) pageTop += paperH + PAGE_GAP;
+      prevMb = mb;
+      hasPrev = true;
     } else {
-      remaining -= height;
+      y = bottom;
+      prevMb = mb;
+      hasPrev = true;
     }
   });
 
@@ -105,7 +120,9 @@ const paginationPlugin = new Plugin<PageBreaks>({
               el.style.height = `${value.spacers[i] ?? 0}px`;
               return el;
             },
-            { key: `page-break-${pos}` },
+            {
+              key: `page-break-${pos}:${value.spacers[i] ?? 0}`,
+            },
           ),
         );
       return decos.length ? DecorationSet.create(state.doc, decos) : null;

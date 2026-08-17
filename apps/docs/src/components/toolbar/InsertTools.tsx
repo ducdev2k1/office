@@ -1,15 +1,8 @@
 import type { Editor } from '@tiptap/core';
-import {
-  Columns3,
-  ImagePlus,
-  Minus,
-  Rows3,
-  SeparatorHorizontal,
-  Table,
-  Trash2,
-} from 'lucide-react';
+import { useTranslation } from '@office/i18n';
+import { InetIcon } from '@office/ui-kit';
 import { useRef } from 'react';
-import { ToolbarButton } from '../ToolbarButton';
+import { ToolbarButton } from '@/components/ToolbarButton';
 
 interface InsertToolsProps {
   editor: Editor;
@@ -24,6 +17,7 @@ export const InsertTools = ({
   onInsertTable,
   onInsertPageBreak,
 }: InsertToolsProps) => {
+  const { t } = useTranslation('docs');
   const imageInputRef = useRef<HTMLInputElement>(null);
   const inTable = editor.isActive('table');
   const insertImage = (file: File | undefined) => {
@@ -35,11 +29,11 @@ export const InsertTools = ({
       <button
         className="tool-button"
         type="button"
-        title="Chen anh"
-        aria-label="Chen anh"
+        title={t('toolbar.insertImage')}
+        aria-label={t('toolbar.insertImage')}
         onClick={() => imageInputRef.current?.click()}
       >
-        <ImagePlus aria-hidden="true" />
+        <InetIcon name="image-plus" />
       </button>
       <input
         ref={imageInputRef}
@@ -51,47 +45,47 @@ export const InsertTools = ({
           event.target.value = '';
         }}
       />
-      <ToolbarButton label="Chen bang" onClick={onInsertTable}>
-        <Table aria-hidden="true" />
+      <ToolbarButton label={t('toolbar.insertTable')} onClick={onInsertTable}>
+        <InetIcon name="table" />
       </ToolbarButton>
       <ToolbarButton
-        label="Chen duong ke ngang"
+        label={t('toolbar.insertHorizontalRule')}
         onClick={() => editor.chain().focus().setHorizontalRule().run()}
       >
-        <Minus aria-hidden="true" />
+        <InetIcon name="minus" />
       </ToolbarButton>
-      <ToolbarButton label="Chen page break (Ctrl+Enter)" onClick={onInsertPageBreak}>
-        <SeparatorHorizontal aria-hidden="true" />
+      <ToolbarButton label={t('toolbar.insertPageBreak')} onClick={onInsertPageBreak}>
+        <InetIcon name="separator-horizontal" />
       </ToolbarButton>
       {inTable && (
         <>
           <span className="toolbar-separator" />
           <ToolbarButton
-            label="Them dong duoi"
+            label={t('toolbar.addRowBelow')}
             onClick={() => editor.chain().focus().addRowAfter().run()}
           >
-            <Rows3 aria-hidden="true" />
+            <InetIcon name="rows-3" />
           </ToolbarButton>
-          <ToolbarButton label="Xoa dong" onClick={() => editor.chain().focus().deleteRow().run()}>
-            <Trash2 aria-hidden="true" />
+          <ToolbarButton label={t('toolbar.deleteRow')} onClick={() => editor.chain().focus().deleteRow().run()}>
+            <InetIcon name="trash-2" />
           </ToolbarButton>
           <ToolbarButton
-            label="Them cot phai"
+            label={t('toolbar.addColumnRight')}
             onClick={() => editor.chain().focus().addColumnAfter().run()}
           >
-            <Columns3 aria-hidden="true" />
+            <InetIcon name="columns-3" />
           </ToolbarButton>
           <ToolbarButton
-            label="Xoa cot"
+            label={t('toolbar.deleteColumn')}
             onClick={() => editor.chain().focus().deleteColumn().run()}
           >
-            <Trash2 aria-hidden="true" />
+            <InetIcon name="columns-3" />
           </ToolbarButton>
           <ToolbarButton
-            label="Xoa bang"
+            label={t('toolbar.deleteTable')}
             onClick={() => editor.chain().focus().deleteTable().run()}
           >
-            <Table aria-hidden="true" />
+            <InetIcon name="table" />
           </ToolbarButton>
         </>
       )}

@@ -1,6 +1,7 @@
-import { Download, FileText, Printer, Search, SlidersHorizontal, Trash2 } from 'lucide-react';
-import type { ViewMode } from '../../editor/use-pagination';
-import { ToolbarButton } from '../ToolbarButton';
+import { useTranslation } from '@office/i18n';
+import { InetIcon } from '@office/ui-kit';
+import type { ViewMode } from '@/editor/use-pagination';
+import { ToolbarButton } from '@/components/ToolbarButton';
 
 interface DocToolsProps {
   findOpen: boolean;
@@ -26,36 +27,40 @@ export const DocTools = ({
   onExportHtml,
   onExportText,
   onDelete,
-}: DocToolsProps) => (
-  <>
-    <ToolbarButton active={findOpen} label="Tim kiem va thay the (Ctrl+H)" onClick={onToggleFind}>
-      <Search aria-hidden="true" />
-    </ToolbarButton>
-    <ToolbarButton
-      active={viewMode === 'paged'}
-      label="Chuyen che do xem trang"
-      onClick={() => onViewModeChange(viewMode === 'paged' ? 'continuous' : 'paged')}
-    >
-      <FileText aria-hidden="true" />
-      <span>{viewMode === 'paged' ? 'Trang' : 'Lien tuc'}</span>
-    </ToolbarButton>
-    <ToolbarButton label="Cau hinh trang" onClick={onPageSetup}>
-      <SlidersHorizontal aria-hidden="true" />
-    </ToolbarButton>
-    <ToolbarButton label="In tai lieu" onClick={onPrint}>
-      <Printer aria-hidden="true" />
-    </ToolbarButton>
-    <span className="toolbar-spacer" />
-    <ToolbarButton label="Export HTML" onClick={onExportHtml}>
-      <Download aria-hidden="true" />
-      <span>HTML</span>
-    </ToolbarButton>
-    <ToolbarButton label="Export TXT" onClick={onExportText}>
-      <Download aria-hidden="true" />
-      <span>TXT</span>
-    </ToolbarButton>
-    <ToolbarButton disabled={!canDelete} label="Delete document" tone="danger" onClick={onDelete}>
-      <Trash2 aria-hidden="true" />
-    </ToolbarButton>
-  </>
-);
+}: DocToolsProps) => {
+  const { t } = useTranslation('docs');
+
+  return (
+    <>
+      <ToolbarButton active={findOpen} label={t('toolbar.findAndReplace')} onClick={onToggleFind}>
+        <InetIcon name="search" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={viewMode === 'paged'}
+        label={t('toolbar.switchViewMode')}
+        onClick={() => onViewModeChange(viewMode === 'paged' ? 'continuous' : 'paged')}
+      >
+        <InetIcon name="file-text" />
+        <span>{viewMode === 'paged' ? t('toolbar.viewModePaged') : t('toolbar.viewModeContinuous')}</span>
+      </ToolbarButton>
+      <ToolbarButton label={t('toolbar.pageSetup')} onClick={onPageSetup}>
+        <InetIcon name="sliders-horizontal" />
+      </ToolbarButton>
+      <ToolbarButton label={t('toolbar.print')} onClick={onPrint}>
+        <InetIcon name="printer" />
+      </ToolbarButton>
+      <span className="toolbar-spacer" />
+      <ToolbarButton label={t('toolbar.exportHtml')} onClick={onExportHtml}>
+        <InetIcon name="download" />
+        <span>HTML</span>
+      </ToolbarButton>
+      <ToolbarButton label={t('toolbar.exportTxt')} onClick={onExportText}>
+        <InetIcon name="download" />
+        <span>TXT</span>
+      </ToolbarButton>
+      <ToolbarButton disabled={!canDelete} label={t('toolbar.deleteDocument')} tone="danger" onClick={onDelete}>
+        <InetIcon name="trash-2" />
+      </ToolbarButton>
+    </>
+  );
+};
