@@ -16,7 +16,7 @@ function ContextMenuContent({
       <BaseContextMenu.Positioner className="z-50">
         <BaseContextMenu.Popup
           className={cn(
-            'min-w-44 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md',
+            'min-w-44 overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg transition-all duration-150 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
             className,
           )}
           {...props}

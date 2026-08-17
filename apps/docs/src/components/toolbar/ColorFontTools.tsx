@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
-import { Icon } from '@office/ui-kit';
-import { useRef, type RefObject } from 'react';
+import type { RefObject } from 'react';
+import { ColorPalettePopover } from '@/components/toolbar/ColorPalettePopover';
 
 const FONT_FAMILIES = ['Arial', 'Roboto', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana'];
 const FONT_SIZES = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48];
@@ -9,52 +9,32 @@ const FONT_SIZES = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48];
 interface ColorFontToolsProps {
   editor: Editor;
   fontPickerRef: RefObject<HTMLSelectElement | null>;
-  colorPickerRef: RefObject<HTMLInputElement | null>;
+  colorPickerRef?: RefObject<HTMLInputElement | null>;
 }
 
-export const ColorFontTools = ({ editor, fontPickerRef, colorPickerRef }: ColorFontToolsProps) => {
+export const ColorFontTools = ({ editor, fontPickerRef }: ColorFontToolsProps) => {
   const { t } = useTranslation('docs');
-  const colorHighlightRef = useRef<HTMLInputElement>(null);
   const textStyle = editor.getAttributes('textStyle');
+  const highlightStyle = editor.getAttributes('highlight');
 
   return (
     <>
-      <div className="color-controls">
-        <button
-          className={`tool-button ${textStyle.color ? 'active' : ''}`}
-          type="button"
-          title={t('toolbar.textColor')}
-          aria-label={t('toolbar.textColor')}
-          onClick={() => colorPickerRef.current?.click()}
-        >
-          <Icon name="baseline" />
-        </button>
-        <input
-          ref={colorPickerRef}
-          className="hidden-color-input"
-          type="color"
-          value={typeof textStyle.color === 'string' ? textStyle.color : '#000000'}
-          onChange={(event) => editor.chain().focus().setColor(event.target.value).run()}
-          aria-label={t('toolbar.selectTextColor')}
+      <div className="flex items-center gap-0.5">
+        <ColorPalettePopover
+          iconName="baseline"
+          label={t('toolbar.textColor')}
+          currentColor={typeof textStyle.color === 'string' ? textStyle.color : '#000000'}
+          active={Boolean(textStyle.color)}
+          onSelectColor={(color) => editor.chain().focus().setColor(color).run()}
+          onResetColor={() => editor.chain().focus().unsetColor().run()}
         />
-        <button
-          className={`tool-button ${editor.isActive('highlight') ? 'active' : ''}`}
-          type="button"
-          title={t('toolbar.highlightColor')}
-          aria-label={t('toolbar.highlightColor')}
-          onClick={() => colorHighlightRef.current?.click()}
-        >
-          <Icon name="highlighter" />
-        </button>
-        <input
-          ref={colorHighlightRef}
-          className="hidden-color-input"
-          type="color"
-          value="#fef000"
-          onChange={(event) =>
-            editor.chain().focus().toggleHighlight({ color: event.target.value }).run()
-          }
-          aria-label={t('toolbar.selectHighlightColor')}
+        <ColorPalettePopover
+          iconName="highlighter"
+          label={t('toolbar.highlightColor')}
+          currentColor={typeof highlightStyle.color === 'string' ? highlightStyle.color : '#fef000'}
+          active={editor.isActive('highlight')}
+          onSelectColor={(color) => editor.chain().focus().toggleHighlight({ color }).run()}
+          onResetColor={() => editor.chain().focus().unsetHighlight().run()}
         />
       </div>
       <span className="toolbar-separator" />

@@ -16,7 +16,7 @@ const TooltipContent = ({
     <BaseTooltip.Positioner sideOffset={sideOffset} className="z-50">
       <BaseTooltip.Popup
         className={cn(
-          'overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground shadow-md',
+          'overflow-hidden rounded-md bg-foreground px-2.5 py-1 text-[11px] font-medium text-background shadow-md transition-all duration-150 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
           className,
         )}
         {...props}

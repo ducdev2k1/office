@@ -173,7 +173,6 @@ export const EditorPage = () => {
         <Header
           title={activeDoc?.title ?? ''}
           onTitleChange={updateTitle}
-          onMenuToggle={handleToggleSidebar}
           theme={theme}
           onToggleTheme={toggleTheme}
           menuActions={{
@@ -300,16 +299,11 @@ export const EditorPage = () => {
             open={findOpen}
             onOpen={() => setFindOpen(true)}
             onClose={() => setFindOpen(false)}
-            style={{
-              position: 'fixed',
-              top: '128px',
-              right: '16px',
-              zIndex: 40,
-            }}
           />
         )}
-        {pageSetupOpen && activeDoc?.pageSetup && (
+        {activeDoc?.pageSetup && (
           <PageSetupPanel
+            open={pageSetupOpen}
             setup={activeDoc.pageSetup}
             onApply={handleApplyPageSetup}
             onClose={() => setPageSetupOpen(false)}

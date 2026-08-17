@@ -1,57 +1,58 @@
 .tiptap-search-replace {
-  --tiptap-search-replace-count-color: var(--tt-gray-light-a-400);
-  --tiptap-search-replace-option-text-color: var(--tt-gray-light-a-600);
-  --tiptap-search-replace-option-icon-color: var(--tt-gray-light-a-500);
-  --tiptap-search-replace-option-hover-bg-color: var(--tt-gray-light-a-200);
-  --tiptap-search-replace-kbd-bg: var(--white);
-  --tiptap-search-replace-kbd-border: var(--tt-gray-light-a-200);
-  --tiptap-search-replace-kbd-color: var(--tt-gray-light-a-500);
-  --tiptap-search-replace-help-bg: var(--tt-gray-light-100);
-  --tiptap-search-replace-help-label-color: var(--tt-gray-light-a-500);
-  --tiptap-search-replace-code-bg: var(--tt-gray-light-a-100);
-  --tiptap-search-replace-code-border: var(--tt-gray-light-a-200);
-  --tiptap-search-replace-code-color: var(--tt-gray-light-a-700);
-  --tiptap-search-replace-focus-border: var(--tt-brand-color-500);
+  --tiptap-search-replace-count-color: var(--muted-foreground);
+  --tiptap-search-replace-option-text-color: var(--foreground);
+  --tiptap-search-replace-option-icon-color: var(--muted-foreground);
+  --tiptap-search-replace-option-hover-bg-color: var(--hover);
+  --tiptap-search-replace-kbd-bg: var(--background);
+  --tiptap-search-replace-kbd-border: var(--border);
+  --tiptap-search-replace-kbd-color: var(--muted-foreground);
+  --tiptap-search-replace-help-bg: var(--muted);
+  --tiptap-search-replace-help-label-color: var(--muted-foreground);
+  --tiptap-search-replace-code-bg: var(--background);
+  --tiptap-search-replace-code-border: var(--border);
+  --tiptap-search-replace-code-color: var(--foreground);
+  --tiptap-search-replace-focus-border: var(--ring);
   --tiptap-search-replace-focus-ring: color-mix(
     in srgb,
-    var(--tt-brand-color-500) 20%,
+    var(--ring) 20%,
     transparent
   );
 
-  width: 19rem;
-  max-width: 100%;
+  position: fixed;
+  top: 108px;
+  right: 20px;
+  z-index: 50;
+  width: 22rem;
+  max-width: calc(100vw - 40px);
+  padding: 12px 14px;
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .dark .tiptap-search-replace {
-  --tiptap-search-replace-count-color: var(--tt-gray-dark-a-400);
-  --tiptap-search-replace-option-text-color: var(--tt-gray-dark-a-600);
-  --tiptap-search-replace-option-icon-color: var(--tt-gray-dark-a-500);
-  --tiptap-search-replace-option-hover-bg-color: var(--tt-gray-dark-a-200);
-  --tiptap-search-replace-kbd-bg: var(--tt-gray-dark-a-50);
-  --tiptap-search-replace-kbd-border: var(--tt-gray-dark-a-200);
-  --tiptap-search-replace-kbd-color: var(--tt-gray-dark-a-500);
-  --tiptap-search-replace-help-bg: var(--tt-gray-dark-100);
-  --tiptap-search-replace-help-label-color: var(--tt-gray-dark-a-500);
-  --tiptap-search-replace-code-bg: var(--tt-gray-dark-a-100);
-  --tiptap-search-replace-code-border: var(--tt-gray-dark-a-200);
-  --tiptap-search-replace-code-color: var(--tt-gray-dark-a-700);
-  --tiptap-search-replace-focus-border: var(--tt-brand-color-400);
-  --tiptap-search-replace-focus-ring: color-mix(
-    in srgb,
-    var(--tt-brand-color-400) 25%,
-    transparent
-  );
+  background-color: var(--card);
+  border-color: var(--border);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 .tiptap-card-body.tiptap-search-replace-body {
   width: 100%;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .tiptap-search-replace-query-controls {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 8px;
 }
 
 .tiptap-search-replace[data-open='true'] {
@@ -67,30 +68,40 @@
 /* On narrow screens the panel may stretch to the available width */
 @media (max-width: 480px) {
   .tiptap-search-replace {
-    width: 100%;
+    width: calc(100vw - 20px);
+    right: 10px;
+    top: 90px;
   }
 }
 
 /* ── Header ─────────────────────────────────────────────────── */
-.tiptap-card-header.tiptap-search-replace-header {
-  gap: 0.25rem;
-  border: 0;
+.tiptap-search-replace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 6px;
 }
 
 .tiptap-search-replace-count {
-  font-size: 0.625rem;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--tiptap-search-replace-count-color);
-  padding-left: 0.625rem;
   white-space: nowrap;
 }
 
 .tiptap-search-replace-nav-group {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 4px;
   margin-left: auto;
+}
+
+.tiptap-search-replace-nav-group .button-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 /* ── Fields and options ─────────────────────────────────────── */

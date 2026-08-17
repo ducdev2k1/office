@@ -32,9 +32,8 @@ export interface SearchAndReplaceProps
 
 export type SearchAndReplaceContentProps = SearchAndReplaceProps;
 
-function isModKey(event: React.KeyboardEvent): boolean {
-  return event.metaKey || event.ctrlKey;
-}
+const isModKey = (event: React.KeyboardEvent): boolean =>
+  event.metaKey || event.ctrlKey;
 
 const REGEX_DOCS_URL =
   'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions';
@@ -73,22 +72,22 @@ const ToolbarIconButton = ({
         <Button
           type="button"
           variant="ghost"
-          size="icon"
-          className="h-7 w-7"
+          size="sm"
+          className="h-7 w-7 p-0 flex items-center justify-center shrink-0"
           disabled={disabled}
           aria-label={label}
           data-search-replace-action={dataAction}
           onClick={onClick}
-        >
-          <Icon name={icon} size={ICON_SIZE} />
-        </Button>
+        />
       }
-    />
+    >
+      <Icon name={icon} size={ICON_SIZE} />
+    </TooltipTrigger>
     <TooltipContent>{label}</TooltipContent>
   </Tooltip>
 );
 
-function RegexExampleButton({
+const RegexExampleButton = ({
   pattern,
   onApply,
   children,
@@ -96,21 +95,19 @@ function RegexExampleButton({
   pattern: string;
   onApply: () => void;
   children: React.ReactNode;
-}) {
-  return (
-    <Button
-      type="button"
-      className="tiptap-search-replace-regex-example-button justify-start"
-      data-regex-example={pattern}
-      onClick={onApply}
-      variant="ghost"
-      size="sm"
-    >
-      <span className="tiptap-button-text">{children}</span>
-      <Icon name="arrow-right" size={ICON_SIZE} className="tiptap-button-icon" />
-    </Button>
-  );
-}
+}) => (
+  <Button
+    type="button"
+    className="tiptap-search-replace-regex-example-button justify-start"
+    data-regex-example={pattern}
+    onClick={onApply}
+    variant="ghost"
+    size="sm"
+  >
+    <span className="tiptap-button-text">{children}</span>
+    <Icon name="arrow-right" size={ICON_SIZE} className="tiptap-button-icon" />
+  </Button>
+);
 
 export const SearchAndReplaceButton = forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
   ({ className, children, ...props }, ref) => {

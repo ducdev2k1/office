@@ -55,10 +55,10 @@ const SHORTCUT_GROUPS: { title: string; items: [string, string][] }[] = [
 
 export const HelpModal = ({ open, onClose }: HelpModalProps) => (
   <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-    <DialogContent>
+    <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>Phim tat ban phim</DialogTitle>
-        <DialogDescription>Danh sach phim tat thao tac nhanh</DialogDescription>
+        <DialogTitle>Phím tắt bàn phím</DialogTitle>
+        <DialogDescription>Danh sách các phím tắt thao tác nhanh trong văn bản</DialogDescription>
       </DialogHeader>
       <div className="help-grid">
         {SHORTCUT_GROUPS.map((group) => (

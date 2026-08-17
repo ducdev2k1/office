@@ -26,15 +26,12 @@ export const InsertTools = ({
 
   return (
     <>
-      <button
-        className="tool-button"
-        type="button"
-        title={t('toolbar.insertImage')}
-        aria-label={t('toolbar.insertImage')}
+      <ToolbarButton
+        label={t('toolbar.insertImage')}
         onClick={() => imageInputRef.current?.click()}
       >
         <Icon name="image-plus" />
-      </button>
+      </ToolbarButton>
       <input
         ref={imageInputRef}
         className="hidden-file-input"

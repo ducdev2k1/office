@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useTranslation } from '@office/i18n';
 import { Button, Icon } from '@office/ui-kit';
 import { MenuBar, type HeaderMenuActions } from '@/components/header/MenuBar';
@@ -5,7 +6,6 @@ import { MenuBar, type HeaderMenuActions } from '@/components/header/MenuBar';
 interface HeaderProps {
   title: string;
   onTitleChange: (title: string) => void;
-  onMenuToggle: () => void;
   menuActions: HeaderMenuActions;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
@@ -14,7 +14,6 @@ interface HeaderProps {
 export const Header = ({
   title,
   onTitleChange,
-  onMenuToggle,
   menuActions,
   theme,
   onToggleTheme,
@@ -28,19 +27,9 @@ export const Header = ({
   return (
     <header className="top-header">
       <div className="file-heading">
-        <Button
-          className="sidebar-toggle-button"
-          type="button"
-          aria-label={t('docs.header.toggleSidebar')}
-          onClick={onMenuToggle}
-          variant="ghost"
-          size="icon"
-        >
-          <Icon name="menu" />
-        </Button>
-        <div className="docs-file-icon">
+        <Link to="/" className="docs-file-icon" title={t('common.actions.back')} aria-label={t('common.actions.back')}>
           <Icon name="file-text" />
-        </div>
+        </Link>
         <div className="file-heading-copy">
           <div className="title-line">
             <input

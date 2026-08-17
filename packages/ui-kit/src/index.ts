@@ -25,3 +25,4 @@ export * from './components/ui/context-menu';
 export * from './components/ui/dialog';
 export * from './components/ui/scroll-area';
 export * from './components/ui/skeleton';
+export * from './components/ui/popover';

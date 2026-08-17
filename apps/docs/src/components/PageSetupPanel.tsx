@@ -1,14 +1,24 @@
 import { useTranslation } from '@office/i18n';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@office/ui-kit';
 import { useEffect, useState } from 'react';
 import { PAPER_SIZES, type PageSetup } from '@/types';
 
 interface PageSetupPanelProps {
+  open: boolean;
   setup: PageSetup;
   onApply: (setup: PageSetup) => void;
   onClose: () => void;
 }
 
-export const PageSetupPanel = ({ setup, onApply, onClose }: PageSetupPanelProps) => {
+export const PageSetupPanel = ({ open, setup, onApply, onClose }: PageSetupPanelProps) => {
   const { t } = useTranslation('docs');
   const [draft, setDraft] = useState<PageSetup>(setup);
 
@@ -36,67 +46,85 @@ export const PageSetupPanel = ({ setup, onApply, onClose }: PageSetupPanelProps)
   };
 
   return (
-    <div className="page-setup-panel" role="dialog" aria-label={t('pageSetup.title')}>
-      <div className="panel-title">{t('pageSetup.title')}</div>
-      <label className="panel-field">
-        <span>{t('pageSetup.paperSize')}</span>
-        <select
-          value={draft.paperSize}
-          onChange={(event) =>
-            setDraft((current) => ({
-              ...current,
-              paperSize: event.target.value as PageSetup['paperSize'],
-            }))
-          }
-        >
-          <option value="a4">A4</option>
-          <option value="a5">A5</option>
-          <option value="letter">Letter</option>
-        </select>
-      </label>
-      <label className="panel-field">
-        <span>{t('pageSetup.orientation')}</span>
-        <select
-          value={draft.orientation}
-          onChange={(event) =>
-            setDraft((current) => ({
-              ...current,
-              orientation: event.target.value as PageSetup['orientation'],
-            }))
-          }
-        >
-          <option value="portrait">{t('pageSetup.portrait')}</option>
-          <option value="landscape">{t('pageSetup.landscape')}</option>
-        </select>
-      </label>
-      <div className="panel-field">
-        <span>{t('pageSetup.margins')}</span>
-        <div className="margin-grid">
-          {(['top', 'right', 'bottom', 'left'] as const).map((side) => (
-            <label key={side} className="margin-input">
-              <span>{marginLabels[side]}</span>
-              <input
-                type="number"
-                min={0}
-                max={80}
-                value={draft.margins[side]}
-                onChange={(event) => setMargin(side, event.target.value)}
-              />
+    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t('pageSetup.title')}</DialogTitle>
+          <DialogDescription>
+            {draft.paperSize.toUpperCase()} ({w} × {h} mm)
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-4 py-2">
+          <div className="grid grid-cols-2 gap-4">
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-foreground">
+              <span>{t('pageSetup.paperSize')}</span>
+              <select
+                className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors focus:outline-none focus:ring-1 focus:ring-ring"
+                value={draft.paperSize}
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    paperSize: event.target.value as PageSetup['paperSize'],
+                  }))
+                }
+              >
+                <option value="a4">A4 (210 × 297 mm)</option>
+                <option value="a5">A5 (148 × 210 mm)</option>
+                <option value="letter">Letter (8.5 × 11 in)</option>
+              </select>
             </label>
-          ))}
+
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-foreground">
+              <span>{t('pageSetup.orientation')}</span>
+              <select
+                className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors focus:outline-none focus:ring-1 focus:ring-ring"
+                value={draft.orientation}
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    orientation: event.target.value as PageSetup['orientation'],
+                  }))
+                }
+              >
+                <option value="portrait">{t('pageSetup.portrait')}</option>
+                <option value="landscape">{t('pageSetup.landscape')}</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="text-xs font-medium text-foreground">{t('pageSetup.margins')} (mm)</span>
+            <div className="grid grid-cols-2 gap-3">
+              {(['top', 'bottom', 'left', 'right'] as const).map((side) => (
+                <label
+                  key={side}
+                  className="flex items-center justify-between gap-2 rounded-md border border-border bg-muted/40 px-3 py-1.5 text-xs"
+                >
+                  <span className="text-muted-foreground">{marginLabels[side]}</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={80}
+                    className="h-7 w-16 rounded border border-input bg-background px-2 text-right text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ring"
+                    value={draft.margins[side]}
+                    onChange={(event) => setMargin(side, event.target.value)}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="panel-preview">
-        {draft.paperSize.toUpperCase()} {w}×{h}mm
-      </div>
-      <div className="panel-actions">
-        <button type="button" onClick={() => onApply(draft)}>
-          {t('pageSetup.apply')}
-        </button>
-        <button type="button" onClick={onClose}>
-          {t('pageSetup.cancel')}
-        </button>
-      </div>
-    </div>
+
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" type="button" onClick={onClose}>
+            {t('pageSetup.cancel')}
+          </Button>
+          <Button type="button" onClick={() => onApply(draft)}>
+            {t('pageSetup.apply')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

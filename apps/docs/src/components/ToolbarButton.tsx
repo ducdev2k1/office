@@ -26,14 +26,19 @@ export const ToolbarButton = ({
           aria-label={label}
           title={tone === 'danger' ? label : undefined}
           variant={tone === 'danger' ? 'destructive' : 'ghost'}
-          size="icon"
+          size="sm"
           disabled={disabled}
           onClick={onClick}
-          className={cn('h-8 w-8', active && 'bg-accent text-accent-foreground')}
+          className={cn(
+            'h-7 min-w-7 px-1.5 gap-1 text-xs font-normal shrink-0',
+            active && 'bg-accent text-accent-foreground font-medium',
+          )}
         />
       }
     >
-      <span className="flex items-center justify-center [&>svg]:size-4">{children}</span>
+      <span className="flex items-center justify-center gap-1 [&_.inet-icon]:size-4 [&_svg]:size-4 shrink-0">
+        {children}
+      </span>
     </TooltipTrigger>
     <TooltipContent>{label}</TooltipContent>
   </Tooltip>

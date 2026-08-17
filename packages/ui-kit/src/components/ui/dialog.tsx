@@ -28,7 +28,10 @@ function DialogOverlay({
 }: React.ComponentPropsWithoutRef<typeof BaseDialog.Backdrop>) {
   return (
     <BaseDialog.Backdrop
-      className={cn('fixed inset-0 z-50 bg-black/50', className)}
+      className={cn(
+        'fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ease-out data-[ending-style]:opacity-0 data-[starting-style]:opacity-0',
+        className,
+      )}
       {...props}
     />
   );
@@ -41,17 +44,17 @@ function DialogContent({
 }: React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>) {
   return (
     <BaseDialog.Portal>
-      <BaseDialog.Backdrop className="fixed inset-0 z-40 bg-black/50" />
-      <BaseDialog.Viewport className="fixed inset-0 z-50 mt-16 flex items-start justify-center p-4 sm:mt-0 sm:items-center">
+      <BaseDialog.Backdrop className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ease-out data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
+      <BaseDialog.Viewport className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <BaseDialog.Popup
           className={cn(
-            'relative z-50 grid gap-4 rounded-lg border bg-background p-6 shadow-lg sm:max-w-lg',
+            'relative z-50 grid w-full max-w-lg gap-4 rounded-xl border border-border bg-card p-6 shadow-2xl transition-all duration-200 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
             className,
           )}
           {...props}
         >
           {children}
-          <BaseDialog.Close className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring">
+          <BaseDialog.Close className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground opacity-70 transition-all hover:bg-hover hover:opacity-100 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
             <CloseIcon />
             <span className="sr-only">Dong</span>
           </BaseDialog.Close>
