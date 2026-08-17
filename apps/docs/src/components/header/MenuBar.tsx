@@ -1,7 +1,7 @@
+import type { ViewMode } from '@/editor/use-pagination';
 import type { Editor } from '@tiptap/core';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { ViewMode } from '../../editor/use-pagination';
 
 export interface MenuAction {
   label: string;
@@ -118,8 +118,16 @@ export const MenuBar = ({
       {
         label: 'Edit',
         items: [
-          { label: 'Undo', shortcut: 'Ctrl+Z', onClick: () => run(() => editor?.chain().focus().undo().run()) },
-          { label: 'Redo', shortcut: 'Ctrl+Y', onClick: () => run(() => editor?.chain().focus().redo().run()) },
+          {
+            label: 'Undo',
+            shortcut: 'Ctrl+Z',
+            onClick: () => run(() => editor?.chain().focus().undo().run()),
+          },
+          {
+            label: 'Redo',
+            shortcut: 'Ctrl+Y',
+            onClick: () => run(() => editor?.chain().focus().redo().run()),
+          },
           'separator',
           { label: 'Tim kiem va thay the', shortcut: 'Ctrl+H', onClick: () => run(onToggleFind) },
         ],
@@ -130,7 +138,8 @@ export const MenuBar = ({
           {
             label: viewMode === 'paged' ? 'Che do lien tuc' : 'Che do phan trang',
             checked: viewMode === 'paged',
-            onClick: () => run(() => onViewModeChange(viewMode === 'paged' ? 'continuous' : 'paged')),
+            onClick: () =>
+              run(() => onViewModeChange(viewMode === 'paged' ? 'continuous' : 'paged')),
           },
           { label: 'Cau hinh trang', onClick: () => run(onPageSetup) },
         ],
@@ -140,8 +149,15 @@ export const MenuBar = ({
         items: [
           { label: 'Chen anh', onClick: () => run(() => imageInputRef.current?.click()) },
           { label: 'Chen bang', onClick: () => run(onInsertTable) },
-          { label: 'Chen duong ke ngang', onClick: () => run(() => editor?.chain().focus().setHorizontalRule().run()) },
-          { label: 'Chen page break', shortcut: 'Ctrl+Enter', onClick: () => run(onInsertPageBreak) },
+          {
+            label: 'Chen duong ke ngang',
+            onClick: () => run(() => editor?.chain().focus().setHorizontalRule().run()),
+          },
+          {
+            label: 'Chen page break',
+            shortcut: 'Ctrl+Enter',
+            onClick: () => run(onInsertPageBreak),
+          },
         ],
       },
       {
@@ -170,8 +186,14 @@ export const MenuBar = ({
           toggleMark('underline', 'Ctrl+U'),
           toggleMark('strike', 'Ctrl+Shift+X'),
           'separator',
-          { label: 'Chi so duoi', onClick: () => run(() => editor?.chain().focus().toggleSubscript().run()) },
-          { label: 'Chi so tren', onClick: () => run(() => editor?.chain().focus().toggleSuperscript().run()) },
+          {
+            label: 'Chi so duoi',
+            onClick: () => run(() => editor?.chain().focus().toggleSubscript().run()),
+          },
+          {
+            label: 'Chi so tren',
+            onClick: () => run(() => editor?.chain().focus().toggleSuperscript().run()),
+          },
           'separator',
           {
             label: 'Danh sach gach dau dau',
@@ -246,7 +268,11 @@ export const MenuBar = ({
                     onClick={item.onClick}
                   >
                     <span className="dropdown-item-label">
-                      {item.checked && <span className="dropdown-check" aria-hidden="true">✓</span>}
+                      {item.checked && (
+                        <span className="dropdown-check" aria-hidden="true">
+                          ✓
+                        </span>
+                      )}
                       {item.label}
                     </span>
                     {item.shortcut && <kbd className="menu-shortcut">{item.shortcut}</kbd>}

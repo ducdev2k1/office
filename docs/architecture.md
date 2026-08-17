@@ -8,11 +8,29 @@ This repository targets a full web Office suite (Docs, Sheets, Slides). See `roa
 
 The current app is a browser-first Docs editor:
 
-- React + Vite frontend.
+- React + Vite frontend (`apps/docs`).
 - TipTap/ProseMirror rich text editor.
 - Multi-document sidebar.
 - Local autosave for MVP workflow validation.
 - HTML and TXT export.
+
+## Monorepo layout
+
+```
+apps/docs             Docs editor (TipTap)
+packages/
+  ooxml-core          byte-preserving OOXML unpack/repack, part registry
+  docx-io             docx ↔ TipTap (T1 preserve-and-patch)
+  xlsx-io             xlsx ↔ Univer (ExcelJS) — Phase 6
+  pptx-io             wrapper around pptx-viewer fork — Phase 7
+  storage-adapter     DocumentStore drivers: IndexedDB | FileSystemAccess | Drive
+  collab-core         Y.Doc + provider switching — Phase 3
+  auth-sdk            OneMail SSO — Phase 4
+  ui-kit              shared design tokens + components
+  fidelity-harness    round-trip quality harness, runs in CI
+```
+
+Note: `apps/sheets`, `apps/slides`, `apps/shell` and `services/api` are created in their respective phases (6, 7, 8, 4).
 
 ## Implemented Editor Features
 

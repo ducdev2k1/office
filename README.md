@@ -19,16 +19,26 @@ Tai lieu lo trinh:
 
 ```bash
 pnpm install
-pnpm dev:web
+pnpm dev:docs
 ```
 
 ## Cau truc
 
 ```text
 apps/
-  web/             React Docs editor
+  docs/             React Docs editor (TipTap)
+packages/
+  ooxml-core/       giai nen/nen giu nguyen byte OOXML, so dang ky phan
+  docx-io/          docx <-> TipTap (T1 — preserve-and-patch)
+  xlsx-io/          xlsx <-> Univer (ExcelJS) — Giai doan 6
+  pptx-io/          bao quanh ban fork pptx-viewer — Giai doan 7
+  storage-adapter/  driver: IndexedDB | FileSystemAccess | Drive
+  collab-core/      Y.Doc + doi provider — Giai doan 3
+  auth-sdk/         OneMail SSO — Giai doan 4
+  ui-kit/           design token + component dung chung
+  fidelity-harness/ bo do chat luong round-trip, chay trong CI
 docs/
-  architecture.md  Docs-only architecture notes
+  architecture.md   Docs-only architecture notes
 ```
 
 ## Tinh nang hien co
@@ -44,7 +54,7 @@ docs/
 
 ## Viec tiep theo — M1 (ngay 1-30): Docs offline chay duoc
 
-1. Doi ten `apps/web` thanh `apps/docs`, tach `packages/`.
+1. ~~Doi ten `apps/web` thanh `apps/docs`, tach `packages/`.~~ Da xong.
 2. `storage-adapter` + IndexedDB thay localStorage (quota 5MB la chan cung).
 3. File System Access API: mo/luu file truc tiep tu may.
 4. PWA: cai duoc nhu ung dung, mat mang van soan thao.

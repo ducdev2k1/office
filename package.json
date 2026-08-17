@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "turbo dev",
-    "dev:web": "pnpm --filter @office/web dev",
+    "dev:docs": "pnpm --filter @office/docs dev",
     "build": "turbo build",
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",

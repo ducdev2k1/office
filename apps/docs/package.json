@@ -1,5 +1,5 @@
 {
-  "name": "@office/web",
+  "name": "@office/docs",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,6 +10,7 @@
     "lint": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@base-ui/react": "^1.7.0",
     "@floating-ui/react": "^0.27.20",
     "@tiptap/core": "^3.30.1",
     "@tiptap/extension-color": "^3.30.1",
@@ -32,6 +33,7 @@
     "@tiptap/react": "^3.30.1",
     "@tiptap/starter-kit": "^3.30.1",
     "@vitejs/plugin-react": "^5.0.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
@@ -40,10 +42,8 @@
     "vite": "^6.0.0"
   },
   "devDependencies": {
-    "@base-ui/react": "^1.7.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "class-variance-authority": "^0.7.1",
     "sass-embedded": "^1.102.0",
     "typescript": "^5.8.3"
   }

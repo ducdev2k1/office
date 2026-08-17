@@ -21,8 +21,11 @@ importers:
         specifier: ^5.8.3
         version: 5.9.3
 
-  apps/web:
+  apps/docs:
     dependencies:
+      '@base-ui/react':
+        specifier: ^1.7.0
+        version: 1.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@floating-ui/react':
         specifier: ^0.27.20
         version: 0.27.20(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -89,6 +92,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^5.0.0
         version: 5.2.0(vite@6.4.3(@types/node@24.13.3)(sass-embedded@1.102.0)(sass@1.102.0)(tsx@4.23.12))
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -108,24 +114,36 @@ importers:
         specifier: ^6.0.0
         version: 6.4.3(@types/node@24.13.3)(sass-embedded@1.102.0)(sass@1.102.0)(tsx@4.23.12)
     devDependencies:
-      '@base-ui/react':
-        specifier: ^1.7.0
-        version: 1.7.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.18
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.2.4(@types/react@19.2.18)
-      class-variance-authority:
-        specifier: ^0.7.1
-        version: 0.7.1
       sass-embedded:
         specifier: ^1.102.0
         version: 1.102.0
       typescript:
         specifier: ^5.8.3
         version: 5.9.3
+
+  packages/auth-sdk: {}
+
+  packages/collab-core: {}
+
+  packages/docx-io: {}
+
+  packages/fidelity-harness: {}
+
+  packages/ooxml-core: {}
+
+  packages/pptx-io: {}
+
+  packages/storage-adapter: {}
+
+  packages/ui-kit: {}
+
+  packages/xlsx-io: {}
 
 packages:
 
