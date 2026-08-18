@@ -21,14 +21,12 @@ const saveRecentFonts = (fonts: string[]) => {
   }
 };
 
-/** Tất cả font names được flatten từ FONT_CATEGORIES */
 const ALL_FONTS: string[] = FONT_CATEGORIES.flatMap((cat) => cat.fonts);
 
 export const useFontPicker = (currentFont: string) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [recentFonts, setRecentFonts] = useState<string[]>(loadRecentFonts);
-  const [hoveredFont, setHoveredFont] = useState<string | null>(null);
 
   const filteredFonts = useMemo(() => {
     if (!search.trim()) return null;
@@ -51,28 +49,22 @@ export const useFontPicker = (currentFont: string) => {
       addToRecent(font);
       setOpen(false);
       setSearch('');
-      setHoveredFont(null);
     },
     [addToRecent],
   );
 
   const handleOpenChange = useCallback((nextOpen: boolean) => {
     setOpen(nextOpen);
-    if (!nextOpen) {
-      setSearch('');
-      setHoveredFont(null);
-    }
+    if (!nextOpen) setSearch('');
   }, []);
 
   return {
     open,
     search,
     recentFonts,
-    hoveredFont,
     filteredFonts,
     currentFont,
     setSearch,
-    setHoveredFont,
     handleSelectFont,
     handleOpenChange,
   };
