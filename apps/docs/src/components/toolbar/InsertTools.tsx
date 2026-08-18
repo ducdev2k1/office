@@ -1,6 +1,6 @@
 import { ToolbarButton } from '@/components/ToolbarButton';
 import { useTranslation } from '@office/i18n';
-import { Icon } from '@office/ui-kit';
+import { Icon, Separator } from '@office/ui-kit';
 import type { Editor } from '@tiptap/core';
 import { useRef } from 'react';
 
@@ -56,7 +56,7 @@ export const InsertTools = ({
       </ToolbarButton>
       {inTable && (
         <>
-          <span className="toolbar-separator" />
+          <Separator orientation="vertical" className="h-5 mx-1 shrink-0" />
           <ToolbarButton
             label={t('toolbar.addRowBelow')}
             onClick={() => editor.chain().focus().addRowAfter().run()}
