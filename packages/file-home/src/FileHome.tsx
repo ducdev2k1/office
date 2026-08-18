@@ -90,7 +90,11 @@ export const FileHome = ({
   return (
     <main className="flex flex-1 flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto">
-        <TemplateStrip config={config} onCreate={actions.onCreate} />
+        <TemplateStrip
+          config={config}
+          onCreate={actions.onCreate}
+          onOpenFromDevice={actions.onOpenFromDevice}
+        />
         <StatsCards files={files} storageMB={storageMB} />
         <div className="mt-4 flex items-end justify-between px-6">
           <FileTabs files={files} active={tab} accentVar={config.accentVar} onChange={setTab} />

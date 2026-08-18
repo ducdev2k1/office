@@ -396,26 +396,62 @@ textarea:focus-visible {
   .statusbar,
   .docs-sidebar,
   .ruler,
+  .ruler-vertical,
   .sidebar-open-floating-btn,
-  .page-scroll-indicator {
+  .page-scroll-indicator,
+  .page-stack,
+  .page-break-marker,
+  .page-break-spacer {
+    display: none !important;
+  }
+  .fixed {
     display: none !important;
   }
   .paper-wrap {
+    display: block !important;
     padding: 0 !important;
     overflow: visible !important;
     background: #fff !important;
+  }
+  .paper-wrap > div {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  .app-shell-root,
+  .editor-stage,
+  .editor-canvas {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    flex: none !important;
+    display: block !important;
+  }
+  .page-viewport {
+    min-height: 0 !important;
   }
   .doc-editor {
     width: 100% !important;
     max-width: 100% !important;
     min-height: auto !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: var(--margin-t) var(--margin-r) var(--margin-b) var(--margin-l) !important;
+    box-sizing: border-box !important;
     border: 0 !important;
     box-shadow: none !important;
     background: #fff !important;
     color: #202124 !important;
     print-color-adjust: exact;
+  }
+  .doc-editor [data-type='page-break'] {
+    display: block !important;
+    height: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    page-break-after: always;
+    break-after: page;
+  }
+  .doc-editor [data-type='page-break']::after {
+    content: none !important;
   }
 }
 
@@ -468,20 +504,20 @@ textarea:focus-visible {
   box-shadow: var(--paper-shadow);
 }
 
-.search-match {
+.find-and-replace-result {
   background-color: rgba(249, 156, 0, 0.25);
   border-radius: 2px;
 }
 
-.search-match-active {
+.find-and-replace-result-current {
   background-color: rgba(249, 156, 0, 0.6);
   border-radius: 2px;
 }
 
-.dark .search-match {
+.dark .find-and-replace-result {
   background: #fbbf24;
 }
 
-.dark .search-match-active {
+.dark .find-and-replace-result-current {
   background: var(--destructive);
 }

@@ -1,12 +1,15 @@
 import { forwardRef, useCallback, useEffect, useRef } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { cn } from '@office/ui-kit';
+import { cn, Button } from '@office/ui-kit';
+import { useTranslation } from '@office/i18n';
 import { useComposedRef } from '@/hooks/useComposedRef';
 import type { SearchAndReplaceProps } from '@/modules/search-replace/types/searchReplace.types';
 import {
   SEARCH_AND_REPLACE_SHORTCUT_KEY,
   NEXT_RESULT_SHORTCUT_KEY,
   PREVIOUS_RESULT_SHORTCUT_KEY,
+  SEARCH_SYNC_DELAY_MS,
+  isFindAndReplaceAvailable,
 } from '@/modules/search-replace/utils/searchReplace.utils';
 import { useSearchAndReplace } from '@/modules/search-replace/hooks/useSearchAndReplace';
 import { SearchReplaceInputs } from '@/modules/search-replace/components/SearchReplaceInputs';
@@ -31,6 +34,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
   ) => {
     const {
       editor,
+      syncState,
       searchTerm,
       setSearchTerm,
       replaceTerm,
@@ -59,6 +63,9 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
     const replaceInputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const composedRef = useComposedRef(containerRef, ref);
+    const searchTermRef = useRef(searchTerm);
+    searchTermRef.current = searchTerm;
+    const { t } = useTranslation('docs');
 
     useEffect(() => {
       if (open && autoFocusSearch) {
@@ -68,6 +75,13 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
         }, 50);
       }
     }, [open, autoFocusSearch]);
+
+    useEffect(() => {
+      if (!editor || !isFindAndReplaceAvailable(editor)) return;
+      editor.commands.setSearchTerm(open ? searchTermRef.current : '');
+      const timeout = window.setTimeout(syncState, SEARCH_SYNC_DELAY_MS);
+      return () => window.clearTimeout(timeout);
+    }, [open, editor, syncState]);
 
     useHotkeys(
       SEARCH_AND_REPLACE_SHORTCUT_KEY,
@@ -160,14 +174,10 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
           replaceTerm={replaceTerm}
           setReplaceTerm={setReplaceTerm}
           resultCountLabel={resultCountLabel}
-          canReplace={canReplace}
-          canReplaceAll={canReplaceAll}
           onSearchKeyDown={handleSearchKeyDown}
           onReplaceKeyDown={handleReplaceKeyDown}
           onGoToPrevious={goToPrevious}
           onGoToNext={goToNext}
-          onReplaceCurrent={replaceCurrent}
-          onReplaceAll={replaceAll}
           onClose={onClose}
         />
 
@@ -179,6 +189,29 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
           onToggleWholeWord={toggleWholeWord}
           onToggleUseRegex={toggleUseRegex}
         />
+
+        <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-border">
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={replaceCurrent}
+            disabled={!canReplace}
+          >
+            {t('searchReplace.replace')}
+          </Button>
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={replaceAll}
+            disabled={!canReplaceAll}
+          >
+            {t('searchReplace.replaceAll')}
+          </Button>
+        </div>
       </div>
     );
   },

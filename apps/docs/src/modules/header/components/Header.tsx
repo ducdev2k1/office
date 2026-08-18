@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
 import { MenuBar } from '@/modules/header/components/MenuBar';
 import { TitleInput } from '@/modules/header/components/TitleInput';
 import type { HeaderMenuActions } from '@/modules/header/types/header.types';
 import { useTranslation } from '@office/i18n';
 import { Button, Icon } from '@office/ui-kit';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   title: string;
@@ -21,14 +21,14 @@ export const Header = ({
   theme,
   onToggleTheme,
 }: HeaderProps) => {
-  const { t, locale, setLocale } = useTranslation();
+  const { t, locale, setLocale } = useTranslation('docs');
 
   const handleToggleLocale = () => {
     setLocale(locale === 'vi' ? 'en' : 'vi');
   };
 
   return (
-    <header className="flex items-center justify-between min-w-0 bg-background border-b border-border px-5 py-2 gap-4">
+    <header className="top-header flex items-center justify-between min-w-0 bg-background border-b border-border px-5 py-2 gap-4">
       <div className="flex items-center min-w-0 flex-1 gap-2.5">
         <Link
           to="/"
@@ -36,7 +36,7 @@ export const Header = ({
           title="OneMail Docs"
           aria-label="OneMail Docs"
         >
-          <Icon name="file-text" className="size-7" />
+          <Icon name="file-text" size={32} />
         </Link>
         <div className="min-w-0 flex-1 overflow-hidden">
           <div className="flex items-center gap-1 min-w-0 max-w-full h-8">
@@ -44,8 +44,8 @@ export const Header = ({
             <Button
               className="size-7.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover shrink-0"
               type="button"
-              aria-label={t('docs.header.star')}
-              title={t('docs.header.star')}
+              aria-label={t('header.star')}
+              title={t('header.star')}
               variant="ghost"
               size="icon"
             >
@@ -54,8 +54,8 @@ export const Header = ({
             <Button
               className="size-7.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover shrink-0"
               type="button"
-              aria-label={t('docs.header.moveToFolder')}
-              title={t('docs.header.moveToFolder')}
+              aria-label={t('header.moveToFolder')}
+              title={t('header.moveToFolder')}
               variant="ghost"
               size="icon"
             >
@@ -104,8 +104,8 @@ export const Header = ({
         <Button
           className="size-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover hidden sm:inline-flex"
           type="button"
-          aria-label={t('docs.header.versionHistory')}
-          title={t('docs.header.versionHistory')}
+          aria-label={t('header.versionHistory')}
+          title={t('header.versionHistory')}
           variant="ghost"
           size="icon"
         >
@@ -114,8 +114,8 @@ export const Header = ({
         <Button
           className="size-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover hidden sm:inline-flex"
           type="button"
-          aria-label={t('docs.header.comments')}
-          title={t('docs.header.comments')}
+          aria-label={t('header.comments')}
+          title={t('header.comments')}
           variant="ghost"
           size="icon"
         >
@@ -124,8 +124,8 @@ export const Header = ({
         <Button
           className="h-8 px-2 gap-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover hidden md:inline-flex"
           type="button"
-          aria-label={t('docs.header.videoMeeting')}
-          title={t('docs.header.videoMeeting')}
+          aria-label={t('header.videoMeeting')}
+          title={t('header.videoMeeting')}
           variant="ghost"
         >
           <Icon name="video" className="size-4.5" />
@@ -140,7 +140,7 @@ export const Header = ({
         </Button>
         <div
           className="grid place-items-center size-8 rounded-full bg-primary text-primary-foreground font-semibold text-xs ml-1 select-none"
-          aria-label={t('docs.header.account', { name: 'Duc' })}
+          aria-label={t('header.account', { name: 'Duc' })}
         >
           D
         </div>

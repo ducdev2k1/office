@@ -5,18 +5,30 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  Icon,
+  Input,
 } from '@office/ui-kit';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface HelpModalProps {
   open: boolean;
   onClose: () => void;
 }
 
+interface ShortcutGroup {
+  title: string;
+  items: [string, string][];
+}
+
 export const HelpModal = ({ open, onClose }: HelpModalProps) => {
   const { t } = useTranslation('docs');
+  const [query, setQuery] = useState('');
 
-  const groups = useMemo(
+  useEffect(() => {
+    if (open) setQuery('');
+  }, [open]);
+
+  const groups: ShortcutGroup[] = useMemo(
     () => [
       {
         title: t('helpModal.groups.basicFormatting'),
@@ -61,6 +73,24 @@ export const HelpModal = ({ open, onClose }: HelpModalProps) => {
     [t],
   );
 
+  const filteredGroups = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return groups;
+
+    return groups
+      .map((group) => ({
+        ...group,
+        items: group.items.filter(
+          ([key, label]) =>
+            label.toLowerCase().includes(normalizedQuery) ||
+            key.toLowerCase().includes(normalizedQuery),
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+  }, [groups, query]);
+
+  const hasResults = filteredGroups.length > 0;
+
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="max-w-[620px] max-h-[80vh]">
@@ -68,22 +98,46 @@ export const HelpModal = ({ open, onClose }: HelpModalProps) => {
           <DialogTitle>{t('helpModal.title')}</DialogTitle>
           <DialogDescription>{t('helpModal.description')}</DialogDescription>
         </DialogHeader>
+        <div className="relative">
+          <Icon
+            name="search"
+            size={15}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            aria-hidden="true"
+          />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('helpModal.searchPlaceholder')}
+            className="pl-9"
+            aria-label={t('helpModal.searchPlaceholder')}
+          />
+        </div>
         <div className="max-h-[60vh] pr-1.5 overflow-y-auto scrollbar-thin">
-          {groups.map((group) => (
-            <div key={group.title} className="mb-4.5">
-              <div className="mb-2 pb-1 border-b border-border text-xs font-semibold text-foreground">
-                {group.title}
-              </div>
-              {group.items.map(([key, label]) => (
-                <div className="flex items-center justify-between py-1 text-xs text-foreground" key={key}>
-                  <kbd className="px-1.5 py-0.5 border border-border rounded bg-muted text-foreground font-mono text-[11px] shadow-xs">
-                    {key}
-                  </kbd>
-                  <span>{label}</span>
+          {hasResults ? (
+            filteredGroups.map((group) => (
+              <div key={group.title} className="mb-4.5">
+                <div className="mb-2 pb-1 border-b border-border text-xs font-semibold text-foreground">
+                  {group.title}
                 </div>
-              ))}
+                {group.items.map(([key, label]) => (
+                  <div
+                    className="flex items-center justify-between gap-4 py-1 text-xs text-foreground"
+                    key={key}
+                  >
+                    <span>{label}</span>
+                    <kbd className="px-1.5 py-0.5 border border-border rounded bg-muted text-foreground font-mono text-[11px] shadow-xs shrink-0">
+                      {key}
+                    </kbd>
+                  </div>
+                ))}
+              </div>
+            ))
+          ) : (
+            <div className="py-8 text-center text-xs text-muted-foreground">
+              {t('helpModal.noResults')}
             </div>
-          ))}
+          )}
         </div>
       </DialogContent>
     </Dialog>

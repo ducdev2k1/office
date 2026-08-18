@@ -1,14 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useTranslation } from '@office/i18n';
-import type { PageSetup } from '@/types/docs.types';
 import { useDocs } from '@/hooks/useDocs';
-import { useTheme } from '@/hooks/useTheme';
 import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
-import { getOutline } from '@/utils/outline.utils';
-import { Header } from '@/modules/header';
-import { Toolbar } from '@/modules/toolbar';
-import { DocsSidebar } from '@/modules/sidebar';
+import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@office/i18n';
 import {
   EditorCanvas,
   EditorContextMenu,
@@ -22,10 +15,19 @@ import {
   usePrintSetup,
   type ContextMenuPosition,
 } from '@/modules/editor';
+import { Header } from '@/modules/header';
 import { SearchAndReplace } from '@/modules/search-replace';
+import { DocsSidebar } from '@/modules/sidebar';
+import { Toolbar } from '@/modules/toolbar';
+import type { PageSetup } from '@/types/docs.types';
+import { getOutline } from '@/utils/outline.utils';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const EditorPage = () => {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation('docs');
+  const navigate = useNavigate();
   const {
     docs,
     activeDoc,
@@ -34,6 +36,7 @@ export const EditorPage = () => {
     updateContent,
     updateTitle,
     addDoc,
+    importFile,
     deleteDoc,
     setActiveDocPageSetup,
     markOpened,
@@ -134,8 +137,14 @@ export const EditorPage = () => {
     schedulePagination(true);
   };
 
+  const handleOpenFromDevice = (file: File): void => {
+    void importFile(file)
+      .then((docId) => navigate(`/edit/${docId}`))
+      .catch(() => window.alert(t('menu.file.openFromDeviceError')));
+  };
+
   return (
-    <div className="h-screen min-h-screen overflow-hidden">
+    <div className="app-shell-root h-screen min-h-screen overflow-hidden">
       <main className="doc-workspace flex flex-col h-screen min-h-screen bg-workspace overflow-hidden">
         <Header
           title={activeDoc?.title ?? ''}
@@ -150,6 +159,7 @@ export const EditorPage = () => {
             wordCount,
             charCount,
             onNewDoc: addDoc,
+            onOpenFromDevice: handleOpenFromDevice,
             onToggleSidebar: handleToggleSidebar,
             onToggleFind: () => setFindOpen((value) => !value),
             onPageSetup: () => setPageSetupOpen(true),

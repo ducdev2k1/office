@@ -2,25 +2,66 @@ import type { DocumentStore, StoredDocument } from '../types';
 
 interface IndexedDbOptions {
   dbName?: string;
-  version?: number;
 }
 
 const DEFAULT_DB = 'one-office';
 const DEFAULT_STORE = 'documents';
-const DEFAULT_VERSION = 1;
 
-const openDb = (dbName: string, storeName: string, version: number): Promise<IDBDatabase> =>
+/**
+ * Mo 1 connection duy nhat cho moi database (chia se giua cac store cung dbName).
+ * IndexedDB chi cho tao object store trong onupgradeneeded (can tang version), va
+ * versionchange se bi block neu con connection khac dang mo — nen ta dong connection
+ * cu truoc khi bump version.
+ */
+const connections = new Map<string, Promise<IDBDatabase>>();
+
+const closeConnection = async (dbName: string): Promise<void> => {
+  const p = connections.get(dbName);
+  if (p) {
+    connections.delete(dbName);
+    const db = await p.catch(() => null);
+    db?.close();
+  }
+};
+
+const openWithStore = (dbName: string, storeName: string): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
-    const request = indexedDB.open(dbName, version);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains(storeName)) {
-        db.createObjectStore(storeName, { keyPath: 'id' });
+    const req = indexedDB.open(dbName);
+    req.onsuccess = () => {
+      const db = req.result;
+      if (db.objectStoreNames.contains(storeName)) {
+        resolve(db);
+        return;
       }
+      db.close();
+      const bump = indexedDB.open(dbName, db.version + 1);
+      bump.onupgradeneeded = () => {
+        const target = bump.result;
+        if (!target.objectStoreNames.contains(storeName)) {
+          target.createObjectStore(storeName, { keyPath: 'id' });
+        }
+      };
+      bump.onsuccess = () => resolve(bump.result);
+      bump.onerror = () => reject(bump.error);
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    req.onerror = () => reject(req.error);
   });
+
+const getDb = (dbName: string, storeName: string): Promise<IDBDatabase> => {
+  const existing = connections.get(dbName);
+  if (!existing) {
+    const p = openWithStore(dbName, storeName);
+    connections.set(dbName, p);
+    return p;
+  }
+  return existing.then(async (db) => {
+    if (db.objectStoreNames.contains(storeName)) return db;
+    await closeConnection(dbName);
+    const fresh = await openWithStore(dbName, storeName);
+    connections.set(dbName, Promise.resolve(fresh));
+    return fresh;
+  });
+};
 
 const withStore = <T>(
   db: IDBDatabase,
@@ -40,24 +81,15 @@ export class IndexedDbStore<T extends StoredDocument = StoredDocument> implement
   readonly name: string;
   private readonly dbName: string;
   private readonly storeName: string;
-  private readonly version: number;
-  private dbPromise: Promise<IDBDatabase> | null = null;
 
   constructor(storeName: string, options: IndexedDbOptions = {}) {
     this.name = storeName;
     this.dbName = options.dbName ?? DEFAULT_DB;
     this.storeName = storeName;
-    this.version = options.version ?? DEFAULT_VERSION;
   }
 
   private db(): Promise<IDBDatabase> {
-    if (!this.dbPromise) {
-      this.dbPromise = openDb(this.dbName, this.storeName, this.version).catch((error) => {
-        this.dbPromise = null;
-        throw error;
-      });
-    }
-    return this.dbPromise;
+    return getDb(this.dbName, this.storeName);
   }
 
   async list(): Promise<T[]> {

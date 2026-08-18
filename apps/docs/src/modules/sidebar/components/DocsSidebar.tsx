@@ -46,7 +46,7 @@ export const DocsSidebar = ({
   return (
     <aside
       className={cn(
-        'absolute top-0 bottom-0 z-30 w-[260px] bg-card/95 backdrop-blur-md border-r border-border shadow-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-y-auto overflow-x-hidden scrollbar-thin',
+        'docs-sidebar absolute top-0 bottom-0 z-30 w-[260px] bg-card/95 backdrop-blur-md border-r border-border shadow-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-y-auto overflow-x-hidden scrollbar-thin',
         // left-4 = 16px = chiều rộng thước dọc (w-4), sidebar bắt đầu ngay bên phải thước
         sidebarOpen
           ? 'left-4 translate-x-0 opacity-100 visible pointer-events-auto'

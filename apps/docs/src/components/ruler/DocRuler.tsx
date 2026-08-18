@@ -113,7 +113,7 @@ export const DocRuler = ({
 
   return (
     <>
-      <div className="flex justify-center w-full bg-card/60 border-b border-border/80 shrink-0 z-30">
+      <div className="ruler flex justify-center w-full bg-card/60 border-b border-border/80 shrink-0 z-30">
         <HorizontalRuler
           paperWidthMm={paperWidthMm}
           margins={margins}

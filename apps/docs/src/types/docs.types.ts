@@ -14,6 +14,8 @@ export interface PageSetup {
   margins: PageMargins;
 }
 
+export type DocSourceType = 'docx';
+
 export interface DocRecord {
   id: string;
   title: string;
@@ -25,6 +27,8 @@ export interface DocRecord {
   deletedAt: string | null;
   content: string;
   pageSetup?: PageSetup;
+  /** Danh dau doc duoc mo tu file (luu byte goc o docxSourceStore). */
+  sourceType?: DocSourceType;
 }
 
 export const PAPER_SIZES: Record<PaperSize, { width: number; height: number }> = {

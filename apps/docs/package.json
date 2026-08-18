@@ -13,6 +13,7 @@
     "@base-ui/react": "^1.7.0",
     "@floating-ui/react": "^0.27.20",
     "@office/app-shell": "workspace:*",
+    "@office/docx-io": "workspace:*",
     "@office/file-home": "workspace:*",
     "@office/i18n": "workspace:*",
     "@office/storage-adapter": "workspace:*",

@@ -19,6 +19,8 @@
     "file": {
       "label": "File",
       "newDoc": "New document",
+      "openFromDevice": "Open from device (.docx)",
+      "openFromDeviceError": "Could not open file. Please choose a valid .docx file.",
       "openList": "Open document list",
       "pageSetup": "Page setup",
       "print": "Print",
@@ -139,7 +141,16 @@
   "pageSetup": {
     "title": "Page setup",
     "paperSize": "Paper size",
+    "paperSizes": {
+      "a4": "A4 (210 × 297 mm)",
+      "a5": "A5 (148 × 210 mm)",
+      "letter": "Letter (8.5 × 11 in)"
+    },
     "orientation": "Orientation",
+    "orientations": {
+      "portrait": "Portrait",
+      "landscape": "Landscape"
+    },
     "portrait": "Portrait",
     "landscape": "Landscape",
     "margins": "Margins (mm)",
@@ -153,6 +164,8 @@
   "helpModal": {
     "title": "Keyboard Shortcuts",
     "description": "List of keyboard shortcuts for quick document actions",
+    "searchPlaceholder": "Search shortcuts...",
+    "noResults": "No shortcuts found",
     "closeAria": "Close shortcuts dialog",
     "groups": {
       "basicFormatting": "Basic Formatting",
@@ -241,5 +254,16 @@
     "leftIndent": "Left indent",
     "rightIndent": "Right indent",
     "toggleUnitTip": "Double click to toggle cm / inch"
+  },
+  "statusbar": {
+    "ariaLabel": "Status bar",
+    "words": "{count} words",
+    "characters": "{count} characters",
+    "pages": "{count} pages",
+    "storageUsage": "~{size} MB used",
+    "lastSaved": "Last saved {time}"
+  },
+  "pagination": {
+    "maxPagesWarning": "Document is too long for page view (maximum 50 pages)."
   }
 }

@@ -51,7 +51,8 @@ export const DocTools = ({
       <ToolbarButton label={t('toolbar.print')} onClick={onPrint}>
         <Icon name="printer" />
       </ToolbarButton>
-      <span className="toolbar-spacer" />
+      <span className="flex-1" />
+
       <ToolbarButton label={t('toolbar.exportHtml')} onClick={onExportHtml}>
         <Icon name="download" />
         <span>HTML</span>

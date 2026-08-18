@@ -24,6 +24,7 @@ export interface HeaderMenuActions {
   wordCount: number;
   charCount: number;
   onNewDoc: () => void;
+  onOpenFromDevice: (file: File) => void;
   onToggleSidebar: () => void;
   onToggleFind: () => void;
   onPageSetup: () => void;

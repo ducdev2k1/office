@@ -7,6 +7,7 @@ import type {
 } from '@/modules/search-replace/types/searchReplace.types';
 import {
   DEFAULT_SCROLL_INTO_VIEW_OPTIONS,
+  SEARCH_SYNC_DELAY_MS,
   getFindAndReplaceStorage,
   isFindAndReplaceAvailable,
   scrollCurrentResultIntoView,
@@ -78,50 +79,65 @@ export const useSearchAndReplace = (config: UseSearchAndReplaceConfig = {}) => {
   useEffect(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.setSearchTerm(searchTerm);
-  }, [editor, searchTerm]);
+    const timeout = window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+    return () => window.clearTimeout(timeout);
+  }, [editor, searchTerm, syncStateFromStorage]);
 
   useEffect(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.setReplaceTerm(replaceTerm);
-  }, [editor, replaceTerm]);
+    const timeout = window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+    return () => window.clearTimeout(timeout);
+  }, [editor, replaceTerm, syncStateFromStorage]);
+
+  const syncState = useCallback(() => {
+    syncStateFromStorage();
+  }, [syncStateFromStorage]);
 
   const goToNext = useCallback(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.goToNextResult();
     scrollCurrentResultIntoView(editor, scrollIntoViewOptions);
-  }, [editor, scrollIntoViewOptions]);
+    window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+  }, [editor, scrollIntoViewOptions, syncStateFromStorage]);
 
   const goToPrevious = useCallback(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.goToPreviousResult();
     scrollCurrentResultIntoView(editor, scrollIntoViewOptions);
-  }, [editor, scrollIntoViewOptions]);
+    window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+  }, [editor, scrollIntoViewOptions, syncStateFromStorage]);
 
   const replaceCurrent = useCallback(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.replace();
     scrollCurrentResultIntoView(editor, scrollIntoViewOptions);
-  }, [editor, scrollIntoViewOptions]);
+    window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+  }, [editor, scrollIntoViewOptions, syncStateFromStorage]);
 
   const replaceAll = useCallback(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.replaceAll();
-  }, [editor]);
+    window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+  }, [editor, syncStateFromStorage]);
 
   const toggleCaseSensitive = useCallback(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.setCaseSensitive(!editorState.caseSensitive);
-  }, [editor, editorState.caseSensitive]);
+    window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+  }, [editor, editorState.caseSensitive, syncStateFromStorage]);
 
   const toggleWholeWord = useCallback(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.setWholeWord(!editorState.wholeWord);
-  }, [editor, editorState.wholeWord]);
+    window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+  }, [editor, editorState.wholeWord, syncStateFromStorage]);
 
   const toggleUseRegex = useCallback(() => {
     if (!editor || !isFindAndReplaceAvailable(editor)) return;
     editor.commands.setUseRegex(!editorState.useRegex);
-  }, [editor, editorState.useRegex]);
+    window.setTimeout(syncStateFromStorage, SEARCH_SYNC_DELAY_MS);
+  }, [editor, editorState.useRegex, syncStateFromStorage]);
 
   const isAvailable = isFindAndReplaceAvailable(editor);
   const shouldHide = hideWhenUnavailable && !isAvailable;
@@ -139,6 +155,7 @@ export const useSearchAndReplace = (config: UseSearchAndReplaceConfig = {}) => {
     editor,
     isAvailable,
     shouldHide,
+    syncState,
     searchTerm,
     setSearchTerm,
     replaceTerm,
@@ -157,7 +174,8 @@ export const useSearchAndReplace = (config: UseSearchAndReplaceConfig = {}) => {
     replaceCurrent,
     replaceAll,
     canSearch: isAvailable && searchTerm.length > 0,
-    canReplace: isAvailable && editorState.total > 0,
+    canReplace:
+      isAvailable && editorState.total > 0 && editorState.currentIndex !== null,
     canReplaceAll: isAvailable && editorState.total > 0,
   };
 };

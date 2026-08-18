@@ -13,7 +13,7 @@ export const isNodeInSchema = (nodeName: string, editor: Editor | null): boolean
 };
 
 export const isExtensionAvailable = (editor: Editor | null, extensionName: string): boolean => {
-  if (!editor) return false;
+  if (!editor?.extensionManager) return false;
   return editor.extensionManager.extensions.some(
     (ext) => ext.name === extensionName || ext.options?.name === extensionName,
   );

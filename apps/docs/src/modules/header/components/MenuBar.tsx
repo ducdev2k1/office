@@ -1,4 +1,3 @@
-import { useMemo, useRef } from 'react';
 import type { HeaderMenuActions, MenuAction, MenuSpec } from '@/modules/header/types/header.types';
 import { useTranslation } from '@office/i18n';
 import {
@@ -10,6 +9,7 @@ import {
   DropdownMenuTrigger,
   Icon,
 } from '@office/ui-kit';
+import { useMemo, useRef } from 'react';
 
 const MenuItemRow = ({ item }: { item: MenuAction }) => (
   <span className="flex w-full items-center gap-2">
@@ -32,6 +32,7 @@ export const MenuBar = ({
   wordCount,
   charCount,
   onNewDoc,
+  onOpenFromDevice,
   onToggleSidebar,
   onToggleFind,
   onPageSetup,
@@ -47,6 +48,7 @@ export const MenuBar = ({
 }: HeaderMenuActions) => {
   const { t } = useTranslation('docs');
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const docxInputRef = useRef<HTMLInputElement>(null);
 
   const menus = useMemo<MenuSpec[]>(() => {
     const toggleMark = (name: string, label: string, shortcut: string): MenuAction => ({
@@ -61,6 +63,7 @@ export const MenuBar = ({
         label: t('menu.file.label'),
         items: [
           { label: t('menu.file.newDoc'), onClick: onNewDoc },
+          { label: t('menu.file.openFromDevice'), onClick: () => docxInputRef.current?.click() },
           { label: t('menu.file.openList'), onClick: onToggleSidebar },
           'separator',
           { label: t('menu.file.pageSetup'), onClick: onPageSetup },
@@ -122,7 +125,7 @@ export const MenuBar = ({
         ],
       },
       {
-        label: t('format.label'),
+        label: t('menu.format.label'),
         items: [
           {
             label: t('toolbar.normalText'),
@@ -142,43 +145,43 @@ export const MenuBar = ({
             onClick: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
           },
           'separator',
-          toggleMark('bold', t('format.bold'), 'Ctrl+B'),
-          toggleMark('italic', t('format.italic'), 'Ctrl+I'),
-          toggleMark('underline', t('format.underline'), 'Ctrl+U'),
-          toggleMark('strike', t('format.strikethrough'), 'Ctrl+Shift+X'),
+          toggleMark('bold', t('menu.format.bold'), 'Ctrl+B'),
+          toggleMark('italic', t('menu.format.italic'), 'Ctrl+I'),
+          toggleMark('underline', t('menu.format.underline'), 'Ctrl+U'),
+          toggleMark('strike', t('menu.format.strikethrough'), 'Ctrl+Shift+X'),
           'separator',
           {
-            label: t('format.subscript'),
+            label: t('menu.format.subscript'),
             onClick: () => editor?.chain().focus().toggleSubscript().run(),
           },
           {
-            label: t('format.superscript'),
+            label: t('menu.format.superscript'),
             onClick: () => editor?.chain().focus().toggleSuperscript().run(),
           },
           'separator',
           {
-            label: t('format.bulletList'),
+            label: t('menu.format.bulletList'),
             checked: editor?.isActive('bulletList') ?? false,
             onClick: () => editor?.chain().focus().toggleBulletList().run(),
           },
           {
-            label: t('format.orderedList'),
+            label: t('menu.format.orderedList'),
             checked: editor?.isActive('orderedList') ?? false,
             onClick: () => editor?.chain().focus().toggleOrderedList().run(),
           },
           'separator',
           {
-            label: t('format.alignLeft'),
+            label: t('menu.format.alignLeft'),
             checked: editor?.isActive({ textAlign: 'left' }) ?? false,
             onClick: () => editor?.chain().focus().setTextAlign('left').run(),
           },
           {
-            label: t('format.alignCenter'),
+            label: t('menu.format.alignCenter'),
             checked: editor?.isActive({ textAlign: 'center' }) ?? false,
             onClick: () => editor?.chain().focus().setTextAlign('center').run(),
           },
           {
-            label: t('format.alignRight'),
+            label: t('menu.format.alignRight'),
             checked: editor?.isActive({ textAlign: 'right' }) ?? false,
             onClick: () => editor?.chain().focus().setTextAlign('right').run(),
           },
@@ -187,7 +190,11 @@ export const MenuBar = ({
       {
         label: t('menu.tools.label'),
         items: [
-          { label: `${t('menu.tools.wordCount')}: ${wordCount}`, disabled: true, onClick: () => undefined },
+          {
+            label: `${t('menu.tools.wordCount')}: ${wordCount}`,
+            disabled: true,
+            onClick: () => undefined,
+          },
           { label: `Ký tự: ${charCount}`, disabled: true, onClick: () => undefined },
           'separator',
           { label: t('menu.tools.shortcuts'), onClick: onHelp },
@@ -198,7 +205,27 @@ export const MenuBar = ({
         items: [{ label: t('menu.help.shortcuts'), shortcut: 'F1', onClick: onHelp }],
       },
     ];
-  }, [editor, viewMode, canDelete, wordCount, charCount, onNewDoc, onToggleSidebar, onPageSetup, onPrint, onExportHtml, onExportText, onDelete, onToggleFind, onViewModeChange, onInsertTable, onInsertPageBreak, onHelp, t]);
+  }, [
+    editor,
+    viewMode,
+    canDelete,
+    wordCount,
+    charCount,
+    onNewDoc,
+    onOpenFromDevice,
+    onToggleSidebar,
+    onPageSetup,
+    onPrint,
+    onExportHtml,
+    onExportText,
+    onDelete,
+    onToggleFind,
+    onViewModeChange,
+    onInsertTable,
+    onInsertPageBreak,
+    onHelp,
+    t,
+  ]);
 
   return (
     <div className="flex items-center gap-0.5 h-6" role="menubar" aria-label="Menu bar">
@@ -229,14 +256,17 @@ export const MenuBar = ({
           </DropdownMenuContent>
         </DropdownMenu>
       ))}
-      <Button
-        className="inline-flex items-center gap-1 h-6 px-2 text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 rounded-full ml-1.5"
-        variant="ghost"
-        size="sm"
-        type="button"
-      >
-        <Icon name="sparkles" className="size-3.5" /> Gemini
-      </Button>
+      <input
+        ref={docxInputRef}
+        className="hidden"
+        type="file"
+        accept=".docx"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) onOpenFromDevice(file);
+          event.target.value = '';
+        }}
+      />
       <input
         ref={imageInputRef}
         className="hidden"

@@ -24,7 +24,7 @@ export const Statusbar = ({
 
   return (
     <footer
-      className="flex items-center gap-4.5 min-h-[30px] px-6.5 border-t border-border bg-background text-muted-foreground text-[11px] select-none z-10"
+      className="statusbar flex items-center gap-4.5 min-h-[30px] px-6.5 border-t border-border bg-background text-muted-foreground text-[11px] select-none z-10"
       aria-label={t('statusbar.ariaLabel')}
     >
       <span className="inline-flex items-center gap-1">

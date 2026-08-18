@@ -81,11 +81,11 @@ export const EditorCanvas = ({
   };
 
   return (
-    <div className="flex flex-1 min-h-0 min-w-0 relative overflow-hidden">
+    <div className="editor-canvas flex flex-1 min-h-0 min-w-0 relative overflow-hidden">
       {!sidebarOpen && (
         <button
           type="button"
-          className="absolute top-3.5 left-7 z-25 grid place-items-center size-9 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-hover shadow-sm hover:shadow transition-all cursor-pointer"
+          className="sidebar-open-floating-btn absolute top-3.5 left-7 z-25 grid place-items-center size-9 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-hover shadow-sm hover:shadow transition-all cursor-pointer"
           title={t('sidebar.title')}
           aria-label={t('sidebar.title')}
           onClick={onOpenSidebar}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FileRecord } from '@office/file-home';
-import { createBlankDoc, getStorageUsageBytes, loadDocs, saveDocs } from '@/services/docs.service';
+import { createBlankDoc, deleteDocxSource, getStorageUsageBytes, loadDocs, saveDocs } from '@/services/docs.service';
+import { importDocxFile } from '@/services/import.service';
 import type { DocRecord, PageSetup } from '@/types/docs.types';
 
 export interface DocsState {
@@ -15,6 +16,7 @@ export interface DocsState {
   updateContent: (html: string) => void;
   updateTitle: (title: string) => void;
   addDoc: () => string;
+  importFile: (file: File) => Promise<string>;
   deleteDoc: () => void;
   setActiveDocPageSetup: (setup: PageSetup) => void;
   star: (id: string) => void;
@@ -85,6 +87,13 @@ export const useDocs = (): DocsState => {
     return nextDoc.id;
   }, []);
 
+  const importFile = useCallback(async (file: File): Promise<string> => {
+    const nextDoc = await importDocxFile(file);
+    setDocs((current) => [nextDoc, ...current]);
+    setActiveId(nextDoc.id);
+    return nextDoc.id;
+  }, []);
+
   const star = useCallback((id: string): void => {
     updateDoc(id, (doc) => ({ ...doc, starred: !doc.starred }));
   }, [updateDoc]);
@@ -125,6 +134,7 @@ export const useDocs = (): DocsState => {
 
   const deleteForever = useCallback((id: string): void => {
     setDocs((current) => current.filter((doc) => doc.id !== id));
+    void deleteDocxSource(id);
   }, []);
 
   const markOpened = useCallback((id: string): void => {
@@ -163,6 +173,7 @@ export const useDocs = (): DocsState => {
     updateContent,
     updateTitle,
     addDoc,
+    importFile,
     deleteDoc,
     setActiveDocPageSetup,
     star,

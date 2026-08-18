@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { Button, Icon } from '@office/ui-kit';
+import { Checkbox, Icon, Switch } from '@office/ui-kit';
 
 interface SearchReplaceOptionsProps {
   caseSensitive: boolean;
@@ -21,45 +21,38 @@ export const SearchReplaceOptions = ({
   const { t } = useTranslation('docs');
 
   return (
-    <div className="flex items-center gap-1 pt-1 border-t border-border text-[11px] text-muted-foreground">
-      <Button
-        type="button"
-        variant={caseSensitive ? 'secondary' : 'ghost'}
-        size="sm"
-        className="h-6 px-2 text-[11px] font-normal"
-        onClick={onToggleCaseSensitive}
-        title={t('searchReplace.caseSensitive')}
-        aria-pressed={caseSensitive}
-      >
-        <Icon name="case-sensitive" size={13} className="mr-1" />
-        Aa
-      </Button>
+    <div className="flex flex-col gap-2 pt-2 border-t border-border text-[13px] text-foreground/90">
+      <label className="flex items-center justify-between cursor-pointer select-none">
+        <span className="flex items-center gap-2">
+          <Icon name="case-sensitive" size={15} className="text-muted-foreground" />
+          <span>{t('searchReplace.matchCase')}</span>
+        </span>
+        <Checkbox
+          checked={caseSensitive}
+          onCheckedChange={onToggleCaseSensitive}
+          aria-label={t('searchReplace.matchCase')}
+        />
+      </label>
 
-      <Button
-        type="button"
-        variant={wholeWord ? 'secondary' : 'ghost'}
-        size="sm"
-        className="h-6 px-2 text-[11px] font-normal"
-        onClick={onToggleWholeWord}
-        title={t('searchReplace.wholeWord')}
-        aria-pressed={wholeWord}
-      >
-        <Icon name="whole-word" size={13} className="mr-1" />
-        [W]
-      </Button>
+      <label className="flex items-center justify-between cursor-pointer select-none">
+        <span className="flex items-center gap-2">
+          <Icon name="whole-word" size={15} className="text-muted-foreground" />
+          <span>{t('searchReplace.wholeWord')}</span>
+        </span>
+        <Checkbox
+          checked={wholeWord}
+          onCheckedChange={onToggleWholeWord}
+          aria-label={t('searchReplace.wholeWord')}
+        />
+      </label>
 
-      <Button
-        type="button"
-        variant={useRegex ? 'secondary' : 'ghost'}
-        size="sm"
-        className="h-6 px-2 text-[11px] font-normal"
-        onClick={onToggleUseRegex}
-        title={t('searchReplace.useRegex')}
-        aria-pressed={useRegex}
-      >
-        <Icon name="regex" size={13} className="mr-1" />
-        .*
-      </Button>
+      <label className="flex items-center justify-between cursor-pointer select-none">
+        <span className="flex items-center gap-2">
+          <Icon name="regex" size={15} className="text-muted-foreground" />
+          <span>{t('searchReplace.useRegex')}</span>
+        </span>
+        <Switch checked={useRegex} onCheckedChange={onToggleUseRegex} />
+      </label>
     </div>
   );
 };

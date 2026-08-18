@@ -21,6 +21,8 @@
     "startNewDoc": "Tạo tài liệu mới",
     "templatesTitle": "Bắt đầu tài liệu mới",
     "blankDoc": "Tài liệu trống",
+    "openFromDevice": "Mở từ máy (.docx)",
+    "openFromDeviceError": "Không mở được file. Vui lòng chọn file .docx hợp lệ.",
     "meetingNotes": "Ghi chú cuộc họp",
     "projectProposal": "Đề xuất dự án",
     "resume": "Sơ yếu lý lịch",

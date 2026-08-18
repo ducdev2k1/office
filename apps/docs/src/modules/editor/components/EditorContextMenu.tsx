@@ -138,21 +138,21 @@ export const EditorContextMenu = ({
 
   const formatGroup: ContextActionItem[] = [
     {
-      label: t('format.bold'),
+      label: t('contextMenu.bold'),
       icon: 'bold',
       shortcut: 'Ctrl+B',
       active: editor.isActive('bold'),
       onClick: () => runAndClose(() => editor.chain().focus().toggleBold().run()),
     },
     {
-      label: t('format.italic'),
+      label: t('contextMenu.italic'),
       icon: 'italic',
       shortcut: 'Ctrl+I',
       active: editor.isActive('italic'),
       onClick: () => runAndClose(() => editor.chain().focus().toggleItalic().run()),
     },
     {
-      label: t('format.underline'),
+      label: t('contextMenu.underline'),
       icon: 'underline',
       shortcut: 'Ctrl+U',
       active: editor.isActive('underline'),

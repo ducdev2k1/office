@@ -21,6 +21,8 @@
     "startNewDoc": "Start a new document",
     "templatesTitle": "Start a new document",
     "blankDoc": "Blank document",
+    "openFromDevice": "Open from device (.docx)",
+    "openFromDeviceError": "Could not open file. Please choose a valid .docx file.",
     "meetingNotes": "Meeting notes",
     "projectProposal": "Project proposal",
     "resume": "Resume",

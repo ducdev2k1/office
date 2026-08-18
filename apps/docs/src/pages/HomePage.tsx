@@ -59,6 +59,14 @@ export const HomePage = () => {
             const id = docsApi.addDoc();
             navigate(`/edit/${id}`);
           },
+          onOpenFromDevice: async (file) => {
+            try {
+              const id = await docsApi.importFile(file);
+              navigate(`/edit/${id}`);
+            } catch {
+              window.alert(t('home.openFromDeviceError'));
+            }
+          },
           onOpen: (id) => {
             docsApi.markOpened(id);
             navigate(`/edit/${id}`);

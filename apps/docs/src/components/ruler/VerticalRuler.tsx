@@ -39,7 +39,7 @@ export const VerticalRuler = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-4 h-full select-none border-r border-border bg-muted/40 text-[8.5px] font-mono text-muted-foreground overflow-hidden shrink-0 shadow-sm z-20"
+      className="ruler-vertical relative w-4 h-full select-none border-r border-border bg-muted/40 text-[8.5px] font-mono text-muted-foreground overflow-hidden shrink-0 shadow-sm z-20"
     >
       {/* Scrollable inner track aligned with paper top (24px initial top padding) */}
       <div

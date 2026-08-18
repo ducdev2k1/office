@@ -1,7 +1,14 @@
-import { createDocumentStore } from '@office/storage-adapter';
+import { createDocumentStore, type StoredDocument } from '@office/storage-adapter';
 import { DEFAULT_PAGE_SETUP, type DocRecord } from '@/types/docs.types';
 
 export const STORAGE_KEY = 'onemail-docs-web-documents';
+
+/** Byte goc cua file .docx duoc mo tu may, giu nguyen de sau nay export/save cloud. */
+export interface DocxSourceRecord extends StoredDocument {
+  id: string;
+  blob: Blob;
+  originalName: string;
+}
 
 export const withDefaults = (doc: DocRecord): DocRecord => ({
   ...doc,
@@ -50,6 +57,29 @@ export const starterDocs: DocRecord[] = [
 ];
 
 export const documentStore = createDocumentStore<DocRecord>('documents');
+
+export const docxSourceStore = createDocumentStore<DocxSourceRecord>('docx-sources');
+
+export const saveDocxSource = async (
+  docId: string,
+  blob: Blob,
+  originalName: string,
+): Promise<void> => {
+  await docxSourceStore.put({
+    id: docId,
+    blob,
+    originalName,
+    title: originalName,
+    updatedAt: new Date().toISOString(),
+  });
+};
+
+export const getDocxSource = async (docId: string): Promise<DocxSourceRecord | undefined> =>
+  docxSourceStore.get(docId);
+
+export const deleteDocxSource = async (docId: string): Promise<void> => {
+  await docxSourceStore.delete(docId);
+};
 
 export const loadDocs = async (): Promise<DocRecord[]> => {
   try {

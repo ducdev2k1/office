@@ -19,6 +19,8 @@
     "file": {
       "label": "Tệp",
       "newDoc": "Tài liệu mới",
+      "openFromDevice": "Mở từ máy (.docx)",
+      "openFromDeviceError": "Không mở được file. Vui lòng chọn file .docx hợp lệ.",
       "openList": "Mở danh sách tài liệu",
       "pageSetup": "Cấu hình trang",
       "print": "In tài liệu",
@@ -139,7 +141,16 @@
   "pageSetup": {
     "title": "Cấu hình trang",
     "paperSize": "Khổ giấy",
+    "paperSizes": {
+      "a4": "A4 (210 × 297 mm)",
+      "a5": "A5 (148 × 210 mm)",
+      "letter": "Letter (216 × 279 mm)"
+    },
     "orientation": "Hướng giấy",
+    "orientations": {
+      "portrait": "Dọc (Portrait)",
+      "landscape": "Ngang (Landscape)"
+    },
     "portrait": "Dọc (Portrait)",
     "landscape": "Ngang (Landscape)",
     "margins": "Lề giấy (mm)",
@@ -153,6 +164,8 @@
   "helpModal": {
     "title": "Phím tắt bàn phím",
     "description": "Danh sách các phím tắt thao tác nhanh trong văn bản",
+    "searchPlaceholder": "Tìm kiếm phím tắt...",
+    "noResults": "Không tìm thấy phím tắt phù hợp",
     "closeAria": "Đóng cửa sổ phím tắt",
     "groups": {
       "basicFormatting": "Định dạng cơ bản",
@@ -241,5 +254,16 @@
     "leftIndent": "Thụt lề trái",
     "rightIndent": "Thụt lề phải",
     "toggleUnitTip": "Nhấp đúp để chuyển đổi cm / inch"
+  },
+  "statusbar": {
+    "ariaLabel": "Thanh trạng thái",
+    "words": "{count} từ",
+    "characters": "{count} ký tự",
+    "pages": "{count} trang",
+    "storageUsage": "~{size} MB đã dùng",
+    "lastSaved": "Lưu lần cuối {time}"
+  },
+  "pagination": {
+    "maxPagesWarning": "Tài liệu quá dài cho chế độ xem phân trang (tối đa 50 trang)."
   }
 }
