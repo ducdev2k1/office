@@ -94,21 +94,7 @@ const IconX = () => (
     <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
-const IconPlus = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
+
 
 /* ── FontRow – tự quản lý submenu qua portal để tránh bị clip ── */
 interface FontRowProps {
@@ -323,19 +309,6 @@ export const FontPickerPopover = ({ currentFont, onSelectFont }: FontPickerPopov
               )
             ) : (
               <>
-                {/* Thêm font khác */}
-                <button
-                  type="button"
-                  className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] text-primary hover:bg-hover transition-colors"
-                >
-                  <span className="shrink-0">
-                    <IconPlus />
-                  </span>
-                  <span>Thêm font khác</span>
-                </button>
-
-                <div className="mx-3 my-1 h-px bg-border/60" />
-
                 {/* Recent */}
                 {recentFonts.length > 0 && (
                   <>
