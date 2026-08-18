@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
+@import '@office/fonts/fonts.css';
 @import '@office/ui-kit/tokens.css';
 @import 'tailwindcss';
 
@@ -384,6 +384,13 @@ textarea:focus-visible {
 
 /* Print */
 @media print {
+  html,
+  body,
+  #root {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
   body {
     background: #fff !important;
   }
