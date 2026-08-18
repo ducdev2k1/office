@@ -46,10 +46,10 @@ export const DocsSidebar = ({
   return (
     <aside
       className={cn(
-        'shrink-0 z-20 bg-card border-r transition-all duration-240 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden',
+        'absolute left-0 top-0 bottom-0 z-40 w-[290px] p-4 bg-card/95 backdrop-blur-md border-r border-border shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-y-auto overflow-x-hidden scrollbar-thin',
         sidebarOpen
-          ? 'w-[280px] min-w-[280px] p-4 opacity-100 visible overflow-y-auto border-border scrollbar-thin'
-          : 'w-0 min-w-0 p-0 opacity-0 invisible border-transparent',
+          ? 'translate-x-0 opacity-100 visible pointer-events-auto'
+          : '-translate-x-full opacity-0 invisible pointer-events-none',
       )}
       aria-label={t('sidebar.title')}
     >
