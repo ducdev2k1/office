@@ -13,6 +13,7 @@ interface VerticalRulerProps {
   };
   unit: RulerUnit;
   rulerHook: ReturnType<typeof useRuler>;
+  scrollTop?: number;
 }
 
 export const VerticalRuler = ({
@@ -20,6 +21,7 @@ export const VerticalRuler = ({
   margins,
   unit,
   rulerHook,
+  scrollTop = 0,
 }: VerticalRulerProps) => {
   const { t } = useTranslation('docs');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,90 +39,99 @@ export const VerticalRuler = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-4 select-none border-r border-border bg-muted/30 text-[8.5px] font-mono text-muted-foreground overflow-hidden shrink-0 shadow-sm"
-      style={{ height: `${paperHeightPx}px`, minHeight: `${paperHeightPx}px` }}
+      className="relative w-4 h-full select-none border-r border-border bg-muted/40 text-[8.5px] font-mono text-muted-foreground overflow-hidden shrink-0 shadow-sm z-20"
     >
-      {/* Usable content area */}
+      {/* Scrollable inner track aligned with paper top (24px initial top padding) */}
       <div
-        className="absolute left-0 right-0 bg-background/80 transition-all duration-75"
+        className="absolute left-0 right-0 transition-transform duration-75 ease-out"
         style={{
-          top: `${topMarginPx}px`,
-          height: `${usableHeightPx}px`,
+          top: 0,
+          transform: `translateY(${24 - scrollTop}px)`,
+          height: `${paperHeightPx}px`,
         }}
-      />
-
-      {/* Top Margin Shaded Area */}
-      <div
-        className="absolute top-0 left-0 right-0 bg-muted/60"
-        style={{ height: `${topMarginPx}px` }}
-      />
-
-      {/* Bottom Margin Shaded Area */}
-      <div
-        className="absolute bottom-0 left-0 right-0 bg-muted/60"
-        style={{ height: `${bottomMarginPx}px` }}
-      />
-
-      {/* Ticks and Numbers */}
-      <svg
-        className="absolute inset-0 size-full pointer-events-none"
-        width={16}
-        height={paperHeightPx}
       >
-        {ticks.map((tick, i) => {
-          const isMajor = tick.heightRatio === 1.0;
-          const tickWidth = isMajor ? 7 : tick.heightRatio > 0.5 ? 5 : 3;
-          return (
-            <g key={i} transform={`translate(0, ${tick.positionPx})`}>
-              <line
-                x1={16}
-                y1={0}
-                x2={16 - tickWidth}
-                y2={0}
-                stroke="currentColor"
-                strokeWidth={isMajor ? 1 : 0.75}
-                opacity={isMajor ? 0.7 : 0.4}
-              />
-              {tick.label && (
-                <text
-                  x={3}
-                  y={6}
-                  fill="currentColor"
-                  fontSize="8"
-                  textAnchor="start"
-                  dominantBaseline="hanging"
-                  opacity={0.8}
-                >
-                  {tick.label}
-                </text>
-              )}
-            </g>
-          );
-        })}
-      </svg>
+        {/* Usable content area */}
+        <div
+          className="absolute left-0 right-0 bg-background/80 transition-all duration-75"
+          style={{
+            top: `${topMarginPx}px`,
+            height: `${usableHeightPx}px`,
+          }}
+        />
 
-      {/* Top Margin Drag Handle */}
-      <div
-        className="absolute left-0 right-0 h-2 -mt-1 cursor-ns-resize z-10 group"
-        style={{ top: `${topMarginPx}px` }}
-        onPointerDown={(e) => {
-          if (containerRef.current) startDrag(e, 'top-margin', containerRef.current);
-        }}
-        title={`${t('ruler.topMargin')}: ${(margins.top / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
-      >
-        <div className="size-full group-hover:bg-primary/30 transition-colors" />
-      </div>
+        {/* Top Margin Shaded Area */}
+        <div
+          className="absolute top-0 left-0 right-0 bg-muted/70"
+          style={{ height: `${topMarginPx}px` }}
+        />
 
-      {/* Bottom Margin Drag Handle */}
-      <div
-        className="absolute left-0 right-0 h-2 -mt-1 cursor-ns-resize z-10 group"
-        style={{ top: `${paperHeightPx - bottomMarginPx}px` }}
-        onPointerDown={(e) => {
-          if (containerRef.current) startDrag(e, 'bottom-margin', containerRef.current);
-        }}
-        title={`${t('ruler.bottomMargin')}: ${(margins.bottom / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
-      >
-        <div className="size-full group-hover:bg-primary/30 transition-colors" />
+        {/* Bottom Margin Shaded Area */}
+        <div
+          className="absolute bottom-0 left-0 right-0 bg-muted/70"
+          style={{ height: `${bottomMarginPx}px` }}
+        />
+
+        {/* Ticks and Numbers */}
+        <svg
+          className="absolute inset-0 size-full pointer-events-none"
+          width={16}
+          height={paperHeightPx}
+        >
+          {ticks.map((tick, i) => {
+            const isMajor = tick.heightRatio === 1.0;
+            const tickWidth = isMajor ? 7 : tick.heightRatio > 0.5 ? 5 : 3;
+            return (
+              <g key={i} transform={`translate(0, ${tick.positionPx})`}>
+                <line
+                  x1={16}
+                  y1={0}
+                  x2={16 - tickWidth}
+                  y2={0}
+                  stroke="currentColor"
+                  strokeWidth={isMajor ? 1 : 0.75}
+                  opacity={isMajor ? 0.7 : 0.4}
+                />
+                {tick.label && (
+                  <text
+                    x={3}
+                    y={6}
+                    fill="currentColor"
+                    fontSize="8"
+                    textAnchor="start"
+                    dominantBaseline="hanging"
+                    opacity={0.8}
+                  >
+                    {tick.label}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Top Margin Drag Handle */}
+        <div
+          className="absolute left-0 right-0 h-2 -mt-1 cursor-ns-resize z-10 group"
+          style={{ top: `${topMarginPx}px` }}
+          onPointerDown={(e) => {
+            if (containerRef.current) startDrag(e, 'top-margin', containerRef.current);
+          }}
+          title={`${t('ruler.topMargin')}: ${(margins.top / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+        >
+          <div className="size-full group-hover:bg-primary/30 transition-colors" />
+        </div>
+
+        {/* Bottom Margin Drag Handle */}
+        <div
+          className="absolute left-0 right-0 h-2 -mt-1 cursor-ns-resize z-10 group"
+          style={{ top: `${paperHeightPx - bottomMarginPx}px` }}
+          onPointerDown={(e) => {
+            if (containerRef.current) startDrag(e, 'bottom-margin', containerRef.current);
+          }}
+          title={`${t('ruler.bottomMargin')}: ${(margins.bottom / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+        >
+          <div className="size-full group-hover:bg-primary/30 transition-colors" />
+        </div>
       </div>
     </div>
   );

@@ -135,8 +135,8 @@ export const EditorPage = () => {
   };
 
   return (
-    <div className="l-shell">
-      <main className="l-work">
+    <div className="h-screen min-h-screen overflow-hidden">
+      <main className="doc-workspace flex flex-col h-screen min-h-screen bg-workspace overflow-hidden">
         <Header
           title={activeDoc?.title ?? ''}
           onTitleChange={updateTitle}
@@ -192,7 +192,7 @@ export const EditorPage = () => {
           onPaginationUpdate={schedulePagination}
         />
 
-        <div className="l-stage">
+        <div className="editor-stage flex flex-1 min-h-0 relative overflow-hidden">
           <DocsSidebar
             docs={docs}
             activeId={activeDoc?.id ?? ''}

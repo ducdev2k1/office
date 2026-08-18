@@ -222,8 +222,8 @@ export const EditorContextMenu = ({
     <>
       <div
         ref={menuRef}
-        className="c-menu_ctx"
-        style={{ position: 'fixed', left: `${coords.x}px`, top: `${coords.y}px` }}
+        className="fixed z-50 min-w-[220px] py-1.5 rounded-lg border border-border bg-popover text-popover-foreground shadow-xl select-none animate-in fade-in-0 zoom-in-95 duration-100"
+        style={{ left: `${coords.x}px`, top: `${coords.y}px` }}
         role="menu"
         aria-label="Editor context menu"
       >
@@ -231,48 +231,66 @@ export const EditorContextMenu = ({
           <button
             key={item.label}
             type="button"
-            className="c-menu_ctx-item"
+            className="flex items-center gap-2.5 w-full px-3.5 py-1.5 text-left text-xs hover:bg-hover transition-colors cursor-pointer text-foreground"
             onClick={item.onClick}
           >
             <Icon name={item.icon} size={15} />
             <span>{item.label}</span>
-            {item.shortcut && <kbd className="c-menu_ctx-kbd">{item.shortcut}</kbd>}
+            {item.shortcut && (
+              <kbd className="ml-auto text-[11px] text-muted-foreground font-mono">
+                {item.shortcut}
+              </kbd>
+            )}
           </button>
         ))}
-        <div className="c-menu_ctx-sep" />
+        <div className="h-px my-1 bg-border" />
         {formatGroup.map((item) => (
           <button
             key={item.label}
             type="button"
-            className={cn('c-menu_ctx-item', item.active && 'is-active bg-accent font-medium')}
+            className={cn(
+              'flex items-center gap-2.5 w-full px-3.5 py-1.5 text-left text-xs hover:bg-hover transition-colors cursor-pointer text-foreground',
+              item.active && 'bg-accent font-medium text-primary',
+            )}
             onClick={item.onClick}
           >
             <Icon name={item.icon} size={15} />
             <span>{item.label}</span>
-            {item.shortcut && <kbd className="c-menu_ctx-kbd">{item.shortcut}</kbd>}
+            {item.shortcut && (
+              <kbd className="ml-auto text-[11px] text-muted-foreground font-mono">
+                {item.shortcut}
+              </kbd>
+            )}
           </button>
         ))}
-        <div className="c-menu_ctx-sep" />
+        <div className="h-px my-1 bg-border" />
         {insertGroup.map((item) => (
           <button
             key={item.label}
             type="button"
-            className="c-menu_ctx-item"
+            className="flex items-center gap-2.5 w-full px-3.5 py-1.5 text-left text-xs hover:bg-hover transition-colors cursor-pointer text-foreground"
             onClick={item.onClick}
           >
             <Icon name={item.icon} size={15} />
             <span>{item.label}</span>
-            {item.shortcut && <kbd className="c-menu_ctx-kbd">{item.shortcut}</kbd>}
+            {item.shortcut && (
+              <kbd className="ml-auto text-[11px] text-muted-foreground font-mono">
+                {item.shortcut}
+              </kbd>
+            )}
           </button>
         ))}
         {tableGroup.length > 0 && (
           <>
-            <div className="c-menu_ctx-sep" />
+            <div className="h-px my-1 bg-border" />
             {tableGroup.map((item) => (
               <button
                 key={item.label}
                 type="button"
-                className={cn('c-menu_ctx-item', item.danger && 'is-danger text-destructive')}
+                className={cn(
+                  'flex items-center gap-2.5 w-full px-3.5 py-1.5 text-left text-xs hover:bg-hover transition-colors cursor-pointer text-foreground',
+                  item.danger && 'text-destructive hover:bg-destructive/10',
+                )}
                 onClick={item.onClick}
               >
                 <Icon name={item.icon} size={15} />

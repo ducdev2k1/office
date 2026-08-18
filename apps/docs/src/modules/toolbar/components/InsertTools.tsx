@@ -56,7 +56,7 @@ export const InsertTools = ({
       </ToolbarButton>
       {inTable && (
         <>
-          <Separator orientation="vertical" className="c-tool_sep" />
+          <Separator orientation="vertical" className="h-5 w-px bg-border/60 mx-1 shrink-0" />
           <ToolbarButton
             label={t('toolbar.addRowBelow')}
             onClick={() => editor.chain().focus().addRowAfter().run()}

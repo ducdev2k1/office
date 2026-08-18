@@ -9,12 +9,14 @@ interface DocVerticalRulerProps {
   activeDoc: DocRecord | undefined;
   onPageSetupChange: (setup: PageSetup) => void;
   onPaginationUpdate: (immediate?: boolean) => void;
+  scrollTop?: number;
 }
 
 export const DocVerticalRuler = ({
   activeDoc,
   onPageSetupChange,
   onPaginationUpdate,
+  scrollTop = 0,
 }: DocVerticalRulerProps) => {
   const [unit] = useState<RulerUnit>(() => {
     const saved = localStorage.getItem('office_ruler_unit');
@@ -59,14 +61,13 @@ export const DocVerticalRuler = ({
 
   return (
     <>
-      <div className="absolute -left-5 top-0 z-20">
-        <VerticalRuler
-          paperHeightMm={paperHeightMm}
-          margins={margins}
-          unit={unit}
-          rulerHook={rulerHook}
-        />
-      </div>
+      <VerticalRuler
+        paperHeightMm={paperHeightMm}
+        margins={margins}
+        unit={unit}
+        rulerHook={rulerHook}
+        scrollTop={scrollTop}
+      />
       <RulerGuideLine dragState={rulerHook.dragState} />
     </>
   );

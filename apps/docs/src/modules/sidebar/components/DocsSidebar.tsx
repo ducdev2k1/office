@@ -3,7 +3,7 @@ import type { DocRecord } from '@/types/docs.types';
 import { DocRow } from '@/modules/sidebar/components/DocRow';
 import { OutlineList } from '@/modules/sidebar/components/OutlineList';
 import { useTranslation } from '@office/i18n';
-import { Icon } from '@office/ui-kit';
+import { Icon, cn } from '@office/ui-kit';
 
 interface DocsSidebarProps {
   docs: DocRecord[];
@@ -45,57 +45,67 @@ export const DocsSidebar = ({
 
   return (
     <aside
-      className={`c-side ${sidebarOpen ? 'is-open' : ''}`}
+      className={cn(
+        'shrink-0 z-20 bg-card border-r transition-all duration-240 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden',
+        sidebarOpen
+          ? 'w-[280px] min-w-[280px] p-4 opacity-100 visible overflow-y-auto border-border scrollbar-thin'
+          : 'w-0 min-w-0 p-0 opacity-0 invisible border-transparent',
+      )}
       aria-label={t('sidebar.title')}
     >
-      <div className="c-side_top">
-        <button
-          className="c-side_btn"
-          type="button"
-          title={t('sidebar.closeAria')}
-          aria-label={t('sidebar.closeAria')}
-          onClick={onClose}
-        >
-          <Icon name="chevron-left" size={18} />
-        </button>
-        <span className="c-side_title">{t('sidebar.title')}</span>
-        <button
-          className="c-side_btn"
-          type="button"
-          title={t('sidebar.addAria')}
-          aria-label={t('sidebar.addAria')}
-          onClick={onAdd}
-        >
-          <Icon name="plus" size={18} />
-        </button>
+      <div className="w-[247px] min-w-[247px]">
+        <div className="flex items-center gap-2 mb-3.5 text-foreground font-medium font-['Google_Sans',Roboto,sans-serif] text-sm">
+          <button
+            className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors"
+            type="button"
+            title={t('sidebar.closeAria')}
+            aria-label={t('sidebar.closeAria')}
+            onClick={onClose}
+          >
+            <Icon name="chevron-left" size={18} />
+          </button>
+          <span className="flex-1 font-medium text-sm text-foreground">{t('sidebar.title')}</span>
+          <button
+            className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors"
+            type="button"
+            title={t('sidebar.addAria')}
+            aria-label={t('sidebar.addAria')}
+            onClick={onAdd}
+          >
+            <Icon name="plus" size={18} />
+          </button>
+        </div>
+        <label className="flex items-center gap-2 h-8.5 px-2.5 mb-3 border border-border focus-within:border-primary rounded-md bg-background text-muted-foreground transition-colors">
+          <Icon name="search" size={15} aria-hidden="true" className="shrink-0" />
+          <input
+            className="w-full min-w-0 border-0 outline-none bg-transparent text-foreground text-xs placeholder:text-muted-foreground/75"
+            value={query}
+            onChange={(event) => onQueryChange(event.target.value)}
+            placeholder={t('sidebar.searchPlaceholder')}
+          />
+        </label>
+        <div className="flex flex-col gap-0.5">
+          {filtered.length ? (
+            filtered.map((doc) => (
+              <DocRow
+                key={doc.id}
+                doc={doc}
+                isActive={doc.id === activeId}
+                onSelect={onSelect}
+                onRename={onRename}
+                onDuplicate={onDuplicate}
+                onStar={onStar}
+                onTrash={onTrash}
+              />
+            ))
+          ) : (
+            <p className="my-3.5 mx-2 text-muted-foreground text-xs leading-relaxed">
+              {t('sidebar.emptyDocs')}
+            </p>
+          )}
+        </div>
+        <OutlineList outline={outline} />
       </div>
-      <label className="c-side_search">
-        <Icon name="search" size={15} aria-hidden="true" />
-        <input
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-          placeholder={t('sidebar.searchPlaceholder')}
-        />
-      </label>
-      <div className="c-side_list">
-        {filtered.length ? (
-          filtered.map((doc) => (
-            <DocRow
-              key={doc.id}
-              doc={doc}
-              isActive={doc.id === activeId}
-              onSelect={onSelect}
-              onRename={onRename}
-              onDuplicate={onDuplicate}
-              onStar={onStar}
-              onTrash={onTrash}
-            />
-          ))
-        ) : (
-          <p className="c-side_empty">{t('sidebar.emptyDocs')}</p>
-        )}
-      </div>
-      <OutlineList outline={outline} />
     </aside>
   );
 };

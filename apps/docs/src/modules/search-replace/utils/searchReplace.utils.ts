@@ -6,8 +6,8 @@ export const SEARCH_AND_REPLACE_SHORTCUT_KEY = 'mod+f';
 export const NEXT_RESULT_SHORTCUT_KEY = 'mod+shift+f';
 export const PREVIOUS_RESULT_SHORTCUT_KEY = 'mod+shift+d';
 
-export const SEARCH_RESULT_CLASS = 'c-srch_res';
-export const SEARCH_RESULT_CURRENT_CLASS = 'c-srch_res-curr';
+export const SEARCH_RESULT_CLASS = 'search-match';
+export const SEARCH_RESULT_CURRENT_CLASS = 'search-match-active';
 
 export const DEFAULT_SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   block: 'nearest',

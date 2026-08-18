@@ -159,51 +159,26 @@ src/
 
 ---
 
-## 10. Quy ước Đặt tên Class CSS / SCSS (Prefix + Single `_` + Short Names)
+## 10. Chiến lược Styling (Tailwind CSS v4 + Shadcn UI Utility Classes)
 
-- **Cấu trúc**: `<prefix>-<block>_<element>` hoặc `<prefix>-<name>` và trạng thái `.is-<state>`.
-- **Chỉ sử dụng 1 dấu gạch dưới `_`** để nối element con (không dùng `__` hay 2-3 dấu).
-- **Tên class phải ngắn gọn, súc tích**:
-  - `l-` (Layout): `l-shell`, `l-work`, `l-stage`, `l-paper`
-  - `c-` (Component): `c-head`, `c-head_title`, `c-tool`, `c-tool_btn`, `c-side`, `c-side_row`, `c-status`, `c-ruler`
-  - `p-` (Panel / Modal): `p-setup`, `p-help`, `p-search`
-  - `is-` (State): `is-open`, `is-active`, `is-paged`, `is-warn`, `is-danger`
+- **Trực tiếp dùng Utility Classes Tailwind trong `.tsx`**:
+  - Toàn bộ component UI sử dụng trực tiếp các class Tailwind kết hợp helper `cn(...)` từ `@office/ui-kit`.
+  - Tận dụng đầy đủ các trạng thái linh hoạt: hover (`hover:...`), focus (`focus:...`), dark mode (`dark:...`), responsive (`sm:...`, `md:...`), flex/grid, spacing, color tokens.
+  - Đảm bảo tính nhất quán, không xung đột CSS selector và tối ưu hóa runtime/bundle size.
 
 ---
 
-## 11. Cấu trúc Thư mục Assets & Styles SCSS (`src/assets/`)
+## 11. Cấu trúc Thư mục Assets & Styles (`src/assets/`)
 
-Toàn bộ static assets và styles SCSS phải được gom tập trung vào thư mục `src/assets/`:
+Toàn bộ static assets và styles chuyên biệt được lưu tập trung vào thư mục `src/assets/`:
 
 ```text
 src/assets/
 ├── images/                       # Chứa hình ảnh tĩnh, logos, icons (nếu có)
-└── styles/                       # Hệ thống styles SCSS (Dart Sass + @tailwindcss/postcss)
-    ├── base/                     # Reset, design tokens, animations, dark mode
-    │   ├── _variables.scss
-    │   ├── _keyframe-animations.scss
-    │   ├── _base.scss
-    │   └── _dark.scss
-    │
-    ├── layout/                   # Styles khung layout tổng thể (_l-*.scss)
-    │   ├── _l-shell.scss
-    │   └── _l-stage.scss
-    │
-    ├── components/               # Styles các component UI (_c-*.scss, bao gồm responsive @media cục bộ)
-    │   ├── _c-head.scss
-    │   ├── _c-tool.scss
-    │   ├── _c-side.scss
-    │   ├── _c-page.scss
-    │   ├── _c-status.scss
-    │   ├── _c-srch.scss
-    │   └── _c-menu-ctx.scss
-    │
-    ├── panels/                   # Styles panels / modals (_p-*.scss)
-    │   ├── _p-setup.scss
-    │   └── _p-help.scss
-    │
-    └── main.scss                 # File entry point import toàn bộ partials theo thứ tự
+└── styles/                       # Stylesheet chuyên biệt
+    └── styles.css                # Tokens import, @theme inline, TipTap editor styles, page canvas, print & animations
 ```
 
-- **Quy tắc Responsive (@media)**: Toàn bộ rules `@media` responsive phải được viết lồng trực tiếp (**co-located**) bên trong chính file style của component / layout / panel đó (ví dụ: responsive của `.c-head` nằm trong `_c-head.scss`), không tách thành file responsive riêng lẻ.
-- **Quy tắc Sử dụng `@apply` Tailwind**: Được phép và khuyến khích chia thành nhiều dòng `@apply` theo từng nhóm chức năng (Layout/Flex, Kích thước/Khoảng cách, Màu sắc/Viền, Tương tác/Transition) để code SCSS dễ đọc, không dồn tất cả class vào một dòng `@apply` quá dài.
+- **Quy tắc Stylesheet (`styles.css`)**:
+  - Chỉ chứa các định nghĩa CSS đặc thù không thuận tiện viết inline trong JSX như: Google Fonts, import Tokens Design System (`@office/ui-kit/tokens.css`), cấu hình `@theme inline`, typography của nội dung ProseMirror TipTap editor (`.doc-editor`, `.tiptap`, bảng table, blockquote), ruler canvas, và `@media print`.
+  - Mọi giao diện khác (Header, Menu, Toolbar, Sidebar, Dialog, Modal, Statusbar...) đều dùng utility classes Tailwind trực tiếp trên JSX.

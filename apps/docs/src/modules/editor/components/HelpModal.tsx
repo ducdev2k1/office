@@ -63,18 +63,22 @@ export const HelpModal = ({ open, onClose }: HelpModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="p-help">
+      <DialogContent className="max-w-[620px] max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>{t('helpModal.title')}</DialogTitle>
           <DialogDescription>{t('helpModal.description')}</DialogDescription>
         </DialogHeader>
-        <div className="p-help_grid">
+        <div className="max-h-[60vh] pr-1.5 overflow-y-auto scrollbar-thin">
           {groups.map((group) => (
-            <div key={group.title} className="p-help_group">
-              <div className="p-help_title">{group.title}</div>
+            <div key={group.title} className="mb-4.5">
+              <div className="mb-2 pb-1 border-b border-border text-xs font-semibold text-foreground">
+                {group.title}
+              </div>
               {group.items.map(([key, label]) => (
-                <div className="p-help_row" key={key}>
-                  <kbd className="p-help_kbd">{key}</kbd>
+                <div className="flex items-center justify-between py-1 text-xs text-foreground" key={key}>
+                  <kbd className="px-1.5 py-0.5 border border-border rounded bg-muted text-foreground font-mono text-[11px] shadow-xs">
+                    {key}
+                  </kbd>
                   <span>{label}</span>
                 </div>
               ))}

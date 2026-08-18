@@ -1,4 +1,5 @@
 import { useTranslation } from '@office/i18n';
+import { cn } from '@office/ui-kit';
 import type { ViewMode } from '@/modules/editor/types/editor.types';
 
 interface StatusbarProps {
@@ -22,17 +23,26 @@ export const Statusbar = ({
   const isNearQuota = storageUsage > 4 * 1024 * 1024;
 
   return (
-    <footer className="c-status" aria-label={t('statusbar.ariaLabel')}>
-      <span className="c-status_item">{t('statusbar.words', { count: wordCount })}</span>
-      <span className="c-status_item">{t('statusbar.characters', { count: charCount })}</span>
+    <footer
+      className="flex items-center gap-4.5 min-h-[30px] px-6.5 border-t border-border bg-background text-muted-foreground text-[11px] select-none z-10"
+      aria-label={t('statusbar.ariaLabel')}
+    >
+      <span className="inline-flex items-center gap-1">
+        {t('statusbar.words', { count: wordCount })}
+      </span>
+      <span className="inline-flex items-center gap-1">
+        {t('statusbar.characters', { count: charCount })}
+      </span>
       {viewMode === 'paged' && (
-        <span className="c-status_item">{t('statusbar.pages', { count: pageCount })}</span>
+        <span className="inline-flex items-center gap-1">
+          {t('statusbar.pages', { count: pageCount })}
+        </span>
       )}
-      <span className={`c-status_item ${isNearQuota ? 'is-warn' : ''}`}>
+      <span className={cn('inline-flex items-center gap-1', isNearQuota && 'text-destructive font-semibold')}>
         {t('statusbar.storageUsage', { size: (storageUsage / 1024).toFixed(1) })}
       </span>
       {lastSavedAt && (
-        <span className="c-status_item ml-auto opacity-75">
+        <span className="inline-flex items-center gap-1 ml-auto opacity-75">
           {t('statusbar.lastSaved', {
             time: formatDateTime(lastSavedAt, {
               hour: '2-digit',

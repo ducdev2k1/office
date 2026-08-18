@@ -144,7 +144,10 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
     return (
       <div
         ref={composedRef}
-        className={cn('c-srch', className)}
+        className={cn(
+          'fixed top-28 right-5 z-50 w-88 max-w-[calc(100vw-32px)] p-3.5 rounded-2xl border border-border bg-card/95 text-card-foreground shadow-2xl backdrop-blur-md flex flex-col gap-2 animate-in fade-in-0 slide-in-from-top-2 duration-150',
+          className,
+        )}
         data-open={open}
         style={style}
         {...divProps}

@@ -44,7 +44,7 @@ export const SearchReplaceInputs = ({
 
   return (
     <>
-      <div className="c-srch_row">
+      <div className="flex items-center gap-1.5">
         <div className="relative flex-1">
           <Input
             ref={searchInputRef}
@@ -56,7 +56,9 @@ export const SearchReplaceInputs = ({
             className="h-8 pr-14 text-xs font-normal"
           />
           {resultCountLabel && (
-            <span className="c-srch_badge">{resultCountLabel}</span>
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-mono text-muted-foreground select-none pointer-events-none">
+              {resultCountLabel}
+            </span>
           )}
         </div>
 
@@ -101,7 +103,7 @@ export const SearchReplaceInputs = ({
         )}
       </div>
 
-      <div className="c-srch_row">
+      <div className="flex items-center gap-1.5">
         <Input
           ref={replaceInputRef}
           type="text"

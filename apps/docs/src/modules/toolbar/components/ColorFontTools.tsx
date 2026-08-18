@@ -68,7 +68,7 @@ export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
         />
       </div>
 
-      <Separator orientation="vertical" className="c-tool_sep" />
+      <Separator orientation="vertical" className="h-5 w-px bg-border/60 mx-1 shrink-0" />
 
       <DropdownMenu>
         <DropdownMenuTrigger
@@ -76,7 +76,7 @@ export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="c-tool_select flex items-center justify-between gap-1 min-w-[100px] max-w-[130px] border border-border/40"
+              className="flex items-center justify-between gap-1 h-7 px-2 text-xs rounded border border-border bg-background hover:bg-hover min-w-[100px] max-w-[130px] text-foreground transition-colors"
               title={t('toolbar.fontFamily')}
               aria-label={t('toolbar.fontFamily')}
             />
@@ -88,7 +88,10 @@ export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
         <DropdownMenuContent align="start" className="min-w-[140px] max-h-64 overflow-y-auto">
           <DropdownMenuItem
             onClick={() => handleSelectFont('')}
-            className={cn('text-xs flex items-center justify-between', !currentFont && 'font-semibold bg-accent')}
+            className={cn(
+              'text-xs flex items-center justify-between',
+              !currentFont && 'font-semibold bg-accent',
+            )}
           >
             <span>{t('toolbar.defaultFont')}</span>
             {!currentFont && <Icon name="check" size={14} className="text-primary" />}
@@ -100,7 +103,10 @@ export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
                 key={font}
                 onClick={() => handleSelectFont(font)}
                 style={{ fontFamily: font }}
-                className={cn('text-xs flex items-center justify-between', isSelected && 'font-semibold bg-accent')}
+                className={cn(
+                  'text-xs flex items-center justify-between',
+                  isSelected && 'font-semibold bg-accent',
+                )}
               >
                 <span>{font}</span>
                 {isSelected && <Icon name="check" size={14} className="text-primary" />}
@@ -116,7 +122,7 @@ export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="c-tool_select flex items-center justify-between gap-1 min-w-[50px] border border-border/40"
+              className="flex items-center justify-between gap-1 h-7 px-2 text-xs rounded border border-border bg-background hover:bg-hover min-w-[50px] text-foreground transition-colors"
               title={t('toolbar.fontSize')}
               aria-label={t('toolbar.fontSize')}
             />
@@ -132,7 +138,10 @@ export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
               <DropdownMenuItem
                 key={size}
                 onClick={() => handleSelectSize(size)}
-                className={cn('text-xs flex items-center justify-between', isSelected && 'font-semibold bg-accent')}
+                className={cn(
+                  'text-xs flex items-center justify-between',
+                  isSelected && 'font-semibold bg-accent',
+                )}
               >
                 <span>{size}</span>
                 {isSelected && <Icon name="check" size={14} className="text-primary" />}

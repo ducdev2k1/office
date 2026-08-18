@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Icon,
+  cn,
 } from '@office/ui-kit';
 
 interface DocRowProps {
@@ -119,7 +120,12 @@ export const DocRow = ({
       <ContextMenuTrigger
         render={
           <div
-            className={`c-side_row ${isActive ? 'is-active' : ''}`}
+            className={cn(
+              'group flex items-center gap-2 min-h-10 w-full px-2.5 py-1.5 rounded-xl text-left cursor-pointer transition-colors outline-none select-none relative',
+              isActive
+                ? 'bg-primary/15 text-primary'
+                : 'text-foreground hover:bg-hover focus-visible:bg-hover',
+            )}
             onClick={() => onSelect(doc.id)}
             role="button"
             tabIndex={0}
@@ -132,13 +138,13 @@ export const DocRow = ({
           />
         }
       >
-        <Icon name="file-text" className="c-side_icon" aria-hidden="true" />
-        <div className="c-side_body">
+        <Icon name="file-text" className="size-4 shrink-0 text-primary" aria-hidden="true" />
+        <div className="min-w-0 flex-1 mr-1">
           {isEditing ? (
             <input
               autoFocus
               aria-label={tShell('fileActions.rename')}
-              className="c-side_input"
+              className="w-full h-6 px-1.5 text-xs font-medium text-foreground bg-background border border-primary rounded outline-none"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={handleRenameKey}
@@ -147,13 +153,17 @@ export const DocRow = ({
             />
           ) : (
             <>
-              <strong title={doc.title}>{doc.title}</strong>
-              <small>{formatDateTime(doc.updatedAt)}</small>
+              <strong className="block text-xs font-medium text-inherit truncate" title={doc.title}>
+                {doc.title}
+              </strong>
+              <small className="block text-[11px] text-muted-foreground truncate mt-0.5">
+                {formatDateTime(doc.updatedAt)}
+              </small>
             </>
           )}
         </div>
         {doc.starred && (
-          <span className="c-side_star" title={tShell('fileActions.star')}>
+          <span className="inline-flex items-center text-amber-500 shrink-0 mr-0.5" title={tShell('fileActions.star')}>
             <Icon name="star" size={13} preferDuotone aria-hidden="true" />
           </span>
         )}
@@ -162,7 +172,7 @@ export const DocRow = ({
             render={
               <button
                 type="button"
-                className="c-side_more"
+                className="grid place-items-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100 shrink-0 ml-auto transition-opacity"
                 aria-label={tShell('fileActions.moreOptions')}
                 title={tShell('fileActions.moreOptions')}
                 onClick={(event: MouseEvent) => event.stopPropagation()}

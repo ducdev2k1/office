@@ -47,7 +47,7 @@ export const PageSetupPanel = ({ open, setup, onApply, onClose }: PageSetupPanel
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="p-setup">
+      <DialogContent className="max-w-[460px]">
         <DialogHeader>
           <DialogTitle>{t('pageSetup.title')}</DialogTitle>
           <DialogDescription>
@@ -57,7 +57,7 @@ export const PageSetupPanel = ({ open, setup, onApply, onClose }: PageSetupPanel
 
         <div className="grid gap-4 py-2">
           <div className="grid grid-cols-2 gap-4">
-            <label className="p-setup_field text-xs font-medium text-foreground">
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-foreground">
               {t('pageSetup.paperSize')}
               <select
                 className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
@@ -75,7 +75,7 @@ export const PageSetupPanel = ({ open, setup, onApply, onClose }: PageSetupPanel
               </select>
             </label>
 
-            <label className="p-setup_field text-xs font-medium text-foreground">
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-foreground">
               {t('pageSetup.orientation')}
               <select
                 className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
@@ -95,11 +95,11 @@ export const PageSetupPanel = ({ open, setup, onApply, onClose }: PageSetupPanel
 
           <div className="flex flex-col gap-2">
             <span className="text-xs font-medium text-foreground">{t('pageSetup.margins')}</span>
-            <div className="p-setup_grid">
+            <div className="grid grid-cols-2 gap-2.5">
               {(['top', 'bottom', 'left', 'right'] as const).map((side) => (
                 <label
                   key={side}
-                  className="p-setup_item rounded-md border border-input px-3 py-1.5 text-xs text-muted-foreground justify-between"
+                  className="flex items-center justify-between rounded-md border border-input px-3 py-1.5 text-xs text-muted-foreground"
                 >
                   <span>{marginLabels[side]}</span>
                   <input

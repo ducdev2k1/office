@@ -21,7 +21,7 @@ export const SearchReplaceOptions = ({
   const { t } = useTranslation('docs');
 
   return (
-    <div className="c-srch_opts">
+    <div className="flex items-center gap-1 pt-1 border-t border-border text-[11px] text-muted-foreground">
       <Button
         type="button"
         variant={caseSensitive ? 'secondary' : 'ghost'}

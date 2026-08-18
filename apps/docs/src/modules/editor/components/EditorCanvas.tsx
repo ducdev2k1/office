@@ -2,7 +2,7 @@ import { useState, useRef, type MouseEvent } from 'react';
 import type { Editor } from '@tiptap/core';
 import { EditorContent } from '@tiptap/react';
 import { useTranslation } from '@office/i18n';
-import { Icon } from '@office/ui-kit';
+import { Icon, cn } from '@office/ui-kit';
 import { PageScrollIndicator } from '@/modules/editor/components/PageScrollIndicator';
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
@@ -30,6 +30,7 @@ export const EditorCanvas = ({
 }: EditorCanvasProps) => {
   const { t } = useTranslation('docs');
   const paperWrapRef = useRef<HTMLDivElement>(null);
+  const [scrollTop, setScrollTop] = useState(0);
   const [scrollIndicator, setScrollIndicator] = useState({
     currentPage: 1,
     topPx: 0,
@@ -43,19 +44,21 @@ export const EditorCanvas = ({
     const wrap = paperWrapRef.current;
     if (!wrap || viewMode !== 'paged') return;
 
-    const scrollTop = wrap.scrollTop;
+    const currentScrollTop = wrap.scrollTop;
+    setScrollTop(currentScrollTop);
+
     const clientHeight = wrap.clientHeight;
     const scrollHeight = wrap.scrollHeight;
 
     const pageHeightWithGap = (scrollHeight - 104) / Math.max(1, pageCount);
     const currentPage = Math.min(
       pageCount,
-      Math.max(1, Math.floor((scrollTop + clientHeight / 2) / pageHeightWithGap) + 1),
+      Math.max(1, Math.floor((currentScrollTop + clientHeight / 2) / pageHeightWithGap) + 1),
     );
 
     const indicatorTop = Math.max(
       30,
-      Math.min(clientHeight - 30, (scrollTop / (scrollHeight - clientHeight)) * clientHeight),
+      Math.min(clientHeight - 30, (currentScrollTop / (scrollHeight - clientHeight)) * clientHeight),
     );
 
     setScrollIndicator({
@@ -78,17 +81,27 @@ export const EditorCanvas = ({
   };
 
   return (
-    <>
+    <div className="flex flex-1 min-h-0 min-w-0 relative overflow-hidden">
       {!sidebarOpen && (
         <button
           type="button"
-          className="c-side_float-btn"
+          className="absolute top-3.5 left-7 z-25 grid place-items-center size-9 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-hover shadow-sm hover:shadow transition-all cursor-pointer"
           title={t('sidebar.title')}
           aria-label={t('sidebar.title')}
           onClick={onOpenSidebar}
         >
           <Icon name="panel-left-open" size={16} />
         </button>
+      )}
+
+      {/* Left-aligned Vertical Ruler (Sát mép màn hình bên trái) */}
+      {viewMode === 'paged' && onPageSetupChange && (
+        <DocVerticalRuler
+          activeDoc={activeDoc}
+          onPageSetupChange={onPageSetupChange}
+          onPaginationUpdate={schedulePagination}
+          scrollTop={scrollTop}
+        />
       )}
 
       <PageScrollIndicator
@@ -98,34 +111,27 @@ export const EditorCanvas = ({
         visible={scrollIndicator.visible}
       />
 
-      <div className="l-paper" ref={paperWrapRef} onScroll={handleScroll}>
+      <div className="paper-wrap flex-1 min-w-0 overflow-y-auto" ref={paperWrapRef} onScroll={handleScroll}>
         {isOverLimit && (
-          <div className="c-page_banner">{t('pagination.maxPagesWarning')}</div>
+          <div className="mb-2.5 py-2 px-3.5 text-center text-xs bg-amber-500/10 border-b border-amber-500/30 text-amber-700 dark:text-amber-400 rounded">
+            {t('pagination.maxPagesWarning')}
+          </div>
         )}
         <div
-          className={`c-page_view ${viewMode === 'paged' ? 'is-paged' : ''} relative`}
+          className={cn('page-viewport relative', viewMode === 'paged' && 'is-paged')}
           style={viewportStyle}
           onContextMenu={handleContextMenuEvent}
         >
           {viewMode === 'paged' && (
-            <>
-              {onPageSetupChange && (
-                <DocVerticalRuler
-                  activeDoc={activeDoc}
-                  onPageSetupChange={onPageSetupChange}
-                  onPaginationUpdate={schedulePagination}
-                />
-              )}
-              <div className="c-page_stack" aria-hidden="true">
-                {Array.from({ length: pageCount }).map((_, i) => (
-                  <div key={i} className="c-page_item" />
-                ))}
-              </div>
-            </>
+            <div className="page-stack" aria-hidden="true">
+              {Array.from({ length: pageCount }).map((_, i) => (
+                <div key={i} className="page" />
+              ))}
+            </div>
           )}
           <EditorContent editor={editor} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
