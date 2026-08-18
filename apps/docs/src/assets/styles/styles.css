@@ -133,6 +133,7 @@ textarea:focus-visible {
 }
 
 .is-paged .page {
+  position: relative;
   width: var(--paper-w);
   height: var(--paper-h);
   margin: 0 auto;
@@ -141,6 +142,43 @@ textarea:focus-visible {
     0 1px 3px rgb(60 64 67 / 20%),
     0 6px 18px rgb(60 64 67 / 12%);
   animation: page-fade 160ms ease-out;
+}
+
+.is-paged .page-hf {
+  position: absolute;
+  left: var(--margin-l);
+  right: var(--margin-r);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 9pt;
+  color: #5f6368;
+  pointer-events: none;
+  user-select: none;
+}
+
+.is-paged .page-header {
+  top: var(--header-margin, 38px);
+}
+
+.is-paged .page-footer {
+  bottom: var(--footer-margin, 38px);
+}
+
+.is-paged .page-hf > span {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.is-paged .page-hf > span:nth-child(2) {
+  text-align: center;
+}
+
+.is-paged .page-hf > span:nth-child(3) {
+  text-align: right;
 }
 
 @keyframes page-fade {
@@ -182,8 +220,12 @@ textarea:focus-visible {
   display: none;
 }
 
-.page-break-spacer {
+.page-break-spacer,
+.page-break-spacer-inline {
   display: block;
+  width: 100%;
+  user-select: none;
+  pointer-events: none;
 }
 
 .page-break-marker {
@@ -383,60 +425,162 @@ textarea:focus-visible {
 }
 
 /* Print */
+#print-root {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
 @media print {
-  html,
-  body,
-  #root {
+  body.printing #root {
+    display: none !important;
+  }
+
+  body.printing #print-root {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #202124 !important;
+  }
+
+  body.printing #print-root .print-page {
+    position: relative;
+    box-sizing: border-box;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: var(--paper-w-mm);
+    height: var(--paper-h-mm);
+    overflow: hidden;
+    break-after: page;
+    page-break-after: always;
+    background: #fff !important;
+    color: #202124 !important;
+  }
+
+  body.printing #print-root .print-page:last-child {
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  body.printing #print-root .print-hf {
+    position: absolute;
+    left: var(--margin-l-mm);
+    right: var(--margin-r-mm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9pt;
+    line-height: 1.2;
+    color: #5f6368;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  body.printing #print-root .print-header {
+    top: var(--header-margin-mm, 10mm);
+  }
+
+  body.printing #print-root .print-footer {
+    bottom: var(--footer-margin-mm, 10mm);
+  }
+
+  body.printing #print-root .print-clip {
+    position: absolute;
+    top: var(--margin-t-mm);
+    left: 0;
+    right: 0;
+    height: var(--usable-px);
+    overflow: hidden;
+  }
+
+  body.printing #print-root .print-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+  }
+
+  body.printing #print-root .page-viewport {
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.printing #print-root .doc-editor {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+    color: #202124 !important;
+  }
+
+  body.printing #print-root .page-break-marker {
+    border: 0 !important;
+    margin: 0 !important;
+    height: 0 !important;
+  }
+
+  body.printing #print-root .page-break-marker::after {
+    content: none !important;
+  }
+
+  body.printing #print-root .page-break-spacer {
+    display: none !important;
+  }
+
+  /* Fallback print styles (when body does NOT have .printing, e.g. continuous view, overlimit, build error) */
+  body:not(.printing) html,
+  body:not(.printing),
+  body:not(.printing) #root {
     height: auto !important;
     min-height: 0 !important;
     overflow: visible !important;
   }
-  body {
+  body:not(.printing) {
     background: #fff !important;
   }
-  .doc-workspace {
+  body:not(.printing) .doc-workspace {
     height: auto !important;
     overflow: visible !important;
   }
-  .top-header,
-  .toolbar,
-  .statusbar,
-  .docs-sidebar,
-  .ruler,
-  .ruler-vertical,
-  .sidebar-open-floating-btn,
-  .page-scroll-indicator,
-  .page-stack,
-  .page-break-marker,
-  .page-break-spacer {
+  body:not(.printing) .top-header,
+  body:not(.printing) .toolbar,
+  body:not(.printing) .statusbar,
+  body:not(.printing) .docs-sidebar,
+  body:not(.printing) .ruler,
+  body:not(.printing) .ruler-vertical,
+  body:not(.printing) .sidebar-open-floating-btn,
+  body:not(.printing) .page-scroll-indicator,
+  body:not(.printing) .page-stack,
+  body:not(.printing) .page-break-marker,
+  body:not(.printing) .page-break-spacer,
+  body:not(.printing) .fixed {
     display: none !important;
   }
-  .fixed {
-    display: none !important;
-  }
-  .paper-wrap {
+  body:not(.printing) .paper-wrap {
     display: block !important;
     padding: 0 !important;
     overflow: visible !important;
     background: #fff !important;
   }
-  .paper-wrap > div {
+  body:not(.printing) .paper-wrap > div {
     width: 100% !important;
     margin: 0 !important;
   }
-  .app-shell-root,
-  .editor-stage,
-  .editor-canvas {
+  body:not(.printing) .app-shell-root,
+  body:not(.printing) .editor-stage,
+  body:not(.printing) .editor-canvas {
     height: auto !important;
     min-height: 0 !important;
     overflow: visible !important;
     flex: none !important;
     display: block !important;
   }
-  .page-viewport {
+  body:not(.printing) .page-viewport {
     min-height: 0 !important;
   }
-  .doc-editor {
+  body:not(.printing) .doc-editor {
     width: 100% !important;
     max-width: 100% !important;
     min-height: auto !important;
@@ -449,7 +593,7 @@ textarea:focus-visible {
     color: #202124 !important;
     print-color-adjust: exact;
   }
-  .doc-editor [data-type='page-break'] {
+  body:not(.printing) .doc-editor [data-type='page-break'] {
     display: block !important;
     height: 0 !important;
     margin: 0 !important;
@@ -457,19 +601,19 @@ textarea:focus-visible {
     page-break-after: always;
     break-after: page;
   }
-  .doc-editor [data-type='page-break']::after {
+  body:not(.printing) .doc-editor [data-type='page-break']::after {
     content: none !important;
   }
 }
 
 /* Dark Theme Overrides for Paper & Editor */
-.dark .doc-editor {
+/* .dark .doc-editor {
   background: var(--paper);
   border-color: var(--paper-border);
   box-shadow: var(--paper-shadow);
-  color: var(--foreground);
-}
-
+  /* color: var(--foreground); */
+/* }  */
+/*
 .dark .doc-editor h1,
 .dark .doc-editor h2,
 .dark .doc-editor h3,
@@ -527,4 +671,4 @@ textarea:focus-visible {
 
 .dark .find-and-replace-result-current {
   background: var(--destructive);
-}
+} */

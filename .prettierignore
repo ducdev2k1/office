@@ -5,6 +5,8 @@ build
 coverage
 *.log
 .DS_Store
+packages/fonts/src/fonts
+packages/fonts/src/fonts.css
 pnpm-lock.yaml
 package-lock.json
 yarn.lock

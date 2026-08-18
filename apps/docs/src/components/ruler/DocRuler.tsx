@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Editor } from '@tiptap/core';
-import { PAPER_SIZES, type DocRecord, type PageSetup } from '@/types/docs.types';
+import { DEFAULT_PAGE_SETUP, PAPER_SIZES, type DocRecord, type PageSetup } from '@/types/docs.types';
 import { HorizontalRuler } from './HorizontalRuler';
 import { RulerGuideLine } from './RulerGuideLine';
 import { type RulerUnit } from './ruler.utils';
@@ -31,16 +31,17 @@ export const DocRuler = ({
   });
 
   const pageSetup = activeDoc?.pageSetup;
-  const paperSize = pageSetup?.paperSize ?? 'a4';
-  const orientation = pageSetup?.orientation ?? 'portrait';
+  const defaults = DEFAULT_PAGE_SETUP();
+  const paperSize = pageSetup?.paperSize ?? defaults.paperSize;
+  const orientation = pageSetup?.orientation ?? defaults.orientation;
   const rawSize = PAPER_SIZES[paperSize] ?? PAPER_SIZES.a4;
 
   const paperWidthMm = orientation === 'landscape' ? rawSize.height : rawSize.width;
   const paperHeightMm = orientation === 'landscape' ? rawSize.width : rawSize.height;
 
   const margins = useMemo(
-    () => pageSetup?.margins ?? { top: 20, right: 15, bottom: 20, left: 15 },
-    [pageSetup?.margins],
+    () => pageSetup?.margins ?? defaults.margins,
+    [pageSetup?.margins, defaults.margins],
   );
 
   // Sync indents from TipTap editor selection

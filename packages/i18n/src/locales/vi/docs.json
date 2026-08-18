@@ -50,6 +50,7 @@
       "table": "Bảng",
       "horizontalRule": "Đường kẻ ngang",
       "pageBreak": "Ngắt trang",
+      "headerFooter": "Đầu trang, chân trang & số trang",
       "link": "Đường dẫn liên kết"
     },
     "format": {
@@ -165,6 +166,42 @@
     "marginBottom": "Dưới",
     "marginLeft": "Trái",
     "marginRight": "Phải",
+    "apply": "Áp dụng",
+    "cancel": "Hủy"
+  },
+  "headerFooter": {
+    "title": "Đầu trang, chân trang & số trang",
+    "description": "Tùy chỉnh nội dung tiêu đề đầu trang, chân trang và định dạng đánh số trang.",
+    "header": "Đầu trang (Header)",
+    "footer": "Chân trang (Footer)",
+    "alignLeft": "Trái",
+    "alignCenter": "Giữa",
+    "alignRight": "Phải",
+    "headerMargin": "Khoảng cách lề đầu trang (mm)",
+    "footerMargin": "Khoảng cách lề chân trang (mm)",
+    "tokens": {
+      "label": "Chèn trường động (Tokens)",
+      "page": "Số trang {page}",
+      "pages": "Tổng trang {pages}",
+      "docTitle": "Tiêu đề {title}",
+      "date": "Ngày {date}"
+    },
+    "pageNumber": {
+      "title": "Cấu hình số trang",
+      "enable": "Hiển thị số trang",
+      "position": "Vị trí",
+      "positionHeader": "Đầu trang (Header)",
+      "positionFooter": "Chân trang (Footer)",
+      "align": "Căn lề số trang",
+      "format": "Định dạng hiển thị",
+      "formatSimple": "Chỉ số trang ({page})",
+      "formatTotal": "Kèm tổng trang ({page} / {pages})",
+      "formatPrefixed": "Tiếng Việt (Trang {page})",
+      "startAt": "Bắt đầu từ trang",
+      "skipFirst": "Bỏ qua trang đầu tiên"
+    },
+    "preview": "Xem trước",
+    "applied": "Đã áp dụng cấu hình đầu trang, chân trang và số trang",
     "apply": "Áp dụng",
     "cancel": "Hủy"
   },

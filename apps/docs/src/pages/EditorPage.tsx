@@ -6,13 +6,14 @@ import {
   EditorCanvas,
   EditorContextMenu,
   HelpModal,
+  PageHeaderFooterPanel,
   PageSetupPanel,
   Ruler,
   Statusbar,
   useDocsEditor,
   useEditorActions,
   usePagination,
-  usePrintSetup,
+  usePrintDocument,
   type ContextMenuPosition,
 } from '@/modules/editor';
 import { Header } from '@/modules/header';
@@ -54,6 +55,7 @@ export const EditorPage = () => {
   });
   const [findOpen, setFindOpen] = useState(false);
   const [pageSetupOpen, setPageSetupOpen] = useState(false);
+  const [headerFooterOpen, setHeaderFooterOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
 
@@ -117,11 +119,12 @@ export const EditorPage = () => {
     () => {
       setFindOpen(false);
       setPageSetupOpen(false);
+      setHeaderFooterOpen(false);
       setHelpOpen(false);
     },
   );
 
-  usePrintSetup(activeDoc);
+  const { printDocument } = usePrintDocument(editor, activeDoc, paginationState);
 
   const wordCount = useMemo(() => {
     const text = editor?.state.doc.textContent.trim() ?? '';
@@ -164,13 +167,14 @@ export const EditorPage = () => {
             onToggleFind: () => setFindOpen((value) => !value),
             onPageSetup: () => setPageSetupOpen(true),
             onViewModeChange: setViewMode,
-            onPrint: () => window.print(),
+            onPrint: () => void printDocument(),
             onExportHtml: exportHtml,
             onExportText: exportText,
             onDelete: deleteDoc,
             onInsertImage: handleImageUpload,
             onInsertTable: handleInsertTable,
             onInsertPageBreak: handleInsertPageBreak,
+            onHeaderFooter: () => setHeaderFooterOpen(true),
             onHelp: () => setHelpOpen(true),
           }}
         />
@@ -185,7 +189,7 @@ export const EditorPage = () => {
           onSetLink={setLink}
           onExportHtml={exportHtml}
           onExportText={exportText}
-          onPrint={() => window.print()}
+          onPrint={() => void printDocument()}
           onDelete={deleteDoc}
           onToggleFind={() => setFindOpen((value) => !value)}
           onInsertImage={handleImageUpload}
@@ -254,6 +258,16 @@ export const EditorPage = () => {
             setup={activeDoc.pageSetup}
             onApply={handleApplyPageSetup}
             onClose={() => setPageSetupOpen(false)}
+          />
+        )}
+
+        {headerFooterOpen && activeDoc?.pageSetup && (
+          <PageHeaderFooterPanel
+            open={headerFooterOpen}
+            setup={activeDoc.pageSetup}
+            docTitle={activeDoc.title}
+            onApply={handleApplyPageSetup}
+            onClose={() => setHeaderFooterOpen(false)}
           />
         )}
 

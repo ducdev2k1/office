@@ -5,6 +5,7 @@ import { getPaperSizePx, mmToPx, type PageSetup } from '@/types/docs.types';
 
 export const PAGE_GAP = 24;
 export const MAX_PAGES = 50;
+const MAX_MEASURED_LINES = 500;
 
 const key = new PluginKey<PageBreaks>('pagination');
 
@@ -13,10 +14,18 @@ export interface PageBreakInfo {
   to: number;
 }
 
+export interface LineMeasurement {
+  top: number;
+  bottom: number;
+  pos: number;
+}
+
 export interface PageBreaks {
   breaks: number[];
   spacers: number[];
   forced: boolean[];
+  /** One entry per laid-out page: the flow offset of each page's content top. */
+  contentOffsets: number[];
 }
 
 export interface PageMetrics {
@@ -27,6 +36,24 @@ export interface PageMetrics {
   marginB: number;
 }
 
+export const EMPTY_BREAKS: PageBreaks = {
+  breaks: [],
+  spacers: [],
+  forced: [],
+  contentOffsets: [0],
+};
+
+export interface BlockMeasurement {
+  type: string;
+  offset: number;
+  height: number;
+  marginTop: number;
+  marginBottom: number;
+  /** Real offsetTop relative to view.dom, for contentOffsets. */
+  domTop: number;
+  lines?: LineMeasurement[];
+}
+
 export const computeMetrics = (setup: PageSetup): PageMetrics => {
   const { width: paperW, height: paperH } = getPaperSizePx(setup);
   const marginT = mmToPx(setup.margins.top);
@@ -34,97 +61,300 @@ export const computeMetrics = (setup: PageSetup): PageMetrics => {
   return { paperW, paperH, usable: paperH - marginT - marginB, marginT, marginB };
 };
 
-export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreaks => {
-  const doc = view.state.doc;
-  const root = view.dom as HTMLElement;
-  if (!root.offsetHeight) return { breaks: [], spacers: [], forced: [] };
-
-  const { paperH, usable } = computeMetrics(setup);
+/**
+ * Pure pagination calculation. Supports both block-level and line-level breaks.
+ * `contentOffsets` tracks the top flow offset for each page.
+ */
+export const computeBreaksFromMeasurements = (
+  blocks: BlockMeasurement[],
+  metrics: PageMetrics,
+): PageBreaks => {
+  const { paperH, usable } = metrics;
   const breaks: number[] = [];
   const spacers: number[] = [];
   const forced: boolean[] = [];
+  const contentOffsets: number[] = [0];
   let y = 0;
   let pageTop = 0;
   let prevMb = 0;
   let hasPrev = false;
 
-  const readBox = (dom: Node | null) => {
-    const el = dom as HTMLElement | null;
-    if (!el) return { height: 0, marginTop: 0, marginBottom: 0 };
-    const style = getComputedStyle(el);
-    return {
-      height: el.offsetHeight,
-      marginTop: parseFloat(style.marginTop) || 0,
-      marginBottom: parseFloat(style.marginBottom) || 0,
-    };
-  };
+  for (const block of blocks) {
+    if (breaks.length >= MAX_PAGES - 1) break;
+    const { height, marginTop: mt, marginBottom: mb, lines } = block;
 
-  doc.forEach((node, offset) => {
-    if (breaks.length >= MAX_PAGES - 1) return;
-    const { height, marginTop: mt, marginBottom: mb } = readBox(view.nodeDOM(offset));
-
-    if (node.type.name === 'pageBreak') {
-      breaks.push(offset);
+    if (block.type === 'pageBreak') {
+      breaks.push(block.offset);
       spacers.push(hasPrev ? pageTop + paperH + PAGE_GAP - y - prevMb : 0);
       forced.push(true);
       y = pageTop + paperH + PAGE_GAP;
       pageTop = y;
+      contentOffsets.push(pageTop);
       prevMb = 0;
       hasPrev = false;
-      return;
+      continue;
     }
 
     const gap = hasPrev ? Math.max(prevMb, mt) : mt;
     const bottom = y + gap + height;
 
+    // Check if block overflows current page
     if (bottom - pageTop > usable) {
-      breaks.push(offset);
-      spacers.push(Math.max(0, pageTop + paperH + PAGE_GAP - y - prevMb));
-      pageTop += paperH + PAGE_GAP;
-      y = pageTop + mt + height;
-      while (y > pageTop + usable) pageTop += paperH + PAGE_GAP;
-      prevMb = mb;
-      hasPrev = true;
+      if (lines && lines.length > 1) {
+        let currentSectionBaseTop = 0;
+        let lineIdx = 0;
+
+        while (lineIdx < lines.length && breaks.length < MAX_PAGES - 1) {
+          const line = lines[lineIdx];
+          if (!line) break;
+
+          const lineTop = y + gap + (line.top - currentSectionBaseTop);
+          const lineBottom = y + gap + (line.bottom - currentSectionBaseTop);
+
+          if (lineBottom - pageTop > usable) {
+            if (lineIdx === 0 && currentSectionBaseTop === 0) {
+              // First line overflows -> push entire block to next page
+              breaks.push(block.offset);
+              spacers.push(Math.max(0, pageTop + paperH + PAGE_GAP - y - prevMb));
+              forced.push(false);
+              pageTop += paperH + PAGE_GAP;
+              contentOffsets.push(pageTop);
+              y = pageTop + mt;
+              currentSectionBaseTop = line.top;
+              lineIdx += 1;
+            } else {
+              // Break inside block at this line
+              const spacer = pageTop + paperH + PAGE_GAP - lineTop;
+              breaks.push(line.pos);
+              spacers.push(Math.max(0, spacer));
+              forced.push(false);
+              pageTop += paperH + PAGE_GAP;
+              contentOffsets.push(pageTop);
+              y = pageTop;
+              currentSectionBaseTop = line.top;
+              lineIdx += 1;
+            }
+          } else {
+            lineIdx += 1;
+          }
+        }
+
+        const lastLine = lines[lines.length - 1];
+        if (lastLine) {
+          y = pageTop + (lastLine.bottom - currentSectionBaseTop);
+        } else {
+          y = pageTop + height;
+        }
+        prevMb = mb;
+        hasPrev = true;
+      } else {
+        // Standard block-level break
+        breaks.push(block.offset);
+        spacers.push(Math.max(0, pageTop + paperH + PAGE_GAP - y - prevMb));
+        forced.push(false);
+        pageTop += paperH + PAGE_GAP;
+        contentOffsets.push(pageTop);
+        y = pageTop + mt + height;
+        while (y > pageTop + usable && contentOffsets.length < MAX_PAGES) {
+          pageTop += paperH + PAGE_GAP;
+          contentOffsets.push(pageTop);
+        }
+        prevMb = mb;
+        hasPrev = true;
+      }
     } else {
       y = bottom;
       prevMb = mb;
       hasPrev = true;
     }
-  });
+  }
 
-  return { breaks, spacers, forced };
+  return { breaks, spacers, forced, contentOffsets };
+};
+
+/**
+ * Replace simulated contentOffsets with real DOM positions.
+ */
+export const resolveContentOffsets = (
+  breaks: number[],
+  simulated: number[],
+  domTopOf: (offset: number) => number | null,
+  paperH: number,
+): number[] => {
+  const out: number[] = [0];
+  let lastBase = 0;
+  for (let i = 1; i < simulated.length; i += 1) {
+    const breakIndex = i - 1;
+    const simTop = simulated[i];
+    if (breakIndex < breaks.length) {
+      const off = breaks[breakIndex];
+      const domTop = off === undefined ? null : domTopOf(off);
+      lastBase = domTop ?? simTop ?? lastBase + paperH + PAGE_GAP;
+      out.push(lastBase);
+    } else {
+      out.push(lastBase + (i - breaks.length) * (paperH + PAGE_GAP));
+    }
+  }
+  return out;
+};
+
+export const measureLines = (
+  view: EditorView,
+  nodeDom: HTMLElement,
+): LineMeasurement[] => {
+  const rects: { top: number; bottom: number; left: number; height: number }[] = [];
+  const walker = document.createTreeWalker(nodeDom, NodeFilter.SHOW_TEXT);
+  let textNode = walker.nextNode();
+  const range = document.createRange();
+
+  while (textNode) {
+    range.selectNodeContents(textNode);
+    const clientRects = range.getClientRects();
+    for (let i = 0; i < clientRects.length; i++) {
+      const r = clientRects[i];
+      if (r && r.width > 0 && r.height > 0) {
+        rects.push({ top: r.top, bottom: r.bottom, left: r.left, height: r.height });
+      }
+    }
+    textNode = walker.nextNode();
+  }
+
+  if (rects.length === 0 || rects.length > MAX_MEASURED_LINES) return [];
+
+  // Group rects into lines with 1.5px epsilon on top
+  rects.sort((a, b) => a.top - b.top || a.left - b.left);
+  const grouped: { top: number; bottom: number; left: number; height: number }[] = [];
+  for (const r of rects) {
+    const last = grouped[grouped.length - 1];
+    if (last && Math.abs(r.top - last.top) <= 1.5) {
+      last.bottom = Math.max(last.bottom, r.bottom);
+      last.left = Math.min(last.left, r.left);
+      last.height = last.bottom - last.top;
+    } else {
+      grouped.push({ ...r });
+    }
+  }
+
+  const domRect = nodeDom.getBoundingClientRect();
+  const lines: LineMeasurement[] = [];
+
+  for (const line of grouped) {
+    const midY = line.top + line.height / 2;
+    const posObj = view.posAtCoords({ left: line.left + 2, top: midY });
+    const pos = posObj?.pos;
+    if (pos === undefined || pos === null) return []; // Fallback to block level
+
+    lines.push({
+      top: line.top - domRect.top,
+      bottom: line.bottom - domRect.top,
+      pos,
+    });
+  }
+
+  return lines;
+};
+
+const measureBlocks = (view: EditorView, metrics: PageMetrics): BlockMeasurement[] => {
+  const out: BlockMeasurement[] = [];
+  let simulatedY = 0;
+  let prevMb = 0;
+  let pageTop = 0;
+
+  view.state.doc.forEach((node, offset) => {
+    const el = view.nodeDOM(offset) as HTMLElement | null;
+    let height = 0;
+    let marginTop = 0;
+    let marginBottom = 0;
+    let domTop = 0;
+    let lines: LineMeasurement[] | undefined;
+
+    if (el) {
+      const style = getComputedStyle(el);
+      height = el.offsetHeight;
+      marginTop = parseFloat(style.marginTop) || 0;
+      marginBottom = parseFloat(style.marginBottom) || 0;
+      domTop = el.offsetTop;
+
+      const gap = out.length > 0 ? Math.max(prevMb, marginTop) : marginTop;
+      const bottom = simulatedY + gap + height;
+
+      // Only measure lines when block crosses a page boundary
+      if (bottom - pageTop > metrics.usable && node.isTextblock && node.childCount > 0) {
+        lines = measureLines(view, el);
+      }
+
+      simulatedY = bottom;
+      prevMb = marginBottom;
+      if (simulatedY - pageTop > metrics.usable) {
+        pageTop += metrics.paperH + PAGE_GAP;
+      }
+    }
+
+    out.push({ type: node.type.name, offset, height, marginTop, marginBottom, domTop, lines });
+  });
+  return out;
+};
+
+export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreaks => {
+  const root = view.dom as HTMLElement;
+  if (!root.offsetHeight) return EMPTY_BREAKS;
+
+  const metrics = computeMetrics(setup);
+  const blocks = measureBlocks(view, metrics);
+  const result = computeBreaksFromMeasurements(blocks, metrics);
+  const byOffset = new Map(blocks.map((b) => [b.offset, b]));
+  const domTopOf = (offset: number): number | null => {
+    const block = byOffset.get(offset);
+    return block && block.type !== 'pageBreak' ? block.domTop : null;
+  };
+  return {
+    ...result,
+    contentOffsets: resolveContentOffsets(result.breaks, result.contentOffsets, domTopOf, metrics.paperH),
+  };
 };
 
 const paginationPlugin = new Plugin<PageBreaks>({
   key,
   state: {
-    init: (): PageBreaks => ({ breaks: [], spacers: [], forced: [] }),
+    init: (): PageBreaks => EMPTY_BREAKS,
     apply(tr, value) {
       const meta = tr.getMeta('paginationBreaks');
-      return meta ? (meta as PageBreaks) : value;
+      if (meta) return meta as PageBreaks;
+      if (!tr.docChanged || !value.breaks.length) return value;
+      const mappedBreaks = value.breaks.map((pos) => tr.mapping.map(pos));
+      return {
+        ...value,
+        breaks: mappedBreaks,
+      };
     },
   },
   props: {
     decorations(state) {
-      const value = key.getState(state) ?? { breaks: [], spacers: [], forced: [] };
+      const value = key.getState(state) ?? EMPTY_BREAKS;
       if (!value.breaks.length) return null;
       const size = state.doc.content.size;
       const decos = value.breaks
-        .filter((pos) => pos >= 0 && pos < size)
-        .map((pos, i) =>
-          Decoration.widget(
+        .map((pos, i) => {
+          if (pos < 0 || pos > size) return null;
+          const spacerHeight = value.spacers[i] ?? 0;
+          return Decoration.widget(
             pos,
             () => {
               const el = document.createElement('div');
-              el.className = value.forced[i] ? 'page-break-marker' : 'page-break-spacer';
-              el.style.height = `${value.spacers[i] ?? 0}px`;
+              el.className = value.forced[i]
+                ? 'page-break-marker'
+                : 'page-break-spacer page-break-spacer-inline';
+              el.style.height = `${spacerHeight}px`;
+              el.contentEditable = 'false';
               return el;
             },
             {
-              key: `page-break-${pos}:${value.spacers[i] ?? 0}`,
+              side: -1,
+              key: `page-break-${pos}:${spacerHeight}`,
             },
-          ),
-        );
+          );
+        })
+        .filter((d): d is Decoration => d !== null);
       return decos.length ? DecorationSet.create(state.doc, decos) : null;
     },
   },

@@ -10,6 +10,10 @@ import '@/assets/styles/styles.css';
 
 initTheme();
 
+if (import.meta.env.DEV) {
+  void import('@/dev/seed-print-fixture');
+}
+
 const Main = () => (
   <React.StrictMode>
     <BrowserRouter>

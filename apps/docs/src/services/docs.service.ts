@@ -10,15 +10,36 @@ export interface DocxSourceRecord extends StoredDocument {
   originalName: string;
 }
 
-export const withDefaults = (doc: DocRecord): DocRecord => ({
-  ...doc,
-  kind: 'docs',
-  createdAt: doc.createdAt ?? doc.updatedAt,
-  lastOpenedAt: doc.lastOpenedAt ?? doc.updatedAt,
-  starred: doc.starred ?? false,
-  deletedAt: doc.deletedAt ?? null,
-  pageSetup: doc.pageSetup ?? DEFAULT_PAGE_SETUP(),
-});
+export const withDefaults = (doc: DocRecord): DocRecord => {
+  const defaults = DEFAULT_PAGE_SETUP();
+  const setup = doc.pageSetup;
+  return {
+    ...doc,
+    kind: 'docs',
+    createdAt: doc.createdAt ?? doc.updatedAt,
+    lastOpenedAt: doc.lastOpenedAt ?? doc.updatedAt,
+    starred: doc.starred ?? false,
+    deletedAt: doc.deletedAt ?? null,
+    pageSetup: {
+      paperSize: setup?.paperSize ?? defaults.paperSize,
+      orientation: setup?.orientation ?? defaults.orientation,
+      margins: setup?.margins
+        ? { ...defaults.margins, ...setup.margins }
+        : defaults.margins,
+      headerMargin: setup?.headerMargin ?? defaults.headerMargin,
+      footerMargin: setup?.footerMargin ?? defaults.footerMargin,
+      header: setup?.header
+        ? { ...defaults.header!, ...setup.header }
+        : defaults.header,
+      footer: setup?.footer
+        ? { ...defaults.footer!, ...setup.footer }
+        : defaults.footer,
+      pageNumber: setup?.pageNumber
+        ? { ...defaults.pageNumber!, ...setup.pageNumber }
+        : defaults.pageNumber,
+    },
+  };
+};
 
 const migrateFromLocalStorage = (): DocRecord[] => {
   try {

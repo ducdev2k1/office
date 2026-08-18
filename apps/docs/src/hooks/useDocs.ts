@@ -43,7 +43,9 @@ export const useDocs = (): DocsState => {
     void loadDocs().then((loaded) => {
       setDocs(loaded);
       const first = loaded.find((doc) => !doc.deletedAt);
-      setActiveId(first?.id ?? loaded[0]?.id ?? '');
+      const urlId = window.location.pathname.match(/^\/edit\/([^/]+)/)?.[1];
+      const hasUrlDoc = urlId !== undefined && loaded.some((doc) => doc.id === urlId && !doc.deletedAt);
+      setActiveId(hasUrlDoc ? urlId : first?.id ?? loaded[0]?.id ?? '');
       setLoading(false);
       setSaveState('Đã lưu');
     });

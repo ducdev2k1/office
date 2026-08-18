@@ -22,6 +22,7 @@ export const Header = ({
   onToggleTheme,
 }: HeaderProps) => {
   const { t, locale, setLocale } = useTranslation('docs');
+  const { t: tCommon } = useTranslation('common');
 
   const handleToggleLocale = () => {
     setLocale(locale === 'vi' ? 'en' : 'vi');
@@ -63,7 +64,7 @@ export const Header = ({
             </Button>
             <span
               className="inline-flex text-muted-foreground shrink-0 pl-1"
-              title={t('common.status.savedToDevice')}
+              title={tCommon('status.savedToDevice')}
             >
               <Icon name="cloud" className="size-4.5" />
             </span>
@@ -75,7 +76,7 @@ export const Header = ({
         <Button
           className="h-8 px-2 font-semibold text-xs rounded-md text-muted-foreground hover:text-foreground hover:bg-hover"
           type="button"
-          aria-label={t('common.language.switchLanguage')}
+          aria-label={tCommon('language.switchLanguage')}
           title={locale === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}
           onClick={handleToggleLocale}
           variant="ghost"
@@ -86,10 +87,10 @@ export const Header = ({
           className="size-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover"
           type="button"
           aria-label={
-            theme === 'dark' ? t('common.theme.switchToLight') : t('common.theme.switchToDark')
+            theme === 'dark' ? tCommon('theme.switchToLight') : tCommon('theme.switchToDark')
           }
           title={
-            theme === 'dark' ? t('common.theme.switchToLight') : t('common.theme.switchToDark')
+            theme === 'dark' ? tCommon('theme.switchToLight') : tCommon('theme.switchToDark')
           }
           onClick={onToggleTheme}
           variant="ghost"
@@ -135,7 +136,7 @@ export const Header = ({
           className="h-9 px-4 gap-1.5 rounded-full bg-primary/15 text-primary hover:bg-primary/25 font-medium text-sm border-0 transition-colors"
           type="button"
         >
-          <Icon name="share-2" className="size-4" /> {t('common.actions.share')}{' '}
+          <Icon name="share-2" className="size-4" /> {tCommon('actions.share')}{' '}
           <Icon name="chevron-down" className="size-3.5" />
         </Button>
         <div

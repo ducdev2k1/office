@@ -4,91 +4,110 @@ title: "Print Sliding-Window"
 status: pending
 priority: P1
 dependencies: [3]
-effort: "1-1.5d"
+effort: "1.5-2d"
 ---
 
 # Phase 4: Print Sliding-Window
 
 ## Overview
 
-**Phase quan trọng nhất** — giải quyết yêu cầu gốc. Thay cơ chế in hiện tại (browser tự repaginate) bằng DOM in dựng sẵn: mỗi trang là một cửa sổ clip nhìn vào cùng một DOM đã render, offset theo `contentOffsets` từ engine. Số trang in khớp màn hình theo định nghĩa.
+Thay cơ chế in hiện tại (browser tự repaginate) bằng DOM in dựng sẵn: mỗi trang là cửa sổ clip nhìn vào cùng DOM đã render, offset theo `contentOffsets` từ P2.
+
+Kiến trúc đã được **spike gate ở P2b verify** trước khi vào phase này. Nếu 2b fail thì phase này không chạy.
 
 ## Requirements
 
 **Functional**
-- Doc N trang paged view → in ra đúng N trang.
-- Header/footer + số trang render trong vùng lề mỗi trang.
-- Hoạt động cả khi bấm nút Print trong app lẫn khi user nhấn `Ctrl+P`.
-- Chỉ áp dụng khi `viewMode === 'paged'`. Ở chế độ khác giữ hành vi in hiện tại.
+- Doc N trang paged view → in ra đúng N trang, **không mất nội dung**.
+- Header/footer + số trang trong vùng lề mỗi trang.
+- Hoạt động cả nút Print lẫn `Ctrl+P`.
+- `viewMode !== 'paged'` **hoặc** `isOverLimit` **hoặc** build fail → fallback đường in cũ, **không bao giờ ra trang trắng**.
 
 **Non-functional**
-- Không trang trắng thừa ở cuối.
-- Dọn sạch `#print-root` sau khi in, kể cả khi user huỷ dialog.
+- Không trang trắng thừa, cả portrait lẫn landscape.
+- Dọn sạch `#print-root` sau khi in, kể cả khi user huỷ dialog hoặc build throw.
+- `buildPrintRoot` dưới ngưỡng thời gian đã đo cho doc 50 trang.
 
 ## Architecture
 
-### Vì sao sliding-window chứ không slice DOM
-
-Slice DOM = cắt nội dung thành N mảnh rồi đặt vào N container. Vấn đề: P7 sẽ ngắt trang **giữa dòng** trong một paragraph — cắt DOM giữa dòng là bất khả thi sạch sẽ.
-
-Sliding-window: clone **nguyên vẹn** `view.dom` một lần, mỗi trang chỉ đổi `top`. Cùng DOM, cùng width, cùng font, cùng CSS → line wrap **không thể lệch**. Và P7 không cần thay đổi gì ở đây.
-
-### Cấu trúc DOM
+### Cấu trúc DOM — LƯU Ý cascade
 
 ```html
 <div id="print-root">
-  <div class="print-page">                              <!-- w/h = khổ giấy -->
+  <div class="print-page">                          <!-- mm units, margin/padding = 0 -->
     <div class="print-hf print-header">
-      <span class="hf-left"></span>
-      <span class="hf-center"></span>
-      <span class="hf-right"></span>
+      <span></span><span></span><span></span>
     </div>
-    <div class="print-clip">                            <!-- inset = margins, h = usable -->
-      <div class="print-content" style="top: -{contentOffsets[i]}px">
-        <!-- CLONE của view.dom, giống hệt mọi trang -->
+    <div class="page-viewport is-paged">            <!-- BẮT BUỘC — xem dưới -->
+      <div class="print-clip">
+        <div class="print-content" style="top:-{contentOffsets[i]}px">CLONE</div>
       </div>
     </div>
     <div class="print-hf print-footer">…</div>
   </div>
-  <!-- lặp pageCount lần -->
 </div>
 ```
 
-CSS:
+**Wrapper `.page-viewport.is-paged` là bắt buộc, không phải trang trí.** `view.dom` mang `class="doc-editor ProseMirror"` (`useDocsEditor.ts:56`), nhưng layout paged đến từ rule **ancestor-scoped** `.is-paged .doc-editor` (`styles.css:171-179`). Class `is-paged` nằm trên `.page-viewport` bên trong `#root` (`EditorCanvas.tsx:121`). Clone đặt vào `#print-root` — sibling của `#root` — sẽ mất ancestor đó và rơi về rule base `.doc-editor` (`styles.css:155-169`).
+
+Số cụ thể, A4 lề 15mm, `mmToPx(15) = 57`, `mmToPx(210) = 794`:
+- Màn hình: `794 − 57 − 57 = 680px`
+- Clone không wrapper: `794 − 82 − 82 − 2px border = 628px` → **hẹp hơn 7.6%**
+
+Mọi paragraph rewrap → clone cao hơn engine đo → mỗi cửa sổ cắt giữa paragraph. Đây chính xác là bug phase này sinh ra để diệt.
+
+Kèm theo nếu thiếu wrapper: lấy lại `border: 1px`, `box-shadow`, `min-height: calc(var(--paper-h) + 48px)`, và `.is-paged [data-type='page-break'] { display: none }` (`styles.css:181-183`) mất tác dụng → mỗi page-break node bung `margin: 24px 0` + gạch xanh + nhãn `'Page break'`.
+
+### Dark theme
+
+`.dark` nằm trên `document.documentElement` (`useTheme.ts:11`) nên clone trong `#print-root` **vẫn match** `.dark .doc-editor` (`styles.css:459`). Bước xoá rule print cũ (`styles.css:441-443` đang ép `background:#fff; color:#202124`) sẽ khiến user theme tối in ra nền tối.
+
+Fix: `#print-root` force light palette tường minh.
+
+### `.page-break-marker` phải xử lý
+
+Forced break gán class `page-break-marker` chứ không phải `page-break-spacer` (`pagination.utils.ts:119`). Class này có `border-top: 2px dashed #1a73e8` + `::after { content: 'Page break' }` (`styles.css:189-205`). Hôm nay vô hại vì print block ẩn nó (`styles.css:403-405`); phase này viết lại print block nên phải xử lý lại.
+
+Marker nằm ở **đầu** vùng nội dung trang mới nên lọt vào trong `.print-clip`, không bị cắt.
+
+Fix: `#print-root .page-break-marker { border: 0 } #print-root .page-break-marker::after { content: none }`.
+
+### CSS — đơn vị mm, zero margin
+
 ```css
-#print-root { display: none; }
+#print-root { display: none; margin: 0; padding: 0; }
 
 @media print {
-  #root { display: none !important; }
-  #print-root { display: block !important; }
+  body.printing #root { display: none !important; }
+  body.printing #print-root { display: block !important; }
 
   .print-page {
     position: relative;
-    width: var(--paper-w);
-    height: calc(var(--paper-h) - 1px);   /* trừ hụt: chống trang trắng do rounding */
+    margin: 0; padding: 0;
+    width: var(--paper-w-mm);      /* mm, khớp @page size */
+    height: var(--paper-h-mm);
     overflow: hidden;
     break-after: page;
     page-break-after: always;
   }
   .print-page:last-child { break-after: auto; page-break-after: auto; }
 
-  .print-clip {
-    position: absolute;
-    top: var(--margin-t); left: var(--margin-l); right: var(--margin-r);
-    height: var(--usable);
-    overflow: hidden;
-  }
+  .print-clip { position: relative; height: var(--usable); overflow: hidden; }
   .print-content { position: absolute; left: 0; right: 0; }
 }
 ```
 
-`.print-page:last-child { break-after: auto }` — bắt buộc, nếu không trang cuối sinh thêm 1 trang trắng.
+**Ba điểm rút từ thực nghiệm CDP của red team:**
 
-Clone giữ nguyên spacer decoration của engine → khoảng trắng cuối trang tự nằm ngoài cửa sổ clip, tự bị cắt. Không cần xử lý gì thêm.
+1. **Đơn vị mm, không px.** `mmToPx` làm tròn về pixel nguyên nên `--paper-w/h` lệch khỏi box `@page` tới 0.5px mỗi trục. Viết `.print-page` bằng đúng mm như `@page size`.
+2. **Zero margin tường minh.** Trang trắng thừa ở **landscape** không do rounding — nguyên nhân thật là **margin lạc trong ancestor chain**. Thực nghiệm: A4 landscape với `body { margin: 8px }` → 4 trang cho 3 div; giảm width 1px **không** fix, zero body margin thì fix. Không dựa ngầm vào Tailwind preflight.
+3. **`body.printing` gate, không `#root { display:none }` vô điều kiện.** Builder toggle class **sau khi** build thành công; gỡ trong `finally` + `afterprint`. Nếu không, continuous view / build throw / `editor === null` sẽ cho ra **trang trắng không cảnh báo**.
 
-### Hook
+`.print-clip` **không** set `left/right = margin` — clone đã tự có padding lề từ `.is-paged .doc-editor`. Set thêm sẽ áp lề hai lần.
 
-Thay `usePrintSetup` bằng `usePrintDocument`:
+### Hook — đọc breaks đồng bộ, không qua React state
+
+`beforeprint` là handler **đồng bộ**. `runPagination` cập nhật qua `setPageCount` (React state, bất đồng bộ) → `usePrintDocument` đọc closure của render **trước**.
 
 ```ts
 export const usePrintDocument = (
@@ -96,70 +115,99 @@ export const usePrintDocument = (
   activeDoc: DocRecord | undefined,
   pagination: PaginationState,
 ) => {
-  const printDocument = () => { buildPrintRoot(); window.print(); };
-  // beforeprint → buildPrintRoot()  (bắt Ctrl+P)
-  // afterprint  → teardownPrintRoot()
+  const buildOrBail = (): boolean => {
+    if (!editor || editor.isDestroyed) return false;
+    if (pagination.viewMode !== 'paged') return false;
+    if (editor.view.composing) return false;              // không ép ngắt IME
+    const breaks = pagination.computeNow();               // P2c: trả PageBreaks | null
+    if (!breaks) return false;
+    if (breaks.contentOffsets.length >= MAX_PAGES) return false;   // quyết định đã chốt
+    try { buildPrintRoot(breaks); document.body.classList.add('printing'); return true; }
+    catch { teardownPrintRoot(); return false; }
+  };
+
+  const printDocument = async () => {
+    await document.fonts.ready;      // CHỈ được await ở đường này
+    buildOrBail();
+    window.print();
+  };
+  // beforeprint → buildOrBail()   (không await được gì)
+  // afterprint  → teardown + remove class  (trong finally)
   return { printDocument };
 };
 ```
 
-`buildPrintRoot` phải **idempotent** — bấm nút Print sẽ build rồi `window.print()` lại kích `beforeprint`, build lần hai. Guard bằng flag hoặc teardown-trước-build.
+`document.fonts.ready` là Promise — **không await được trong `beforeprint`**. Chỉ dùng ở đường nút Print. `usePagination.ts:97-100` đã dùng đúng pattern này (ngoài handler).
 
-`@page { size: WxH mm; margin: 0 }` giữ nguyên như `usePrintSetup` hiện tại.
+**Idempotent guard bắt buộc.** Thực nghiệm red team: build eager + build trong `beforeprint` → **6 trang cho doc 3 trang**. `buildPrintRoot` phải teardown trước khi build.
 
-### Hệ quy chiếu contentOffsets — CẦN VERIFY TRƯỚC
+### Doc vượt `MAX_PAGES` — quyết định đã chốt
 
-P2 ghi `contentOffsets` theo hệ toạ độ nội bộ engine. Nhưng `.doc-editor` khi paged có `padding-top: var(--margin-t)`, nên offset thực tế trong element clone có thể lệch đúng `marginT`.
+`isOverLimit === true` → **không dựng print-root**, để browser repaginate như hôm nay. Số trang có thể lệch nhưng **không mất nội dung**. Đây là lý do phải giữ nguyên rule `.doc-editor` trong print block cho đường fallback, không xoá.
 
-**Bước 1 của phase này là thực nghiệm**: dựng print-root với offset thô, mở browser, so vị trí nội dung trang 2 với màn hình. Điều chỉnh công thức rồi mới code tiếp. **Không đoán.**
+### Chi phí clone
+
+`plan.md` phiên bản trước ghi mitigation *"Clone 1 lần, dùng chung qua CSS"* — **bất khả thi**: mỗi `.print-page` cần `top` khác nhau nên phải có DOM subtree riêng. Chi phí thật là `pageCount × toàn bộ DOM`.
+
+Doc 50 trang + ảnh data-URL 1MB (`image.utils.ts` cho phép) → 250 lần decode bitmap, **đồng bộ trong `beforeprint`**. Phải đo và đặt ngưỡng cứng, không để dạng "cân nhắc".
 
 ## Related Code Files
 
 - Create: `apps/docs/src/modules/editor/print/print-document.utils.ts`
 - Create: `apps/docs/src/modules/editor/print/use-print-document.ts`
 - Delete: `apps/docs/src/modules/editor/hooks/usePrintSetup.ts`
-- Modify: `apps/docs/src/pages/EditorPage.tsx` — `onPrint` (2 chỗ: dòng ~167 và ~188) gọi `printDocument`
-- Modify: `apps/docs/src/assets/styles/styles.css` — viết lại khối `@media print` (hiện ở ~dòng 386)
+- Modify: `apps/docs/src/modules/editor/index.ts:12` — barrel đang export `usePrintSetup`, phải cập nhật
+- Modify: `apps/docs/src/pages/EditorPage.tsx` — `:124` dùng `usePrintSetup`; `onPrint` ở `:167` và `:188`
+- Modify: `apps/docs/src/assets/styles/styles.css` — viết lại `@media print` (~`:386`), **giữ** rule `.doc-editor` cho đường fallback
 - Modify: `apps/docs/index.html` — thêm `<div id="print-root"></div>` cạnh `#root`
 
 ## Implementation Steps
 
-1. **Thực nghiệm hệ quy chiếu** (xem trên). Ghi kết quả vào JSDoc của `contentOffsets`.
-2. Thêm `<div id="print-root"></div>` vào `index.html`.
-3. Viết `buildPrintRoot(editor, setup, pagination, docTitle)`:
-   - Teardown trước nếu đã tồn tại
-   - `const clone = editor.view.dom.cloneNode(true) as HTMLElement`
-   - Đặt CSS vars (`--paper-w/h`, `--margin-*`, `--usable`) lên `#print-root`
-   - Với mỗi `i` trong `[0, pageCount)`: tạo `.print-page`, gắn `resolveSlot(...)` cho header/footer, gắn `.print-clip > .print-content` với `top: -contentOffsets[i]px` và một **clone riêng** của `clone`
-   - Bỏ `contentEditable` và `id` trùng lặp trên các clone
-4. Viết `teardownPrintRoot()` — xoá hết con của `#print-root`.
-5. Viết `use-print-document.ts`: `beforeprint`/`afterprint` listeners + `printDocument()`. Trước khi build luôn gọi `pagination.schedulePagination(true)` để chắc chắn breaks tươi.
-6. Nếu `viewMode !== 'paged'` → không build, để hành vi in cũ.
-7. Viết lại `@media print` trong `styles.css` theo CSS trên. Bỏ các rule `.doc-editor` cũ trong print block.
-8. Wire `EditorPage.tsx` 2 chỗ `onPrint`.
-9. Xoá `usePrintSetup.ts`, chuyển logic `@page` sang hook mới.
-10. Verify bằng `scripts/print-check.mjs`: doc 1 / 3 / 12 / 50 trang, A4 portrait + A4 landscape + A5 + Letter.
+1. Thêm `#print-root` vào `index.html`.
+2. `buildPrintRoot(breaks, setup, docTitle)`:
+   - Teardown trước (idempotent)
+   - `const base = editor.view.dom.cloneNode(true) as HTMLElement`; strip `id`, `contentEditable`
+   - **Assert** `base.scrollHeight === editor.view.dom.scrollHeight` → mismatch thì throw (bắt trọn class bug cascade)
+   - Set CSS vars mm + `--usable` lên `#print-root`
+   - Mỗi `i` trong `[0, contentOffsets.length)`: `.print-page` → `.print-hf` (từ `resolveSlot`) + `.page-viewport.is-paged > .print-clip > .print-content` với clone riêng
+   - Normalize `.page-break-marker` trong clone
+3. `teardownPrintRoot()` — xoá con của `#print-root`, gỡ `body.printing`.
+4. `use-print-document.ts` theo sketch trên. `beforeprint`/`afterprint` + `printDocument()`.
+5. Viết lại `@media print`: thêm nhánh `body.printing`, **giữ nguyên** nhánh cũ cho fallback.
+6. Cập nhật barrel `modules/editor/index.ts:12`, wire `EditorPage.tsx` (`:124`, `:167`, `:188`).
+7. Xoá `usePrintSetup.ts`, chuyển logic `@page` sang hook mới.
+8. Đo `buildPrintRoot` wall time: doc 50 trang + 20 ảnh. Ghi ngưỡng vào AC.
+   **Sau bước này mới quyết có nâng `MAX_PAGES` trên 50 hay không** — validation chốt giữ 50 tới khi có số đo thật. Ghi kết quả đo vào `plan.md` Open questions.
+   <!-- Updated: Validation Session 1 - MAX_PAGES giữ 50, quyết sau khi đo ở bước này -->
+9. Verify bằng `scripts/print-check.mjs`: 1 / 3 / 12 / 40 trang × A4 portrait + A4 landscape + A5 + Letter.
+10. Verify các đường fallback: continuous view, `isOverLimit`, `editor === null`, build throw (inject lỗi tay).
 
 ## Success Criteria
 
-- [ ] `print-check.mjs` báo số trang PDF == `pageCount` cho: 1, 3, 12, 50 trang
-- [ ] Khớp với cả 3 khổ giấy × 2 hướng
-- [ ] Không trang trắng ở cuối
-- [ ] `Ctrl+P` và nút Print trong app cho kết quả giống nhau
-- [ ] Huỷ dialog in → `#print-root` rỗng, app không còn dấu vết
+- [ ] `print-check.mjs`: marker `[[N]]` liền mạch, đủ, không trùng — cho 1/3/12/40 trang
+- [ ] Khớp với A4 portrait **và A4 landscape** và A5 và Letter
+- [ ] Doc có block cao 3 trang: không mất nội dung
+- [ ] Không trang trắng ở cuối, cả portrait lẫn landscape
+- [ ] `Ctrl+P` và nút Print cho kết quả giống nhau
 - [ ] Bấm Print 2 lần liên tiếp → không nhân đôi trang
-- [ ] Header/footer + số trang xuất hiện đúng vùng lề mọi trang
-- [ ] `viewMode !== 'paged'` → in vẫn chạy (hành vi cũ)
+- [ ] Huỷ dialog → `#print-root` rỗng, `body.printing` đã gỡ
+- [ ] **Không bao giờ in ra trang trắng**: continuous view / `isOverLimit` / `editor===null` / build throw đều fallback đường in cũ và in ra nội dung
+- [ ] Doc > 50 trang: in đủ nội dung qua đường fallback
+- [ ] Doc có forced page break: bản in **không** chứa chữ "Page break"
+- [ ] Theme tối: bản in nền trắng chữ đen
+- [ ] `buildPrintRoot` doc 50 trang + 20 ảnh dưới ngưỡng đã đo
 - [ ] `pnpm typecheck` + `pnpm test` xanh
 
 ## Risk Assessment
 
 | Rủi ro | Mức | Mitigation |
 |---|---|---|
-| `contentOffsets` sai hệ quy chiếu → nội dung lệch dọc | Cao | Bước 1 thực nghiệm trước khi code |
-| Trang trắng thừa do rounding subpixel | Trung bình | `height: calc(var(--paper-h) - 1px)` + `:last-child { break-after: auto }` |
-| `beforeprint` build 2 lần khi bấm nút Print | Trung bình | `buildPrintRoot` idempotent (teardown trước build) |
-| Clone 50 trang × DOM lớn → chậm/tốn RAM | Trung bình | Clone gốc 1 lần rồi `cloneNode` từ đó; đo thời gian build, nếu >1s cân nhắc `MAX_PAGES` cho print |
-| `id` trùng lặp giữa các clone | Thấp | Strip `id` khi clone |
-| Header/footer mặc định của browser (URL, ngày) in đè | Thấp | Không tắt được bằng CSS — ghi hướng dẫn user bỏ tick trong dialog |
-| Ảnh lazy-load chưa render lúc clone | Thấp | Chờ `document.fonts.ready` + kiểm `img.complete` trước khi build |
+| Clone mất cascade `.is-paged` → wrap lệch | **Cao** | Wrapper `.page-viewport.is-paged` + assert `scrollHeight` bằng nhau trước khi dựng |
+| Đọc React state cũ trong `beforeprint` | **Cao** | `pagination.computeNow()` trả `PageBreaks` đồng bộ; `composing` → abort |
+| N clone đồng bộ → đơ / OOM | **Cao** | Đo wall time ở bước 8, ngưỡng cứng trong AC; abort + fallback nếu vượt |
+| In ra trang trắng | **Cao** | `body.printing` chỉ set sau khi build thành công; try/catch + `finally` |
+| Trang trắng thừa ở landscape do margin lạc | Trung bình | mm units + zero margin tường minh + `:last-child { break-after: auto }`; test cả 2 hướng |
+| `.page-break-marker` in chữ "Page break" | Trung bình | Normalize marker trong clone |
+| Theme tối in nền tối | Trung bình | Force light palette trong `#print-root` |
+| Header/footer mặc định của browser (URL, ngày) | Thấp | Không tắt được bằng CSS — ghi hướng dẫn user bỏ tick |
+| Ảnh chưa render lúc clone | Thấp | `await document.fonts.ready` ở đường nút Print; kiểm `img.complete`; `beforeprint` không await được nên chấp nhận |

@@ -4,10 +4,11 @@ import { EditorContent } from '@tiptap/react';
 import { useTranslation } from '@office/i18n';
 import { Icon, cn } from '@office/ui-kit';
 import { PageScrollIndicator } from '@/modules/editor/components/PageScrollIndicator';
+import { PageStack } from '@/modules/editor/components/PageStack';
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
-import type { DocRecord, PageSetup } from '@/types/docs.types';
+import { DEFAULT_PAGE_SETUP, type DocRecord, type PageSetup } from '@/types/docs.types';
 
 interface EditorCanvasProps {
   editor: Editor | null;
@@ -123,11 +124,11 @@ export const EditorCanvas = ({
           onContextMenu={handleContextMenuEvent}
         >
           {viewMode === 'paged' && (
-            <div className="page-stack" aria-hidden="true">
-              {Array.from({ length: pageCount }).map((_, i) => (
-                <div key={i} className="page" />
-              ))}
-            </div>
+            <PageStack
+              pageCount={pageCount}
+              setup={activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP()}
+              docTitle={activeDoc?.title ?? ''}
+            />
           )}
           <EditorContent editor={editor} />
         </div>

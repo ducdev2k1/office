@@ -44,6 +44,7 @@ export const MenuBar = ({
   onInsertImage,
   onInsertTable,
   onInsertPageBreak,
+  onHeaderFooter,
   onHelp,
 }: HeaderMenuActions) => {
   const { t } = useTranslation('docs');
@@ -121,6 +122,11 @@ export const MenuBar = ({
             label: t('menu.insert.pageBreak'),
             shortcut: 'Ctrl+Enter',
             onClick: onInsertPageBreak,
+          },
+          'separator',
+          {
+            label: t('menu.insert.headerFooter'),
+            onClick: () => onHeaderFooter?.(),
           },
         ],
       },

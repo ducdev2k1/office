@@ -50,6 +50,7 @@
       "table": "Table",
       "horizontalRule": "Horizontal line",
       "pageBreak": "Page break",
+      "headerFooter": "Header, footer & page numbers",
       "link": "Link"
     },
     "format": {
@@ -165,6 +166,42 @@
     "marginBottom": "Bottom",
     "marginLeft": "Left",
     "marginRight": "Right",
+    "apply": "Apply",
+    "cancel": "Cancel"
+  },
+  "headerFooter": {
+    "title": "Header, Footer & Page Numbers",
+    "description": "Customize header, footer text content and page numbering layout.",
+    "header": "Header",
+    "footer": "Footer",
+    "alignLeft": "Left",
+    "alignCenter": "Center",
+    "alignRight": "Right",
+    "headerMargin": "Header margin (mm)",
+    "footerMargin": "Footer margin (mm)",
+    "tokens": {
+      "label": "Insert dynamic token",
+      "page": "Page number {page}",
+      "pages": "Total pages {pages}",
+      "docTitle": "Title {title}",
+      "date": "Date {date}"
+    },
+    "pageNumber": {
+      "title": "Page Number Configuration",
+      "enable": "Show page numbers",
+      "position": "Position",
+      "positionHeader": "Header",
+      "positionFooter": "Footer",
+      "align": "Alignment",
+      "format": "Display format",
+      "formatSimple": "Simple ({page})",
+      "formatTotal": "With total ({page} / {pages})",
+      "formatPrefixed": "Page prefix (Page {page})",
+      "startAt": "Start at page",
+      "skipFirst": "Skip first page"
+    },
+    "preview": "Preview",
+    "applied": "Applied header, footer and page number settings",
     "apply": "Apply",
     "cancel": "Cancel"
   },
