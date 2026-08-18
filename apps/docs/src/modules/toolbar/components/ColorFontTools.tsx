@@ -1,21 +1,13 @@
 import { ColorPalettePopover } from '@/modules/toolbar/components/ColorPalettePopover';
+import { FontPickerPopover } from '@/modules/toolbar/components/FontPickerPopover';
+import { FontSizePicker } from '@/modules/toolbar/components/FontSizePicker';
 import { useTranslation } from '@office/i18n';
 import { Separator } from '@office/ui-kit';
 import type { Editor } from '@tiptap/core';
-import type { RefObject } from 'react';
-
-const FONT_FAMILIES = ['Arial', 'Roboto', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana'];
-const FONT_SIZES = [8, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48];
 
 interface ColorFontToolsProps {
   editor: Editor;
-  fontPickerRef?: RefObject<HTMLSelectElement | null>;
-  colorPickerRef?: RefObject<HTMLInputElement | null>;
 }
-
-const selectCls =
-  'h-7 rounded border border-border bg-background px-1.5 text-xs text-foreground ' +
-  'outline-none hover:bg-hover focus:ring-1 focus:ring-ring transition-colors cursor-pointer';
 
 export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
   const { t } = useTranslation('docs');
@@ -29,6 +21,15 @@ export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
       : typeof textStyle.fontSize === 'number'
         ? String(textStyle.fontSize)
         : '14';
+
+  const handleSelectFont = (font: string) => {
+    if (font) editor.chain().focus().setFontFamily(font).run();
+    else editor.chain().focus().unsetFontFamily().run();
+  };
+
+  const handleChangeSize = (size: number) => {
+    editor.chain().focus().setFontSize(`${size}px`).run();
+  };
 
   return (
     <>
@@ -53,37 +54,9 @@ export const ColorFontTools = ({ editor }: ColorFontToolsProps) => {
 
       <Separator orientation="vertical" className="h-5 w-px bg-border/50 mx-1 shrink-0" />
 
-      <select
-        aria-label={t('toolbar.fontFamily')}
-        title={t('toolbar.fontFamily')}
-        value={currentFont}
-        onChange={(e) => {
-          const val = e.target.value;
-          if (val) editor.chain().focus().setFontFamily(val).run();
-          else editor.chain().focus().unsetFontFamily().run();
-        }}
-        className={`${selectCls} min-w-[90px] max-w-[120px]`}
-      >
-        <option value="">{t('toolbar.defaultFont')}</option>
-        {FONT_FAMILIES.map((f) => (
-          <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>
-        ))}
-      </select>
+      <FontPickerPopover currentFont={currentFont} onSelectFont={handleSelectFont} />
 
-      <select
-        aria-label={t('toolbar.fontSize')}
-        title={t('toolbar.fontSize')}
-        value={currentSize}
-        onChange={(e) => {
-          const size = Number(e.target.value);
-          if (size) editor.chain().focus().setFontSize(`${size}px`).run();
-        }}
-        className={`${selectCls} w-[46px]`}
-      >
-        {FONT_SIZES.map((s) => (
-          <option key={s} value={String(s)}>{s}</option>
-        ))}
-      </select>
+      <FontSizePicker currentSize={currentSize} onChangeSize={handleChangeSize} />
     </>
   );
 };
