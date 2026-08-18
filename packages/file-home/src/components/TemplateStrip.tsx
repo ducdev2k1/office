@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import type { ProductConfig } from '../types';
 import { KIND_ICON } from '../lib/icons';
 import { Icon } from '@office/ui-kit';
@@ -9,6 +10,7 @@ interface TemplateStripProps {
 
 /** Day card "Tao moi" + template — giong Google Workspace home. */
 export const TemplateStrip = ({ config, onCreate }: TemplateStripProps) => {
+  const { t } = useTranslation('appShell');
   const IconName = KIND_ICON[config.kind];
 
   return (
@@ -16,7 +18,7 @@ export const TemplateStrip = ({ config, onCreate }: TemplateStripProps) => {
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-base font-medium text-foreground">{config.startLabel}</h2>
         {config.templates.length > 0 && (
-          <span className="text-sm text-muted-foreground">Thư viện mẫu</span>
+          <span className="text-sm text-muted-foreground">{t('home.templateGallery')}</span>
         )}
       </div>
       <div className="flex gap-4 overflow-x-auto pb-2">
@@ -40,7 +42,12 @@ export const TemplateStrip = ({ config, onCreate }: TemplateStripProps) => {
             className="flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm"
           >
             <span className="flex h-28 items-center justify-center bg-muted">
-              <Icon name={IconName} size={40} className="text-muted-foreground" aria-hidden="true" />
+              <Icon
+                name={IconName}
+                size={40}
+                className="text-muted-foreground"
+                aria-hidden="true"
+              />
             </span>
             <span className="truncate px-2 py-2 text-sm text-foreground">{template.label}</span>
           </div>

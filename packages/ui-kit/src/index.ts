@@ -1,9 +1,5 @@
 export { cn } from './cn';
-export {
-  Icon,
-  type IconProps,
-  type IconVariant,
-} from './icons';
+export { Icon, type IconProps, type IconVariant } from './icons';
 export {
   applyTheme,
   DEFAULT_THEME,

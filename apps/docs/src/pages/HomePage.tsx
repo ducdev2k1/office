@@ -1,6 +1,7 @@
 import { ShellLayout, TopBar, type ProductIdentity } from '@office/app-shell';
 import { FileHome, estimateStorageMB, type ProductConfig } from '@office/file-home';
-import { useEffect, useState } from 'react';
+import { useTranslation } from '@office/i18n';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocs } from '@/hooks/use-docs';
 import { useTheme } from '@/hooks/use-theme';
@@ -11,24 +12,28 @@ const docsProduct: ProductIdentity = {
   accentVar: 'var(--o-kind-docs)',
 };
 
-const docsConfig: ProductConfig = {
-  kind: 'docs',
-  name: 'Docs',
-  createLabel: 'Tạo tài liệu mới',
-  startLabel: 'Bắt đầu tài liệu mới',
-  blankLabel: 'Tài liệu trống',
-  editorPath: (id) => `/edit/${id}`,
-  accentVar: 'var(--o-kind-docs)',
-  templates: [],
-};
-
 /** Trang home: quan ly file Docs (tai dung cho Sheets/Slides qua ProductConfig). */
 export const HomePage = () => {
+  const { t } = useTranslation('appShell');
   const { theme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [storageMB, setStorageMB] = useState<number | undefined>(undefined);
   const navigate = useNavigate();
   const docsApi = useDocs();
+
+  const docsConfig = useMemo<ProductConfig>(
+    () => ({
+      kind: 'docs',
+      name: 'Docs',
+      createLabel: t('home.createNew'),
+      startLabel: t('home.templatesTitle'),
+      blankLabel: t('home.blankDoc'),
+      editorPath: (id) => `/edit/${id}`,
+      accentVar: 'var(--o-kind-docs)',
+      templates: [],
+    }),
+    [t],
+  );
 
   useEffect(() => {
     void estimateStorageMB().then(setStorageMB);

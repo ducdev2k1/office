@@ -40,12 +40,11 @@ export const FileToolbar = ({ sort, view, onSortChange, onViewChange }: FileTool
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" sideOffset={4}>
           {SORT_OPTIONS.map((option) => (
-            <DropdownMenuItem
-              key={option.value}
-              onSelect={() => onSortChange(option.value)}
-            >
+            <DropdownMenuItem key={option.value} onSelect={() => onSortChange(option.value)}>
               {t(option.labelKey)}
-              {sort === option.value && <Icon name="check" size={16} className="ml-auto" aria-hidden="true" />}
+              {sort === option.value && (
+                <Icon name="check" size={16} className="ml-auto" aria-hidden="true" />
+              )}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -57,7 +56,9 @@ export const FileToolbar = ({ sort, view, onSortChange, onViewChange }: FileTool
           aria-pressed={view === 'list'}
           onClick={() => onViewChange('list')}
           className={`flex size-7 items-center justify-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
-            view === 'list' ? 'bg-active text-active-foreground' : 'text-muted-foreground hover:bg-hover'
+            view === 'list'
+              ? 'bg-active text-active-foreground'
+              : 'text-muted-foreground hover:bg-hover'
           }`}
         >
           <Icon name="list" size={16} aria-hidden="true" />
@@ -68,7 +69,9 @@ export const FileToolbar = ({ sort, view, onSortChange, onViewChange }: FileTool
           aria-pressed={view === 'grid'}
           onClick={() => onViewChange('grid')}
           className={`flex size-7 items-center justify-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
-            view === 'grid' ? 'bg-active text-active-foreground' : 'text-muted-foreground hover:bg-hover'
+            view === 'grid'
+              ? 'bg-active text-active-foreground'
+              : 'text-muted-foreground hover:bg-hover'
           }`}
         >
           <Icon name="grid-2x2" size={16} aria-hidden="true" />

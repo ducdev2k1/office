@@ -246,15 +246,15 @@ Mục này viết để người không làm kỹ thuật vẫn nắm được t
 
 **Nền tảng chung cho cả ba ứng dụng**
 
-| Thành phần                    | Nó là gì, nói dễ hiểu                                                                                                                                                                                     |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **React + TypeScript + Vite** | Bộ công cụ dựng giao diện web. Đây là lựa chọn phổ biến nhất hiện nay, dễ tuyển người, đã dùng sẵn trong sản phẩm hiện tại                                                                                |
-| **shadcn/ui + Base UI + Tailwind CSS** | Bộ thành phần giao diện dựng sẵn: nút, hộp thoại, menu, dropdown, tooltip. **Không phải thư viện phụ thuộc — là mã nguồn chép thẳng vào dự án, ta sở hữu hoàn toàn.** Nhờ vậy không có rủi ro chuỗi cung ứng và không phụ thuộc tác giả bên ngoài |
-| **Bộ design token dùng chung** | Một tập biến màu, phông, bo góc dùng chung cho cả ba ứng dụng, **lấy bảng màu thương hiệu iNET** để bộ Office trông đúng là một phần của OneMail. Chỉ dùng lại giá trị màu — **không phụ thuộc ViUI, Vuetify hay Vue**; ba ứng dụng đều là React thuần |
-| **IndexedDB**                 | Kho dữ liệu có sẵn trong mọi trình duyệt. Là nơi cất tài liệu để làm việc khi không có mạng                                                                                                               |
-| **File System Access API**    | Tính năng của trình duyệt cho phép mở và lưu file thẳng trên máy người dùng, giống hệt phần mềm cài đặt                                                                                                   |
-| **PWA**                       | Công nghệ biến trang web thành ứng dụng cài được lên máy, có biểu tượng riêng, mở ra là chạy kể cả khi mất mạng                                                                                           |
-| **Yjs**                       | Thư viện đồng bộ dữ liệu. Cho phép nhiều người sửa cùng một tài liệu mà không đè lên nhau, và cho phép làm việc offline rồi tự hợp nhất khi có mạng lại. Đây là nền của tính năng cộng tác thời gian thực |
+| Thành phần                             | Nó là gì, nói dễ hiểu                                                                                                                                                                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **React + TypeScript + Vite**          | Bộ công cụ dựng giao diện web. Đây là lựa chọn phổ biến nhất hiện nay, dễ tuyển người, đã dùng sẵn trong sản phẩm hiện tại                                                                                                                             |
+| **shadcn/ui + Base UI + Tailwind CSS** | Bộ thành phần giao diện dựng sẵn: nút, hộp thoại, menu, dropdown, tooltip. **Không phải thư viện phụ thuộc — là mã nguồn chép thẳng vào dự án, ta sở hữu hoàn toàn.** Nhờ vậy không có rủi ro chuỗi cung ứng và không phụ thuộc tác giả bên ngoài      |
+| **Bộ design token dùng chung**         | Một tập biến màu, phông, bo góc dùng chung cho cả ba ứng dụng, **lấy bảng màu thương hiệu iNET** để bộ Office trông đúng là một phần của OneMail. Chỉ dùng lại giá trị màu — **không phụ thuộc ViUI, Vuetify hay Vue**; ba ứng dụng đều là React thuần |
+| **IndexedDB**                          | Kho dữ liệu có sẵn trong mọi trình duyệt. Là nơi cất tài liệu để làm việc khi không có mạng                                                                                                                                                            |
+| **File System Access API**             | Tính năng của trình duyệt cho phép mở và lưu file thẳng trên máy người dùng, giống hệt phần mềm cài đặt                                                                                                                                                |
+| **PWA**                                | Công nghệ biến trang web thành ứng dụng cài được lên máy, có biểu tượng riêng, mở ra là chạy kể cả khi mất mạng                                                                                                                                        |
+| **Yjs**                                | Thư viện đồng bộ dữ liệu. Cho phép nhiều người sửa cùng một tài liệu mà không đè lên nhau, và cho phép làm việc offline rồi tự hợp nhất khi có mạng lại. Đây là nền của tính năng cộng tác thời gian thực                                              |
 
 **Riêng cho Docs**
 
@@ -266,11 +266,11 @@ Mục này viết để người không làm kỹ thuật vẫn nắm được t
 
 **Riêng cho Sheets và Slides** (bắt đầu sau MVP)
 
-| Thành phần      | Nó là gì, nói dễ hiểu                                                                                                                 |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Univer**      | Động cơ bảng tính. Vai trò với Sheets giống TipTap với Docs                                                                           |
-| **ExcelJS**     | Thư viện đọc và ghi file Excel. **Bắt buộc phải có** vì phần đọc ghi Excel của Univer là tính năng trả phí, mà ta không mua bản quyền |
-| **echarts**     | Thư viện vẽ biểu đồ, thay cho biểu đồ bản trả phí của Univer                                                                          |
+| Thành phần      | Nó là gì, nói dễ hiểu                                                                                                                                                                                                                                                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Univer**      | Động cơ bảng tính. Vai trò với Sheets giống TipTap với Docs                                                                                                                                                                                                                                                                                 |
+| **ExcelJS**     | Thư viện đọc và ghi file Excel. **Bắt buộc phải có** vì phần đọc ghi Excel của Univer là tính năng trả phí, mà ta không mua bản quyền                                                                                                                                                                                                       |
+| **echarts**     | Thư viện vẽ biểu đồ, thay cho biểu đồ bản trả phí của Univer                                                                                                                                                                                                                                                                                |
 | **pptx-viewer** | Thư viện đọc, hiển thị và sửa file PowerPoint — đầy đủ nhất trong các lựa chọn mã nguồn mở: ribbon, kéo thả trên canvas, 187 hình khối, 23 loại biểu đồ, SmartArt, hiệu ứng, xuất PDF/video, đồng sửa nhiều người. **Vẫn là thành phần rủi ro nhất cả dự án**, nhưng vì tuổi đời và tác giả chứ không phải vì thiếu tính năng — xem mục 6.4 |
 
 **Cho phần máy chủ** (từ tháng 9 trở đi, MVP không cần)
@@ -291,25 +291,25 @@ Mục này viết để người không làm kỹ thuật vẫn nắm được t
 
 Toàn bộ đã kiểm tra trực tiếp trên npm registry ngày 17/08/2026. **Không có thành phần nào vi phạm C1, C2 hoặc C3.**
 
-| Thư viện                                          | Giấy phép            | Vai trò                                                         |
-| ------------------------------------------------- | -------------------- | --------------------------------------------------------------- |
-| `@tiptap/*` (gồm cả `extension-find-and-replace`) | **MIT**              | Trình soạn thảo Docs                                            |
-| `@tiptap/pm` / ProseMirror                        | MIT                  | Nền tảng mô hình tài liệu                                       |
-| `docx-preview`                                    | **Apache-2.0**       | Trình xem `.docx` ở M2; cũng là tham chiếu hợp lệ cho `docx-io` |
-| `jszip`                                           | MIT (chọn nhánh MIT) | Giải nén/nén OOXML                                              |
-| `fast-xml-parser`                                 | MIT                  | Phân tích/tuần tự XML giữ nguyên định dạng                      |
-| `yjs`, `y-prosemirror`, `y-indexeddb`             | **MIT**              | Cộng tác + offline                                              |
-| `@hocuspocus/server`                              | MIT                  | Máy chủ đồng bộ Yjs (Giai đoạn 5)                               |
-| `exceljs`                                         | **MIT**              | Đọc/ghi xlsx                                                    |
-| `@univerjs/core`                                  | Apache-2.0           | Bảng tính                                                       |
-| `pptx-viewer` | Apache-2.0 | Trình chiếu — xem đánh giá rủi ro riêng ở mục 6.4 |
-| `echarts`                                         | Apache-2.0           | Biểu đồ cho Sheets                                              |
-| `pixelmatch`                                      | ISC                  | So sánh ảnh trong bộ đo chất lượng                              |
-| `shadcn/ui` | **MIT** | Thành phần giao diện — chép mã vào dự án, không phải dependency |
-| `@base-ui/react` | MIT | Nền primitive của shadcn (mặc định từ 7/2026), **đã cài sẵn trong repo** |
-| `tailwindcss` | MIT | Hệ thống class CSS mà shadcn dựa vào |
-| React 19, Vite 6, TypeScript                      | MIT / Apache-2.0     | Nền tảng                                                        |
-| NestJS                                            | MIT                  | Máy chủ (Giai đoạn 4)                                           |
+| Thư viện                                          | Giấy phép            | Vai trò                                                                  |
+| ------------------------------------------------- | -------------------- | ------------------------------------------------------------------------ |
+| `@tiptap/*` (gồm cả `extension-find-and-replace`) | **MIT**              | Trình soạn thảo Docs                                                     |
+| `@tiptap/pm` / ProseMirror                        | MIT                  | Nền tảng mô hình tài liệu                                                |
+| `docx-preview`                                    | **Apache-2.0**       | Trình xem `.docx` ở M2; cũng là tham chiếu hợp lệ cho `docx-io`          |
+| `jszip`                                           | MIT (chọn nhánh MIT) | Giải nén/nén OOXML                                                       |
+| `fast-xml-parser`                                 | MIT                  | Phân tích/tuần tự XML giữ nguyên định dạng                               |
+| `yjs`, `y-prosemirror`, `y-indexeddb`             | **MIT**              | Cộng tác + offline                                                       |
+| `@hocuspocus/server`                              | MIT                  | Máy chủ đồng bộ Yjs (Giai đoạn 5)                                        |
+| `exceljs`                                         | **MIT**              | Đọc/ghi xlsx                                                             |
+| `@univerjs/core`                                  | Apache-2.0           | Bảng tính                                                                |
+| `pptx-viewer`                                     | Apache-2.0           | Trình chiếu — xem đánh giá rủi ro riêng ở mục 6.4                        |
+| `echarts`                                         | Apache-2.0           | Biểu đồ cho Sheets                                                       |
+| `pixelmatch`                                      | ISC                  | So sánh ảnh trong bộ đo chất lượng                                       |
+| `shadcn/ui`                                       | **MIT**              | Thành phần giao diện — chép mã vào dự án, không phải dependency          |
+| `@base-ui/react`                                  | MIT                  | Nền primitive của shadcn (mặc định từ 7/2026), **đã cài sẵn trong repo** |
+| `tailwindcss`                                     | MIT                  | Hệ thống class CSS mà shadcn dựa vào                                     |
+| React 19, Vite 6, TypeScript                      | MIT / Apache-2.0     | Nền tảng                                                                 |
+| NestJS                                            | MIT                  | Máy chủ (Giai đoạn 4)                                                    |
 
 ### 6.3 Đã cân nhắc và loại, kèm lý do
 
@@ -325,16 +325,16 @@ Toàn bộ đã kiểm tra trực tiếp trên npm registry ngày 17/08/2026. **
 
 Vì đây là phụ thuộc rủi ro nhất cả dự án, mục này ghi lại dữ liệu đã kiểm chứng để lần sau không phải tranh luận bằng cảm tính. Số liệu lấy trực tiếp từ GitHub API và npm registry ngày 17/08/2026.
 
-| Chỉ số | Giá trị | Nghĩa là gì |
-|---|---|---|
-| Lượt tải npm | **~21.000/tuần** (`pptx-viewer-core`), 19.300/tuần (bản React) | **Có người dùng thật.** Số sao GitHub (61) là chỉ báo tồi, không nên dùng |
-| Ngày tạo | **16/03/2026 — mới 5 tháng** | ⚠️ Với thư viện xử lý định dạng file, tuổi đời chính là thước đo. Độ chính xác OOXML đến từ việc va phải hàng chục nghìn file kỳ quặc ngoài đời, không đến từ đọc đặc tả |
-| Lần đẩy mã cuối | 14/08/2026 | Đang phát triển rất tích cực, không bỏ hoang |
-| Người đóng góp | ChristopherVR **2.319 commit**; ba người khác tổng cộng **7 commit** | ⚠️ **Bus factor = 1**, y hệt tình trạng dự án của ta |
-| Nhịp commit | ~15 commit/ngày liên tục trong 5 tháng | ⚠️ Gần như chắc chắn là mã sinh bằng AI ở quy mô lớn — mang đúng rủi ro ghi ở R2d, nhưng ở quy mô lớn hơn và ta không kiểm soát được |
-| Số phiên bản phát hành | 103–180 bản trong 5 tháng, ~1 bản/ngày | ⚠️ **API chưa ổn định.** Phải ghim phiên bản cứng, chủ động nâng cấp, không để trôi |
-| Issue đang mở / người theo dõi | 1 / 0 | ⚠️ Với thư viện có SmartArt, 23 loại biểu đồ và hiệu ứng, con số này không có nghĩa "không lỗi" mà là **chưa ai đẩy tới giới hạn và báo lại** |
-| Giấy phép | Apache-2.0, 25 fork | ✅ Fork được, không vướng pháp lý |
+| Chỉ số                         | Giá trị                                                              | Nghĩa là gì                                                                                                                                                              |
+| ------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Lượt tải npm                   | **~21.000/tuần** (`pptx-viewer-core`), 19.300/tuần (bản React)       | **Có người dùng thật.** Số sao GitHub (61) là chỉ báo tồi, không nên dùng                                                                                                |
+| Ngày tạo                       | **16/03/2026 — mới 5 tháng**                                         | ⚠️ Với thư viện xử lý định dạng file, tuổi đời chính là thước đo. Độ chính xác OOXML đến từ việc va phải hàng chục nghìn file kỳ quặc ngoài đời, không đến từ đọc đặc tả |
+| Lần đẩy mã cuối                | 14/08/2026                                                           | Đang phát triển rất tích cực, không bỏ hoang                                                                                                                             |
+| Người đóng góp                 | ChristopherVR **2.319 commit**; ba người khác tổng cộng **7 commit** | ⚠️ **Bus factor = 1**, y hệt tình trạng dự án của ta                                                                                                                     |
+| Nhịp commit                    | ~15 commit/ngày liên tục trong 5 tháng                               | ⚠️ Gần như chắc chắn là mã sinh bằng AI ở quy mô lớn — mang đúng rủi ro ghi ở R2d, nhưng ở quy mô lớn hơn và ta không kiểm soát được                                     |
+| Số phiên bản phát hành         | 103–180 bản trong 5 tháng, ~1 bản/ngày                               | ⚠️ **API chưa ổn định.** Phải ghim phiên bản cứng, chủ động nâng cấp, không để trôi                                                                                      |
+| Issue đang mở / người theo dõi | 1 / 0                                                                | ⚠️ Với thư viện có SmartArt, 23 loại biểu đồ và hiệu ứng, con số này không có nghĩa "không lỗi" mà là **chưa ai đẩy tới giới hạn và báo lại**                            |
+| Giấy phép                      | Apache-2.0, 25 fork                                                  | ✅ Fork được, không vướng pháp lý                                                                                                                                        |
 
 **Tính năng thì đầy đủ thật** — demo có ribbon, bảng thuộc tính, kéo thả trên canvas, 187 hình khối dựng sẵn, 23 loại biểu đồ, SmartArt, hiệu ứng và morph, xuất PNG/JPEG/SVG/PDF/GIF/video, đồng sửa nhiều người qua Yjs, hỗ trợ 5 khung giao diện. Hạn chế tác giả tự công bố: đối tượng OLE chỉ đọc, một số hiệu ứng hình ảnh chỉ mô phỏng gần đúng, phông chữ phụ thuộc trình duyệt.
 
@@ -527,28 +527,28 @@ Các giai đoạn dưới đây bắt đầu **sau mốc M5**, ước lượng v
 
 Con số 6–9 tháng không phải cảm tính. Bóc tách cho **1 kỹ sư có hỗ trợ AI agentic**, tính bằng số ngày làm việc:
 
-| Hạng mục                                                                  | Mốc | Ngày             |
-| ------------------------------------------------------------------------- | --- | ---------------- |
-| Nền tảng: monorepo, IndexedDB, File System Access, PWA, quản lý file      | M1  | 12–18            |
-| Nền giao diện: Tailwind + shadcn/ui, chuyển 9 primitive, design token dùng chung | M1 | 4–6 |
-| `ooxml-core` giải nén/nén giữ nguyên byte                                 | M2  | 6–9              |
-| `fidelity-harness` — **phát khác biệt máy đọc được**, không chỉ phần trăm | M2  | 6–9              |
-| Trình xem dùng `docx-preview`                                             | M2  | 3–5              |
-| Yjs làm nguồn dữ liệu gốc                                                 | M3  | 6–8              |
-| Đọc: paragraph, run, chuỗi phân giải kiểu                                 | M3  | 7–10             |
-| Đọc: danh sách nhiều cấp                                                  | M3  | 3–5              |
-| Đọc: bảng                                                                 | M3  | 5–8              |
-| Đọc: ảnh, siêu liên kết, dấu trang                                        | M3  | 4–6              |
-| Đọc: `sectPr`, đầu/chân trang, nút mờ                                     | M3  | 5–8              |
-| Đuôi dài gỡ lỗi chiều đọc                                                 | M3  | 7–11             |
-| Ghi: ánh xạ vị trí + định danh nút bền vững                               | M4  | 7–10             |
-| Ghi: theo dõi nút bẩn + tuần tự hóa chọn lọc                              | M4  | 4–7              |
-| Ghi: nút mới/xóa + kế thừa thuộc tính                                     | M4  | 6–9              |
-| Ghi: bảng và danh sách                                                    | M4  | 5–8              |
-| **Đuôi dài gỡ lỗi round-trip**                                            | M4  | **10–17**        |
-| Ghép lại thanh công cụ / phân trang với lược đồ mới                       | M5  | 3–5              |
-| Gia cố + dùng thử nội bộ + sửa lỗi                                        | M5  | 8–12             |
-| **Tổng** | | **111–171 ngày** |
+| Hạng mục                                                                         | Mốc | Ngày             |
+| -------------------------------------------------------------------------------- | --- | ---------------- |
+| Nền tảng: monorepo, IndexedDB, File System Access, PWA, quản lý file             | M1  | 12–18            |
+| Nền giao diện: Tailwind + shadcn/ui, chuyển 9 primitive, design token dùng chung | M1  | 4–6              |
+| `ooxml-core` giải nén/nén giữ nguyên byte                                        | M2  | 6–9              |
+| `fidelity-harness` — **phát khác biệt máy đọc được**, không chỉ phần trăm        | M2  | 6–9              |
+| Trình xem dùng `docx-preview`                                                    | M2  | 3–5              |
+| Yjs làm nguồn dữ liệu gốc                                                        | M3  | 6–8              |
+| Đọc: paragraph, run, chuỗi phân giải kiểu                                        | M3  | 7–10             |
+| Đọc: danh sách nhiều cấp                                                         | M3  | 3–5              |
+| Đọc: bảng                                                                        | M3  | 5–8              |
+| Đọc: ảnh, siêu liên kết, dấu trang                                               | M3  | 4–6              |
+| Đọc: `sectPr`, đầu/chân trang, nút mờ                                            | M3  | 5–8              |
+| Đuôi dài gỡ lỗi chiều đọc                                                        | M3  | 7–11             |
+| Ghi: ánh xạ vị trí + định danh nút bền vững                                      | M4  | 7–10             |
+| Ghi: theo dõi nút bẩn + tuần tự hóa chọn lọc                                     | M4  | 4–7              |
+| Ghi: nút mới/xóa + kế thừa thuộc tính                                            | M4  | 6–9              |
+| Ghi: bảng và danh sách                                                           | M4  | 5–8              |
+| **Đuôi dài gỡ lỗi round-trip**                                                   | M4  | **10–17**        |
+| Ghép lại thanh công cụ / phân trang với lược đồ mới                              | M5  | 3–5              |
+| Gia cố + dùng thử nội bộ + sửa lỗi                                               | M5  | 8–12             |
+| **Tổng**                                                                         |     | **111–171 ngày** |
 
 Trừ họp, chuyển ngữ cảnh, việc phát sinh và nghỉ phép, một người làm toàn thời gian thực tế chỉ có **19–20 ngày làm được việc mỗi tháng**. Chia ra: **6–9 tháng**, điểm giữa khoảng **7 tháng**.
 
@@ -668,20 +668,20 @@ Chưa có số liệu thực tế. Cần thu thập trước khi dùng lập lu�
 
 ## 11. Rủi ro và giảm thiểu
 
-| #   | Rủi ro                                                                                                                  | Khả năng   | Mức độ           | Giảm thiểu                                                                                                                                               |
-| --- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1  | Chất lượng round-trip `.docx` không đạt                                                                                 | Trung bình | **Nghiêm trọng** | Bộ đo từ M2; mốc chứng minh byte-identical ở ngày 60; dự phòng chỉ-đọc + chuyển tiếp Collabora                                                           |
-| R2  | **Toàn bộ dự án phụ thuộc 1 kỹ sư trong 7 tháng**                                                                       | Cao        | **Nghiêm trọng** | Rủi ro tổ chức lớn nhất. Bắt buộc: ghi chép quyết định kiến trúc, tài liệu hóa `ooxml-core`/`docx-io`, bổ sung người thứ hai chậm nhất đầu M3            |
-| R2b | **Bộ đo không phát được khác biệt máy đọc được** → vòng lặp gỡ lỗi quay về thủ công, tiến độ +1,5–2 tháng               | Trung bình | **Nghiêm trọng** | Coi đây là tiêu chí nghiệm thu của M2, không phải tính năng phụ. Nếu M2 không đạt, điều chỉnh kỳ vọng tiến độ ngay chứ không chờ tới M4                  |
-| R2d | **Lạm dụng AI sinh mã mà không kiểm chứng** — với OOXML, mã sai một cách hợp lý chỉ lộ ra ở file thứ hai trăm của khách | Cao        | **Nghiêm trọng** | Mọi ánh xạ phải có kiểm thử đơn vị đối chiếu đặc tả ECMA-376; bộ đo chạy mỗi lần build; không nhận mã mà chưa hiểu                                       |
-| R2c | **Mất động lực do chu kỳ dài không có kết quả nhìn thấy** — rủi ro thật với dự án solo 7 tháng                          | Trung bình | Nghiêm trọng     | Chính là lý do chia M1–M5: mỗi mốc đều có thứ demo được, M2 còn triển khai thật được                                                                     |
-| R3 | `pptx-viewer`: dự án 5 tháng tuổi, một tác giả, ~1 bản phát hành/ngày, mã sinh bằng AI quy mô lớn. Tính năng đầy đủ nhưng **chưa được kiểm chứng ngoài thực địa** | Cao | Trung bình | Khảo sát 2 tuần **bằng file thật của khách**, không dùng file demo; fork và coi là mã nhà; ghim phiên bản cứng. Chi tiết mục 6.4 |
-| R4  | Khoảng cách tính năng Univer bản mở vs Pro                                                                              | Trung bình | Trung bình       | Khảo sát 1 tuần đầu Giai đoạn 6, trước khi đầu tư sâu                                                                                                    |
-| R5  | File System Access API chỉ có trên Chromium                                                                             | Chắc chắn  | Thấp             | Dự phòng bằng input file + tải blob cho Firefox/Safari                                                                                                   |
-| R6  | **Trình duyệt xóa IndexedDB** (Safari xóa sau 7 ngày không dùng)                                                        | Trung bình | **Nghiêm trọng** | Dùng Storage Persistence API; cảnh báo rõ cho người dùng; khuyến khích lưu lên Drive; không bao giờ để IndexedDB là bản duy nhất của tài liệu quan trọng |
-| R9 | **Ba ứng dụng trông không giống nhau.** Univer và `pptx-viewer` mang giao diện riêng (toolbar, ribbon, bảng thuộc tính), không tự động theo shadcn. Đánh thẳng vào lập luận số một để thay Collabora là "giao diện thống nhất với OneMail" | Cao | Trung bình | Bộ design token dùng chung dựng từ M1, điều khiển đồng thời theme shadcn và ghi đè theme Univer/pptx-viewer. Phải thiết kế chủ động ngay từ đầu, không hy vọng có sẵn |
-| R7  | API OneMail/Drive thay đổi                                                                                              | Thấp       | Trung bình       | Cô lập sau `auth-sdk` và `storage-adapter`                                                                                                               |
-| R8  | Áp lực rút ngắn tiến độ giữa chừng                                                                                      | Trung bình | Trung bình       | Hai đòn bẩy đã chuẩn bị sẵn ở mục 4.4, để lãnh đạo quyết                                                                                                 |
+| #   | Rủi ro                                                                                                                                                                                                                                     | Khả năng   | Mức độ           | Giảm thiểu                                                                                                                                                            |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | Chất lượng round-trip `.docx` không đạt                                                                                                                                                                                                    | Trung bình | **Nghiêm trọng** | Bộ đo từ M2; mốc chứng minh byte-identical ở ngày 60; dự phòng chỉ-đọc + chuyển tiếp Collabora                                                                        |
+| R2  | **Toàn bộ dự án phụ thuộc 1 kỹ sư trong 7 tháng**                                                                                                                                                                                          | Cao        | **Nghiêm trọng** | Rủi ro tổ chức lớn nhất. Bắt buộc: ghi chép quyết định kiến trúc, tài liệu hóa `ooxml-core`/`docx-io`, bổ sung người thứ hai chậm nhất đầu M3                         |
+| R2b | **Bộ đo không phát được khác biệt máy đọc được** → vòng lặp gỡ lỗi quay về thủ công, tiến độ +1,5–2 tháng                                                                                                                                  | Trung bình | **Nghiêm trọng** | Coi đây là tiêu chí nghiệm thu của M2, không phải tính năng phụ. Nếu M2 không đạt, điều chỉnh kỳ vọng tiến độ ngay chứ không chờ tới M4                               |
+| R2d | **Lạm dụng AI sinh mã mà không kiểm chứng** — với OOXML, mã sai một cách hợp lý chỉ lộ ra ở file thứ hai trăm của khách                                                                                                                    | Cao        | **Nghiêm trọng** | Mọi ánh xạ phải có kiểm thử đơn vị đối chiếu đặc tả ECMA-376; bộ đo chạy mỗi lần build; không nhận mã mà chưa hiểu                                                    |
+| R2c | **Mất động lực do chu kỳ dài không có kết quả nhìn thấy** — rủi ro thật với dự án solo 7 tháng                                                                                                                                             | Trung bình | Nghiêm trọng     | Chính là lý do chia M1–M5: mỗi mốc đều có thứ demo được, M2 còn triển khai thật được                                                                                  |
+| R3  | `pptx-viewer`: dự án 5 tháng tuổi, một tác giả, ~1 bản phát hành/ngày, mã sinh bằng AI quy mô lớn. Tính năng đầy đủ nhưng **chưa được kiểm chứng ngoài thực địa**                                                                          | Cao        | Trung bình       | Khảo sát 2 tuần **bằng file thật của khách**, không dùng file demo; fork và coi là mã nhà; ghim phiên bản cứng. Chi tiết mục 6.4                                      |
+| R4  | Khoảng cách tính năng Univer bản mở vs Pro                                                                                                                                                                                                 | Trung bình | Trung bình       | Khảo sát 1 tuần đầu Giai đoạn 6, trước khi đầu tư sâu                                                                                                                 |
+| R5  | File System Access API chỉ có trên Chromium                                                                                                                                                                                                | Chắc chắn  | Thấp             | Dự phòng bằng input file + tải blob cho Firefox/Safari                                                                                                                |
+| R6  | **Trình duyệt xóa IndexedDB** (Safari xóa sau 7 ngày không dùng)                                                                                                                                                                           | Trung bình | **Nghiêm trọng** | Dùng Storage Persistence API; cảnh báo rõ cho người dùng; khuyến khích lưu lên Drive; không bao giờ để IndexedDB là bản duy nhất của tài liệu quan trọng              |
+| R9  | **Ba ứng dụng trông không giống nhau.** Univer và `pptx-viewer` mang giao diện riêng (toolbar, ribbon, bảng thuộc tính), không tự động theo shadcn. Đánh thẳng vào lập luận số một để thay Collabora là "giao diện thống nhất với OneMail" | Cao        | Trung bình       | Bộ design token dùng chung dựng từ M1, điều khiển đồng thời theme shadcn và ghi đè theme Univer/pptx-viewer. Phải thiết kế chủ động ngay từ đầu, không hy vọng có sẵn |
+| R7  | API OneMail/Drive thay đổi                                                                                                                                                                                                                 | Thấp       | Trung bình       | Cô lập sau `auth-sdk` và `storage-adapter`                                                                                                                            |
+| R8  | Áp lực rút ngắn tiến độ giữa chừng                                                                                                                                                                                                         | Trung bình | Trung bình       | Hai đòn bẩy đã chuẩn bị sẵn ở mục 4.4, để lãnh đạo quyết                                                                                                              |
 
 ---
 

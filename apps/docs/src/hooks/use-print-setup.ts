@@ -5,7 +5,9 @@ export const usePrintSetup = (activeDoc: DocRecord | undefined): void => {
   useEffect(() => {
     const beforePrint = () => {
       const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
-      const { width, height } = PAPER_SIZES[setup.paperSize];
+      const paper = PAPER_SIZES[setup.paperSize];
+      const { width, height } =
+        setup.orientation === 'landscape' ? { width: paper.height, height: paper.width } : paper;
       const { top, right, bottom, left } = setup.margins;
       const root = document.documentElement;
       root.style.setProperty('--print-size', `${width}mm ${height}mm`);

@@ -54,11 +54,11 @@
 
 ## Risk Assessment
 
-| Risk | Mitigation |
-| --- | --- |
-| Relative time lech timezone | Dung Intl voi timezone local, unit gan dung (phut/gio/ngay) |
-| Demo route vao production | Guard NODE_ENV !== 'production' |
-| storage.estimate khong chinh xac 100% | Hien "~", dung lam chi so gan dung |
+| Risk                                  | Mitigation                                                  |
+| ------------------------------------- | ----------------------------------------------------------- |
+| Relative time lech timezone           | Dung Intl voi timezone local, unit gan dung (phut/gio/ngay) |
+| Demo route vao production             | Guard NODE_ENV !== 'production'                             |
+| storage.estimate khong chinh xac 100% | Hien "~", dung lam chi so gan dung                          |
 
 ## Next Steps
 

@@ -24,10 +24,7 @@ export const formatDateTime = (
   return new Intl.DateTimeFormat(LOCALE_TAGS[locale], defaultOptions).format(d);
 };
 
-export const formatRelativeTime = (
-  date: Date | string | number,
-  locale: Locale = 'vi',
-): string => {
+export const formatRelativeTime = (date: Date | string | number, locale: Locale = 'vi'): string => {
   const d = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
   if (Number.isNaN(d.getTime())) return '';
 

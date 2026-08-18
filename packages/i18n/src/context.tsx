@@ -24,10 +24,7 @@ const DICTIONARIES: Record<Locale, TranslationSchema> = {
   en,
 };
 
-const resolveValue = (
-  dict: Record<string, unknown>,
-  path: string,
-): string | undefined => {
+const resolveValue = (dict: Record<string, unknown>, path: string): string | undefined => {
   const segments = path.split('.');
   let current: unknown = dict;
 
@@ -67,10 +64,7 @@ export interface I18nProviderProps {
   defaultLocale?: Locale;
 }
 
-export const I18nProvider = ({
-  children,
-  defaultLocale,
-}: I18nProviderProps) => {
+export const I18nProvider = ({ children, defaultLocale }: I18nProviderProps) => {
   const [locale, setLocaleState] = useState<Locale>(() => defaultLocale ?? getInitialLocale());
 
   const setLocale = useCallback((nextLocale: Locale) => {
@@ -120,8 +114,7 @@ export const I18nProvider = ({
   );
 
   const formatNumber = useCallback(
-    (value: number, options?: Intl.NumberFormatOptions) =>
-      baseFormatNumber(value, locale, options),
+    (value: number, options?: Intl.NumberFormatOptions) => baseFormatNumber(value, locale, options),
     [locale],
   );
 

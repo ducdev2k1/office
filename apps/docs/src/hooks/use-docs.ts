@@ -34,8 +34,7 @@ export const useDocs = (): DocsState => {
   const [activeId, setActiveId] = useState(() => 'doc-roadmap');
   const [saveState, setSaveState] = useState('Dang tai...');
   const activeDoc =
-    docs.find((doc) => doc.id === activeId && !doc.deletedAt) ??
-    docs.find((doc) => !doc.deletedAt);
+    docs.find((doc) => doc.id === activeId && !doc.deletedAt) ?? docs.find((doc) => !doc.deletedAt);
   const activeDocRef = useRef(activeDoc);
 
   useEffect(() => {
@@ -70,7 +69,11 @@ export const useDocs = (): DocsState => {
   const updateTitle = (title: string): void => {
     const currentDoc = activeDocRef.current;
     if (!currentDoc) return;
-    updateDoc(currentDoc.id, (doc) => ({ ...doc, title: title || 'Chua co tieu de', updatedAt: now() }));
+    updateDoc(currentDoc.id, (doc) => ({
+      ...doc,
+      title: title || 'Chua co tieu de',
+      updatedAt: now(),
+    }));
   };
 
   const addDoc = (): string => {
@@ -98,7 +101,11 @@ export const useDocs = (): DocsState => {
   };
 
   const rename = (id: string, title: string): void => {
-    updateDoc(id, (doc) => ({ ...doc, title: title.trim() || 'Chua co tieu de', updatedAt: now() }));
+    updateDoc(id, (doc) => ({
+      ...doc,
+      title: title.trim() || 'Chua co tieu de',
+      updatedAt: now(),
+    }));
   };
 
   const duplicate = (id: string): void => {

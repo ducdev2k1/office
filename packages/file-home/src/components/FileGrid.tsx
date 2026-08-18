@@ -51,7 +51,12 @@ export const FileGrid = ({ files, accentVar, tab, actions }: FileGridProps) => {
                 aria-label={t('fileActions.open')}
                 onClick={() => actions.onOpen(file.id)}
               >
-                <Icon name={KIND_ICON[file.kind]} size={48} className="text-muted-foreground" aria-hidden="true" />
+                <Icon
+                  name={KIND_ICON[file.kind]}
+                  size={48}
+                  className="text-muted-foreground"
+                  aria-hidden="true"
+                />
               </button>
               <div className="flex items-center gap-2 p-2">
                 <span

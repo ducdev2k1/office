@@ -22,47 +22,43 @@ const CloseIcon = () => (
   </svg>
 );
 
-function DialogOverlay({
+const DialogOverlay = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof BaseDialog.Backdrop>) {
-  return (
-    <BaseDialog.Backdrop
-      className={cn(
-        'fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ease-out data-[ending-style]:opacity-0 data-[starting-style]:opacity-0',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+}: React.ComponentPropsWithoutRef<typeof BaseDialog.Backdrop>) => (
+  <BaseDialog.Backdrop
+    className={cn(
+      'fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ease-out data-[ending-style]:opacity-0 data-[starting-style]:opacity-0',
+      className,
+    )}
+    {...props}
+  />
+);
 
-function DialogContent({
+const DialogContent = ({
   className,
   children,
   ...props
-}: React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>) {
-  return (
-    <BaseDialog.Portal>
-      <BaseDialog.Backdrop className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ease-out data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
-      <BaseDialog.Viewport className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <BaseDialog.Popup
-          className={cn(
-            'relative z-50 grid w-full max-w-lg gap-4 rounded-xl border border-border bg-card p-6 shadow-2xl transition-all duration-200 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
-            className,
-          )}
-          {...props}
-        >
-          {children}
-          <BaseDialog.Close className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground opacity-70 transition-all hover:bg-hover hover:opacity-100 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-            <CloseIcon />
-            <span className="sr-only">Dong</span>
-          </BaseDialog.Close>
-        </BaseDialog.Popup>
-      </BaseDialog.Viewport>
-    </BaseDialog.Portal>
-  );
-}
+}: React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>) => (
+  <BaseDialog.Portal>
+    <BaseDialog.Backdrop className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ease-out data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
+    <BaseDialog.Viewport className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <BaseDialog.Popup
+        className={cn(
+          'relative z-50 grid w-full max-w-lg gap-4 rounded-xl border border-border bg-card p-6 shadow-2xl transition-all duration-200 ease-out data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+        <BaseDialog.Close className="absolute right-4 top-4 rounded-md p-1.5 text-muted-foreground opacity-70 transition-all hover:bg-hover hover:opacity-100 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+          <CloseIcon />
+          <span className="sr-only">Đóng</span>
+        </BaseDialog.Close>
+      </BaseDialog.Popup>
+    </BaseDialog.Viewport>
+  </BaseDialog.Portal>
+);
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)} {...props} />

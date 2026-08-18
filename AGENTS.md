@@ -100,3 +100,60 @@ export function DocumentList() {
 - **Dữ liệu dịch**: Lưu dưới dạng file JSON thuần theo namespace (`common.json`, `docs.json`, `app-shell.json`) trong `packages/i18n/src/locales/vi/` và `en/`.
 - **Tự động suy diễn type**: Type schema suy diễn trực tiếp 100% từ cấu trúc JSON; đảm bảo mọi key mới thêm vào file Tiếng Việt (`vi`) bắt buộc phải có mặt tương ứng ở Tiếng Anh (`en`).
 - **Sử dụng Hook**: Dùng `const { t } = useTranslation('namespace')` trong các React component.
+
+---
+
+## 8. Giới hạn Kích thước File (File Length Limit)
+
+- **Mỗi file code tối đa không vượt quá 400 dòng**:
+  - Không viết các file quá dài/monolithic.
+  - Khi một file có xu hướng vượt quá 400 dòng, bắt buộc phải tách nhỏ (modularize) thành các sub-components, custom hooks, helper utils hoặc file constants/types riêng biệt.
+  - Tuân thủ nguyên tắc Single Responsibility Principle (SRP), KISS và DRY.
+
+---
+
+## 9. Phân tách Tầng Giao diện & Logic & Quy ước Đặt tên File (File Suffix Convention)
+
+- **File `.tsx` chỉ đảm nhiệm vai trò UI (Presentational Component)**:
+  - Chỉ chứa cấu trúc JSX, styling, gắn kết event handlers từ props/custom hooks và hiển thị dữ liệu.
+  - Tuyệt đối không nhồi nhét logic xử lý tính toán nặng, business state cồng kềnh hoặc API/storage calls trực tiếp trong component `.tsx`.
+- **Quy ước đặt tên file theo hậu tố (Suffix Naming)**:
+  - Bắt buộc đặt tên file kèm hậu tố đại diện cho thư mục chức năng để nhìn vào tên file là nhận diện được ngay vai trò:
+
+```text
+src/
+├── components/                 # Component UI (.tsx)
+│   ├── UserProfile.tsx
+│   ├── Header.tsx
+│   └── DocumentList.tsx
+│
+├── hooks/                      # Custom hooks (.ts) - bắt đầu bằng 'use'
+│   ├── useAuth.ts
+│   ├── useUser.ts
+│   └── useProduct.ts
+│
+├── services/                   # API / Storage services - hậu tố '.service.ts'
+│   ├── auth.service.ts
+│   ├── user.service.ts
+│   └── product.service.ts
+│
+├── types/                      # TypeScript types & interfaces - hậu tố '.types.ts'
+│   ├── auth.types.ts
+│   ├── user.types.ts
+│   └── product.types.ts
+│
+├── utils/                      # Helper functions thuần túy - hậu tố '.utils.ts'
+│   ├── format.utils.ts
+│   ├── validate.utils.ts
+│   ├── storage.utils.ts
+│   └── date.utils.ts
+│
+├── constants/                  # Hằng số, config cố định - hậu tố '.constants.ts'
+│   ├── routes.constants.ts
+│   └── config.constants.ts
+│
+└── store/                      # State stores (nếu dùng) - hậu tố '.store.ts'
+    ├── auth.store.ts
+    └── user.store.ts
+```
+

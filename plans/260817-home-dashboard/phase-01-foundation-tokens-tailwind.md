@@ -9,7 +9,7 @@
 
 1. Token moi trong `packages/ui-kit/src/tokens.css`:
    ```css
-   --o-kind-docs:   var(--o-primary);
+   --o-kind-docs: var(--o-primary);
    --o-kind-sheets: var(--info);
    --o-kind-slides: var(--o-accent);
    ```
@@ -49,10 +49,10 @@
 
 ## Risk Assessment
 
-| Risk | Mitigation |
-| --- | --- |
+| Risk                                                           | Mitigation                                                                                                             |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Tailwind v4 khong quet source trong packages (rui ro lon nhat) | Phase nay la spike dau tien; neu that bai thi chuyen huong: build CSS trong package hoac duong dan `@source` tuyet doi |
-| Token --o-kind trung mau nhau (green giong blue trong dark) | Kiem tra tuong phan 2 theme, dieu chinh gia tri cung hue |
+| Token --o-kind trung mau nhau (green giong blue trong dark)    | Kiem tra tuong phan 2 theme, dieu chinh gia tri cung hue                                                               |
 
 ## Next Steps
 

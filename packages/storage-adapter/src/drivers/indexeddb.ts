@@ -36,9 +36,7 @@ const withStore = <T>(
   });
 
 /** Driver IndexedDB — nguon du lieu goc cho offline-first. */
-export class IndexedDbStore<T extends StoredDocument = StoredDocument>
-  implements DocumentStore<T>
-{
+export class IndexedDbStore<T extends StoredDocument = StoredDocument> implements DocumentStore<T> {
   readonly name: string;
   private readonly dbName: string;
   private readonly storeName: string;

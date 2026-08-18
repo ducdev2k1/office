@@ -1,5 +1,4 @@
 import type { ViewMode } from '@/editor/use-pagination';
-import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
 import {
   Button,
@@ -10,6 +9,7 @@ import {
   DropdownMenuTrigger,
   Icon,
 } from '@office/ui-kit';
+import type { Editor } from '@tiptap/core';
 import { useMemo, useRef } from 'react';
 
 export interface MenuAction {
@@ -176,43 +176,43 @@ export const MenuBar = ({
             onClick: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
           },
           'separator',
-          toggleMark('bold', t('format.bold'), 'Ctrl+B'),
-          toggleMark('italic', t('format.italic'), 'Ctrl+I'),
-          toggleMark('underline', t('format.underline'), 'Ctrl+U'),
-          toggleMark('strike', t('format.strikethrough'), 'Ctrl+Shift+X'),
+          toggleMark('bold', t('menu.format.bold'), 'Ctrl+B'),
+          toggleMark('italic', t('menu.format.italic'), 'Ctrl+I'),
+          toggleMark('underline', t('menu.format.underline'), 'Ctrl+U'),
+          toggleMark('strike', t('menu.format.strikethrough'), 'Ctrl+Shift+X'),
           'separator',
           {
-            label: t('format.subscript'),
+            label: t('menu.format.subscript'),
             onClick: () => editor?.chain().focus().toggleSubscript().run(),
           },
           {
-            label: t('format.superscript'),
+            label: t('menu.format.superscript'),
             onClick: () => editor?.chain().focus().toggleSuperscript().run(),
           },
           'separator',
           {
-            label: t('format.bulletList'),
+            label: t('menu.format.bulletList'),
             checked: editor?.isActive('bulletList') ?? false,
             onClick: () => editor?.chain().focus().toggleBulletList().run(),
           },
           {
-            label: t('format.orderedList'),
+            label: t('menu.format.orderedList'),
             checked: editor?.isActive('orderedList') ?? false,
             onClick: () => editor?.chain().focus().toggleOrderedList().run(),
           },
           'separator',
           {
-            label: t('format.alignLeft'),
+            label: t('menu.format.alignLeft'),
             checked: editor?.isActive({ textAlign: 'left' }) ?? false,
             onClick: () => editor?.chain().focus().setTextAlign('left').run(),
           },
           {
-            label: t('format.alignCenter'),
+            label: t('menu.format.alignCenter'),
             checked: editor?.isActive({ textAlign: 'center' }) ?? false,
             onClick: () => editor?.chain().focus().setTextAlign('center').run(),
           },
           {
-            label: t('format.alignRight'),
+            label: t('menu.format.alignRight'),
             checked: editor?.isActive({ textAlign: 'right' }) ?? false,
             onClick: () => editor?.chain().focus().setTextAlign('right').run(),
           },
@@ -221,8 +221,16 @@ export const MenuBar = ({
       {
         label: t('menu.tools.label'),
         items: [
-          { label: `${t('menu.tools.wordCount')}: ${wordCount}`, disabled: true, onClick: () => undefined },
-          { label: `Ký tự: ${charCount}`, disabled: true, onClick: () => undefined },
+          {
+            label: `${t('menu.tools.wordCount')}: ${wordCount}`,
+            disabled: true,
+            onClick: () => undefined,
+          },
+          {
+            label: `${t('menu.tools.characterCount')}: ${charCount}`,
+            disabled: true,
+            onClick: () => undefined,
+          },
           'separator',
           { label: t('menu.tools.shortcuts'), onClick: onHelp },
         ],
@@ -232,13 +240,35 @@ export const MenuBar = ({
         items: [{ label: t('menu.help.shortcuts'), shortcut: 'F1', onClick: onHelp }],
       },
     ];
-  }, [editor, viewMode, canDelete, wordCount, charCount, onNewDoc, onToggleSidebar, onPageSetup, onPrint, onExportHtml, onExportText, onDelete, onToggleFind, onViewModeChange, onInsertTable, onInsertPageBreak, onHelp, t]);
+  }, [
+    editor,
+    viewMode,
+    canDelete,
+    wordCount,
+    charCount,
+    onNewDoc,
+    onToggleSidebar,
+    onPageSetup,
+    onPrint,
+    onExportHtml,
+    onExportText,
+    onDelete,
+    onToggleFind,
+    onViewModeChange,
+    onInsertTable,
+    onInsertPageBreak,
+    onHelp,
+    t,
+  ]);
 
   return (
-    <div className="menu-row" role="menubar" aria-label="Menu bar">
+    <div className="menu-row" role="menubar" aria-label={t('menu.ariaLabel')}>
       {menus.map((menu) => (
         <DropdownMenu key={menu.label}>
-          <DropdownMenuTrigger className="menu-trigger" render={<Button variant="ghost" size="sm" />}>
+          <DropdownMenuTrigger
+            className="menu-trigger"
+            render={<Button variant="ghost" size="sm" />}
+          >
             {menu.label}
             <Icon name="chevron-down" className="menu-chevron" />
           </DropdownMenuTrigger>

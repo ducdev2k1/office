@@ -11,12 +11,25 @@
    ```ts
    type FileKind = 'docs' | 'sheets' | 'slides';
    interface FileRecord {
-     id: string; title: string; kind: FileKind;
-     createdAt: string; updatedAt: string; lastOpenedAt: string;
-     starred: boolean; deletedAt: string | null;
+     id: string;
+     title: string;
+     kind: FileKind;
+     createdAt: string;
+     updatedAt: string;
+     lastOpenedAt: string;
+     starred: boolean;
+     deletedAt: string | null;
    }
-   interface ProductConfig { kind, name, createLabel, startLabel, blankLabel,
-     editorPath(id): string, accentVar: string, templates: {id,label}[] }
+   interface ProductConfig {
+     kind;
+     name;
+     createLabel;
+     startLabel;
+     blankLabel;
+     editorPath(id): string;
+     accentVar: string;
+     templates: { id; label }[];
+   }
    type FileSort = 'lastOpened' | 'updated' | 'name';
    type FileView = 'list' | 'grid';
    ```
@@ -71,10 +84,10 @@
 
 ## Risk Assessment
 
-| Risk | Mitigation |
-| --- | --- |
-| Migration dung du lieu cu | Map default an toan, khong mutate object goc |
-| Props phong to (actions) | Gom `actions` object thanh 1 prop; component con nhan tung callback can thiet |
+| Risk                       | Mitigation                                                                             |
+| -------------------------- | -------------------------------------------------------------------------------------- |
+| Migration dung du lieu cu  | Map default an toan, khong mutate object goc                                           |
+| Props phong to (actions)   | Gom `actions` object thanh 1 prop; component con nhan tung callback can thiet          |
 | IndexedDB async -> loading | FileHome nhan files da load (useDocs dang async), HomePage render skeleton khi chua co |
 
 ## Next Steps

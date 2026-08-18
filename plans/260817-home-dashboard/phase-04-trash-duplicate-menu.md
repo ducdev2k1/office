@@ -53,10 +53,10 @@
 
 ## Risk Assessment
 
-| Risk | Mitigation |
-| --- | --- |
-| Base UI Menu a11y/trap loi | Dung pattern khuyen nghi cua Base UI; kiem tra keyboard (arrow, Esc) |
-| Rename blur vs Enter dua event | Xu ly keydown truoc blur (flag), giu draft state |
+| Risk                           | Mitigation                                                           |
+| ------------------------------ | -------------------------------------------------------------------- |
+| Base UI Menu a11y/trap loi     | Dung pattern khuyen nghi cua Base UI; kiem tra keyboard (arrow, Esc) |
+| Rename blur vs Enter dua event | Xu ly keydown truoc blur (flag), giu draft state                     |
 
 ## Next Steps
 

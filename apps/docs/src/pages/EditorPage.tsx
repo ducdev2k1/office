@@ -1,28 +1,25 @@
-import { EditorContent } from '@tiptap/react';
-import { useTranslation } from '@office/i18n';
-import { Icon } from '@office/ui-kit';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { SearchAndReplace } from '@/components/tiptap-ui/search-and-replace';
 import { DocsSidebar } from '@/components/DocsSidebar';
-import {
-  EditorContextMenu,
-  type ContextMenuPosition,
-} from '@/components/EditorContextMenu';
+import { EditorContextMenu, type ContextMenuPosition } from '@/components/EditorContextMenu';
 import { Header } from '@/components/Header';
 import { HelpModal } from '@/components/HelpModal';
 import { PageSetupPanel } from '@/components/PageSetupPanel';
+import { SearchAndReplace } from '@/components/tiptap-ui/search-and-replace';
 import { Toolbar } from '@/components/Toolbar';
+import { PAGE_GAP } from '@/editor/pagination';
 import { useDocsEditor } from '@/editor/use-docs-editor';
 import { usePagination } from '@/editor/use-pagination';
-import { useEditorActions } from '@/hooks/use-editor-actions';
 import { useDocs } from '@/hooks/use-docs';
+import { useEditorActions } from '@/hooks/use-editor-actions';
 import { useGlobalShortcuts } from '@/hooks/use-global-shortcuts';
 import { usePrintSetup } from '@/hooks/use-print-setup';
 import { useTheme } from '@/hooks/use-theme';
 import { getOutline } from '@/lib/utils';
 import { DEFAULT_PAGE_SETUP, getPaperSizePx, type PageSetup } from '@/types';
-import { PAGE_GAP } from '@/editor/pagination';
+import { useTranslation } from '@office/i18n';
+import { Icon } from '@office/ui-kit';
+import { EditorContent } from '@tiptap/react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const QUOTA_WARN_BYTES = 4.5 * 1024 * 1024;
 
@@ -41,6 +38,10 @@ export const EditorPage = () => {
     deleteDoc,
     setActiveDocPageSetup,
     markOpened,
+    rename,
+    duplicate,
+    star,
+    trash,
   } = useDocs();
   const { theme, toggleTheme } = useTheme();
   const [query, setQuery] = useState('');
@@ -173,6 +174,7 @@ export const EditorPage = () => {
         <Header
           title={activeDoc?.title ?? ''}
           onTitleChange={updateTitle}
+          onMenuToggle={handleToggleSidebar}
           theme={theme}
           onToggleTheme={toggleTheme}
           menuActions={{
@@ -231,6 +233,10 @@ export const EditorPage = () => {
             onSelect={handleSelectDoc}
             onAdd={addDoc}
             onClose={handleCloseSidebar}
+            onRename={rename}
+            onDuplicate={duplicate}
+            onStar={star}
+            onTrash={trash}
           />
           {!sidebarOpen && (
             <button
@@ -254,9 +260,7 @@ export const EditorPage = () => {
             }}
           >
             {isOverLimit && (
-              <div className="page-limit-banner">
-                {t('docs.warnings.pageLimitExceeded')}
-              </div>
+              <div className="page-limit-banner">{t('docs.warnings.pageLimitExceeded')}</div>
             )}
             <div
               className={`page-viewport ${viewMode === 'paged' ? 'is-paged' : ''}`}
@@ -284,10 +288,17 @@ export const EditorPage = () => {
         </div>
         <footer className="statusbar">
           <span>{t('common.status.wordsCount', { count: wordCount })}</span>
-          <span>{t('common.status.charsCount', { count: editor?.state.doc.textContent.length ?? 0 })}</span>
-          {viewMode === 'paged' && <span>{t('common.status.pagesCount', { count: pageCount })}</span>}
+          <span>
+            {t('common.status.charsCount', { count: editor?.state.doc.textContent.length ?? 0 })}
+          </span>
+          {viewMode === 'paged' && (
+            <span>{t('common.status.pagesCount', { count: pageCount })}</span>
+          )}
           <span className={storageBytes > QUOTA_WARN_BYTES ? 'quota-warn' : ''}>
-            {t('common.status.quotaWarning', { used: (storageBytes / (1024 * 1024)).toFixed(1), total: '5' })}
+            {t('common.status.quotaWarning', {
+              used: (storageBytes / (1024 * 1024)).toFixed(1),
+              total: '5',
+            })}
           </span>
           <span>
             <Icon name="check" aria-hidden="true" /> {saveState}
@@ -299,9 +310,15 @@ export const EditorPage = () => {
             open={findOpen}
             onOpen={() => setFindOpen(true)}
             onClose={() => setFindOpen(false)}
+            style={{
+              position: 'fixed',
+              top: '128px',
+              right: '16px',
+              zIndex: 40,
+            }}
           />
         )}
-        {activeDoc?.pageSetup && (
+        {pageSetupOpen && activeDoc?.pageSetup && (
           <PageSetupPanel
             open={pageSetupOpen}
             setup={activeDoc.pageSetup}

@@ -1,3 +1,4 @@
+import { PAPER_SIZES, type PageSetup } from '@/types';
 import { useTranslation } from '@office/i18n';
 import {
   Button,
@@ -9,7 +10,6 @@ import {
   DialogTitle,
 } from '@office/ui-kit';
 import { useEffect, useState } from 'react';
-import { PAPER_SIZES, type PageSetup } from '@/types';
 
 interface PageSetupPanelProps {
   open: boolean;
@@ -94,7 +94,9 @@ export const PageSetupPanel = ({ open, setup, onApply, onClose }: PageSetupPanel
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="text-xs font-medium text-foreground">{t('pageSetup.margins')} (mm)</span>
+            <span className="text-xs font-medium text-foreground">
+              {t('pageSetup.margins')} (mm)
+            </span>
             <div className="grid grid-cols-2 gap-3">
               {(['top', 'bottom', 'left', 'right'] as const).map((side) => (
                 <label

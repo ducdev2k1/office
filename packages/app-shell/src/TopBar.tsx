@@ -1,6 +1,6 @@
 import { useTranslation } from '@office/i18n';
 import type { Theme } from '@office/ui-kit';
-import { Icon } from '@office/ui-kit';
+import { Button, Icon } from '@office/ui-kit';
 import { ProductSwitcher } from './ProductSwitcher';
 import type { ProductIdentity } from './types';
 
@@ -21,6 +21,11 @@ export const TopBar = ({
   onToggleTheme,
 }: TopBarProps) => {
   const { t } = useTranslation('appShell');
+  const { t: tCommon, locale, setLocale } = useTranslation('common');
+
+  const handleToggleLocale = () => {
+    setLocale(locale === 'vi' ? 'en' : 'vi');
+  };
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background px-4">
@@ -39,11 +44,24 @@ export const TopBar = ({
           />
         </label>
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
+        <Button
+          className="header-icon-button font-medium text-xs px-2"
+          type="button"
+          aria-label={tCommon('language.switchLanguage')}
+          title={locale === 'vi' ? tCommon('language.switchToEn') : tCommon('language.switchToVi')}
+          onClick={handleToggleLocale}
+          variant="ghost"
+          size="sm"
+        >
+          <span className="font-semibold">{locale.toUpperCase()}</span>
+        </Button>
         <button
           type="button"
-          aria-label={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
-          title={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
+          aria-label={
+            theme === 'dark' ? tCommon('theme.switchToLight') : tCommon('theme.switchToDark')
+          }
+          title={theme === 'dark' ? tCommon('theme.switchToLight') : tCommon('theme.switchToDark')}
           className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-hover hover:text-foreground"
           onClick={onToggleTheme}
         >

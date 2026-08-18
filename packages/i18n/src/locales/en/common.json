@@ -40,7 +40,9 @@
   "language": {
     "vi": "Tiếng Việt",
     "en": "English",
-    "switchLanguage": "Switch language"
+    "switchLanguage": "Switch language",
+    "switchToVi": "Switch to Vietnamese",
+    "switchToEn": "Switch to English"
   },
   "status": {
     "savedToDevice": "Saved to device",

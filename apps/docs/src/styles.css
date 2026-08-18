@@ -123,11 +123,16 @@ textarea:focus-visible {
   align-items: center;
 }
 .file-heading {
+  display: flex;
+  align-items: center;
   min-width: 0;
+  flex: 1 1 auto;
   gap: 11px;
 }
 .file-heading-copy {
   min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 .docs-file-icon {
   display: grid;
@@ -135,6 +140,7 @@ textarea:focus-visible {
   height: 36px;
   place-items: center;
   color: #1a73e8;
+  flex-shrink: 0;
 }
 .docs-file-icon svg {
   width: 29px;
@@ -143,13 +149,38 @@ textarea:focus-visible {
   stroke-width: 1.7;
 }
 .title-line {
+  display: flex;
+  align-items: center;
   gap: 4px;
   min-width: 0;
+  max-width: 100%;
   height: 31px;
 }
+.title-input-wrapper {
+  display: inline-grid;
+  align-items: center;
+  position: relative;
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow: hidden;
+}
+.title-input-sizer {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  white-space: pre;
+  padding: 2px 7px;
+  font-family: 'Google Sans', Roboto, sans-serif;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 400;
+  border: 1px solid transparent;
+  pointer-events: none;
+  min-width: 60px;
+}
 .title-input {
-  width: 250px;
-  min-width: 80px;
+  grid-area: 1 / 1;
+  width: 100%;
+  min-width: 0;
   height: 28px;
   padding: 2px 7px;
   border: 1px solid transparent;
@@ -159,7 +190,12 @@ textarea:focus-visible {
   font-family: 'Google Sans', Roboto, sans-serif;
   font-size: 18px;
   line-height: 22px;
-  transition: border-color 150ms ease, background-color 150ms ease;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
 }
 .title-input:hover {
   border-color: var(--border);
@@ -169,7 +205,16 @@ textarea:focus-visible {
   background: var(--background);
   outline: none;
 }
-.plain-icon-button,
+.plain-icon-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #5f6368;
+  flex-shrink: 0;
+}
 .header-icon-button {
   display: inline-flex;
   justify-content: center;
@@ -192,10 +237,16 @@ textarea:focus-visible {
   display: inline-flex;
   color: #5f6368;
   padding-left: 3px;
+  flex-shrink: 0;
 }
 .cloud-state svg {
   width: 18px;
   height: 18px;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 .menu-row {
   gap: 1px;
@@ -502,7 +553,10 @@ textarea:focus-visible {
   color: var(--muted-foreground);
   cursor: pointer;
   animation: sidebarBtnFadeIn 180ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
 }
 @keyframes sidebarBtnFadeIn {
   from {
@@ -547,7 +601,9 @@ textarea:focus-visible {
   border: none;
   background: transparent;
   cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
 }
 .back-button:hover,
 .add-tab-button:hover {
@@ -596,19 +652,25 @@ textarea:focus-visible {
 .doc-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-height: 40px;
   width: 100%;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 6px 6px 6px 12px;
+  border-radius: 12px;
   border: none;
   background: transparent;
   color: var(--foreground);
   text-align: left;
   cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+  position: relative;
+  user-select: none;
+  outline: none;
 }
-.doc-row:hover {
+.doc-row:hover,
+.doc-row:focus-visible {
   background: var(--hover);
 }
 .doc-row.active {
@@ -618,10 +680,14 @@ textarea:focus-visible {
 .doc-row-icon {
   flex-shrink: 0;
   color: var(--o-primary, #1a73e8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .doc-row-content {
   min-width: 0;
-  flex: 1;
+  flex: 1 1 auto;
+  margin-right: 4px;
 }
 .doc-row strong,
 .doc-row small {
@@ -633,21 +699,66 @@ textarea:focus-visible {
 .doc-row strong {
   font-size: 13px;
   font-weight: 500;
+  color: inherit;
 }
 .doc-row small {
   margin-top: 1px;
   color: var(--muted-foreground);
   font-size: 11px;
 }
-.doc-more {
+.doc-row.active small {
+  color: var(--o-primary, #1a73e8);
+  opacity: 0.85;
+}
+.doc-star-indicator {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  color: #f59e0b;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.doc-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
   color: var(--muted-foreground);
   opacity: 0.6;
+  flex-shrink: 0;
+  margin-left: auto;
+  cursor: pointer;
+  transition:
+    opacity 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
 }
-.doc-row:hover .doc-more {
+.doc-row:hover .doc-more-btn,
+.doc-more-btn:focus-visible,
+.doc-more-btn[data-state='open'],
+.doc-more-btn[aria-expanded='true'],
+.doc-more-btn[data-popup-open] {
   opacity: 1;
+}
+.doc-more-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--foreground);
+}
+.doc-rename-input {
+  width: 100%;
+  height: 24px;
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  outline: none;
 }
 .empty-docs,
 .outline-empty {
@@ -683,7 +794,9 @@ textarea:focus-visible {
   white-space: nowrap;
   font-size: 12.5px;
   cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
 }
 .outline-row:hover {
   background: var(--hover);
@@ -883,7 +996,9 @@ textarea:focus-visible {
   font-family: inherit;
   outline: none;
   cursor: pointer;
-  transition: border-color 150ms ease, background-color 150ms ease;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
 }
 .tool-picker:hover {
   border-color: var(--ring);
@@ -1219,8 +1334,11 @@ textarea:focus-visible {
   .cloud-state {
     display: none;
   }
+  .title-input-wrapper {
+    max-width: min(55vw, 220px);
+  }
+  .title-input-sizer,
   .title-input {
-    width: min(52vw, 210px);
     font-size: 16px;
   }
   .menu-row > .dropdown-root:nth-child(n + 3),
@@ -1270,38 +1388,94 @@ textarea:focus-visible {
   margin: var(--print-margin, 20mm 15mm 20mm 15mm);
 }
 @media print {
+  html,
+  body,
+  #root {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
   .top-header,
   .toolbar,
   .ruler,
   .docs-sidebar,
+  .sidebar-open-floating-btn,
+  .page-scroll-indicator,
+  .page-limit-banner,
   .statusbar,
   .find-replace-bar,
   .page-setup-panel,
   .help-modal {
-    display: none;
+    display: none !important;
   }
   .doc-workspace {
     display: block;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
-  .paper-wrap {
+  .editor-stage {
+    display: block;
+    overflow: visible !important;
+    min-height: 0 !important;
+  }
+  .paper-wrap,
+  .dark .paper-wrap {
+    display: block;
     padding: 0;
-    background: #fff;
+    overflow: visible !important;
+    background: #fff !important;
   }
   .page-stack {
     display: none;
   }
   .page-viewport {
-    min-height: auto;
+    min-height: auto !important;
   }
-  .doc-editor {
-    width: 100%;
-    min-height: auto;
-    border: 0;
-    box-shadow: none;
-  }
+  .doc-editor,
+  .dark .doc-editor,
   .is-paged .doc-editor {
+    width: 100%;
+    max-width: none;
+    min-height: auto !important;
     margin: 0 auto;
     padding: 0;
+    border: 0;
+    box-shadow: none;
+    background: #fff !important;
+    color: #202124 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .dark .doc-editor h1,
+  .dark .doc-editor h2,
+  .dark .doc-editor h3,
+  .dark .doc-editor p,
+  .dark .doc-editor li {
+    color: #202124 !important;
+  }
+  .dark .doc-editor a {
+    color: #1a73e8 !important;
+  }
+  .dark .doc-editor blockquote {
+    border-left-color: #dadce0 !important;
+    color: #5f6368 !important;
+  }
+  .dark .doc-editor code {
+    background: #f1f3f4 !important;
+  }
+  .dark .doc-editor pre {
+    background: #202124 !important;
+    color: #e8eaed !important;
+  }
+  .dark .doc-editor table,
+  .dark .doc-editor th,
+  .dark .doc-editor td {
+    border-color: #c8cacc !important;
+  }
+  .dark .doc-editor th {
+    background: #f8f9fa !important;
   }
   .page-break-marker,
   .page-break-spacer {
@@ -1487,6 +1661,13 @@ textarea:focus-visible {
 }
 .dark .doc-row small {
   color: var(--muted-foreground);
+}
+.dark .doc-more-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.dark .doc-rename-input {
+  background: var(--card);
+  color: var(--foreground);
 }
 .dark .empty-docs,
 .dark .outline-empty {

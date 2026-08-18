@@ -41,7 +41,9 @@ export const DocTools = ({
         onClick={() => onViewModeChange(viewMode === 'paged' ? 'continuous' : 'paged')}
       >
         <Icon name="file-text" />
-        <span>{viewMode === 'paged' ? t('toolbar.viewModePaged') : t('toolbar.viewModeContinuous')}</span>
+        <span>
+          {viewMode === 'paged' ? t('toolbar.viewModePaged') : t('toolbar.viewModeContinuous')}
+        </span>
       </ToolbarButton>
       <ToolbarButton label={t('toolbar.pageSetup')} onClick={onPageSetup}>
         <Icon name="sliders-horizontal" />
@@ -58,7 +60,12 @@ export const DocTools = ({
         <Icon name="download" />
         <span>TXT</span>
       </ToolbarButton>
-      <ToolbarButton disabled={!canDelete} label={t('toolbar.deleteDocument')} tone="danger" onClick={onDelete}>
+      <ToolbarButton
+        disabled={!canDelete}
+        label={t('toolbar.deleteDocument')}
+        tone="danger"
+        onClick={onDelete}
+      >
         <Icon name="trash-2" />
       </ToolbarButton>
     </>

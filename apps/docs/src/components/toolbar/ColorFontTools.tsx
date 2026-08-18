@@ -1,7 +1,7 @@
-import type { Editor } from '@tiptap/core';
-import { useTranslation } from '@office/i18n';
-import type { RefObject } from 'react';
 import { ColorPalettePopover } from '@/components/toolbar/ColorPalettePopover';
+import { useTranslation } from '@office/i18n';
+import type { Editor } from '@tiptap/core';
+import type { RefObject } from 'react';
 
 const FONT_FAMILIES = ['Arial', 'Roboto', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana'];
 const FONT_SIZES = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48];
@@ -31,7 +31,7 @@ export const ColorFontTools = ({ editor, fontPickerRef }: ColorFontToolsProps) =
         <ColorPalettePopover
           iconName="highlighter"
           label={t('toolbar.highlightColor')}
-          currentColor={typeof highlightStyle.color === 'string' ? highlightStyle.color : '#fef000'}
+          currentColor={typeof highlightStyle.color === 'string' ? highlightStyle.color : undefined}
           active={editor.isActive('highlight')}
           onSelectColor={(color) => editor.chain().focus().toggleHighlight({ color }).run()}
           onResetColor={() => editor.chain().focus().unsetHighlight().run()}

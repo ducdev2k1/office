@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import type { FileHomeActions, FileRecord, FileSort, FileTab, FileView, ProductConfig } from './types';
+import type {
+  FileHomeActions,
+  FileRecord,
+  FileSort,
+  FileTab,
+  FileView,
+  ProductConfig,
+} from './types';
 import { TemplateStrip } from './components/TemplateStrip';
 import { StatsCards } from './components/StatsCards';
 import { FileTabs } from './components/FileTabs';
@@ -53,9 +60,7 @@ export const FileHome = ({
   onClearQuery,
 }: FileHomeProps) => {
   const [tab, setTab] = useState<FileTab>('recent');
-  const [view, setView] = useState<FileView>(() =>
-    readPref(VIEW_KEY, 'list', ['list', 'grid']),
-  );
+  const [view, setView] = useState<FileView>(() => readPref(VIEW_KEY, 'list', ['list', 'grid']));
   const [sort, setSort] = useState<FileSort>(() =>
     readPref(SORT_KEY, 'lastOpened', ['lastOpened', 'updated', 'name']),
   );
@@ -95,10 +100,7 @@ export const FileHome = ({
           {loading ? (
             <div className="flex flex-col gap-3 py-4" aria-hidden="true">
               {Array.from({ length: 5 }, (_, i) => (
-                <div
-                  key={i}
-                  className="h-12 animate-pulse rounded-md bg-muted"
-                />
+                <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
               ))}
             </div>
           ) : showNoResults ? (

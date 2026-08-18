@@ -1,6 +1,7 @@
 import { ShellLayout, TopBar, type ProductIdentity } from '@office/app-shell';
 import { FileHome, type FileRecord, type ProductConfig } from '@office/file-home';
-import { useState } from 'react';
+import { useTranslation } from '@office/i18n';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -8,21 +9,6 @@ const sheetsProduct: ProductIdentity = {
   kind: 'sheets',
   name: 'Sheets',
   accentVar: 'var(--o-kind-sheets)',
-};
-
-const sheetsConfig: ProductConfig = {
-  kind: 'sheets',
-  name: 'Sheets',
-  createLabel: 'Tạo bảng tính mới',
-  startLabel: 'Bắt đầu bảng tính mới',
-  blankLabel: 'Bảng tính trống',
-  editorPath: (id) => `/demo/sheets/${id}`,
-  accentVar: 'var(--o-kind-sheets)',
-  templates: [
-    { id: 'blank', label: 'Bảng tính trống' },
-    { id: 'budget', label: 'Ngân sách hộ gia đình' },
-    { id: 'schedule', label: 'Lịch tuần' },
-  ],
 };
 
 const fakeFiles: FileRecord[] = [
@@ -60,9 +46,28 @@ const fakeFiles: FileRecord[] = [
 
 /** Demo tái dùng FileHome cho Sheets (dev-only) — minh họa ProductConfig, không sửa FileHome. */
 export const DemoSheetsPage = () => {
+  const { t } = useTranslation('appShell');
   const { theme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+
+  const sheetsConfig = useMemo<ProductConfig>(
+    () => ({
+      kind: 'sheets',
+      name: 'Sheets',
+      createLabel: 'Tạo bảng tính mới',
+      startLabel: 'Bắt đầu bảng tính mới',
+      blankLabel: 'Bảng tính trống',
+      editorPath: (id) => `/demo/sheets/${id}`,
+      accentVar: 'var(--o-kind-sheets)',
+      templates: [
+        { id: 'blank', label: 'Bảng tính trống' },
+        { id: 'budget', label: 'Ngân sách hộ gia đình' },
+        { id: 'schedule', label: 'Lịch tuần' },
+      ],
+    }),
+    [],
+  );
 
   return (
     <ShellLayout>

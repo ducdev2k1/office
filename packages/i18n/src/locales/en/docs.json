@@ -1,5 +1,6 @@
 {
   "header": {
+    "appTitle": "OneMail Docs",
     "titlePlaceholder": "Untitled document",
     "titleAriaLabel": "Document title",
     "star": "Star",
@@ -14,6 +15,7 @@
     "toggleSidebar": "Open document tabs"
   },
   "menu": {
+    "ariaLabel": "Menu bar",
     "file": {
       "label": "File",
       "newDoc": "New document",
@@ -67,6 +69,7 @@
     "tools": {
       "label": "Tools",
       "wordCount": "Word count",
+      "characterCount": "Character count",
       "shortcuts": "Keyboard shortcuts"
     },
     "help": {
@@ -76,6 +79,7 @@
     }
   },
   "toolbar": {
+    "ariaLabel": "Toolbar",
     "undo": "Undo (Ctrl+Z)",
     "redo": "Redo (Ctrl+Y)",
     "normalText": "Normal text",
@@ -93,6 +97,8 @@
     "selectTextColor": "Select text color",
     "highlightColor": "Highlight color",
     "selectHighlightColor": "Select highlight color",
+    "customColor": "Custom color",
+    "custom": "Custom",
     "fontFamily": "Font family (Ctrl+Shift+F)",
     "fontSize": "Font size (Ctrl+Shift+> / <)",
     "defaultFont": "Default",
@@ -146,6 +152,7 @@
   },
   "helpModal": {
     "title": "Keyboard Shortcuts",
+    "description": "List of keyboard shortcuts for quick document actions",
     "closeAria": "Close shortcuts dialog",
     "groups": {
       "basicFormatting": "Basic Formatting",
@@ -200,15 +207,25 @@
     "findAndReplace": "Find and replace"
   },
   "searchReplace": {
+    "title": "Find and replace",
     "findPlaceholder": "Find...",
     "replacePlaceholder": "Replace with...",
     "find": "Find",
     "replace": "Replace",
     "replaceAll": "Replace all",
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Previous result",
+    "next": "Next result",
+    "close": "Close",
     "matchCase": "Match case",
-    "wholeWord": "Whole word",
+    "wholeWord": "Whole words",
+    "useRegex": "Use regular expression",
+    "tryPattern": "Try a search pattern",
+    "tryReplace": "Try search and replace",
+    "learnRegex": "Learn about regular expressions",
+    "to": "to",
+    "regexAnyLetter": "Any middle letter:",
+    "regexEitherTerm": "Either term:",
+    "regexCaseInsensitive": "Uppercase or lowercase C:",
     "noResults": "No results",
     "matchesCount": "{current} of {total}"
   },

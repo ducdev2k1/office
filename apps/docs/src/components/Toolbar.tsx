@@ -15,7 +15,7 @@ export interface ToolbarProps {
   findOpen: boolean;
   viewMode: ViewMode;
   fontPickerRef: RefObject<HTMLSelectElement | null>;
-  colorPickerRef: RefObject<HTMLInputElement | null>;
+  colorPickerRef?: RefObject<HTMLInputElement | null>;
   canDelete: boolean;
   onSetLink: () => void;
   onExportHtml: () => void;
@@ -51,10 +51,10 @@ export const Toolbar = ({
 }: ToolbarProps) => {
   const { t } = useTranslation('docs');
 
-  if (!editor) return <div className="toolbar" aria-label="Toolbar" />;
+  if (!editor) return <div className="toolbar" aria-label={t('toolbar.ariaLabel')} />;
 
   return (
-    <div className="toolbar" aria-label="Toolbar">
+    <div className="toolbar" aria-label={t('toolbar.ariaLabel')}>
       <ToolbarButton label={t('toolbar.undo')} onClick={() => editor.chain().focus().undo().run()}>
         <Icon name="undo" />
       </ToolbarButton>

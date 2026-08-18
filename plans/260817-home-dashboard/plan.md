@@ -17,13 +17,13 @@ Xây trang home quản lý file cho Docs kiểu Google Workspace, đóng gói th
 
 ## Phases
 
-| # | Phase | File | Effort | Status |
-| --- | --- | --- | --- | --- |
-| 1 | Foundation: token `--o-kind-*`, Tailwind quét packages, skeleton 2 package | `phase-01-foundation-tokens-tailwind.md` | 2h | done |
-| 2 | app-shell: TopBar + ShellLayout + ProductSwitcher + Router tách Home/Editor | `phase-02-app-shell-router.md` | 3h | done |
-| 3 | file-home core: FileRecord/ProductConfig, mở rộng useDocs, TemplateStrip + StatsCards + Tabs + List/Grid + search/sort | `phase-03-file-home-core.md` | 5h | done |
-| 4 | Trash + Duplicate + FileRowMenu + ConfirmDialog + rename inline | `phase-04-trash-duplicate-menu.md` | 4h | done |
-| 5 | Polish + verify: empty/skeleton/relative time/a11y, storage estimate, route demo kind='sheets', typecheck+build | `phase-05-polish-verify.md` | 3h | done |
+| #   | Phase                                                                                                                  | File                                     | Effort | Status |
+| --- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ------ | ------ |
+| 1   | Foundation: token `--o-kind-*`, Tailwind quét packages, skeleton 2 package                                             | `phase-01-foundation-tokens-tailwind.md` | 2h     | done   |
+| 2   | app-shell: TopBar + ShellLayout + ProductSwitcher + Router tách Home/Editor                                            | `phase-02-app-shell-router.md`           | 3h     | done   |
+| 3   | file-home core: FileRecord/ProductConfig, mở rộng useDocs, TemplateStrip + StatsCards + Tabs + List/Grid + search/sort | `phase-03-file-home-core.md`             | 5h     | done   |
+| 4   | Trash + Duplicate + FileRowMenu + ConfirmDialog + rename inline                                                        | `phase-04-trash-duplicate-menu.md`       | 4h     | done   |
+| 5   | Polish + verify: empty/skeleton/relative time/a11y, storage estimate, route demo kind='sheets', typecheck+build        | `phase-05-polish-verify.md`              | 3h     | done   |
 
 **Tổng effort: 17h**
 

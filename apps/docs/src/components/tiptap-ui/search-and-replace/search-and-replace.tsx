@@ -1,19 +1,26 @@
-import { forwardRef, useCallback, useEffect, useRef } from 'react';
+import { forwardRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useTranslation } from '@office/i18n';
 
 // --- Hooks ---
 import { useComposedRef } from '@/hooks/use-composed-ref';
 
 // --- Icons ---
-import { Button, Icon, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
-import { Input, Separator, Switch } from '@office/ui-kit';
 import { cn } from '@/lib/tiptap-utils';
+import {
+  Button,
+  Icon,
+  Input,
+  Separator,
+  Switch,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@office/ui-kit';
 
 // --- Tiptap UI ---
 import type { UseSearchAndReplaceConfig } from '@/components/tiptap-ui/search-and-replace';
 import {
-  NEXT_RESULT_SHORTCUT_KEY,
-  PREVIOUS_RESULT_SHORTCUT_KEY,
   SEARCH_AND_REPLACE_SHORTCUT_KEY,
   useSearchAndReplace,
 } from '@/components/tiptap-ui/search-and-replace';
@@ -32,17 +39,10 @@ export interface SearchAndReplaceProps
 
 export type SearchAndReplaceContentProps = SearchAndReplaceProps;
 
-const isModKey = (event: React.KeyboardEvent): boolean =>
-  event.metaKey || event.ctrlKey;
+const isModKey = (event: React.KeyboardEvent): boolean => event.metaKey || event.ctrlKey;
 
 const REGEX_DOCS_URL =
   'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions';
-
-const REGEX_SEARCH_EXAMPLES = [
-  { label: 'Any middle letter:', pattern: 'c.t' },
-  { label: 'Either term:', pattern: 'cat|tiptap' },
-  { label: 'Uppercase or lowercase C:', pattern: '[Cc]at' },
-];
 
 const REGEX_REPLACE_EXAMPLES = [
   { pattern: 'TipTap|tiptap|TIPTAP', replacement: 'Tiptap' },
@@ -72,17 +72,17 @@ const ToolbarIconButton = ({
         <Button
           type="button"
           variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0 flex items-center justify-center shrink-0"
+          size="icon"
+          className="h-7 w-7"
           disabled={disabled}
           aria-label={label}
           data-search-replace-action={dataAction}
           onClick={onClick}
-        />
+        >
+          <Icon name={icon} size={ICON_SIZE} />
+        </Button>
       }
-    >
-      <Icon name={icon} size={ICON_SIZE} />
-    </TooltipTrigger>
+    />
     <TooltipContent>{label}</TooltipContent>
   </Tooltip>
 );
@@ -109,24 +109,26 @@ const RegexExampleButton = ({
   </Button>
 );
 
-export const SearchAndReplaceButton = forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
-  ({ className, children, ...props }, ref) => {
-    return (
-      <Button
-        type="button"
-        className={className}
-        variant="ghost"
-        role="button"
-        tabIndex={-1}
-        aria-label="Search and replace"
-        ref={ref}
-        {...props}
-      >
-        {children || <Icon name="search" size={ICON_SIZE} className="tiptap-button-icon" />}
-      </Button>
-    );
-  },
-);
+export const SearchAndReplaceButton = forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<typeof Button>
+>(({ className, children, ...props }, ref) => {
+  const { t } = useTranslation('docs');
+  return (
+    <Button
+      type="button"
+      className={className}
+      variant="ghost"
+      role="button"
+      tabIndex={-1}
+      aria-label={t('searchReplace.title')}
+      ref={ref}
+      {...props}
+    >
+      {children || <Icon name="search" size={ICON_SIZE} className="tiptap-button-icon" />}
+    </Button>
+  );
+});
 
 SearchAndReplaceButton.displayName = 'SearchAndReplaceButton';
 
@@ -146,6 +148,18 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
     },
     ref,
   ) => {
+    const { t } = useTranslation('docs');
+    const { t: tCommon } = useTranslation('common');
+
+    const regexSearchExamples = useMemo(
+      () => [
+        { label: t('searchReplace.regexAnyLetter'), pattern: 'c.t' },
+        { label: t('searchReplace.regexEitherTerm'), pattern: 'cat|tiptap' },
+        { label: t('searchReplace.regexCaseInsensitive'), pattern: '[Cc]at' },
+      ],
+      [t],
+    );
+
     const searchAndReplace = useSearchAndReplace({
       editor: providedEditor,
       hideWhenUnavailable,
@@ -358,7 +372,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
         className={cn('tiptap-search-replace', className)}
         data-open={open ? 'true' : 'false'}
         role="dialog"
-        aria-label="Search and replace"
+        aria-label={t('searchReplace.title')}
         onKeyDown={handlePanelKeyDown}
         ref={composedPanelRef}
         {...divProps}
@@ -371,14 +385,14 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
           <div className="tiptap-search-replace-nav-group">
             <div className="button-group">
               <ToolbarIconButton
-                label="Previous result"
+                label={t('searchReplace.previous')}
                 disabled={!canNavigate}
                 onClick={goToPrevious}
                 icon="chevron-up"
                 dataAction="prev"
               />
               <ToolbarIconButton
-                label="Next result"
+                label={t('searchReplace.next')}
                 disabled={!canNavigate}
                 onClick={goToNext}
                 icon="chevron-down"
@@ -386,7 +400,12 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
               />
             </div>
             <div className="button-group">
-              <ToolbarIconButton label="Close" onClick={() => onClose?.()} icon="x" dataAction="close" />
+              <ToolbarIconButton
+                label={tCommon('actions.close')}
+                onClick={() => onClose?.()}
+                icon="x"
+                dataAction="close"
+              />
             </div>
           </div>
         </div>
@@ -397,8 +416,8 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
               <div className="tiptap-search-replace-input-group relative">
                 <Input
                   data-field="search-query"
-                  placeholder="Search"
-                  aria-label="Search"
+                  placeholder={t('searchReplace.findPlaceholder')}
+                  aria-label={t('searchReplace.findPlaceholder')}
                   value={searchTerm}
                   autoFocus={open && autoFocusSearch}
                   autoComplete="off"
@@ -422,8 +441,8 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
               <div className="tiptap-search-replace-input-group relative">
                 <Input
                   data-field="replace-query"
-                  placeholder="Replace"
-                  aria-label="Replace"
+                  placeholder={t('searchReplace.replacePlaceholder')}
+                  aria-label={t('searchReplace.replacePlaceholder')}
                   value={replaceTerm}
                   autoComplete="off"
                   autoCorrect="off"
@@ -455,7 +474,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                 className={cn(caseSensitive && 'bg-accent text-accent-foreground')}
               >
                 <Icon name="case-sensitive" size={ICON_SIZE} className="tiptap-button-icon" />
-                <span className="tiptap-button-text">Match case</span>
+                <span className="tiptap-button-text">{t('searchReplace.matchCase')}</span>
               </Button>
 
               <Button
@@ -469,7 +488,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                 className={cn(wholeWord && 'bg-accent text-accent-foreground')}
               >
                 <Icon name="whole-word" size={ICON_SIZE} className="tiptap-button-icon" />
-                <span className="tiptap-button-text">Whole words</span>
+                <span className="tiptap-button-text">{t('searchReplace.wholeWord')}</span>
               </Button>
             </div>
           </div>
@@ -479,7 +498,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
           <div className="tiptap-search-replace-regex-toggle">
             <label data-option="use-regex" className="tiptap-search-replace-regex-toggle-row">
               <span className="tiptap-search-replace-regex-toggle-label">
-                Use regular expression
+                {t('searchReplace.useRegex')}
               </span>
               <Switch checked={useRegex} onCheckedChange={toggleUseRegex} disabled={!canSearch} />
             </label>
@@ -488,11 +507,11 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
               <div className="tiptap-search-replace-regex-help">
                 <div className="tiptap-search-replace-regex-help-section">
                   <span className="tiptap-search-replace-regex-help-label">
-                    Try a search pattern
+                    {t('searchReplace.tryPattern')}
                   </span>
 
                   <div className="tiptap-search-replace-regex-example-list">
-                    {REGEX_SEARCH_EXAMPLES.map(({ label, pattern }) => (
+                    {regexSearchExamples.map(({ label, pattern }) => (
                       <RegexExampleButton
                         key={pattern}
                         pattern={pattern}
@@ -511,7 +530,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
 
                 <div className="tiptap-search-replace-regex-help-section">
                   <span className="tiptap-search-replace-regex-help-label">
-                    Try search and replace
+                    {t('searchReplace.tryReplace')}
                   </span>
 
                   <div className="tiptap-search-replace-regex-example-list">
@@ -521,7 +540,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                         pattern={pattern}
                         onApply={() => applyRegexExample(pattern, replacement)}
                       >
-                        <code>{pattern}</code> to <code>{replacement}</code>
+                        <code>{pattern}</code> {t('searchReplace.to')} <code>{replacement}</code>
                       </RegexExampleButton>
                     ))}
                   </div>
@@ -533,7 +552,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Learn about regular expressions
+                    {t('searchReplace.learnRegex')}
                     <Icon
                       name="external-link"
                       size={ICON_SIZE}
@@ -554,19 +573,19 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
               type="button"
               data-search-replace-action="replace"
               disabled={!canReplace}
-              aria-label="Replace current result"
+              aria-label={t('searchReplace.replace')}
               onClick={replaceCurrent}
             >
-              Replace
+              {t('searchReplace.replace')}
             </Button>
             <Button
               type="button"
               data-search-replace-action="replace-all"
               disabled={!canReplaceAll}
-              aria-label="Replace all results"
+              aria-label={t('searchReplace.replaceAll')}
               onClick={replaceAll}
             >
-              Replace all
+              {t('searchReplace.replaceAll')}
             </Button>
           </div>
         </div>

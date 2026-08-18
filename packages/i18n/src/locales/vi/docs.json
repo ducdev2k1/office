@@ -1,5 +1,6 @@
 {
   "header": {
+    "appTitle": "OneMail Docs",
     "titlePlaceholder": "Tài liệu không có tiêu đề",
     "titleAriaLabel": "Tiêu đề tài liệu",
     "star": "Đánh dấu yêu thích",
@@ -14,6 +15,7 @@
     "toggleSidebar": "Mở danh sách tài liệu"
   },
   "menu": {
+    "ariaLabel": "Thanh thực đơn",
     "file": {
       "label": "Tệp",
       "newDoc": "Tài liệu mới",
@@ -67,6 +69,7 @@
     "tools": {
       "label": "Công cụ",
       "wordCount": "Số lượng từ",
+      "characterCount": "Số lượng ký tự",
       "shortcuts": "Phím tắt bàn phím"
     },
     "help": {
@@ -76,6 +79,7 @@
     }
   },
   "toolbar": {
+    "ariaLabel": "Thanh công cụ",
     "undo": "Hoàn tác (Ctrl+Z)",
     "redo": "Làm lại (Ctrl+Y)",
     "normalText": "Văn bản thường",
@@ -93,6 +97,8 @@
     "selectTextColor": "Chọn màu chữ",
     "highlightColor": "Đánh dấu văn bản",
     "selectHighlightColor": "Chọn màu đánh dấu",
+    "customColor": "Màu tùy chỉnh",
+    "custom": "Tùy chỉnh",
     "fontFamily": "Phông chữ (Ctrl+Shift+F)",
     "fontSize": "Cỡ chữ (Ctrl+Shift+> / <)",
     "defaultFont": "Mặc định",
@@ -146,6 +152,7 @@
   },
   "helpModal": {
     "title": "Phím tắt bàn phím",
+    "description": "Danh sách các phím tắt thao tác nhanh trong văn bản",
     "closeAria": "Đóng cửa sổ phím tắt",
     "groups": {
       "basicFormatting": "Định dạng cơ bản",
@@ -170,13 +177,13 @@
       "undo": "Hoàn tác",
       "redo": "Làm lại",
       "headings": "Tiêu đề 1 / 2 / 3",
-      "lists": "Danh sách chấm / số",
+      "lists": "Danh sách dấu đầu dòng / số",
       "codeBlock": "Khối mã nguồn",
       "indent": "Thụt / lùi danh sách"
     }
   },
   "contextMenu": {
-    "ariaLabel": "Menu chuột phải",
+    "ariaLabel": "Menu ngữ cảnh",
     "undo": "Hoàn tác",
     "redo": "Làm lại",
     "cut": "Cắt",
@@ -200,15 +207,25 @@
     "findAndReplace": "Tìm kiếm và thay thế"
   },
   "searchReplace": {
+    "title": "Tìm kiếm và thay thế",
     "findPlaceholder": "Tìm kiếm...",
     "replacePlaceholder": "Thay thế bằng...",
     "find": "Tìm",
     "replace": "Thay thế",
     "replaceAll": "Thay thế tất cả",
-    "previous": "Trước",
-    "next": "Tiếp",
+    "previous": "Kết quả trước",
+    "next": "Kết quả tiếp theo",
+    "close": "Đóng",
     "matchCase": "Phân biệt hoa/thường",
-    "wholeWord": "Toàn bộ từ",
+    "wholeWord": "Khớp toàn bộ từ",
+    "useRegex": "Sử dụng biểu thức chính quy",
+    "tryPattern": "Mẫu tìm kiếm gợi ý",
+    "tryReplace": "Gợi ý tìm kiếm & thay thế",
+    "learnRegex": "Tìm hiểu về biểu thức chính quy",
+    "to": "thành",
+    "regexAnyLetter": "Ký tự bất kỳ ở giữa:",
+    "regexEitherTerm": "Một trong hai từ:",
+    "regexCaseInsensitive": "Chữ hoa hoặc chữ thường:",
     "noResults": "Không tìm thấy kết quả",
     "matchesCount": "{current} trên {total}"
   },

@@ -51,10 +51,10 @@
 
 ## Risk Assessment
 
-| Risk | Mitigation |
-| --- | --- |
+| Risk                                   | Mitigation                                                                         |
+| -------------------------------------- | ---------------------------------------------------------------------------------- |
 | Refactor App.tsx gay regression editor | Copy hien tai nguyen ven thanh EditorPage truoc, chi sua lop mount; typecheck ngay |
-| Khong co activeId khi mo /edit/:id | Lay id tu params, setActiveId bang useEffect |
+| Khong co activeId khi mo /edit/:id     | Lay id tu params, setActiveId bang useEffect                                       |
 
 ## Next Steps
 

@@ -1,11 +1,11 @@
 # Biên bản brainstorm — Home Dashboard cho Docs (tái dùng Sheets/Slides)
 
-| | |
-|---|---|
-| Ngày | 17/08/2026 |
-| Phiên | `/brainstorm` — UI/UX home dashboard |
-| Trạng thái | Đã chốt thiết kế, chưa triển khai |
-| Đầu ra | Report này · kế hoạch triển khai (nếu chốt `/ck:plan`) |
+|            |                                                        |
+| ---------- | ------------------------------------------------------ |
+| Ngày       | 17/08/2026                                             |
+| Phiên      | `/brainstorm` — UI/UX home dashboard                   |
+| Trạng thái | Đã chốt thiết kế, chưa triển khai                      |
+| Đầu ra     | Report này · kế hoạch triển khai (nếu chốt `/ck:plan`) |
 
 ## Vấn đề
 
@@ -13,29 +13,31 @@ Repo `onemail-docs` (Docs TipTap đã chạy) thiếu trang home quản lý file
 
 ## Yêu cầu (đã chốt với người dùng)
 
-| # | Quyết định |
-|---|---|
-| R1 | Dashboard = **file home + thẻ thống kê nhỏ** ("Cả hai") |
-| R2 | **Kéo shell lên sớm** nhưng dưới dạng **package dùng chung** (`@office/app-shell` + `@office/file-home`), không phải deployable thứ 4 — giữ C5 (3 app deploy độc lập) |
-| R3 | MVP **đầy đủ kiểu Google**: template strip, tabs, search, sort, list/grid toggle, starred, **Trash (soft-delete)**, duplicate, rename inline |
-| R4 | Ngôn ngữ thiết kế: **chuẩn Google Workspace home + token iNET One Seri** |
-| R5 | Router: **react-router-dom** (`/` = home, `/edit/:id` = editor) |
-| R6 | Kỹ thuật: **shadcn/ui + Base UI + Tailwind** (đã chốt Q11 trước đó) |
+| #   | Quyết định                                                                                                                                                            |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | Dashboard = **file home + thẻ thống kê nhỏ** ("Cả hai")                                                                                                               |
+| R2  | **Kéo shell lên sớm** nhưng dưới dạng **package dùng chung** (`@office/app-shell` + `@office/file-home`), không phải deployable thứ 4 — giữ C5 (3 app deploy độc lập) |
+| R3  | MVP **đầy đủ kiểu Google**: template strip, tabs, search, sort, list/grid toggle, starred, **Trash (soft-delete)**, duplicate, rename inline                          |
+| R4  | Ngôn ngữ thiết kế: **chuẩn Google Workspace home + token iNET One Seri**                                                                                              |
+| R5  | Router: **react-router-dom** (`/` = home, `/edit/:id` = editor)                                                                                                       |
+| R6  | Kỹ thuật: **shadcn/ui + Base UI + Tailwind** (đã chốt Q11 trước đó)                                                                                                   |
 
 ## Đánh giá các hướng (đã cân nhắc)
 
 ### Vị trí kiến trúc
-| Hướng | Ưu | Nhược |
-|---|---|---|
-| **A. Package chung (CHỐT)** `@office/app-shell` + `@office/file-home`, mỗi app mount ở `/` | Đúng C5, không thêm infra, sheets/slides mount y hệt, apps/shell Phase 8 chỉ là app rỗng nhúng package | Chưa có "1 điểm vào drive-like" (không cần MVP) |
-| B. apps/shell deployable ngay | UX 1 cửa kiểu Google Drive | 4 app deploy, cần app-registry/routing infra, sai thứ tự (chưa có app để shell) |
-| C. Chỉ trong apps/docs | Nhanh nhất | Phải viết lại khi sheets/slides — phá hoại DRY |
+
+| Hướng                                                                                      | Ưu                                                                                                     | Nhược                                                                           |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| **A. Package chung (CHỐT)** `@office/app-shell` + `@office/file-home`, mỗi app mount ở `/` | Đúng C5, không thêm infra, sheets/slides mount y hệt, apps/shell Phase 8 chỉ là app rỗng nhúng package | Chưa có "1 điểm vào drive-like" (không cần MVP)                                 |
+| B. apps/shell deployable ngay                                                              | UX 1 cửa kiểu Google Drive                                                                             | 4 app deploy, cần app-registry/routing infra, sai thứ tự (chưa có app để shell) |
+| C. Chỉ trong apps/docs                                                                     | Nhanh nhất                                                                                             | Phải viết lại khi sheets/slides — phá hoại DRY                                  |
 
 ### Mức độ MVP
-| Hướng | Ưu | Nhược |
-|---|---|---|
+
+| Hướng                        | Ưu                                            | Nhược                                                       |
+| ---------------------------- | --------------------------------------------- | ----------------------------------------------------------- |
 | **A. Đầy đủ + Trash (CHỐT)** | Đúng mental model Google, ít phải bổ sung sau | Model/storage phình nhẹ (soft-delete flag) — chấp nhận được |
-| B. Trash lùi | Model gọn | Chưa trọn trải nghiệm, phải làm sau |
+| B. Trash lùi                 | Model gọn                                     | Chưa trọn trải nghiệm, phải làm sau                         |
 
 ## Thiết kế UI/UX chốt
 
@@ -118,12 +120,12 @@ packages/ui-kit/src/               ← mở rộng
 ```ts
 interface ProductConfig {
   kind: 'docs' | 'sheets' | 'slides';
-  name: string;                        // "Docs"
-  createLabel: string;                 // "Tạo tài liệu mới"
-  startLabel: string;                  // "Bắt đầu một tài liệu mới"
-  blankLabel: string;                  // "Tài liệu trống"
-  editorPath: (id: string) => string;  // `/edit/${id}`
-  accentVar: string;                   // 'var(--o-kind-docs)'
+  name: string; // "Docs"
+  createLabel: string; // "Tạo tài liệu mới"
+  startLabel: string; // "Bắt đầu một tài liệu mới"
+  blankLabel: string; // "Tài liệu trống"
+  editorPath: (id: string) => string; // `/edit/${id}`
+  accentVar: string; // 'var(--o-kind-docs)'
   templates: { id: string; label: string }[];
 }
 ```
@@ -142,14 +144,14 @@ Sheets/Slides sau này chỉ cần truyền config + store riêng — FileHome 1
 
 ## Cân nhắc triển khai & rủi ro
 
-| Rủi ro | Mitigate |
-|---|---|
-| **Tailwind + package workspace**: Vite phải quét CSS của `packages/` để gen utility class | Cấu hình Tailwind v4 (`@tailwindcss/vite`) `@source` trỏ `../../packages` — kiểm tra ngay spike đầu |
-| **Migration dữ liệu cũ** thiếu field mới | Default an toàn khi map trong storage.ts; không phá content cũ |
-| **Editor đang SCSS/tiptap-ui-primitive**, home Tailwind — lệch style nhất thời | Q11 đã lên kế hoạch migrate M1; home viết Tailwind native ngay, editor migrate sau, cả 2 dùng chung token `--o-*` nên không lệch màu |
-| Refactor App.tsx → router gây regression editor | Giữ nguyên EditorPage logic; chỉ thay đổi lớp mount. Chạy lại typecheck + lint |
-| Quota 5MB localStorage (code cũ) | IndexedDB đã có (storage-adapter); dashboard đọc storage thật, thẻ quota dùng estimate |
-| Việt hóa chưa nhất quán (bỏ dấu rải rác trong code) | Text UI mới viết có dấu chuẩn; không làm mới văn bản editor cũ (ngoài phạm vi) |
+| Rủi ro                                                                                    | Mitigate                                                                                                                             |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Tailwind + package workspace**: Vite phải quét CSS của `packages/` để gen utility class | Cấu hình Tailwind v4 (`@tailwindcss/vite`) `@source` trỏ `../../packages` — kiểm tra ngay spike đầu                                  |
+| **Migration dữ liệu cũ** thiếu field mới                                                  | Default an toàn khi map trong storage.ts; không phá content cũ                                                                       |
+| **Editor đang SCSS/tiptap-ui-primitive**, home Tailwind — lệch style nhất thời            | Q11 đã lên kế hoạch migrate M1; home viết Tailwind native ngay, editor migrate sau, cả 2 dùng chung token `--o-*` nên không lệch màu |
+| Refactor App.tsx → router gây regression editor                                           | Giữ nguyên EditorPage logic; chỉ thay đổi lớp mount. Chạy lại typecheck + lint                                                       |
+| Quota 5MB localStorage (code cũ)                                                          | IndexedDB đã có (storage-adapter); dashboard đọc storage thật, thẻ quota dùng estimate                                               |
+| Việt hóa chưa nhất quán (bỏ dấu rải rác trong code)                                       | Text UI mới viết có dấu chuẩn; không làm mới văn bản editor cũ (ngoài phạm vi)                                                       |
 
 ## Tiêu chí nghiệm thu
 

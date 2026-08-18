@@ -234,7 +234,9 @@ select:focus-visible {
 }
 
 [data-base-ui-popup] {
-  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1), transform 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition:
+    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 [data-base-ui-popup][data-starting-style],
 [data-base-ui-popup][data-ending-style] {

@@ -91,5 +91,4 @@ export const createBlankDoc = (): DocRecord => {
   };
 };
 
-export const getStorageUsageBytes = (docs: DocRecord[]): number =>
-  JSON.stringify(docs).length;
+export const getStorageUsageBytes = (docs: DocRecord[]): number => JSON.stringify(docs).length;

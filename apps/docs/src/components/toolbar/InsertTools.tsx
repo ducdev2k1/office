@@ -1,8 +1,8 @@
-import type { Editor } from '@tiptap/core';
+import { ToolbarButton } from '@/components/ToolbarButton';
 import { useTranslation } from '@office/i18n';
 import { Icon } from '@office/ui-kit';
+import type { Editor } from '@tiptap/core';
 import { useRef } from 'react';
-import { ToolbarButton } from '@/components/ToolbarButton';
 
 interface InsertToolsProps {
   editor: Editor;
@@ -63,7 +63,10 @@ export const InsertTools = ({
           >
             <Icon name="rows-3" />
           </ToolbarButton>
-          <ToolbarButton label={t('toolbar.deleteRow')} onClick={() => editor.chain().focus().deleteRow().run()}>
+          <ToolbarButton
+            label={t('toolbar.deleteRow')}
+            onClick={() => editor.chain().focus().deleteRow().run()}
+          >
             <Icon name="trash-2" />
           </ToolbarButton>
           <ToolbarButton

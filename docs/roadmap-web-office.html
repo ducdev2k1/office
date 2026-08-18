@@ -1,717 +1,2084 @@
 <!doctype html>
 <html lang="vi">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lộ trình Web Office Suite, iNET</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* ============================================================
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lộ trình Web Office Suite, iNET</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
    Tầng token: lấy trực tiếp từ iNET ViUI Design System.
    Sáng = bảng token mặc định. Tối = bảng token dark chính thức.
    ============================================================ */
-:root{
-  color-scheme:light dark;
+      :root {
+        color-scheme: light dark;
 
-  /* Màu thương hiệu */
-  --viui-primary:#024799;
-  --viui-primary-500:#0582D4;
-  --viui-accent:#cc0e0e;
+        /* Màu thương hiệu */
+        --viui-primary: #024799;
+        --viui-primary-500: #0582d4;
+        --viui-accent: #cc0e0e;
 
-  /* Trung tính và bề mặt */
-  --viui-surface:#FFFFFF;
-  --viui-surface-elevated:#F4F7FA;
-  --viui-surface-card:#E8EEF4;
-  --viui-border:#D0DAE6;
-  --viui-border-subtle:#E8EEF4;
-  --viui-nl-600:#4A6278;
-  --viui-nl-700:#2E4A5C;
-  --viui-nl-900:#0F1E2D;
+        /* Trung tính và bề mặt */
+        --viui-surface: #ffffff;
+        --viui-surface-elevated: #f4f7fa;
+        --viui-surface-card: #e8eef4;
+        --viui-border: #d0dae6;
+        --viui-border-subtle: #e8eef4;
+        --viui-nl-600: #4a6278;
+        --viui-nl-700: #2e4a5c;
+        --viui-nl-900: #0f1e2d;
 
-  /* Ngữ nghĩa */
-  --viui-error:#B91C1C;
-  --viui-warning-text:#92400E;
-  --viui-success-text:#065F46;
+        /* Ngữ nghĩa */
+        --viui-error: #b91c1c;
+        --viui-warning-text: #92400e;
+        --viui-success-text: #065f46;
 
-  /* Chuyển động */
-  --vi-dur-fast:100ms;
-  --vi-dur-normal:200ms;
-  --vi-dur-slow:350ms;
-  --vi-dur-dramatic:500ms;
-  --vi-stagger:80ms;
-  --vi-ease-standard:cubic-bezier(.4,0,.2,1);
-  --vi-ease-decelerate:cubic-bezier(0,0,.2,1);
+        /* Chuyển động */
+        --vi-dur-fast: 100ms;
+        --vi-dur-normal: 200ms;
+        --vi-dur-slow: 350ms;
+        --vi-dur-dramatic: 500ms;
+        --vi-stagger: 80ms;
+        --vi-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+        --vi-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
 
-  /* Lưới 8pt */
-  --s1:8px; --s2:16px; --s3:24px; --s4:32px;
-  --s5:40px; --s6:48px; --s8:64px; --s10:80px; --s12:96px;
+        /* Lưới 8pt */
+        --s1: 8px;
+        --s2: 16px;
+        --s3: 24px;
+        --s4: 32px;
+        --s5: 40px;
+        --s6: 48px;
+        --s8: 64px;
+        --s10: 80px;
+        --s12: 96px;
 
-  /* Bo góc: thẻ 12px, khối nhỏ 8px, nhãn 4px. Không dùng pill. */
-  --r-sm:4px; --r-base:8px; --r-md:12px;
+        /* Bo góc: thẻ 12px, khối nhỏ 8px, nhãn 4px. Không dùng pill. */
+        --r-sm: 4px;
+        --r-base: 8px;
+        --r-md: 12px;
 
-  /* Ánh xạ token sang vai trò trong tài liệu */
-  --ink:var(--viui-nl-900);
-  --ink-soft:var(--viui-nl-700);
-  --muted:var(--viui-nl-600);
-  --paper:var(--viui-surface);
-  --surface:var(--viui-surface-elevated);
-  --surface-2:var(--viui-surface-card);
-  --accent:var(--viui-primary);
-  --accent-tint:rgba(2,71,153,.05);
-  --accent-tint-2:rgba(2,71,153,.10);
-  --brand-red:var(--viui-accent);
-  --danger:var(--viui-error);
-  --gold:var(--viui-warning-text);
-  --ok:var(--viui-success-text);
-  --hairline:var(--viui-border);
-  --hairline-soft:var(--viui-border-subtle);
+        /* Ánh xạ token sang vai trò trong tài liệu */
+        --ink: var(--viui-nl-900);
+        --ink-soft: var(--viui-nl-700);
+        --muted: var(--viui-nl-600);
+        --paper: var(--viui-surface);
+        --surface: var(--viui-surface-elevated);
+        --surface-2: var(--viui-surface-card);
+        --accent: var(--viui-primary);
+        --accent-tint: rgba(2, 71, 153, 0.05);
+        --accent-tint-2: rgba(2, 71, 153, 0.1);
+        --brand-red: var(--viui-accent);
+        --danger: var(--viui-error);
+        --gold: var(--viui-warning-text);
+        --ok: var(--viui-success-text);
+        --hairline: var(--viui-border);
+        --hairline-soft: var(--viui-border-subtle);
 
-  --display:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --sans:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;
-}
+        --display: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --sans: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+      }
 
-@media (prefers-color-scheme:dark){
-  :root{
-    --viui-primary:#66AAFF;
-    --viui-accent:#FF7070;
-    --viui-surface:#121212;
-    --viui-surface-elevated:#1e1e1e;
-    --viui-surface-card:#2a2a2a;
-    --viui-border:#424242;
-    --viui-border-subtle:#303030;
-    --viui-nl-600:#8B949E;
-    --viui-nl-700:#b0b0b0;
-    --viui-nl-900:#e0e0e0;
-    --viui-error:#F87171;
-    --viui-warning-text:#FBBF24;
-    --viui-success-text:#34D399;
-    --accent-tint:rgba(102,170,255,.08);
-    --accent-tint-2:rgba(102,170,255,.14);
-  }
-}
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --viui-primary: #66aaff;
+          --viui-accent: #ff7070;
+          --viui-surface: #121212;
+          --viui-surface-elevated: #1e1e1e;
+          --viui-surface-card: #2a2a2a;
+          --viui-border: #424242;
+          --viui-border-subtle: #303030;
+          --viui-nl-600: #8b949e;
+          --viui-nl-700: #b0b0b0;
+          --viui-nl-900: #e0e0e0;
+          --viui-error: #f87171;
+          --viui-warning-text: #fbbf24;
+          --viui-success-text: #34d399;
+          --accent-tint: rgba(102, 170, 255, 0.08);
+          --accent-tint-2: rgba(102, 170, 255, 0.14);
+        }
+      }
 
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;background:var(--paper);color:var(--ink);
-  font:16px/1.65 var(--sans);
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-}
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 16px/1.65 var(--sans);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
 
-/* Thanh tiến độ đọc: cho biết đang ở đâu trong deck 11 phần.
+      /* Thanh tiến độ đọc: cho biết đang ở đâu trong deck 11 phần.
    Dùng scroll-driven animation của CSS, không nghe sự kiện scroll. */
-.progress{
-  position:fixed;inset:0 0 auto 0;height:2px;z-index:10;
-  background:var(--accent);transform:scaleX(0);transform-origin:0 50%;
-}
-@supports (animation-timeline:scroll()){
-  .progress{animation:progress-grow linear;animation-timeline:scroll(root block)}
-  @keyframes progress-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-}
+      .progress {
+        position: fixed;
+        inset: 0 0 auto 0;
+        height: 2px;
+        z-index: 10;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: 0 50%;
+      }
+      @supports (animation-timeline: scroll()) {
+        .progress {
+          animation: progress-grow linear;
+          animation-timeline: scroll(root block);
+        }
+        @keyframes progress-grow {
+          from {
+            transform: scaleX(0);
+          }
+          to {
+            transform: scaleX(1);
+          }
+        }
+      }
 
-/* ---------- Khung slide ---------- */
-.slide{
-  min-height:100dvh;padding:var(--s12) 8vw var(--s10);
-  border-bottom:1px solid var(--hairline-soft);
-  position:relative;display:flex;flex-direction:column;justify-content:center;
-}
-.container{max-width:1240px;margin:0 auto;width:100%}
-.slide-tag,.slide-num{
-  position:absolute;top:var(--s5);
-  font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
-}
-.slide-tag{left:8vw;color:var(--accent)}
-.slide-num{right:8vw;color:var(--muted);font-variant-numeric:tabular-nums}
+      /* ---------- Khung slide ---------- */
+      .slide {
+        min-height: 100dvh;
+        padding: var(--s12) 8vw var(--s10);
+        border-bottom: 1px solid var(--hairline-soft);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .container {
+        max-width: 1240px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .slide-tag,
+      .slide-num {
+        position: absolute;
+        top: var(--s5);
+        font: 500 11px/1 var(--mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .slide-tag {
+        left: 8vw;
+        color: var(--accent);
+      }
+      .slide-num {
+        right: 8vw;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
 
-/* ---------- Chữ ---------- */
-h1{font:300 clamp(44px,7.5vw,96px)/1.02 var(--display);margin:0;letter-spacing:-.03em}
-h2{font:300 clamp(28px,3.6vw,48px)/1.14 var(--display);margin:0 0 var(--s1);letter-spacing:-.02em;max-width:24ch}
-h2 em{color:var(--accent);font-style:italic;line-height:1.16;padding-bottom:2px}
-h3{font:500 clamp(17px,1.4vw,20px)/1.35 var(--display);margin:0 0 10px;letter-spacing:-.01em}
-h4{font:600 11px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.13em;color:var(--muted);margin:0 0 12px}
-p{margin:0 0 var(--s2);max-width:62ch}
-.lead{font:400 clamp(17px,1.5vw,21px)/1.55 var(--display);max-width:58ch;color:var(--ink-soft)}
-.eyebrow{
-  font:600 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.2em;
-  color:var(--brand-red);display:block;margin-bottom:var(--s4);
-}
-.meta{font:400 12px/1.9 var(--mono);letter-spacing:.04em;color:var(--muted)}
-.rule{height:1px;background:var(--hairline);margin:var(--s5) 0;border:0}
-.rule.strong{height:2px;background:var(--accent);max-width:80px;margin-bottom:var(--s4)}
-strong{font-weight:600;color:var(--ink)}
+      /* ---------- Chữ ---------- */
+      h1 {
+        font: 300 clamp(44px, 7.5vw, 96px)/1.02 var(--display);
+        margin: 0;
+        letter-spacing: -0.03em;
+      }
+      h2 {
+        font: 300 clamp(28px, 3.6vw, 48px)/1.14 var(--display);
+        margin: 0 0 var(--s1);
+        letter-spacing: -0.02em;
+        max-width: 24ch;
+      }
+      h2 em {
+        color: var(--accent);
+        font-style: italic;
+        line-height: 1.16;
+        padding-bottom: 2px;
+      }
+      h3 {
+        font: 500 clamp(17px, 1.4vw, 20px)/1.35 var(--display);
+        margin: 0 0 10px;
+        letter-spacing: -0.01em;
+      }
+      h4 {
+        font: 600 11px/1.3 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        color: var(--muted);
+        margin: 0 0 12px;
+      }
+      p {
+        margin: 0 0 var(--s2);
+        max-width: 62ch;
+      }
+      .lead {
+        font: 400 clamp(17px, 1.5vw, 21px)/1.55 var(--display);
+        max-width: 58ch;
+        color: var(--ink-soft);
+      }
+      .eyebrow {
+        font: 600 11px/1 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--brand-red);
+        display: block;
+        margin-bottom: var(--s4);
+      }
+      .meta {
+        font: 400 12px/1.9 var(--mono);
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .rule {
+        height: 1px;
+        background: var(--hairline);
+        margin: var(--s5) 0;
+        border: 0;
+      }
+      .rule.strong {
+        height: 2px;
+        background: var(--accent);
+        max-width: 80px;
+        margin-bottom: var(--s4);
+      }
+      strong {
+        font-weight: 600;
+        color: var(--ink);
+      }
 
-/* ---------- Lưới ---------- */
-.grid2{display:grid;grid-template-columns:5fr 7fr;gap:var(--s8);align-items:start}
-.grid2.even{grid-template-columns:1fr 1fr;gap:var(--s5)}
-.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3)}
-.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s3)}
+      /* ---------- Lưới ---------- */
+      .grid2 {
+        display: grid;
+        grid-template-columns: 5fr 7fr;
+        gap: var(--s8);
+        align-items: start;
+      }
+      .grid2.even {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--s5);
+      }
+      .three-col {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--s3);
+      }
+      .four-col {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--s3);
+      }
 
-/* ---------- Thẻ: một hệ duy nhất, không đảo nền giữa trang ---------- */
-.card{
-  background:var(--surface);border:1px solid var(--hairline-soft);
-  border-radius:var(--r-md);padding:var(--s4) var(--s3);position:relative;
-}
-.card.feature{
-  background:var(--accent-tint);border-color:transparent;
-  box-shadow:inset 3px 0 0 var(--accent);
-}
-.card-mark{
-  position:absolute;top:var(--s2);right:var(--s2);
-  display:inline-flex;align-items:center;
-  font:500 11px/1 var(--mono);letter-spacing:.1em;color:var(--muted);
-}
-.card-mark.warn{color:var(--gold)}
-.card-mark.stop{color:var(--danger)}
-.card p{font-size:14.5px;margin-bottom:0}
-.card ul{font-size:14.5px;margin-bottom:0}
-.card h4{margin-bottom:10px}
+      /* ---------- Thẻ: một hệ duy nhất, không đảo nền giữa trang ---------- */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--hairline-soft);
+        border-radius: var(--r-md);
+        padding: var(--s4) var(--s3);
+        position: relative;
+      }
+      .card.feature {
+        background: var(--accent-tint);
+        border-color: transparent;
+        box-shadow: inset 3px 0 0 var(--accent);
+      }
+      .card-mark {
+        position: absolute;
+        top: var(--s2);
+        right: var(--s2);
+        display: inline-flex;
+        align-items: center;
+        font: 500 11px/1 var(--mono);
+        letter-spacing: 0.1em;
+        color: var(--muted);
+      }
+      .card-mark.warn {
+        color: var(--gold);
+      }
+      .card-mark.stop {
+        color: var(--danger);
+      }
+      .card p {
+        font-size: 14.5px;
+        margin-bottom: 0;
+      }
+      .card ul {
+        font-size: 14.5px;
+        margin-bottom: 0;
+      }
+      .card h4 {
+        margin-bottom: 10px;
+      }
 
-.track-box{
-  background:var(--surface);border-radius:var(--r-md);
-  box-shadow:inset 3px 0 0 var(--accent);
-  padding:var(--s5);
-}
-.track-box h4{color:var(--accent)}
-.track-box h3{font:500 clamp(19px,1.8vw,23px)/1.35 var(--display);margin-bottom:var(--s2)}
-.note{font-size:14.5px;color:var(--ink-soft)}
+      .track-box {
+        background: var(--surface);
+        border-radius: var(--r-md);
+        box-shadow: inset 3px 0 0 var(--accent);
+        padding: var(--s5);
+      }
+      .track-box h4 {
+        color: var(--accent);
+      }
+      .track-box h3 {
+        font: 500 clamp(19px, 1.8vw, 23px)/1.35 var(--display);
+        margin-bottom: var(--s2);
+      }
+      .note {
+        font-size: 14.5px;
+        color: var(--ink-soft);
+      }
 
-.pull-quote{
-  font:300 italic clamp(24px,2.8vw,38px)/1.3 var(--display);
-  color:var(--ink);max-width:24ch;margin:var(--s6) 0;
-  padding:var(--s1) 0 6px var(--s4);border-left:2px solid var(--accent);
-}
+      .pull-quote {
+        font: 300 italic clamp(24px, 2.8vw, 38px)/1.3 var(--display);
+        color: var(--ink);
+        max-width: 24ch;
+        margin: var(--s6) 0;
+        padding: var(--s1) 0 6px var(--s4);
+        border-left: 2px solid var(--accent);
+      }
 
-/* ---------- Số liệu ---------- */
-.stat{border-top:2px solid var(--ink);padding-top:var(--s2)}
-.stat .l{
-  font:600 10.5px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.14em;
-  color:var(--muted);display:block;margin-bottom:6px;
-}
-.stat .n{
-  font:300 clamp(38px,4.2vw,60px)/1 var(--display);letter-spacing:-.03em;
-  display:block;margin-bottom:10px;font-variant-numeric:tabular-nums;
-}
-.stat .n.acc{color:var(--accent)}
-.stat p{font-size:13.5px;color:var(--muted);margin:0}
+      /* ---------- Số liệu ---------- */
+      .stat {
+        border-top: 2px solid var(--ink);
+        padding-top: var(--s2);
+      }
+      .stat .l {
+        font: 600 10.5px/1.4 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 6px;
+      }
+      .stat .n {
+        font: 300 clamp(38px, 4.2vw, 60px)/1 var(--display);
+        letter-spacing: -0.03em;
+        display: block;
+        margin-bottom: 10px;
+        font-variant-numeric: tabular-nums;
+      }
+      .stat .n.acc {
+        color: var(--accent);
+      }
+      .stat p {
+        font-size: 13.5px;
+        color: var(--muted);
+        margin: 0;
+      }
 
-/* ---------- Bảng ---------- */
-table{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:var(--s3)}
-th{
-  font:600 10.5px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.12em;
-  color:var(--muted);text-align:left;padding:0 var(--s2) 12px 0;
-  border-bottom:2px solid var(--ink);vertical-align:bottom;
-}
-td{padding:14px var(--s2) 14px 0;border-bottom:1px solid var(--hairline-soft);vertical-align:top}
-tbody tr:last-child td{border-bottom:2px solid var(--ink)}
-td:first-child{font:500 15px/1.45 var(--display)}
-tbody tr:hover td{background:var(--accent-tint)}
-tbody tr.grp:hover td{background:none}
-tr.grp td{border-bottom:none;padding-top:var(--s3);padding-bottom:4px}
-tr.grp td .meta{color:var(--accent);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px}
-.col-feat{background:var(--accent-tint)}
-tbody tr:hover .col-feat{background:var(--accent-tint-2)}
-.no{color:var(--muted)}
-.yes{color:var(--accent);font-weight:600;white-space:nowrap}
-.crit{color:var(--danger);font-weight:600;white-space:nowrap}
-.yes .ico,.crit .ico{vertical-align:-4px;margin-right:4px}
-.table-wrap{overflow-x:auto}
-.t-tech td:last-child,.t-tech th:last-child{white-space:nowrap;width:1%}
+      /* ---------- Bảng ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14.5px;
+        margin-top: var(--s3);
+      }
+      th {
+        font: 600 10.5px/1.4 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        text-align: left;
+        padding: 0 var(--s2) 12px 0;
+        border-bottom: 2px solid var(--ink);
+        vertical-align: bottom;
+      }
+      td {
+        padding: 14px var(--s2) 14px 0;
+        border-bottom: 1px solid var(--hairline-soft);
+        vertical-align: top;
+      }
+      tbody tr:last-child td {
+        border-bottom: 2px solid var(--ink);
+      }
+      td:first-child {
+        font: 500 15px/1.45 var(--display);
+      }
+      tbody tr:hover td {
+        background: var(--accent-tint);
+      }
+      tbody tr.grp:hover td {
+        background: none;
+      }
+      tr.grp td {
+        border-bottom: none;
+        padding-top: var(--s3);
+        padding-bottom: 4px;
+      }
+      tr.grp td .meta {
+        color: var(--accent);
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 10.5px;
+      }
+      .col-feat {
+        background: var(--accent-tint);
+      }
+      tbody tr:hover .col-feat {
+        background: var(--accent-tint-2);
+      }
+      .no {
+        color: var(--muted);
+      }
+      .yes {
+        color: var(--accent);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .crit {
+        color: var(--danger);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .yes .ico,
+      .crit .ico {
+        vertical-align: -4px;
+        margin-right: 4px;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      .t-tech td:last-child,
+      .t-tech th:last-child {
+        white-space: nowrap;
+        width: 1%;
+      }
 
-ul{margin:0 0 var(--s2);padding-left:18px;max-width:62ch}
-li{margin-bottom:8px}
-li::marker{color:var(--accent)}
+      ul {
+        margin: 0 0 var(--s2);
+        padding-left: 18px;
+        max-width: 62ch;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      li::marker {
+        color: var(--accent);
+      }
 
-/* ---------- Dòng thời gian mốc ---------- */
-.timeline{margin-top:var(--s6);padding-left:var(--s4);border-left:1px solid var(--hairline)}
-.phase{
-  position:relative;display:grid;
-  grid-template-columns:minmax(130px,160px) 1fr minmax(90px,auto);
-  gap:var(--s3);padding:var(--s3) 0;align-items:baseline;
-  border-bottom:1px solid var(--hairline-soft);
-}
-.phase:last-child{border-bottom:none}
-.phase::before{
-  content:"";position:absolute;left:calc(-1 * var(--s4) - 5px);top:calc(var(--s3) + 7px);
-  width:9px;height:9px;border-radius:50%;
-  background:var(--paper);border:1.5px solid var(--hairline);
-}
-.phase.mile{background:var(--accent-tint);border-radius:var(--r-base);padding:var(--s3) var(--s2);margin:0 calc(-1 * var(--s2))}
-.phase.mile::before{background:var(--accent);border-color:var(--accent)}
-.phase-id{font:600 11.5px/1.4 var(--mono);text-transform:uppercase;letter-spacing:.11em;color:var(--accent)}
-.phase-id.post{color:var(--ink-soft)}
-.phase-id.fut{color:var(--gold)}
-.phase-body h3{margin-bottom:6px}
-.phase-body p{font-size:14px;color:var(--muted);margin:0;max-width:none}
-.phase-eff{
-  font:600 11.5px/1.4 var(--mono);letter-spacing:.06em;color:var(--ink);
-  text-align:right;font-variant-numeric:tabular-nums;
-}
+      /* ---------- Dòng thời gian mốc ---------- */
+      .timeline {
+        margin-top: var(--s6);
+        padding-left: var(--s4);
+        border-left: 1px solid var(--hairline);
+      }
+      .phase {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(130px, 160px) 1fr minmax(90px, auto);
+        gap: var(--s3);
+        padding: var(--s3) 0;
+        align-items: baseline;
+        border-bottom: 1px solid var(--hairline-soft);
+      }
+      .phase:last-child {
+        border-bottom: none;
+      }
+      .phase::before {
+        content: '';
+        position: absolute;
+        left: calc(-1 * var(--s4) - 5px);
+        top: calc(var(--s3) + 7px);
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--paper);
+        border: 1.5px solid var(--hairline);
+      }
+      .phase.mile {
+        background: var(--accent-tint);
+        border-radius: var(--r-base);
+        padding: var(--s3) var(--s2);
+        margin: 0 calc(-1 * var(--s2));
+      }
+      .phase.mile::before {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .phase-id {
+        font: 600 11.5px/1.4 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+        color: var(--accent);
+      }
+      .phase-id.post {
+        color: var(--ink-soft);
+      }
+      .phase-id.fut {
+        color: var(--gold);
+      }
+      .phase-body h3 {
+        margin-bottom: 6px;
+      }
+      .phase-body p {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+        max-width: none;
+      }
+      .phase-eff {
+        font: 600 11.5px/1.4 var(--mono);
+        letter-spacing: 0.06em;
+        color: var(--ink);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
 
-/* ---------- Sơ đồ tổ chức mã nguồn ---------- */
-.arch{display:grid;gap:var(--s3)}
-.arch-group{
-  background:var(--surface);border:1px solid var(--hairline-soft);
-  border-radius:var(--r-md);padding:var(--s3) var(--s3) var(--s2);
-}
-.arch-label{
-  display:block;font:600 11px/1 var(--mono);letter-spacing:.14em;
-  text-transform:uppercase;color:var(--accent);margin-bottom:var(--s2);
-}
-.arch-row{
-  display:grid;grid-template-columns:minmax(120px,150px) 1fr auto;
-  gap:var(--s2);align-items:baseline;padding:7px 0;
-}
-.arch-row code{font:500 13px/1.5 var(--mono);color:var(--ink)}
-.arch-row span{font-size:13.5px;color:var(--muted)}
-.arch-row.key{background:var(--accent-tint);border-radius:var(--r-sm);padding:7px var(--s1);margin:0 calc(-1 * var(--s1))}
-.arch-row.key code{color:var(--accent);font-weight:600}
-.tag{
-  font:500 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
-  color:var(--muted);background:var(--surface-2);border-radius:var(--r-sm);
-  padding:5px 8px;white-space:nowrap;
-}
-.tag.on{color:var(--ok);background:transparent;box-shadow:inset 0 0 0 1px currentColor}
-.arch-note{font-size:13px;color:var(--muted);margin-top:6px}
+      /* ---------- Sơ đồ tổ chức mã nguồn ---------- */
+      .arch {
+        display: grid;
+        gap: var(--s3);
+      }
+      .arch-group {
+        background: var(--surface);
+        border: 1px solid var(--hairline-soft);
+        border-radius: var(--r-md);
+        padding: var(--s3) var(--s3) var(--s2);
+      }
+      .arch-label {
+        display: block;
+        font: 600 11px/1 var(--mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: var(--s2);
+      }
+      .arch-row {
+        display: grid;
+        grid-template-columns: minmax(120px, 150px) 1fr auto;
+        gap: var(--s2);
+        align-items: baseline;
+        padding: 7px 0;
+      }
+      .arch-row code {
+        font: 500 13px/1.5 var(--mono);
+        color: var(--ink);
+      }
+      .arch-row span {
+        font-size: 13.5px;
+        color: var(--muted);
+      }
+      .arch-row.key {
+        background: var(--accent-tint);
+        border-radius: var(--r-sm);
+        padding: 7px var(--s1);
+        margin: 0 calc(-1 * var(--s1));
+      }
+      .arch-row.key code {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .tag {
+        font: 500 10.5px/1 var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: var(--surface-2);
+        border-radius: var(--r-sm);
+        padding: 5px 8px;
+        white-space: nowrap;
+      }
+      .tag.on {
+        color: var(--ok);
+        background: transparent;
+        box-shadow: inset 0 0 0 1px currentColor;
+      }
+      .arch-note {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
 
-/* ---------- Biểu tượng: viui-icons, stroke 1.5 ---------- */
-.ico{width:20px;height:20px;flex:none}
-.ico.xs{width:16px;height:16px}
+      /* ---------- Biểu tượng: viui-icons, stroke 1.5 ---------- */
+      .ico {
+        width: 20px;
+        height: 20px;
+        flex: none;
+      }
+      .ico.xs {
+        width: 16px;
+        height: 16px;
+      }
 
-/* ---------- Chuyển động: chỉ hé lộ nội dung khi cuộn tới ---------- */
-.js .reveal{
-  opacity:0;transform:translateY(20px);
-  transition:opacity var(--vi-dur-dramatic) var(--vi-ease-decelerate),
-             transform var(--vi-dur-dramatic) var(--vi-ease-decelerate);
-}
-.js .reveal.visible{opacity:1;transform:none}
-.delay-1{transition-delay:var(--vi-stagger)}
-.delay-2{transition-delay:calc(var(--vi-stagger) * 2)}
-.delay-3{transition-delay:calc(var(--vi-stagger) * 3)}
+      /* ---------- Chuyển động: chỉ hé lộ nội dung khi cuộn tới ---------- */
+      .js .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity var(--vi-dur-dramatic) var(--vi-ease-decelerate),
+          transform var(--vi-dur-dramatic) var(--vi-ease-decelerate);
+      }
+      .js .reveal.visible {
+        opacity: 1;
+        transform: none;
+      }
+      .delay-1 {
+        transition-delay: var(--vi-stagger);
+      }
+      .delay-2 {
+        transition-delay: calc(var(--vi-stagger) * 2);
+      }
+      .delay-3 {
+        transition-delay: calc(var(--vi-stagger) * 3);
+      }
 
-@media (prefers-reduced-motion:reduce),print{
-  .js .reveal{opacity:1;transform:none;transition:none}
-  .progress{display:none}
-  html{scroll-behavior:auto}
-}
+      @media (prefers-reduced-motion: reduce), print {
+        .js .reveal {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+        .progress {
+          display: none;
+        }
+        html {
+          scroll-behavior: auto;
+        }
+      }
 
-/* ---------- Thu gọn về một cột dưới 900px ---------- */
-@media (max-width:900px){
-  body{font-size:15px}
-  .slide{padding:var(--s10) 6vw var(--s8);min-height:auto}
-  .slide-tag{left:6vw}
-  .slide-num{right:6vw}
-  .grid2,.grid2.even,.three-col,.four-col{grid-template-columns:1fr;gap:var(--s3)}
-  .timeline{padding-left:var(--s3)}
-  .phase{grid-template-columns:1fr;gap:6px}
-  .phase::before{left:calc(-1 * var(--s3) - 5px)}
-  .phase-eff{text-align:left}
-  .arch-row{grid-template-columns:1fr;gap:2px}
-  .pull-quote{max-width:none;padding-left:var(--s3)}
-  .track-box{padding:var(--s3)}
-}
-</style>
-</head>
-<body>
-<script>document.documentElement.classList.add("js")</script>
-<div class="progress" aria-hidden="true"></div>
+      /* ---------- Thu gọn về một cột dưới 900px ---------- */
+      @media (max-width: 900px) {
+        body {
+          font-size: 15px;
+        }
+        .slide {
+          padding: var(--s10) 6vw var(--s8);
+          min-height: auto;
+        }
+        .slide-tag {
+          left: 6vw;
+        }
+        .slide-num {
+          right: 6vw;
+        }
+        .grid2,
+        .grid2.even,
+        .three-col,
+        .four-col {
+          grid-template-columns: 1fr;
+          gap: var(--s3);
+        }
+        .timeline {
+          padding-left: var(--s3);
+        }
+        .phase {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+        .phase::before {
+          left: calc(-1 * var(--s3) - 5px);
+        }
+        .phase-eff {
+          text-align: left;
+        }
+        .arch-row {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+        .pull-quote {
+          max-width: none;
+          padding-left: var(--s3);
+        }
+        .track-box {
+          padding: var(--s3);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
+    <div class="progress" aria-hidden="true"></div>
 
-<section class="slide" id="cover">
-  <div class="container">
-    <span class="eyebrow reveal">iNET · Đề xuất kỹ thuật nội bộ</span>
-    <h1 class="reveal delay-1">Web Office<br>Suite</h1>
-    <div class="rule reveal delay-1"></div>
-    <div class="grid2 reveal delay-2">
-      <p class="lead">Xây dựng bộ Docs, Sheets, Slides chạy trên trình duyệt, thay thế Collabora Online, hoàn thiện hệ sinh thái OneMail + Drive thành một Workspace hoàn chỉnh. <em>Giao giá trị theo từng chặng, không chờ tới cuối.</em></p>
-      <div class="meta">
-        Phiên bản 1.3 &nbsp;·&nbsp; 17 tháng 8, 2026<br>
-        Thay thế lộ trình v6.1 ngày 14/08/2026<br>
-        Trạng thái: đề xuất, chờ duyệt<br><br>
-        Mã nguồn mở 100% &nbsp;·&nbsp; MIT / Apache-2.0<br>
-        Không phí bản quyền &nbsp;·&nbsp; Không mở mã sản phẩm<br>
-        Một kỹ sư toàn thời gian + hỗ trợ AI
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="slide" id="problem">
-  <span class="slide-tag">Vấn đề</span><span class="slide-num">01 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Collabora cho ta chức năng.<br><em>Nhưng lấy đi quyền kiểm soát.</em></h2>
-    </div>
-    <div class="pull-quote reveal delay-1">Vấn đề không phải chi phí. Vấn đề là ta không tự quyết được sản phẩm của mình.</div>
-    <div class="grid2 reveal delay-2">
-      <div>
-        <p>Collabora Online là LibreOffice chạy phía máy chủ, nhúng vào sản phẩm qua giao thức WOPI trong một khung iframe. Kiến trúc đó đặt một bức tường giữa iNET và trải nghiệm người dùng cuối.</p>
-        <p>Mọi tính năng khác biệt mà ta muốn xây dựng để cạnh tranh đều nằm đúng phía bên kia bức tường.</p>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Ta muốn</th><th>Với Collabora</th></tr></thead>
-          <tbody>
-            <tr><td>Giao diện thống nhất với OneMail</td><td class="no">Chỉnh được rất ít</td></tr>
-            <tr><td>Nhúng sâu vào Drive, email</td><td class="no">Chỉ ở mức WOPI cho phép</td></tr>
-            <tr><td>Mẫu tài liệu, ký số, luồng duyệt, AI</td><td class="no">Không thêm được</td></tr>
-            <tr><td>Sửa lỗi khi khách báo</td><td class="no">Phụ thuộc upstream</td></tr>
-            <tr><td>Tối ưu hiệu năng theo tải thật</td><td class="no">Hộp đen</td></tr>
-            <tr><td>Trải nghiệm riêng cho di động</td><td class="no">Không</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="slide" id="evidence">
-  <span class="slide-tag">Bằng chứng</span><span class="slide-num">02 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Không bắt đầu từ con số không.</h2>
-    </div>
-    <div class="four-col reveal delay-1" style="margin-top:56px">
-      <div class="stat"><span class="l">Đã có</span><span class="n">106</span><p>file mã nguồn. Docs editor TipTap đã chạy thật: thanh công cụ đầy đủ, bảng, ảnh, tìm-thay-thế, phân trang kiểu Google Docs.</p></div>
-      <div class="stat"><span class="l">Chưa có</span><span class="n">0</span><p>khả năng đọc ghi file Office. Đây là toàn bộ khoảng cách còn lại giữa hiện tại và việc thay được Collabora.</p></div>
-      <div class="stat"><span class="l">Nhân sự</span><span class="n acc">1</span><p>kỹ sư fullstack cùng hỗ trợ AI. Đây đồng thời là rủi ro tổ chức lớn nhất của dự án.</p></div>
-      <div class="stat"><span class="l">Chi phí bản quyền</span><span class="n">0đ</span><p>Toàn bộ stack đã kiểm tra trên npm registry: MIT hoặc Apache-2.0, không copyleft.</p></div>
-    </div>
-    <div class="rule"></div>
-    <div class="three-col reveal delay-2">
-      <div class="card"><div class="card-mark">01</div><h4>Ràng buộc</h4><h3>Chỉ giấy phép dễ dãi</h3><p>MIT, Apache-2.0, BSD. Loại toàn bộ AGPL và GPL, kể cả thư viện tốt nhất hiện có.</p></div>
-      <div class="card"><div class="card-mark">02</div><h4>Ràng buộc</h4><h3>Không mua bản quyền</h3><p>Loại Univer Pro và các bản thương mại, kể cả khi rẻ hơn thời gian kỹ sư.</p></div>
-      <div class="card"><div class="card-mark">03</div><h4>Ràng buộc</h4><h3>Không mở mã sản phẩm</h3><p>Loại mọi thư viện copyleft mạnh. Ba ràng buộc này định hình toàn bộ lộ trình.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="slide" id="decision">
-  <span class="slide-tag">Quyết định cốt lõi</span><span class="slide-num">03 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Một quyết định định giá cả dự án.<br><em>Và không thể sửa lại sau.</em></h2>
-      <p class="lead" style="margin-top:24px">Yêu cầu "mở file cũ, sửa, lưu lại không hỏng" nghe đơn giản nhưng là bài toán khó nhất. Mô hình dữ liệu của trình soạn thảo web nghèo hơn OOXML rất nhiều. Làm theo cách thông thường thì mỗi lần người dùng bấm Lưu là file mất dữ liệu - đó là hệ quả tất yếu của kiến trúc, không phải lỗi lập trình.</p>
-    </div>
-    <div class="table-wrap reveal delay-1">
-      <table>
-        <thead><tr><th></th><th>T0 · Chuyển đổi thẳng</th><th>A · Thư viện AGPL</th><th>B · Bản thương mại</th><th class="col-feat">T1 · Giữ nguyên và vá</th></tr></thead>
-        <tbody>
-          <tr><td>Công sức tới Docs MVP</td><td>1-2 tháng</td><td>3-5 tháng</td><td>3-5 tháng</td><td class="col-feat"><strong>6-9 tháng</strong></td></tr>
-          <tr><td>Chất lượng round-trip</td><td class="no">Hỏng file</td><td>Cao</td><td>Cao</td><td class="col-feat">Trung bình, tăng dần</td></tr>
-          <tr><td>Chi phí bản quyền</td><td>0</td><td>0</td><td class="no">Phải trả</td><td class="col-feat">0</td></tr>
-          <tr><td>Ràng buộc pháp lý</td><td>Không</td><td class="no">Buộc mở mã nguồn</td><td>Không</td><td class="col-feat">Không</td></tr>
-          <tr><td>Gánh nặng bảo trì</td><td>Thấp</td><td>Thấp</td><td>Thấp</td><td class="col-feat">Rất cao, vĩnh viễn</td></tr>
-          <tr><td>Kết luận</td><td class="no">Loại · vi phạm chất lượng</td><td class="no">Loại · vi phạm giấy phép</td><td class="no">Loại · vi phạm chi phí</td><td class="col-feat yes"><svg class="ico xs" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Chọn</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="track-box reveal delay-2" style="margin-top:56px">
-      <h4>Phương án chọn · T1 preserve-and-patch</h4>
-      <h3>Giữ nguyên vẹn file gốc. Chỉ vá đúng chỗ người dùng chạm vào.</h3>
-      <p>File OOXML gốc được giải nén và giữ nguyên trong bộ nhớ trình duyệt, đóng vai trò nguồn dữ liệu gốc. Trình soạn thảo chỉ là khung nhìn sửa được trên phần thân. Khi lưu, hệ thống chỉ ghi đè đúng những đoạn đã sửa; các phần định nghĩa kiểu, đánh số, theme, đầu chân trang, hình ảnh được giữ nguyên từng byte. Cấu trúc nào trình soạn thảo không hiểu thì trở thành khối chỉ đọc, bảo toàn nguyên vẹn thay vì bị xóa âm thầm.</p>
-      <p style="margin-bottom:0"><strong>Nguyên tắc: suy giảm có kiểm soát. Thứ ta không hiểu thì ta không đụng vào.</strong></p>
-    </div>
-  </div>
-</section>
-
-<section class="slide" id="price">
-  <span class="slide-tag">Đánh đổi</span><span class="slide-num">04 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Gần một nửa tiến độ.<br><em>Đó là giá của ba ràng buộc pháp lý.</em></h2>
-    </div>
-    <div class="grid2 reveal delay-1" style="margin-top:48px">
-      <div>
-        <p>Tồn tại một thư viện mã nguồn mở đã hiện thực đúng kiến trúc T1, với gần bảy nghìn lần cập nhật đứng sau. Dùng nó xóa bỏ gần như toàn bộ tầng đọc ghi .docx, rút MVP từ 6-9 tháng xuống còn 3-5 tháng.</p>
-        <p>Nó mang giấy phép AGPLv3 - nhúng vào ứng dụng trình duyệt sẽ buộc công khai mã nguồn ứng dụng Docs. Ràng buộc của ta loại bỏ lựa chọn đó.</p>
-        <p>Quan trọng hơn cả tốc độ: hai phương án bị loại đều cho <strong>chất lượng round-trip cao hơn hẳn ngay từ ngày đầu</strong>, vì đứng sau chúng là hàng nghìn lần xử lý các trường hợp biên của OOXML. Đi đường tự xây nghĩa là ta tự đi lại quãng đường đó, và chất lượng tăng dần theo tháng chứ không có sẵn.</p>
-        <p><strong>Đây là đánh đổi có ý thức, không phải chậm tiến độ.</strong></p>
-      </div>
-      <div style="display:grid;gap:24px">
-        <div class="card"><div class="card-mark">01</div><h4>Đòn bẩy một</h4><h3>Nới ràng buộc mở mã nguồn</h3><p>MVP về khoảng 3-5 tháng. Phần giao diện vốn đã tải xuống trình duyệt người dùng. Backend, SSO, Drive và logic nghiệp vụ không bị ảnh hưởng vì là tiến trình riêng giao tiếp qua API. Nghĩa vụ thực tế hẹp hơn nhiều so với cảm giác khi nghe "AGPL".</p></div>
-        <div class="card feature"><div class="card-mark">02</div><h4>Đòn bẩy hai</h4><h3>Nới ràng buộc chi phí</h3><p>MVP về khoảng 3-5 tháng, và chất lượng round-trip cao ngay lập tức. So sánh giá bản quyền thương mại với ba đến bốn tháng lương một kỹ sư - cán cân thường nghiêng về mua.</p></div>
-      </div>
-    </div>
-    <p class="meta reveal delay-2" style="margin-top:48px">Hai đòn bẩy này thuộc thẩm quyền lãnh đạo, không thuộc thẩm quyền kỹ thuật. Chúng được chuẩn bị sẵn để dùng khi có áp lực tiến độ.</p>
-  </div>
-</section>
-
-<section class="slide" id="scope">
-  <span class="slide-tag">Hợp đồng phạm vi</span><span class="slide-num">05 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Không hứa sửa được mọi thứ.<br><em>Hứa không bao giờ làm mất dữ liệu.</em></h2>
-      <p class="lead" style="margin-top:24px">"Round-trip đầy đủ với mọi file .docx" là mục tiêu không sản phẩm nào trên thị trường đạt được, kể cả Google Docs. Thứ đạt được, và thứ ta cam kết, là một ranh giới rõ ràng giữa hai lớp tài liệu.</p>
-    </div>
-    <div class="grid2 even reveal delay-1" style="margin-top:48px">
-      <div class="card">
-        <div class="card-mark">A</div>
-        <h4>Lớp A · trong phạm vi MVP</h4>
-        <h3>Sửa được, round-trip đầy đủ</h3>
-        <ul>
-          <li>Đoạn văn, heading, định dạng ký tự: đậm, nghiêng, gạch chân, màu, cỡ chữ, phông chữ</li>
-          <li>Danh sách bullet và đánh số, kể cả nhiều cấp</li>
-          <li>Bảng: gộp ô, viền, màu nền</li>
-          <li>Hình ảnh nhúng, siêu liên kết, dấu trang</li>
-          <li>Khổ giấy, lề, hướng giấy, kiểu tài liệu</li>
-          <li>Đầu và chân trang: hiển thị đúng, giữ nguyên khi lưu</li>
-        </ul>
-      </div>
-      <div class="card feature">
-        <div class="card-mark">B</div>
-        <h4>Lớp B · bảo toàn, chưa sửa được</h4>
-        <h3>Giữ nguyên từng byte khi lưu</h3>
-        <ul>
-          <li>SmartArt, biểu đồ nhúng, đối tượng OLE</li>
-          <li>Điều khiển nội dung, trường động</li>
-          <li>Chú thích chân trang và cuối trang</li>
-          <li>Bình luận, theo dõi thay đổi</li>
-          <li>Hộp văn bản, hình vẽ phức tạp, công thức toán</li>
-        </ul>
-        <p style="margin-top:16px"><strong>Hiển thị dạng khối chỉ đọc. Khi lưu được ghi lại nguyên vẹn.</strong></p>
-      </div>
-    </div>
-    <div class="pull-quote reveal delay-2">Đa số sản phẩm cạnh tranh xóa mất phần họ không hiểu. Ta giữ nguyên.</div>
-    <div class="track-box reveal delay-2">
-      <h4>Ràng buộc hai chiều</h4>
-      <p style="margin-bottom:0">Ngoài phạm vi MVP: Sheets, Slides, đăng nhập, Drive, cộng tác thời gian thực, xuất PDF chất lượng in ấn. <strong>Nếu phạm vi này bị nới ra trong lúc triển khai, ước lượng 6-9 tháng trở thành 18-24 tháng.</strong> Kỹ thuật cam kết mốc, lãnh đạo cam kết không nới phạm vi.</p>
-    </div>
-  </div>
-</section>
-
-<section class="slide" id="architecture">
-  <span class="slide-tag">Kiến trúc</span><span class="slide-num">06 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Toàn bộ tính toán chạy ở trình duyệt.<br><em>MVP không cần máy chủ nào.</em></h2>
-    </div>
-    <div class="grid2 reveal delay-1" style="margin-top:48px">
-      <div>
-        <p>Ba ứng dụng triển khai độc lập - tên miền con riêng, build riêng, hỏng một cái không kéo theo hai cái kia - nhưng dùng chung tầng đọc ghi file, tầng lưu trữ và tầng cộng tác trong một monorepo.</p>
-        <p>Hướng offline-first đảo ngược lộ trình cũ: nguồn dữ liệu gốc nằm ở máy người dùng, máy chủ chỉ là nơi đồng bộ. Hệ quả là ba ứng dụng tĩnh đẩy lên CDN đã đủ cho MVP.</p>
-        <div class="rule"></div>
-        <h4>Drive iNET lưu trên S3 - kiến trúc mỏng thêm</h4>
-        <p class="note">Trình duyệt lấy pre-signed URL từ máy chủ rồi đọc ghi <strong>thẳng lên S3</strong>. Byte file không đi qua máy chủ ta, nên không có bài toán scale băng thông. Máy chủ chỉ còn xác thực, phát URL có thời hạn và giữ metadata. Bật versioning trên bucket thì có lịch sử phiên bản gần như miễn phí; xung đột xử lý bằng ETag với ghi có điều kiện.</p>
-        <div class="rule"></div>
-        <h4>Chi tiết từng công nghệ ở phần 07</h4>
-        <p class="note">Sơ đồ bên cạnh là cách mã nguồn được tổ chức. Phần tiếp theo giải thích từng công nghệ làm gì bằng ngôn ngữ thường.</p>
-        <div class="rule"></div>
-        <h4>Hai khoản đầu tư trước bắt buộc</h4>
-        <p class="note">Vi phạm YAGNI có ý thức, vì không thể lắp thêm sau: <strong>tầng lưu trữ trừu tượng</strong> phải có ngay để đổi sang Drive không phải viết lại, và <strong>Yjs làm nguồn dữ liệu gốc</strong> ngay từ đầu - chi phí bây giờ một tuần, chi phí sau này bốn đến sáu tuần cộng rủi ro mất dữ liệu.</p>
-      </div>
-      <div class="arch">
-        <div class="arch-group">
-          <span class="arch-label">apps/</span>
-          <div class="arch-row"><code>docs</code><span>TipTap</span><b class="tag on">đang có</b></div>
-          <div class="arch-row"><code>sheets</code><span>Univer</span><b class="tag">GĐ 6</b></div>
-          <div class="arch-row"><code>slides</code><span>pptx-viewer</span><b class="tag">GĐ 7</b></div>
-          <div class="arch-row"><code>shell</code><span>launcher</span><b class="tag">GĐ 8</b></div>
+    <section class="slide" id="cover">
+      <div class="container">
+        <span class="eyebrow reveal">iNET · Đề xuất kỹ thuật nội bộ</span>
+        <h1 class="reveal delay-1">Web Office<br />Suite</h1>
+        <div class="rule reveal delay-1"></div>
+        <div class="grid2 reveal delay-2">
+          <p class="lead">
+            Xây dựng bộ Docs, Sheets, Slides chạy trên trình duyệt, thay thế Collabora Online, hoàn
+            thiện hệ sinh thái OneMail + Drive thành một Workspace hoàn chỉnh.
+            <em>Giao giá trị theo từng chặng, không chờ tới cuối.</em>
+          </p>
+          <div class="meta">
+            Phiên bản 1.3 &nbsp;·&nbsp; 17 tháng 8, 2026<br />
+            Thay thế lộ trình v6.1 ngày 14/08/2026<br />
+            Trạng thái: đề xuất, chờ duyệt<br /><br />
+            Mã nguồn mở 100% &nbsp;·&nbsp; MIT / Apache-2.0<br />
+            Không phí bản quyền &nbsp;·&nbsp; Không mở mã sản phẩm<br />
+            Một kỹ sư toàn thời gian + hỗ trợ AI
+          </div>
         </div>
-        <div class="arch-group">
-          <span class="arch-label">packages/</span>
-          <div class="arch-row"><code>ooxml-core</code><span>giữ nguyên byte</span></div>
-          <div class="arch-row key"><code>docx-io</code><span>trái tim dự án</span></div>
-          <div class="arch-row"><code>xlsx-io</code><span>ExcelJS</span></div>
-          <div class="arch-row"><code>pptx-io</code><span>bản fork</span></div>
-          <div class="arch-row"><code>storage-adapter</code><span>IndexedDB → S3</span></div>
-          <div class="arch-row"><code>collab-core</code><span>Y.Doc</span></div>
-          <div class="arch-row"><code>auth-sdk</code><span>OneMail SSO</span></div>
-          <div class="arch-row key"><code>fidelity-harness</code><span>thước đo chất lượng</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="problem">
+      <span class="slide-tag">Vấn đề</span><span class="slide-num">01 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Collabora cho ta chức năng.<br /><em>Nhưng lấy đi quyền kiểm soát.</em></h2>
         </div>
-        <div class="arch-group">
-          <span class="arch-label">services/</span>
-          <div class="arch-row"><code>api</code><span>NestJS, một ứng dụng nhiều module</span></div>
-          <div class="arch-note">Chỉ xác thực và phát pre-signed URL. Byte file không đi qua máy chủ.</div>
+        <div class="pull-quote reveal delay-1">
+          Vấn đề không phải chi phí. Vấn đề là ta không tự quyết được sản phẩm của mình.
+        </div>
+        <div class="grid2 reveal delay-2">
+          <div>
+            <p>
+              Collabora Online là LibreOffice chạy phía máy chủ, nhúng vào sản phẩm qua giao thức
+              WOPI trong một khung iframe. Kiến trúc đó đặt một bức tường giữa iNET và trải nghiệm
+              người dùng cuối.
+            </p>
+            <p>
+              Mọi tính năng khác biệt mà ta muốn xây dựng để cạnh tranh đều nằm đúng phía bên kia
+              bức tường.
+            </p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ta muốn</th>
+                  <th>Với Collabora</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Giao diện thống nhất với OneMail</td>
+                  <td class="no">Chỉnh được rất ít</td>
+                </tr>
+                <tr>
+                  <td>Nhúng sâu vào Drive, email</td>
+                  <td class="no">Chỉ ở mức WOPI cho phép</td>
+                </tr>
+                <tr>
+                  <td>Mẫu tài liệu, ký số, luồng duyệt, AI</td>
+                  <td class="no">Không thêm được</td>
+                </tr>
+                <tr>
+                  <td>Sửa lỗi khi khách báo</td>
+                  <td class="no">Phụ thuộc upstream</td>
+                </tr>
+                <tr>
+                  <td>Tối ưu hiệu năng theo tải thật</td>
+                  <td class="no">Hộp đen</td>
+                </tr>
+                <tr>
+                  <td>Trải nghiệm riêng cho di động</td>
+                  <td class="no">Không</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="track-box reveal delay-2" style="margin-top:56px">
-      <h4>Khác biệt so với lộ trình v6.1</h4>
-      <h3>Không dựng bảy microservices trước khi có người dùng đầu tiên.</h3>
-      <p style="margin-bottom:0">Với một kỹ sư, bảy dịch vụ là bảy pipeline, bảy bộ log, bảy lần triển khai và gỡ lỗi phân tán - đổi lại con số không giá trị nghiệp vụ. Ranh giới dịch vụ đúng chỉ lộ ra sau khi hệ thống chạy thật; vẽ trước gần như luôn vẽ sai, và sửa ranh giới sai đắt hơn tách monolith. Việc Drive nằm trên S3 càng củng cố điều này: máy chủ không chạm vào byte file, nên gần như không có gì để tách.</p>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="slide" id="tech">
-  <span class="slide-tag">Công nghệ</span><span class="slide-num">07 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Toàn bộ là mã nguồn mở miễn phí.<br><em>Không trả phí, không phải công khai sản phẩm.</em></h2>
-    </div>
-    <div class="table-wrap t-tech reveal delay-1">
-      <table>
-        <thead><tr><th>Thành phần</th><th>Nó là gì, nói dễ hiểu</th><th>Giấy phép</th></tr></thead>
-        <tbody>
-          <tr class="grp"><td colspan="3"><span class="meta">Nền tảng chung cho cả ba ứng dụng</span></td></tr>
-          <tr><td>React · TypeScript · Vite</td><td>Bộ công cụ dựng giao diện web. Lựa chọn phổ biến nhất hiện nay, dễ tuyển người, đã dùng sẵn trong sản phẩm hiện tại</td><td>MIT</td></tr>
-          <tr><td>shadcn/ui · Base UI · Tailwind</td><td>Bộ thành phần giao diện dựng sẵn: nút, hộp thoại, menu, dropdown, tooltip. <strong>Không phải thư viện phụ thuộc — là mã nguồn chép thẳng vào dự án, ta sở hữu hoàn toàn.</strong> Không có rủi ro chuỗi cung ứng, không phụ thuộc tác giả bên ngoài. Repo đã cài sẵn Base UI, nền mặc định của shadcn từ tháng 7/2026</td><td>MIT</td></tr>
-          <tr><td>Bộ design token dùng chung</td><td>Biến màu, phông, bo góc dùng chung cho cả ba ứng dụng, <strong>lấy bảng màu thương hiệu iNET</strong> để bộ Office trông đúng là một phần của OneMail. Chỉ dùng lại giá trị màu, không phụ thuộc Vue hay Vuetify — cả ba ứng dụng đều React thuần</td><td>tự xây</td></tr>
-          <tr><td>IndexedDB</td><td>Kho dữ liệu có sẵn trong mọi trình duyệt. Là nơi cất tài liệu để làm việc khi không có mạng</td><td>chuẩn web</td></tr>
-          <tr><td>File System Access</td><td>Tính năng trình duyệt cho phép mở và lưu file thẳng trên máy người dùng, giống hệt phần mềm cài đặt</td><td>chuẩn web</td></tr>
-          <tr><td>PWA</td><td>Biến trang web thành ứng dụng cài được lên máy, có biểu tượng riêng, mở ra là chạy kể cả khi mất mạng</td><td>chuẩn web</td></tr>
-          <tr><td>Yjs</td><td>Thư viện đồng bộ dữ liệu. Nhiều người sửa cùng lúc không đè lên nhau; làm việc offline rồi tự hợp nhất khi có mạng lại. Nền của tính năng cộng tác</td><td>MIT</td></tr>
-
-          <tr class="grp"><td colspan="3"><span class="meta">Riêng cho Docs</span></td></tr>
-          <tr><td>TipTap · ProseMirror</td><td><strong>Động cơ soạn thảo văn bản</strong> - tạo ra vùng gõ chữ, in đậm, danh sách, bảng. Vai trò tương đương phần lõi của Word. Đã có và đang chạy tốt trong sản phẩm hiện tại</td><td>MIT</td></tr>
-          <tr><td>docx-preview</td><td>Hiển thị file Word trong trình duyệt với độ chính xác cao. Dùng làm trình xem ở mốc M2 - <strong>tiết kiệm nhiều tháng so với tự viết</strong></td><td>Apache-2.0</td></tr>
-          <tr><td>JSZip · fast-xml-parser</td><td>File .docx thực chất là gói nén chứa nhiều tệp XML. Hai thư viện này mở gói và sửa đúng phần cần sửa, <strong>giữ nguyên những phần không đụng tới</strong> - chính là cơ chế bảo vệ dữ liệu của khách</td><td>MIT</td></tr>
-
-          <tr class="grp"><td colspan="3"><span class="meta">Riêng cho Sheets và Slides - bắt đầu sau MVP</span></td></tr>
-          <tr><td>Univer</td><td>Động cơ bảng tính. Vai trò với Sheets giống TipTap với Docs</td><td>Apache-2.0</td></tr>
-          <tr><td>ExcelJS</td><td>Đọc và ghi file Excel. <strong>Bắt buộc phải có</strong> vì phần đọc ghi Excel của Univer là tính năng trả phí, mà ta không mua bản quyền</td><td>MIT</td></tr>
-          <tr><td>echarts</td><td>Vẽ biểu đồ, thay cho biểu đồ bản trả phí của Univer</td><td>Apache-2.0</td></tr>
-          <tr><td>pptx-viewer</td><td>Đọc, hiển thị và sửa file PowerPoint. Đầy đủ nhất trong các lựa chọn mã nguồn mở: ribbon, kéo thả trên canvas, 187 hình khối, 23 loại biểu đồ, SmartArt, hiệu ứng, xuất PDF và video, đồng sửa nhiều người. <strong>Vẫn là thành phần rủi ro nhất cả dự án — nhưng vì tuổi đời và tác giả, không phải vì thiếu tính năng.</strong> Xem thẻ bên dưới</td><td>Apache-2.0</td></tr>
-
-          <tr class="grp"><td colspan="3"><span class="meta">Phần máy chủ - từ tháng 9, MVP không cần</span></td></tr>
-          <tr><td>NestJS</td><td>Nền tảng viết máy chủ. Chỉ làm hai việc: xác thực người dùng và giữ thông tin tài liệu</td><td>MIT</td></tr>
-          <tr><td>Pre-signed URL lên S3</td><td>Trình duyệt tải file lên xuống <strong>thẳng kho lưu trữ của Drive</strong>, không qua máy chủ ta. Nhờ vậy chi phí máy chủ gần như không tăng dù có bao nhiêu người dùng</td><td>chuẩn S3</td></tr>
-          <tr><td>Hocuspocus</td><td>Máy chủ đi kèm Yjs, chuyển tiếp thay đổi giữa những người đang mở cùng một tài liệu</td><td>MIT</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="three-col reveal delay-2" style="margin-top:56px">
-      <div class="card feature"><div class="card-mark warn"><svg class="ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z"/><path d="M12 4l9 15.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none"/></svg></div><h4>Thành phần ta tự xây</h4><h3>fidelity-harness - bộ đo chất lượng</h3><p>Lấy 50-100 file thật của khách, mở ra rồi lưu lại, so sánh với bản gốc và cho ra con số phần trăm chính xác. <strong>Đây là thước đo duy nhất trả lời được câu hỏi "đã thay được Collabora chưa"</strong>, và là con số báo cáo hàng tháng.</p></div>
-      <div class="card"><div class="card-mark stop"><svg class="ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div><h4>Lựa chọn tốt nhất bị loại</h4><h3>SuperDoc</h3><p>Chất lượng tốt nhất trong các phương án, nhưng giấy phép AGPLv3 buộc công khai mã nguồn, còn bản thương mại thì mất phí. Cả hai đều vi phạm ràng buộc đã đặt. <strong>Đây chính là đòn bẩy rút ngắn 3-4 tháng nếu lãnh đạo nới ràng buộc.</strong></p></div>
-      <div class="card"><div class="card-mark stop"><svg class="ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div><h4>Bẫy đã tránh được</h4><h3>SheetJS bản miễn phí</h3><p>Giấy phép không vướng, nhưng <strong>âm thầm loại bỏ định dạng khi ghi file</strong>. Nếu chọn nhầm, phải hai tháng sau mới phát hiện, khi đã đầu tư sâu. Dùng ExcelJS thay thế.</p></div>
-    </div>
-    <div class="track-box reveal delay-3" style="margin-top:36px">
-      <h4>Đánh giá riêng · pptx-viewer — phụ thuộc rủi ro nhất</h4>
-      <h3 style="font-size:22px;margin-bottom:16px">Tính năng đầy đủ thật. Rủi ro nằm ở tuổi đời và tác giả, không phải ở tính năng.</h3>
-      <div class="table-wrap">
-        <table style="margin-top:8px">
-          <thead><tr><th>Chỉ số</th><th>Giá trị</th><th>Nghĩa là gì</th></tr></thead>
-          <tbody>
-            <tr><td>Lượt tải npm</td><td>~21.000 mỗi tuần</td><td>Có người dùng thật. Số sao GitHub là chỉ báo tồi, không nên dùng để đánh giá</td></tr>
-            <tr><td>Ngày tạo dự án</td><td>16/03/2026 — mới 5 tháng</td><td>Với thư viện xử lý định dạng file, tuổi đời chính là thước đo. Độ chính xác đến từ việc va phải hàng chục nghìn file kỳ quặc ngoài đời, không từ đọc đặc tả</td></tr>
-            <tr><td>Người đóng góp</td><td>Một người 2.319 commit; ba người khác tổng cộng 7</td><td>Bus factor bằng một, y hệt tình trạng dự án của ta</td></tr>
-            <tr><td>Nhịp commit</td><td>Khoảng 15 mỗi ngày, liên tục 5 tháng</td><td>Gần như chắc chắn là mã sinh bằng AI quy mô lớn — mang đúng rủi ro ta đã cảnh báo cho chính mình, nhưng ta không kiểm soát được</td></tr>
-            <tr><td>Phiên bản phát hành</td><td>103–180 bản trong 5 tháng</td><td>API chưa ổn định. Phải ghim phiên bản cứng và chủ động nâng cấp</td></tr>
-            <tr><td>Issue mở / người theo dõi</td><td>1 / 0</td><td>Không có nghĩa là không lỗi, mà là chưa ai đẩy nó tới giới hạn và báo lại</td></tr>
-          </tbody>
-        </table>
+    <section class="slide" id="evidence">
+      <span class="slide-tag">Bằng chứng</span><span class="slide-num">02 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Không bắt đầu từ con số không.</h2>
+        </div>
+        <div class="four-col reveal delay-1" style="margin-top: 56px">
+          <div class="stat">
+            <span class="l">Đã có</span><span class="n">106</span>
+            <p>
+              file mã nguồn. Docs editor TipTap đã chạy thật: thanh công cụ đầy đủ, bảng, ảnh,
+              tìm-thay-thế, phân trang kiểu Google Docs.
+            </p>
+          </div>
+          <div class="stat">
+            <span class="l">Chưa có</span><span class="n">0</span>
+            <p>
+              khả năng đọc ghi file Office. Đây là toàn bộ khoảng cách còn lại giữa hiện tại và việc
+              thay được Collabora.
+            </p>
+          </div>
+          <div class="stat">
+            <span class="l">Nhân sự</span><span class="n acc">1</span>
+            <p>
+              kỹ sư fullstack cùng hỗ trợ AI. Đây đồng thời là rủi ro tổ chức lớn nhất của dự án.
+            </p>
+          </div>
+          <div class="stat">
+            <span class="l">Chi phí bản quyền</span><span class="n">0đ</span>
+            <p>Toàn bộ stack đã kiểm tra trên npm registry: MIT hoặc Apache-2.0, không copyleft.</p>
+          </div>
+        </div>
+        <div class="rule"></div>
+        <div class="three-col reveal delay-2">
+          <div class="card">
+            <div class="card-mark">01</div>
+            <h4>Ràng buộc</h4>
+            <h3>Chỉ giấy phép dễ dãi</h3>
+            <p>MIT, Apache-2.0, BSD. Loại toàn bộ AGPL và GPL, kể cả thư viện tốt nhất hiện có.</p>
+          </div>
+          <div class="card">
+            <div class="card-mark">02</div>
+            <h4>Ràng buộc</h4>
+            <h3>Không mua bản quyền</h3>
+            <p>Loại Univer Pro và các bản thương mại, kể cả khi rẻ hơn thời gian kỹ sư.</p>
+          </div>
+          <div class="card">
+            <div class="card-mark">03</div>
+            <h4>Ràng buộc</h4>
+            <h3>Không mở mã sản phẩm</h3>
+            <p>Loại mọi thư viện copyleft mạnh. Ba ràng buộc này định hình toàn bộ lộ trình.</p>
+          </div>
+        </div>
       </div>
-      <p style="margin-top:20px;margin-bottom:0"><strong>Vẫn dùng, vì không có lựa chọn nào tốt hơn</strong> — tự xây trình chiếu từ đầu tốn hơn sáu tháng riêng cho Slides. Nhưng phải fork và coi như mã nhà ngay từ đầu. Bài kiểm tra bắt buộc trước khi cam kết phạm vi: dùng <strong>file .pptx thật của khách hàng iNET</strong> có logo, bảng biểu và phông tiếng Việt, không dùng file demo của tác giả.</p>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="slide" id="roadmap">
-  <span class="slide-tag">Lộ trình</span><span class="slide-num">08 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Mỗi mốc giao được một thứ dùng thật.<br><em>Không chờ mười tháng mới có kết quả.</em></h2>
-    </div>
-    <div class="timeline reveal delay-1">
-      <div class="phase"><span class="phase-id">M1 · Ngày 30</span><div class="phase-body"><h3>Docs offline chạy được</h3><p>Tái cấu trúc monorepo · IndexedDB thay localStorage · File System Access · PWA · quản lý file · export HTML, TXT, PDF · <strong>dựng nền giao diện shadcn/ui và bộ design token màu iNET</strong>. Chưa động tới .docx nên rủi ro thấp. <strong>Demo được, dùng nội bộ ngay cho tài liệu tạo mới.</strong></p></div><span class="phase-eff">16-24 ngày</span></div>
-      <div class="phase mile"><span class="phase-id">M2 · Ngày 60</span><div class="phase-body"><h3>Trình xem .docx - triển khai thật được</h3><p>Lõi OOXML giữ nguyên byte · bộ đo chất lượng <strong>phát khác biệt máy đọc được</strong> · trình xem dùng <strong>docx-preview</strong>, không cần tự viết phần hiển thị. <strong>Mốc: mở file thật, xem chuẩn xác, lưu lại giống hệt từng byte.</strong> Chiếm luồng "xem file" của Collabora ngay từ tháng thứ hai.</p></div><span class="phase-eff">15-23 ngày</span></div>
-      <div class="phase"><span class="phase-id">M3 · Tháng 2-4</span><div class="phase-body"><h3>Sửa được .docx trong trình soạn thảo</h3><p>Yjs làm nguồn dữ liệu gốc · chuỗi phân giải kiểu · danh sách nhiều cấp · bảng · ảnh · phân đoạn · khối bảo toàn Lớp B · đuôi dài gỡ lỗi hiển thị. Chuyển từ xem sang sửa, chưa lưu ngược về .docx.</p></div><span class="phase-eff">30-45 ngày</span></div>
-      <div class="phase"><span class="phase-id">M4 · Tháng 4-6</span><div class="phase-body"><h3>Round-trip Lớp A - chặng khó nhất</h3><p>Ánh xạ vị trí hai chiều · theo dõi nút bẩn · ghi ngược bảng và danh sách · <strong>đuôi dài gỡ lỗi round-trip, 10-17 ngày, hạng mục tốn nhất cả dự án</strong>. Mốc: sửa một từ, lưu, mở bằng Word - khác biệt duy nhất là từ đó.</p></div><span class="phase-eff">32-51 ngày</span></div>
-      <div class="phase mile"><span class="phase-id">M5 · Tháng 6-9</span><div class="phase-body"><h3>Gia cố và nghiệm thu MVP</h3><p>Ghép lại thanh công cụ và phân trang với lược đồ mới · cảnh báo Lớp B · dùng thử nội bộ diện rộng. <strong>Nghiệm thu: Lớp A round-trip từ 95%, Lớp B bảo toàn 100%, offline hoàn toàn, không mất dữ liệu trong 4 tuần dùng thử.</strong></p></div><span class="phase-eff">MVP</span></div>
-      <div class="phase"><span class="phase-id post">Tháng 9-10</span><div class="phase-body"><h3>Ghép hệ sinh thái</h3><p>OneMail SSO · driver Drive qua pre-signed URL lên S3 · một ứng dụng NestJS nhiều module. Rủi ro thấp, API đã có sẵn - <strong>có thể kéo lên chạy song song với M3 nếu muốn thấy tích hợp sớm.</strong></p></div><span class="phase-eff">4-6 tuần</span></div>
-      <div class="phase"><span class="phase-id post">Tháng 10-11</span><div class="phase-body"><h3>Cộng tác thời gian thực</h3><p>Hocuspocus · con trỏ và hiện diện · phân quyền theo Drive. Offline-first giữ nguyên, không đánh đổi.</p></div><span class="phase-eff">4-6 tuần</span></div>
-      <div class="phase"><span class="phase-id post">Tháng 11-15</span><div class="phase-body"><h3>Sheets</h3><p>Univer bản mở cùng tầng đọc ghi xlsx tự xây bằng ExcelJS. Bắt buộc khảo sát một tuần đầu giai đoạn để đo khoảng cách bản mở và bản thương mại.</p></div><span class="phase-eff">12-16 tuần</span></div>
-      <div class="phase"><span class="phase-id post">Tháng 15-19</span><div class="phase-body"><h3>Slides - rủi ro cao nhất</h3><p>Fork thư viện pptx và coi như mã nhà tự bảo trì. Bắt buộc khảo sát hai tuần trước khi cam kết phạm vi.</p></div><span class="phase-eff">14-18 tuần</span></div>
-      <div class="phase"><span class="phase-id post">Tháng 19-20</span><div class="phase-body"><h3>Vỏ chung và hoàn thiện</h3><p>Launcher, quản lý file chung, theme thống nhất, đa ngôn ngữ, gia cố bảo mật và trợ năng.</p></div><span class="phase-eff">4-6 tuần</span></div>
-      <div class="phase"><span class="phase-id fut">Dài hạn</span><div class="phase-body"><h3>Desktop · Di động · Trợ lý AI</h3><p>Tauri rẻ hơn nhiều so với dự tính cũ vì offline-first đã xong ở tầng web. PWA gần như miễn phí. Trợ lý AI là điểm khác biệt mà Collabora không cho phép làm.</p></div><span class="phase-eff">chưa cam kết</span></div>
-    </div>
-  </div>
-</section>
-
-<section class="slide" id="people">
-  <span class="slide-tag">Nhân sự</span><span class="slide-num">09 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Thêm người rút ngắn được nhiều thứ.<br><em>Trừ đúng phần khó nhất.</em></h2>
-    </div>
-    <div class="table-wrap reveal delay-1">
-      <table>
-        <thead><tr><th>Kịch bản</th><th>Docs MVP</th><th>Hệ sinh thái + Cộng tác</th><th class="col-feat">Bộ hoàn chỉnh</th></tr></thead>
-        <tbody>
-          <tr><td>1 kỹ sư + AI · hiện tại</td><td><strong>6-9 tháng</strong></td><td>+2 tháng</td><td class="col-feat">15-20 tháng</td></tr>
-          <tr><td>2-3 kỹ sư + AI</td><td>4-5 tháng</td><td>+1,5 tháng</td><td class="col-feat">9-13 tháng</td></tr>
-          <tr><td>4-6 kỹ sư + AI</td><td>3-4 tháng</td><td>+1 tháng</td><td class="col-feat">7-9 tháng</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="pull-quote reveal delay-2">Gấp đôi nhân sự chỉ rút MVP khoảng 40%. Nhưng rút bộ hoàn chỉnh gần một nửa.</div>
-    <div class="grid2 reveal delay-2">
-      <div>
-        <p>Con số 6-9 tháng dựa trên bóc tách <strong>111-171 ngày</strong>, quy đổi theo mức 19-20 ngày làm được việc mỗi tháng. Chiều ghi của tầng đọc ghi .docx là đường găng và rất khó chia nhỏ; đuôi dài gỡ lỗi gần như không song song hoá được. Người thứ hai và thứ ba tăng tốc rõ rệt ở Sheets, Slides, vỏ chung và backend.</p><p><strong>Hỗ trợ AI đã được tính ở mức tích cực, với một điều kiện thiết kế bắt buộc:</strong> vòng lặp gỡ lỗi fidelity chỉ chạy được bằng agentic AI khi bộ đo phát ra <em>khác biệt máy đọc được</em> - XPath phần tử lệch, tên thuộc tính, giá trị mong đợi so với thực tế. Nếu bộ đo chỉ trả về một con số phần trăm, con người phải mò từng file và tiến độ dài thêm 1,5-2 tháng.</p><p><strong>Năm thứ không nén được bằng tốc độ code:</strong> thu thập bộ mẫu phụ thuộc người khác; bốn tuần dùng thử nội bộ là thời gian lịch; xác minh tính đúng đắn OOXML phải có người làm; băng thông đọc hiểu của một người; quyết định kiến trúc.</p>
-        <p><strong>Bốn điều kiện để các mốc có hiệu lực:</strong> kỹ sư làm toàn thời gian, nếu chỉ 50% thời gian thì nhân đôi mọi con số; phạm vi Lớp A và Lớp B không bị nới; bộ mẫu 50-100 file thật có trước ngày thứ hai mươi; mỗi mốc M1-M5 là cổng kiểm soát, trượt thì cắt phạm vi trong vòng một tuần.</p>
+    <section class="slide" id="decision">
+      <span class="slide-tag">Quyết định cốt lõi</span><span class="slide-num">03 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Một quyết định định giá cả dự án.<br /><em>Và không thể sửa lại sau.</em></h2>
+          <p class="lead" style="margin-top: 24px">
+            Yêu cầu "mở file cũ, sửa, lưu lại không hỏng" nghe đơn giản nhưng là bài toán khó nhất.
+            Mô hình dữ liệu của trình soạn thảo web nghèo hơn OOXML rất nhiều. Làm theo cách thông
+            thường thì mỗi lần người dùng bấm Lưu là file mất dữ liệu - đó là hệ quả tất yếu của
+            kiến trúc, không phải lỗi lập trình.
+          </p>
+        </div>
+        <div class="table-wrap reveal delay-1">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>T0 · Chuyển đổi thẳng</th>
+                <th>A · Thư viện AGPL</th>
+                <th>B · Bản thương mại</th>
+                <th class="col-feat">T1 · Giữ nguyên và vá</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Công sức tới Docs MVP</td>
+                <td>1-2 tháng</td>
+                <td>3-5 tháng</td>
+                <td>3-5 tháng</td>
+                <td class="col-feat"><strong>6-9 tháng</strong></td>
+              </tr>
+              <tr>
+                <td>Chất lượng round-trip</td>
+                <td class="no">Hỏng file</td>
+                <td>Cao</td>
+                <td>Cao</td>
+                <td class="col-feat">Trung bình, tăng dần</td>
+              </tr>
+              <tr>
+                <td>Chi phí bản quyền</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="no">Phải trả</td>
+                <td class="col-feat">0</td>
+              </tr>
+              <tr>
+                <td>Ràng buộc pháp lý</td>
+                <td>Không</td>
+                <td class="no">Buộc mở mã nguồn</td>
+                <td>Không</td>
+                <td class="col-feat">Không</td>
+              </tr>
+              <tr>
+                <td>Gánh nặng bảo trì</td>
+                <td>Thấp</td>
+                <td>Thấp</td>
+                <td>Thấp</td>
+                <td class="col-feat">Rất cao, vĩnh viễn</td>
+              </tr>
+              <tr>
+                <td>Kết luận</td>
+                <td class="no">Loại · vi phạm chất lượng</td>
+                <td class="no">Loại · vi phạm giấy phép</td>
+                <td class="no">Loại · vi phạm chi phí</td>
+                <td class="col-feat yes">
+                  <svg
+                    class="ico xs"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M20 6 9 17l-5-5" /></svg
+                  >Chọn
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="track-box reveal delay-2" style="margin-top: 56px">
+          <h4>Phương án chọn · T1 preserve-and-patch</h4>
+          <h3>Giữ nguyên vẹn file gốc. Chỉ vá đúng chỗ người dùng chạm vào.</h3>
+          <p>
+            File OOXML gốc được giải nén và giữ nguyên trong bộ nhớ trình duyệt, đóng vai trò nguồn
+            dữ liệu gốc. Trình soạn thảo chỉ là khung nhìn sửa được trên phần thân. Khi lưu, hệ
+            thống chỉ ghi đè đúng những đoạn đã sửa; các phần định nghĩa kiểu, đánh số, theme, đầu
+            chân trang, hình ảnh được giữ nguyên từng byte. Cấu trúc nào trình soạn thảo không hiểu
+            thì trở thành khối chỉ đọc, bảo toàn nguyên vẹn thay vì bị xóa âm thầm.
+          </p>
+          <p style="margin-bottom: 0">
+            <strong
+              >Nguyên tắc: suy giảm có kiểm soát. Thứ ta không hiểu thì ta không đụng vào.</strong
+            >
+          </p>
+        </div>
       </div>
-      <div class="card feature"><div class="card-mark warn"><svg class="ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z"/><path d="M12 4l9 15.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none"/></svg></div><h4>Kế hoạch không có dự phòng</h4><h3>Bảy tháng phụ thuộc một người</h3><p>Một đợt ốm hai tuần, hoặc bị điều sang việc khác một tháng, là trượt mốc. Đây là lập luận mạnh nhất để xin người thứ hai, độc lập với chuyện tiến độ. Thời điểm bổ sung hiệu quả nhất là đầu mốc M3, khi Yjs, đọc file và tích hợp hệ sinh thái có thể chạy song song.</p></div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="slide" id="transition">
-  <span class="slide-tag">Chuyển đổi</span><span class="slide-num">10 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Không thay một lần.<br><em>Thay theo số liệu.</em></h2>
-      <p class="lead" style="margin-top:24px">Collabora là LibreOffice với hàng chục năm xử lý định dạng Office. Tuyên bố "vài tháng là thay xong" là cách chắc chắn nhất để mất uy tín ngay lần đầu một khách hàng mở file phức tạp. Mốc MVP là thời điểm bắt đầu chuyển đổi, không phải thời điểm kết thúc.</p>
-    </div>
-    <div class="three-col reveal delay-1" style="margin-top:56px">
-      <div class="card"><div class="card-mark">A</div><h4>Ngày 0-60 &nbsp;→&nbsp; Tháng 2-7</h4><h3>Song song, rồi chiếm luồng xem</h3><p>Hai tháng đầu Collabora vẫn là chính, ta thu thập bộ mẫu. <strong>Từ mốc M2, trình xem triển khai thật: mọi thao tác chỉ-xem chuyển sang nền tảng mới, Collabora chỉ còn phục vụ sửa.</strong> Đây là lần giảm tải Collabora đầu tiên và sớm nhất.</p></div>
-      <div class="card"><div class="card-mark">B</div><h4>Tháng 7-11</h4><h3>Mặc định có dự phòng</h3><p>Nền tảng mới thành mặc định cho tạo mới và tài liệu Lớp A. Bộ định tuyến tự động chuyển file chứa nhiều phần tử Lớp B sang Collabora. Người dùng không thấy khác biệt.</p></div>
-      <div class="card"><div class="card-mark">C</div><h4>Tháng 11+</h4><h3>Thu hẹp</h3><p>Mỗi tháng chuyển thêm một nhóm phần tử từ Lớp B lên Lớp A, giảm dần phạm vi Collabora theo số liệu thực tế chứ không theo cảm tính.</p></div>
-    </div>
-    <div class="track-box reveal delay-2" style="margin-top:56px">
-      <h4>Tiêu chí định lượng để tắt hẳn Collabora - phải đạt đồng thời</h4>
-      <ul style="margin-top:16px;margin-bottom:0;max-width:none">
-        <li>Bộ mẫu round-trip đạt từ 95% trở lên.</li>
-        <li>Tỉ lệ chuyển tiếp sang Collabora thực tế dưới 5%, duy trì liên tục 60 ngày.</li>
-        <li>Không có sự cố mất dữ liệu nào trong 90 ngày.</li>
-        <li>Thời gian mở file ở phân vị 95 không chậm hơn Collabora hiện tại.</li>
-      </ul>
-      <p style="margin-top:16px;margin-bottom:0"><strong>Bộ tiêu chí này bảo vệ cả hai phía:</strong> kỹ thuật không bị ép tắt sớm, và lãnh đạo có mốc rõ ràng để biết khi nào khoản đầu tư đã hoàn tất.</p>
-    </div>
-  </div>
-</section>
-
-<section class="slide" id="risks">
-  <span class="slide-tag">Rủi ro và quyết định</span><span class="slide-num">11 / 11</span>
-  <div class="container">
-    <div class="reveal">
-      <h2>Rủi ro lớn nhất không phải kỹ thuật.<br><em>Là một người.</em></h2>
-    </div>
-    <div class="table-wrap reveal delay-1">
-      <table>
-        <thead><tr><th>Rủi ro</th><th>Khả năng</th><th>Mức độ</th><th>Giảm thiểu</th></tr></thead>
-        <tbody>
-          <tr class="col-feat"><td>Toàn bộ dự án phụ thuộc một kỹ sư trong bảy tháng</td><td>Cao</td><td class="crit"><svg class="ico xs" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z"/><path d="M12 4l9 15.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none"/></svg>Nghiêm trọng</td><td>Ghi chép quyết định kiến trúc, tài liệu hóa hai gói lõi, bổ sung người thứ hai chậm nhất đầu mốc M3</td></tr>
-          <tr><td>Chất lượng round-trip không đạt</td><td>Trung bình</td><td class="crit"><svg class="ico xs" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z"/><path d="M12 4l9 15.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none"/></svg>Nghiêm trọng</td><td>Bộ đo có từ M2; mốc byte-identical chứng minh ở ngày 60; dự phòng chế độ chỉ đọc và chuyển tiếp Collabora</td></tr>
-          <tr><td><strong>Bộ đo không phát được khác biệt máy đọc được</strong><br><span class="meta">vòng lặp gỡ lỗi quay về thủ công, +1,5-2 tháng</span></td><td>Trung bình</td><td class="crit"><svg class="ico xs" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z"/><path d="M12 4l9 15.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none"/></svg>Nghiêm trọng</td><td>Coi đây là tiêu chí nghiệm thu của M2, không phải tính năng phụ. Nếu M2 không đạt thì điều chỉnh kỳ vọng tiến độ ngay, không chờ tới M4</td></tr>
-          <tr><td><strong>Lạm dụng AI sinh mã mà không kiểm chứng</strong><br><span class="meta">với OOXML, mã sai một cách hợp lý chỉ lộ ra ở file thứ hai trăm của khách</span></td><td>Cao</td><td class="crit"><svg class="ico xs" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z"/><path d="M12 4l9 15.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none"/></svg>Nghiêm trọng</td><td>Mọi ánh xạ phải có kiểm thử đơn vị đối chiếu đặc tả ECMA-376; bộ đo chạy mỗi lần build; không nhận mã mà chưa hiểu</td></tr>
-          <tr><td>Mất động lực do chu kỳ bảy tháng ít kết quả nhìn thấy</td><td>Trung bình</td><td class="crit"><svg class="ico xs" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z"/><path d="M12 4l9 15.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none"/></svg>Nghiêm trọng</td><td>Chính là lý do chia M1-M5: mỗi mốc đều demo được, riêng M2 còn triển khai thật được</td></tr>
-          <tr><td>Trình duyệt xóa dữ liệu cục bộ<br><span class="meta">Safari xóa sau 7 ngày không dùng</span></td><td>Trung bình</td><td class="crit"><svg class="ico xs" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z"/><path d="M12 4l9 15.5H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none"/></svg>Nghiêm trọng</td><td>Storage Persistence API; cảnh báo rõ cho người dùng; không bao giờ để bộ nhớ trình duyệt là bản duy nhất của tài liệu quan trọng</td></tr>
-          <tr><td>Phạm vi bị nới trong lúc triển khai</td><td>Cao</td><td>Nghiêm trọng</td><td>Hợp đồng phạm vi Lớp A và Lớp B được duyệt thành văn bản; mọi thay đổi phải kèm điều chỉnh mốc ngày</td></tr>
-          <tr><td><strong>Ba ứng dụng trông không giống nhau</strong><br><span class="meta">Univer và pptx-viewer mang giao diện riêng, không tự động theo shadcn</span></td><td>Cao</td><td>Trung bình</td><td>Đánh thẳng vào lập luận số một để thay Collabora là "giao diện thống nhất với OneMail". Bộ design token dùng chung dựng từ M1, điều khiển đồng thời theme shadcn và ghi đè theme của Univer, pptx-viewer. Phải thiết kế chủ động, không hy vọng có sẵn</td></tr>
-          <tr><td>Thư viện Slides mới 5 tháng tuổi, một tác giả duy nhất<br><span class="meta">tính năng đầy đủ nhưng chưa được kiểm chứng ngoài thực địa</span></td><td>Cao</td><td>Trung bình</td><td>Khảo sát hai tuần <strong>bằng file thật của khách</strong>, không dùng file demo; fork và coi là mã nhà; ghim phiên bản cứng</td></tr>
-          <tr><td>Khoảng cách bản mở và bản thương mại của Sheets</td><td>Trung bình</td><td>Trung bình</td><td>Khảo sát một tuần đầu giai đoạn, trước khi đầu tư sâu</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="rule strong" style="margin-top:64px"></div>
-    <div class="reveal delay-2">
-      <h4>Đề xuất quyết định</h4>
-      <div class="four-col" style="margin-top:24px">
-        <div class="card"><div class="card-mark">01</div><h3>Duyệt hợp đồng phạm vi</h3><p>Lớp A sửa được, Lớp B bảo toàn. Duyệt lộ trình mà không duyệt phạm vi thì mốc ngày sẽ trượt.</p></div>
-        <div class="card feature"><div class="card-mark">02</div><h3>Cấp quyền lấy bộ mẫu trước ngày thứ 20</h3><p>50-100 file thật đã ẩn danh. Không có bộ mẫu thì không đo được chất lượng. Việc này phụ thuộc người khác nên phải khởi động từ tuần đầu.</p></div>
-        <div class="card"><div class="card-mark">03</div><h3>Xác nhận ràng buộc</h3><p>Ba ràng buộc pháp lý chiếm gần một nửa tiến độ. Nới AGPL đưa MVP về 3-5 tháng; thêm kỹ sư thứ hai đưa về 4-5 tháng.</p></div>
-        <div class="card"><div class="card-mark">04</div><h3>Quyết nhân sự</h3><p>Giữ một người trong 7 tháng và chấp nhận kế hoạch không có dự phòng, hay bổ sung từ mốc M3 để về 4-5 tháng.</p></div>
+    <section class="slide" id="price">
+      <span class="slide-tag">Đánh đổi</span><span class="slide-num">04 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Gần một nửa tiến độ.<br /><em>Đó là giá của ba ràng buộc pháp lý.</em></h2>
+        </div>
+        <div class="grid2 reveal delay-1" style="margin-top: 48px">
+          <div>
+            <p>
+              Tồn tại một thư viện mã nguồn mở đã hiện thực đúng kiến trúc T1, với gần bảy nghìn lần
+              cập nhật đứng sau. Dùng nó xóa bỏ gần như toàn bộ tầng đọc ghi .docx, rút MVP từ 6-9
+              tháng xuống còn 3-5 tháng.
+            </p>
+            <p>
+              Nó mang giấy phép AGPLv3 - nhúng vào ứng dụng trình duyệt sẽ buộc công khai mã nguồn
+              ứng dụng Docs. Ràng buộc của ta loại bỏ lựa chọn đó.
+            </p>
+            <p>
+              Quan trọng hơn cả tốc độ: hai phương án bị loại đều cho
+              <strong>chất lượng round-trip cao hơn hẳn ngay từ ngày đầu</strong>, vì đứng sau chúng
+              là hàng nghìn lần xử lý các trường hợp biên của OOXML. Đi đường tự xây nghĩa là ta tự
+              đi lại quãng đường đó, và chất lượng tăng dần theo tháng chứ không có sẵn.
+            </p>
+            <p><strong>Đây là đánh đổi có ý thức, không phải chậm tiến độ.</strong></p>
+          </div>
+          <div style="display: grid; gap: 24px">
+            <div class="card">
+              <div class="card-mark">01</div>
+              <h4>Đòn bẩy một</h4>
+              <h3>Nới ràng buộc mở mã nguồn</h3>
+              <p>
+                MVP về khoảng 3-5 tháng. Phần giao diện vốn đã tải xuống trình duyệt người dùng.
+                Backend, SSO, Drive và logic nghiệp vụ không bị ảnh hưởng vì là tiến trình riêng
+                giao tiếp qua API. Nghĩa vụ thực tế hẹp hơn nhiều so với cảm giác khi nghe "AGPL".
+              </p>
+            </div>
+            <div class="card feature">
+              <div class="card-mark">02</div>
+              <h4>Đòn bẩy hai</h4>
+              <h3>Nới ràng buộc chi phí</h3>
+              <p>
+                MVP về khoảng 3-5 tháng, và chất lượng round-trip cao ngay lập tức. So sánh giá bản
+                quyền thương mại với ba đến bốn tháng lương một kỹ sư - cán cân thường nghiêng về
+                mua.
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="meta reveal delay-2" style="margin-top: 48px">
+          Hai đòn bẩy này thuộc thẩm quyền lãnh đạo, không thuộc thẩm quyền kỹ thuật. Chúng được
+          chuẩn bị sẵn để dùng khi có áp lực tiến độ.
+        </p>
       </div>
-    </div>
-    <p class="meta" style="margin-top:56px">Tài liệu chi tiết kèm theo: docs/roadmap-web-office.md &nbsp;·&nbsp; Biên bản quyết định kỹ thuật: plans/ducnd/reports/</p>
-  </div>
-</section>
+    </section>
 
-<script>
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-</script>
-</body>
+    <section class="slide" id="scope">
+      <span class="slide-tag">Hợp đồng phạm vi</span><span class="slide-num">05 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Không hứa sửa được mọi thứ.<br /><em>Hứa không bao giờ làm mất dữ liệu.</em></h2>
+          <p class="lead" style="margin-top: 24px">
+            "Round-trip đầy đủ với mọi file .docx" là mục tiêu không sản phẩm nào trên thị trường
+            đạt được, kể cả Google Docs. Thứ đạt được, và thứ ta cam kết, là một ranh giới rõ ràng
+            giữa hai lớp tài liệu.
+          </p>
+        </div>
+        <div class="grid2 even reveal delay-1" style="margin-top: 48px">
+          <div class="card">
+            <div class="card-mark">A</div>
+            <h4>Lớp A · trong phạm vi MVP</h4>
+            <h3>Sửa được, round-trip đầy đủ</h3>
+            <ul>
+              <li>
+                Đoạn văn, heading, định dạng ký tự: đậm, nghiêng, gạch chân, màu, cỡ chữ, phông chữ
+              </li>
+              <li>Danh sách bullet và đánh số, kể cả nhiều cấp</li>
+              <li>Bảng: gộp ô, viền, màu nền</li>
+              <li>Hình ảnh nhúng, siêu liên kết, dấu trang</li>
+              <li>Khổ giấy, lề, hướng giấy, kiểu tài liệu</li>
+              <li>Đầu và chân trang: hiển thị đúng, giữ nguyên khi lưu</li>
+            </ul>
+          </div>
+          <div class="card feature">
+            <div class="card-mark">B</div>
+            <h4>Lớp B · bảo toàn, chưa sửa được</h4>
+            <h3>Giữ nguyên từng byte khi lưu</h3>
+            <ul>
+              <li>SmartArt, biểu đồ nhúng, đối tượng OLE</li>
+              <li>Điều khiển nội dung, trường động</li>
+              <li>Chú thích chân trang và cuối trang</li>
+              <li>Bình luận, theo dõi thay đổi</li>
+              <li>Hộp văn bản, hình vẽ phức tạp, công thức toán</li>
+            </ul>
+            <p style="margin-top: 16px">
+              <strong>Hiển thị dạng khối chỉ đọc. Khi lưu được ghi lại nguyên vẹn.</strong>
+            </p>
+          </div>
+        </div>
+        <div class="pull-quote reveal delay-2">
+          Đa số sản phẩm cạnh tranh xóa mất phần họ không hiểu. Ta giữ nguyên.
+        </div>
+        <div class="track-box reveal delay-2">
+          <h4>Ràng buộc hai chiều</h4>
+          <p style="margin-bottom: 0">
+            Ngoài phạm vi MVP: Sheets, Slides, đăng nhập, Drive, cộng tác thời gian thực, xuất PDF
+            chất lượng in ấn.
+            <strong
+              >Nếu phạm vi này bị nới ra trong lúc triển khai, ước lượng 6-9 tháng trở thành 18-24
+              tháng.</strong
+            >
+            Kỹ thuật cam kết mốc, lãnh đạo cam kết không nới phạm vi.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="architecture">
+      <span class="slide-tag">Kiến trúc</span><span class="slide-num">06 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Toàn bộ tính toán chạy ở trình duyệt.<br /><em>MVP không cần máy chủ nào.</em></h2>
+        </div>
+        <div class="grid2 reveal delay-1" style="margin-top: 48px">
+          <div>
+            <p>
+              Ba ứng dụng triển khai độc lập - tên miền con riêng, build riêng, hỏng một cái không
+              kéo theo hai cái kia - nhưng dùng chung tầng đọc ghi file, tầng lưu trữ và tầng cộng
+              tác trong một monorepo.
+            </p>
+            <p>
+              Hướng offline-first đảo ngược lộ trình cũ: nguồn dữ liệu gốc nằm ở máy người dùng, máy
+              chủ chỉ là nơi đồng bộ. Hệ quả là ba ứng dụng tĩnh đẩy lên CDN đã đủ cho MVP.
+            </p>
+            <div class="rule"></div>
+            <h4>Drive iNET lưu trên S3 - kiến trúc mỏng thêm</h4>
+            <p class="note">
+              Trình duyệt lấy pre-signed URL từ máy chủ rồi đọc ghi <strong>thẳng lên S3</strong>.
+              Byte file không đi qua máy chủ ta, nên không có bài toán scale băng thông. Máy chủ chỉ
+              còn xác thực, phát URL có thời hạn và giữ metadata. Bật versioning trên bucket thì có
+              lịch sử phiên bản gần như miễn phí; xung đột xử lý bằng ETag với ghi có điều kiện.
+            </p>
+            <div class="rule"></div>
+            <h4>Chi tiết từng công nghệ ở phần 07</h4>
+            <p class="note">
+              Sơ đồ bên cạnh là cách mã nguồn được tổ chức. Phần tiếp theo giải thích từng công nghệ
+              làm gì bằng ngôn ngữ thường.
+            </p>
+            <div class="rule"></div>
+            <h4>Hai khoản đầu tư trước bắt buộc</h4>
+            <p class="note">
+              Vi phạm YAGNI có ý thức, vì không thể lắp thêm sau:
+              <strong>tầng lưu trữ trừu tượng</strong> phải có ngay để đổi sang Drive không phải
+              viết lại, và <strong>Yjs làm nguồn dữ liệu gốc</strong> ngay từ đầu - chi phí bây giờ
+              một tuần, chi phí sau này bốn đến sáu tuần cộng rủi ro mất dữ liệu.
+            </p>
+          </div>
+          <div class="arch">
+            <div class="arch-group">
+              <span class="arch-label">apps/</span>
+              <div class="arch-row">
+                <code>docs</code><span>TipTap</span><b class="tag on">đang có</b>
+              </div>
+              <div class="arch-row">
+                <code>sheets</code><span>Univer</span><b class="tag">GĐ 6</b>
+              </div>
+              <div class="arch-row">
+                <code>slides</code><span>pptx-viewer</span><b class="tag">GĐ 7</b>
+              </div>
+              <div class="arch-row">
+                <code>shell</code><span>launcher</span><b class="tag">GĐ 8</b>
+              </div>
+            </div>
+            <div class="arch-group">
+              <span class="arch-label">packages/</span>
+              <div class="arch-row"><code>ooxml-core</code><span>giữ nguyên byte</span></div>
+              <div class="arch-row key"><code>docx-io</code><span>trái tim dự án</span></div>
+              <div class="arch-row"><code>xlsx-io</code><span>ExcelJS</span></div>
+              <div class="arch-row"><code>pptx-io</code><span>bản fork</span></div>
+              <div class="arch-row"><code>storage-adapter</code><span>IndexedDB → S3</span></div>
+              <div class="arch-row"><code>collab-core</code><span>Y.Doc</span></div>
+              <div class="arch-row"><code>auth-sdk</code><span>OneMail SSO</span></div>
+              <div class="arch-row key">
+                <code>fidelity-harness</code><span>thước đo chất lượng</span>
+              </div>
+            </div>
+            <div class="arch-group">
+              <span class="arch-label">services/</span>
+              <div class="arch-row">
+                <code>api</code><span>NestJS, một ứng dụng nhiều module</span>
+              </div>
+              <div class="arch-note">
+                Chỉ xác thực và phát pre-signed URL. Byte file không đi qua máy chủ.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="track-box reveal delay-2" style="margin-top: 56px">
+          <h4>Khác biệt so với lộ trình v6.1</h4>
+          <h3>Không dựng bảy microservices trước khi có người dùng đầu tiên.</h3>
+          <p style="margin-bottom: 0">
+            Với một kỹ sư, bảy dịch vụ là bảy pipeline, bảy bộ log, bảy lần triển khai và gỡ lỗi
+            phân tán - đổi lại con số không giá trị nghiệp vụ. Ranh giới dịch vụ đúng chỉ lộ ra sau
+            khi hệ thống chạy thật; vẽ trước gần như luôn vẽ sai, và sửa ranh giới sai đắt hơn tách
+            monolith. Việc Drive nằm trên S3 càng củng cố điều này: máy chủ không chạm vào byte
+            file, nên gần như không có gì để tách.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="tech">
+      <span class="slide-tag">Công nghệ</span><span class="slide-num">07 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>
+            Toàn bộ là mã nguồn mở miễn phí.<br /><em
+              >Không trả phí, không phải công khai sản phẩm.</em
+            >
+          </h2>
+        </div>
+        <div class="table-wrap t-tech reveal delay-1">
+          <table>
+            <thead>
+              <tr>
+                <th>Thành phần</th>
+                <th>Nó là gì, nói dễ hiểu</th>
+                <th>Giấy phép</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="grp">
+                <td colspan="3"><span class="meta">Nền tảng chung cho cả ba ứng dụng</span></td>
+              </tr>
+              <tr>
+                <td>React · TypeScript · Vite</td>
+                <td>
+                  Bộ công cụ dựng giao diện web. Lựa chọn phổ biến nhất hiện nay, dễ tuyển người, đã
+                  dùng sẵn trong sản phẩm hiện tại
+                </td>
+                <td>MIT</td>
+              </tr>
+              <tr>
+                <td>shadcn/ui · Base UI · Tailwind</td>
+                <td>
+                  Bộ thành phần giao diện dựng sẵn: nút, hộp thoại, menu, dropdown, tooltip.
+                  <strong
+                    >Không phải thư viện phụ thuộc — là mã nguồn chép thẳng vào dự án, ta sở hữu
+                    hoàn toàn.</strong
+                  >
+                  Không có rủi ro chuỗi cung ứng, không phụ thuộc tác giả bên ngoài. Repo đã cài sẵn
+                  Base UI, nền mặc định của shadcn từ tháng 7/2026
+                </td>
+                <td>MIT</td>
+              </tr>
+              <tr>
+                <td>Bộ design token dùng chung</td>
+                <td>
+                  Biến màu, phông, bo góc dùng chung cho cả ba ứng dụng,
+                  <strong>lấy bảng màu thương hiệu iNET</strong> để bộ Office trông đúng là một phần
+                  của OneMail. Chỉ dùng lại giá trị màu, không phụ thuộc Vue hay Vuetify — cả ba ứng
+                  dụng đều React thuần
+                </td>
+                <td>tự xây</td>
+              </tr>
+              <tr>
+                <td>IndexedDB</td>
+                <td>
+                  Kho dữ liệu có sẵn trong mọi trình duyệt. Là nơi cất tài liệu để làm việc khi
+                  không có mạng
+                </td>
+                <td>chuẩn web</td>
+              </tr>
+              <tr>
+                <td>File System Access</td>
+                <td>
+                  Tính năng trình duyệt cho phép mở và lưu file thẳng trên máy người dùng, giống hệt
+                  phần mềm cài đặt
+                </td>
+                <td>chuẩn web</td>
+              </tr>
+              <tr>
+                <td>PWA</td>
+                <td>
+                  Biến trang web thành ứng dụng cài được lên máy, có biểu tượng riêng, mở ra là chạy
+                  kể cả khi mất mạng
+                </td>
+                <td>chuẩn web</td>
+              </tr>
+              <tr>
+                <td>Yjs</td>
+                <td>
+                  Thư viện đồng bộ dữ liệu. Nhiều người sửa cùng lúc không đè lên nhau; làm việc
+                  offline rồi tự hợp nhất khi có mạng lại. Nền của tính năng cộng tác
+                </td>
+                <td>MIT</td>
+              </tr>
+
+              <tr class="grp">
+                <td colspan="3"><span class="meta">Riêng cho Docs</span></td>
+              </tr>
+              <tr>
+                <td>TipTap · ProseMirror</td>
+                <td>
+                  <strong>Động cơ soạn thảo văn bản</strong> - tạo ra vùng gõ chữ, in đậm, danh
+                  sách, bảng. Vai trò tương đương phần lõi của Word. Đã có và đang chạy tốt trong
+                  sản phẩm hiện tại
+                </td>
+                <td>MIT</td>
+              </tr>
+              <tr>
+                <td>docx-preview</td>
+                <td>
+                  Hiển thị file Word trong trình duyệt với độ chính xác cao. Dùng làm trình xem ở
+                  mốc M2 - <strong>tiết kiệm nhiều tháng so với tự viết</strong>
+                </td>
+                <td>Apache-2.0</td>
+              </tr>
+              <tr>
+                <td>JSZip · fast-xml-parser</td>
+                <td>
+                  File .docx thực chất là gói nén chứa nhiều tệp XML. Hai thư viện này mở gói và sửa
+                  đúng phần cần sửa, <strong>giữ nguyên những phần không đụng tới</strong> - chính
+                  là cơ chế bảo vệ dữ liệu của khách
+                </td>
+                <td>MIT</td>
+              </tr>
+
+              <tr class="grp">
+                <td colspan="3">
+                  <span class="meta">Riêng cho Sheets và Slides - bắt đầu sau MVP</span>
+                </td>
+              </tr>
+              <tr>
+                <td>Univer</td>
+                <td>Động cơ bảng tính. Vai trò với Sheets giống TipTap với Docs</td>
+                <td>Apache-2.0</td>
+              </tr>
+              <tr>
+                <td>ExcelJS</td>
+                <td>
+                  Đọc và ghi file Excel. <strong>Bắt buộc phải có</strong> vì phần đọc ghi Excel của
+                  Univer là tính năng trả phí, mà ta không mua bản quyền
+                </td>
+                <td>MIT</td>
+              </tr>
+              <tr>
+                <td>echarts</td>
+                <td>Vẽ biểu đồ, thay cho biểu đồ bản trả phí của Univer</td>
+                <td>Apache-2.0</td>
+              </tr>
+              <tr>
+                <td>pptx-viewer</td>
+                <td>
+                  Đọc, hiển thị và sửa file PowerPoint. Đầy đủ nhất trong các lựa chọn mã nguồn mở:
+                  ribbon, kéo thả trên canvas, 187 hình khối, 23 loại biểu đồ, SmartArt, hiệu ứng,
+                  xuất PDF và video, đồng sửa nhiều người.
+                  <strong
+                    >Vẫn là thành phần rủi ro nhất cả dự án — nhưng vì tuổi đời và tác giả, không
+                    phải vì thiếu tính năng.</strong
+                  >
+                  Xem thẻ bên dưới
+                </td>
+                <td>Apache-2.0</td>
+              </tr>
+
+              <tr class="grp">
+                <td colspan="3">
+                  <span class="meta">Phần máy chủ - từ tháng 9, MVP không cần</span>
+                </td>
+              </tr>
+              <tr>
+                <td>NestJS</td>
+                <td>
+                  Nền tảng viết máy chủ. Chỉ làm hai việc: xác thực người dùng và giữ thông tin tài
+                  liệu
+                </td>
+                <td>MIT</td>
+              </tr>
+              <tr>
+                <td>Pre-signed URL lên S3</td>
+                <td>
+                  Trình duyệt tải file lên xuống <strong>thẳng kho lưu trữ của Drive</strong>, không
+                  qua máy chủ ta. Nhờ vậy chi phí máy chủ gần như không tăng dù có bao nhiêu người
+                  dùng
+                </td>
+                <td>chuẩn S3</td>
+              </tr>
+              <tr>
+                <td>Hocuspocus</td>
+                <td>
+                  Máy chủ đi kèm Yjs, chuyển tiếp thay đổi giữa những người đang mở cùng một tài
+                  liệu
+                </td>
+                <td>MIT</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="three-col reveal delay-2" style="margin-top: 56px">
+          <div class="card feature">
+            <div class="card-mark warn">
+              <svg
+                class="ico"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z" />
+                <path d="M12 4l9 15.5H3z" />
+                <path d="M12 10v4" />
+                <circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none" />
+              </svg>
+            </div>
+            <h4>Thành phần ta tự xây</h4>
+            <h3>fidelity-harness - bộ đo chất lượng</h3>
+            <p>
+              Lấy 50-100 file thật của khách, mở ra rồi lưu lại, so sánh với bản gốc và cho ra con
+              số phần trăm chính xác.
+              <strong
+                >Đây là thước đo duy nhất trả lời được câu hỏi "đã thay được Collabora chưa"</strong
+              >, và là con số báo cáo hàng tháng.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-mark stop">
+              <svg
+                class="ico"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </div>
+            <h4>Lựa chọn tốt nhất bị loại</h4>
+            <h3>SuperDoc</h3>
+            <p>
+              Chất lượng tốt nhất trong các phương án, nhưng giấy phép AGPLv3 buộc công khai mã
+              nguồn, còn bản thương mại thì mất phí. Cả hai đều vi phạm ràng buộc đã đặt.
+              <strong>Đây chính là đòn bẩy rút ngắn 3-4 tháng nếu lãnh đạo nới ràng buộc.</strong>
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-mark stop">
+              <svg
+                class="ico"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </div>
+            <h4>Bẫy đã tránh được</h4>
+            <h3>SheetJS bản miễn phí</h3>
+            <p>
+              Giấy phép không vướng, nhưng <strong>âm thầm loại bỏ định dạng khi ghi file</strong>.
+              Nếu chọn nhầm, phải hai tháng sau mới phát hiện, khi đã đầu tư sâu. Dùng ExcelJS thay
+              thế.
+            </p>
+          </div>
+        </div>
+        <div class="track-box reveal delay-3" style="margin-top: 36px">
+          <h4>Đánh giá riêng · pptx-viewer — phụ thuộc rủi ro nhất</h4>
+          <h3 style="font-size: 22px; margin-bottom: 16px">
+            Tính năng đầy đủ thật. Rủi ro nằm ở tuổi đời và tác giả, không phải ở tính năng.
+          </h3>
+          <div class="table-wrap">
+            <table style="margin-top: 8px">
+              <thead>
+                <tr>
+                  <th>Chỉ số</th>
+                  <th>Giá trị</th>
+                  <th>Nghĩa là gì</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lượt tải npm</td>
+                  <td>~21.000 mỗi tuần</td>
+                  <td>
+                    Có người dùng thật. Số sao GitHub là chỉ báo tồi, không nên dùng để đánh giá
+                  </td>
+                </tr>
+                <tr>
+                  <td>Ngày tạo dự án</td>
+                  <td>16/03/2026 — mới 5 tháng</td>
+                  <td>
+                    Với thư viện xử lý định dạng file, tuổi đời chính là thước đo. Độ chính xác đến
+                    từ việc va phải hàng chục nghìn file kỳ quặc ngoài đời, không từ đọc đặc tả
+                  </td>
+                </tr>
+                <tr>
+                  <td>Người đóng góp</td>
+                  <td>Một người 2.319 commit; ba người khác tổng cộng 7</td>
+                  <td>Bus factor bằng một, y hệt tình trạng dự án của ta</td>
+                </tr>
+                <tr>
+                  <td>Nhịp commit</td>
+                  <td>Khoảng 15 mỗi ngày, liên tục 5 tháng</td>
+                  <td>
+                    Gần như chắc chắn là mã sinh bằng AI quy mô lớn — mang đúng rủi ro ta đã cảnh
+                    báo cho chính mình, nhưng ta không kiểm soát được
+                  </td>
+                </tr>
+                <tr>
+                  <td>Phiên bản phát hành</td>
+                  <td>103–180 bản trong 5 tháng</td>
+                  <td>API chưa ổn định. Phải ghim phiên bản cứng và chủ động nâng cấp</td>
+                </tr>
+                <tr>
+                  <td>Issue mở / người theo dõi</td>
+                  <td>1 / 0</td>
+                  <td>Không có nghĩa là không lỗi, mà là chưa ai đẩy nó tới giới hạn và báo lại</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top: 20px; margin-bottom: 0">
+            <strong>Vẫn dùng, vì không có lựa chọn nào tốt hơn</strong> — tự xây trình chiếu từ đầu
+            tốn hơn sáu tháng riêng cho Slides. Nhưng phải fork và coi như mã nhà ngay từ đầu. Bài
+            kiểm tra bắt buộc trước khi cam kết phạm vi: dùng
+            <strong>file .pptx thật của khách hàng iNET</strong> có logo, bảng biểu và phông tiếng
+            Việt, không dùng file demo của tác giả.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="roadmap">
+      <span class="slide-tag">Lộ trình</span><span class="slide-num">08 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>
+            Mỗi mốc giao được một thứ dùng thật.<br /><em>Không chờ mười tháng mới có kết quả.</em>
+          </h2>
+        </div>
+        <div class="timeline reveal delay-1">
+          <div class="phase">
+            <span class="phase-id">M1 · Ngày 30</span>
+            <div class="phase-body">
+              <h3>Docs offline chạy được</h3>
+              <p>
+                Tái cấu trúc monorepo · IndexedDB thay localStorage · File System Access · PWA ·
+                quản lý file · export HTML, TXT, PDF ·
+                <strong>dựng nền giao diện shadcn/ui và bộ design token màu iNET</strong>. Chưa động
+                tới .docx nên rủi ro thấp.
+                <strong>Demo được, dùng nội bộ ngay cho tài liệu tạo mới.</strong>
+              </p>
+            </div>
+            <span class="phase-eff">16-24 ngày</span>
+          </div>
+          <div class="phase mile">
+            <span class="phase-id">M2 · Ngày 60</span>
+            <div class="phase-body">
+              <h3>Trình xem .docx - triển khai thật được</h3>
+              <p>
+                Lõi OOXML giữ nguyên byte · bộ đo chất lượng
+                <strong>phát khác biệt máy đọc được</strong> · trình xem dùng
+                <strong>docx-preview</strong>, không cần tự viết phần hiển thị.
+                <strong>Mốc: mở file thật, xem chuẩn xác, lưu lại giống hệt từng byte.</strong>
+                Chiếm luồng "xem file" của Collabora ngay từ tháng thứ hai.
+              </p>
+            </div>
+            <span class="phase-eff">15-23 ngày</span>
+          </div>
+          <div class="phase">
+            <span class="phase-id">M3 · Tháng 2-4</span>
+            <div class="phase-body">
+              <h3>Sửa được .docx trong trình soạn thảo</h3>
+              <p>
+                Yjs làm nguồn dữ liệu gốc · chuỗi phân giải kiểu · danh sách nhiều cấp · bảng · ảnh
+                · phân đoạn · khối bảo toàn Lớp B · đuôi dài gỡ lỗi hiển thị. Chuyển từ xem sang
+                sửa, chưa lưu ngược về .docx.
+              </p>
+            </div>
+            <span class="phase-eff">30-45 ngày</span>
+          </div>
+          <div class="phase">
+            <span class="phase-id">M4 · Tháng 4-6</span>
+            <div class="phase-body">
+              <h3>Round-trip Lớp A - chặng khó nhất</h3>
+              <p>
+                Ánh xạ vị trí hai chiều · theo dõi nút bẩn · ghi ngược bảng và danh sách ·
+                <strong>đuôi dài gỡ lỗi round-trip, 10-17 ngày, hạng mục tốn nhất cả dự án</strong>.
+                Mốc: sửa một từ, lưu, mở bằng Word - khác biệt duy nhất là từ đó.
+              </p>
+            </div>
+            <span class="phase-eff">32-51 ngày</span>
+          </div>
+          <div class="phase mile">
+            <span class="phase-id">M5 · Tháng 6-9</span>
+            <div class="phase-body">
+              <h3>Gia cố và nghiệm thu MVP</h3>
+              <p>
+                Ghép lại thanh công cụ và phân trang với lược đồ mới · cảnh báo Lớp B · dùng thử nội
+                bộ diện rộng.
+                <strong
+                  >Nghiệm thu: Lớp A round-trip từ 95%, Lớp B bảo toàn 100%, offline hoàn toàn,
+                  không mất dữ liệu trong 4 tuần dùng thử.</strong
+                >
+              </p>
+            </div>
+            <span class="phase-eff">MVP</span>
+          </div>
+          <div class="phase">
+            <span class="phase-id post">Tháng 9-10</span>
+            <div class="phase-body">
+              <h3>Ghép hệ sinh thái</h3>
+              <p>
+                OneMail SSO · driver Drive qua pre-signed URL lên S3 · một ứng dụng NestJS nhiều
+                module. Rủi ro thấp, API đã có sẵn -
+                <strong>có thể kéo lên chạy song song với M3 nếu muốn thấy tích hợp sớm.</strong>
+              </p>
+            </div>
+            <span class="phase-eff">4-6 tuần</span>
+          </div>
+          <div class="phase">
+            <span class="phase-id post">Tháng 10-11</span>
+            <div class="phase-body">
+              <h3>Cộng tác thời gian thực</h3>
+              <p>
+                Hocuspocus · con trỏ và hiện diện · phân quyền theo Drive. Offline-first giữ nguyên,
+                không đánh đổi.
+              </p>
+            </div>
+            <span class="phase-eff">4-6 tuần</span>
+          </div>
+          <div class="phase">
+            <span class="phase-id post">Tháng 11-15</span>
+            <div class="phase-body">
+              <h3>Sheets</h3>
+              <p>
+                Univer bản mở cùng tầng đọc ghi xlsx tự xây bằng ExcelJS. Bắt buộc khảo sát một tuần
+                đầu giai đoạn để đo khoảng cách bản mở và bản thương mại.
+              </p>
+            </div>
+            <span class="phase-eff">12-16 tuần</span>
+          </div>
+          <div class="phase">
+            <span class="phase-id post">Tháng 15-19</span>
+            <div class="phase-body">
+              <h3>Slides - rủi ro cao nhất</h3>
+              <p>
+                Fork thư viện pptx và coi như mã nhà tự bảo trì. Bắt buộc khảo sát hai tuần trước
+                khi cam kết phạm vi.
+              </p>
+            </div>
+            <span class="phase-eff">14-18 tuần</span>
+          </div>
+          <div class="phase">
+            <span class="phase-id post">Tháng 19-20</span>
+            <div class="phase-body">
+              <h3>Vỏ chung và hoàn thiện</h3>
+              <p>
+                Launcher, quản lý file chung, theme thống nhất, đa ngôn ngữ, gia cố bảo mật và trợ
+                năng.
+              </p>
+            </div>
+            <span class="phase-eff">4-6 tuần</span>
+          </div>
+          <div class="phase">
+            <span class="phase-id fut">Dài hạn</span>
+            <div class="phase-body">
+              <h3>Desktop · Di động · Trợ lý AI</h3>
+              <p>
+                Tauri rẻ hơn nhiều so với dự tính cũ vì offline-first đã xong ở tầng web. PWA gần
+                như miễn phí. Trợ lý AI là điểm khác biệt mà Collabora không cho phép làm.
+              </p>
+            </div>
+            <span class="phase-eff">chưa cam kết</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="people">
+      <span class="slide-tag">Nhân sự</span><span class="slide-num">09 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Thêm người rút ngắn được nhiều thứ.<br /><em>Trừ đúng phần khó nhất.</em></h2>
+        </div>
+        <div class="table-wrap reveal delay-1">
+          <table>
+            <thead>
+              <tr>
+                <th>Kịch bản</th>
+                <th>Docs MVP</th>
+                <th>Hệ sinh thái + Cộng tác</th>
+                <th class="col-feat">Bộ hoàn chỉnh</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1 kỹ sư + AI · hiện tại</td>
+                <td><strong>6-9 tháng</strong></td>
+                <td>+2 tháng</td>
+                <td class="col-feat">15-20 tháng</td>
+              </tr>
+              <tr>
+                <td>2-3 kỹ sư + AI</td>
+                <td>4-5 tháng</td>
+                <td>+1,5 tháng</td>
+                <td class="col-feat">9-13 tháng</td>
+              </tr>
+              <tr>
+                <td>4-6 kỹ sư + AI</td>
+                <td>3-4 tháng</td>
+                <td>+1 tháng</td>
+                <td class="col-feat">7-9 tháng</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pull-quote reveal delay-2">
+          Gấp đôi nhân sự chỉ rút MVP khoảng 40%. Nhưng rút bộ hoàn chỉnh gần một nửa.
+        </div>
+        <div class="grid2 reveal delay-2">
+          <div>
+            <p>
+              Con số 6-9 tháng dựa trên bóc tách <strong>111-171 ngày</strong>, quy đổi theo mức
+              19-20 ngày làm được việc mỗi tháng. Chiều ghi của tầng đọc ghi .docx là đường găng và
+              rất khó chia nhỏ; đuôi dài gỡ lỗi gần như không song song hoá được. Người thứ hai và
+              thứ ba tăng tốc rõ rệt ở Sheets, Slides, vỏ chung và backend.
+            </p>
+            <p>
+              <strong
+                >Hỗ trợ AI đã được tính ở mức tích cực, với một điều kiện thiết kế bắt buộc:</strong
+              >
+              vòng lặp gỡ lỗi fidelity chỉ chạy được bằng agentic AI khi bộ đo phát ra
+              <em>khác biệt máy đọc được</em> - XPath phần tử lệch, tên thuộc tính, giá trị mong đợi
+              so với thực tế. Nếu bộ đo chỉ trả về một con số phần trăm, con người phải mò từng file
+              và tiến độ dài thêm 1,5-2 tháng.
+            </p>
+            <p>
+              <strong>Năm thứ không nén được bằng tốc độ code:</strong> thu thập bộ mẫu phụ thuộc
+              người khác; bốn tuần dùng thử nội bộ là thời gian lịch; xác minh tính đúng đắn OOXML
+              phải có người làm; băng thông đọc hiểu của một người; quyết định kiến trúc.
+            </p>
+            <p>
+              <strong>Bốn điều kiện để các mốc có hiệu lực:</strong> kỹ sư làm toàn thời gian, nếu
+              chỉ 50% thời gian thì nhân đôi mọi con số; phạm vi Lớp A và Lớp B không bị nới; bộ mẫu
+              50-100 file thật có trước ngày thứ hai mươi; mỗi mốc M1-M5 là cổng kiểm soát, trượt
+              thì cắt phạm vi trong vòng một tuần.
+            </p>
+          </div>
+          <div class="card feature">
+            <div class="card-mark warn">
+              <svg
+                class="ico"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z" />
+                <path d="M12 4l9 15.5H3z" />
+                <path d="M12 10v4" />
+                <circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none" />
+              </svg>
+            </div>
+            <h4>Kế hoạch không có dự phòng</h4>
+            <h3>Bảy tháng phụ thuộc một người</h3>
+            <p>
+              Một đợt ốm hai tuần, hoặc bị điều sang việc khác một tháng, là trượt mốc. Đây là lập
+              luận mạnh nhất để xin người thứ hai, độc lập với chuyện tiến độ. Thời điểm bổ sung
+              hiệu quả nhất là đầu mốc M3, khi Yjs, đọc file và tích hợp hệ sinh thái có thể chạy
+              song song.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="transition">
+      <span class="slide-tag">Chuyển đổi</span><span class="slide-num">10 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Không thay một lần.<br /><em>Thay theo số liệu.</em></h2>
+          <p class="lead" style="margin-top: 24px">
+            Collabora là LibreOffice với hàng chục năm xử lý định dạng Office. Tuyên bố "vài tháng
+            là thay xong" là cách chắc chắn nhất để mất uy tín ngay lần đầu một khách hàng mở file
+            phức tạp. Mốc MVP là thời điểm bắt đầu chuyển đổi, không phải thời điểm kết thúc.
+          </p>
+        </div>
+        <div class="three-col reveal delay-1" style="margin-top: 56px">
+          <div class="card">
+            <div class="card-mark">A</div>
+            <h4>Ngày 0-60 &nbsp;→&nbsp; Tháng 2-7</h4>
+            <h3>Song song, rồi chiếm luồng xem</h3>
+            <p>
+              Hai tháng đầu Collabora vẫn là chính, ta thu thập bộ mẫu.
+              <strong
+                >Từ mốc M2, trình xem triển khai thật: mọi thao tác chỉ-xem chuyển sang nền tảng
+                mới, Collabora chỉ còn phục vụ sửa.</strong
+              >
+              Đây là lần giảm tải Collabora đầu tiên và sớm nhất.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-mark">B</div>
+            <h4>Tháng 7-11</h4>
+            <h3>Mặc định có dự phòng</h3>
+            <p>
+              Nền tảng mới thành mặc định cho tạo mới và tài liệu Lớp A. Bộ định tuyến tự động
+              chuyển file chứa nhiều phần tử Lớp B sang Collabora. Người dùng không thấy khác biệt.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-mark">C</div>
+            <h4>Tháng 11+</h4>
+            <h3>Thu hẹp</h3>
+            <p>
+              Mỗi tháng chuyển thêm một nhóm phần tử từ Lớp B lên Lớp A, giảm dần phạm vi Collabora
+              theo số liệu thực tế chứ không theo cảm tính.
+            </p>
+          </div>
+        </div>
+        <div class="track-box reveal delay-2" style="margin-top: 56px">
+          <h4>Tiêu chí định lượng để tắt hẳn Collabora - phải đạt đồng thời</h4>
+          <ul style="margin-top: 16px; margin-bottom: 0; max-width: none">
+            <li>Bộ mẫu round-trip đạt từ 95% trở lên.</li>
+            <li>Tỉ lệ chuyển tiếp sang Collabora thực tế dưới 5%, duy trì liên tục 60 ngày.</li>
+            <li>Không có sự cố mất dữ liệu nào trong 90 ngày.</li>
+            <li>Thời gian mở file ở phân vị 95 không chậm hơn Collabora hiện tại.</li>
+          </ul>
+          <p style="margin-top: 16px; margin-bottom: 0">
+            <strong>Bộ tiêu chí này bảo vệ cả hai phía:</strong> kỹ thuật không bị ép tắt sớm, và
+            lãnh đạo có mốc rõ ràng để biết khi nào khoản đầu tư đã hoàn tất.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="risks">
+      <span class="slide-tag">Rủi ro và quyết định</span><span class="slide-num">11 / 11</span>
+      <div class="container">
+        <div class="reveal">
+          <h2>Rủi ro lớn nhất không phải kỹ thuật.<br /><em>Là một người.</em></h2>
+        </div>
+        <div class="table-wrap reveal delay-1">
+          <table>
+            <thead>
+              <tr>
+                <th>Rủi ro</th>
+                <th>Khả năng</th>
+                <th>Mức độ</th>
+                <th>Giảm thiểu</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="col-feat">
+                <td>Toàn bộ dự án phụ thuộc một kỹ sư trong bảy tháng</td>
+                <td>Cao</td>
+                <td class="crit">
+                  <svg
+                    class="ico xs"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z" />
+                    <path d="M12 4l9 15.5H3z" />
+                    <path d="M12 10v4" />
+                    <circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none" /></svg
+                  >Nghiêm trọng
+                </td>
+                <td>
+                  Ghi chép quyết định kiến trúc, tài liệu hóa hai gói lõi, bổ sung người thứ hai
+                  chậm nhất đầu mốc M3
+                </td>
+              </tr>
+              <tr>
+                <td>Chất lượng round-trip không đạt</td>
+                <td>Trung bình</td>
+                <td class="crit">
+                  <svg
+                    class="ico xs"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z" />
+                    <path d="M12 4l9 15.5H3z" />
+                    <path d="M12 10v4" />
+                    <circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none" /></svg
+                  >Nghiêm trọng
+                </td>
+                <td>
+                  Bộ đo có từ M2; mốc byte-identical chứng minh ở ngày 60; dự phòng chế độ chỉ đọc
+                  và chuyển tiếp Collabora
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Bộ đo không phát được khác biệt máy đọc được</strong><br /><span
+                    class="meta"
+                    >vòng lặp gỡ lỗi quay về thủ công, +1,5-2 tháng</span
+                  >
+                </td>
+                <td>Trung bình</td>
+                <td class="crit">
+                  <svg
+                    class="ico xs"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z" />
+                    <path d="M12 4l9 15.5H3z" />
+                    <path d="M12 10v4" />
+                    <circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none" /></svg
+                  >Nghiêm trọng
+                </td>
+                <td>
+                  Coi đây là tiêu chí nghiệm thu của M2, không phải tính năng phụ. Nếu M2 không đạt
+                  thì điều chỉnh kỳ vọng tiến độ ngay, không chờ tới M4
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Lạm dụng AI sinh mã mà không kiểm chứng</strong><br /><span class="meta"
+                    >với OOXML, mã sai một cách hợp lý chỉ lộ ra ở file thứ hai trăm của khách</span
+                  >
+                </td>
+                <td>Cao</td>
+                <td class="crit">
+                  <svg
+                    class="ico xs"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z" />
+                    <path d="M12 4l9 15.5H3z" />
+                    <path d="M12 10v4" />
+                    <circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none" /></svg
+                  >Nghiêm trọng
+                </td>
+                <td>
+                  Mọi ánh xạ phải có kiểm thử đơn vị đối chiếu đặc tả ECMA-376; bộ đo chạy mỗi lần
+                  build; không nhận mã mà chưa hiểu
+                </td>
+              </tr>
+              <tr>
+                <td>Mất động lực do chu kỳ bảy tháng ít kết quả nhìn thấy</td>
+                <td>Trung bình</td>
+                <td class="crit">
+                  <svg
+                    class="ico xs"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z" />
+                    <path d="M12 4l9 15.5H3z" />
+                    <path d="M12 10v4" />
+                    <circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none" /></svg
+                  >Nghiêm trọng
+                </td>
+                <td>
+                  Chính là lý do chia M1-M5: mỗi mốc đều demo được, riêng M2 còn triển khai thật
+                  được
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Trình duyệt xóa dữ liệu cục bộ<br /><span class="meta"
+                    >Safari xóa sau 7 ngày không dùng</span
+                  >
+                </td>
+                <td>Trung bình</td>
+                <td class="crit">
+                  <svg
+                    class="ico xs"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path fill="currentColor" stroke="none" opacity="0.2" d="M12 4l9 15.5H3z" />
+                    <path d="M12 4l9 15.5H3z" />
+                    <path d="M12 10v4" />
+                    <circle cx="12" cy="16.8" r="0.9" fill="currentColor" stroke="none" /></svg
+                  >Nghiêm trọng
+                </td>
+                <td>
+                  Storage Persistence API; cảnh báo rõ cho người dùng; không bao giờ để bộ nhớ trình
+                  duyệt là bản duy nhất của tài liệu quan trọng
+                </td>
+              </tr>
+              <tr>
+                <td>Phạm vi bị nới trong lúc triển khai</td>
+                <td>Cao</td>
+                <td>Nghiêm trọng</td>
+                <td>
+                  Hợp đồng phạm vi Lớp A và Lớp B được duyệt thành văn bản; mọi thay đổi phải kèm
+                  điều chỉnh mốc ngày
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Ba ứng dụng trông không giống nhau</strong><br /><span class="meta"
+                    >Univer và pptx-viewer mang giao diện riêng, không tự động theo shadcn</span
+                  >
+                </td>
+                <td>Cao</td>
+                <td>Trung bình</td>
+                <td>
+                  Đánh thẳng vào lập luận số một để thay Collabora là "giao diện thống nhất với
+                  OneMail". Bộ design token dùng chung dựng từ M1, điều khiển đồng thời theme shadcn
+                  và ghi đè theme của Univer, pptx-viewer. Phải thiết kế chủ động, không hy vọng có
+                  sẵn
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Thư viện Slides mới 5 tháng tuổi, một tác giả duy nhất<br /><span class="meta"
+                    >tính năng đầy đủ nhưng chưa được kiểm chứng ngoài thực địa</span
+                  >
+                </td>
+                <td>Cao</td>
+                <td>Trung bình</td>
+                <td>
+                  Khảo sát hai tuần <strong>bằng file thật của khách</strong>, không dùng file demo;
+                  fork và coi là mã nhà; ghim phiên bản cứng
+                </td>
+              </tr>
+              <tr>
+                <td>Khoảng cách bản mở và bản thương mại của Sheets</td>
+                <td>Trung bình</td>
+                <td>Trung bình</td>
+                <td>Khảo sát một tuần đầu giai đoạn, trước khi đầu tư sâu</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="rule strong" style="margin-top: 64px"></div>
+        <div class="reveal delay-2">
+          <h4>Đề xuất quyết định</h4>
+          <div class="four-col" style="margin-top: 24px">
+            <div class="card">
+              <div class="card-mark">01</div>
+              <h3>Duyệt hợp đồng phạm vi</h3>
+              <p>
+                Lớp A sửa được, Lớp B bảo toàn. Duyệt lộ trình mà không duyệt phạm vi thì mốc ngày
+                sẽ trượt.
+              </p>
+            </div>
+            <div class="card feature">
+              <div class="card-mark">02</div>
+              <h3>Cấp quyền lấy bộ mẫu trước ngày thứ 20</h3>
+              <p>
+                50-100 file thật đã ẩn danh. Không có bộ mẫu thì không đo được chất lượng. Việc này
+                phụ thuộc người khác nên phải khởi động từ tuần đầu.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-mark">03</div>
+              <h3>Xác nhận ràng buộc</h3>
+              <p>
+                Ba ràng buộc pháp lý chiếm gần một nửa tiến độ. Nới AGPL đưa MVP về 3-5 tháng; thêm
+                kỹ sư thứ hai đưa về 4-5 tháng.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-mark">04</div>
+              <h3>Quyết nhân sự</h3>
+              <p>
+                Giữ một người trong 7 tháng và chấp nhận kế hoạch không có dự phòng, hay bổ sung từ
+                mốc M3 để về 4-5 tháng.
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="meta" style="margin-top: 56px">
+          Tài liệu chi tiết kèm theo: docs/roadmap-web-office.md &nbsp;·&nbsp; Biên bản quyết định
+          kỹ thuật: plans/ducnd/reports/
+        </p>
+      </div>
+    </section>
+
+    <script>
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              io.unobserve(e.target);
+            }
+          }),
+        { threshold: 0.12 },
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    </script>
+  </body>
 </html>

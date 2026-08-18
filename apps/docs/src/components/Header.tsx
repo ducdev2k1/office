@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
+import { MenuBar, type HeaderMenuActions } from '@/components/header/MenuBar';
 import { useTranslation } from '@office/i18n';
 import { Button, Icon } from '@office/ui-kit';
-import { MenuBar, type HeaderMenuActions } from '@/components/header/MenuBar';
 
 interface HeaderProps {
   title: string;
   onTitleChange: (title: string) => void;
+  onMenuToggle?: () => void;
   menuActions: HeaderMenuActions;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
@@ -27,18 +28,28 @@ export const Header = ({
   return (
     <header className="top-header">
       <div className="file-heading">
-        <Link to="/" className="docs-file-icon" title={t('common.actions.back')} aria-label={t('common.actions.back')}>
+        <Link
+          to="/"
+          className="docs-file-icon"
+          title={t('docs.header.appTitle')}
+          aria-label={t('docs.header.appTitle')}
+        >
           <Icon name="file-text" />
         </Link>
         <div className="file-heading-copy">
           <div className="title-line">
-            <input
-              aria-label={t('docs.header.titleAriaLabel')}
-              placeholder={t('docs.header.titlePlaceholder')}
-              className="title-input"
-              value={title}
-              onChange={(event) => onTitleChange(event.target.value)}
-            />
+            <div className="title-input-wrapper">
+              <span className="title-input-sizer" aria-hidden="true">
+                {title || t('docs.header.titlePlaceholder')}
+              </span>
+              <input
+                aria-label={t('docs.header.titleAriaLabel')}
+                placeholder={t('docs.header.titlePlaceholder')}
+                className="title-input"
+                value={title}
+                onChange={(event) => onTitleChange(event.target.value)}
+              />
+            </div>
             <Button
               className="plain-icon-button"
               type="button"
@@ -71,7 +82,9 @@ export const Header = ({
           className="header-icon-button font-medium text-xs px-2"
           type="button"
           aria-label={t('common.language.switchLanguage')}
-          title={locale === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'}
+          title={
+            locale === 'vi' ? t('common.language.switchToEn') : t('common.language.switchToVi')
+          }
           onClick={handleToggleLocale}
           variant="ghost"
         >
@@ -81,14 +94,10 @@ export const Header = ({
           className="header-icon-button"
           type="button"
           aria-label={
-            theme === 'dark'
-              ? t('common.theme.switchToLight')
-              : t('common.theme.switchToDark')
+            theme === 'dark' ? t('common.theme.switchToLight') : t('common.theme.switchToDark')
           }
           title={
-            theme === 'dark'
-              ? t('common.theme.switchToLight')
-              : t('common.theme.switchToDark')
+            theme === 'dark' ? t('common.theme.switchToLight') : t('common.theme.switchToDark')
           }
           onClick={onToggleTheme}
           variant="ghost"

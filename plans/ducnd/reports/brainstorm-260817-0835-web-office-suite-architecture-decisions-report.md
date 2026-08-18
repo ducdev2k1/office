@@ -1,11 +1,11 @@
 # Biên bản quyết định kỹ thuật — Web Office Suite
 
-| | |
-|---|---|
-| Ngày | 17/08/2026 |
-| Phiên | `/brainstorm` — lộ trình bộ Office web thay Collabora |
-| Đầu ra | `docs/roadmap-web-office.md` · `docs/roadmap-web-office.html` |
-| Trạng thái | Đã chốt kiến trúc, chưa triển khai |
+|            |                                                               |
+| ---------- | ------------------------------------------------------------- |
+| Ngày       | 17/08/2026                                                    |
+| Phiên      | `/brainstorm` — lộ trình bộ Office web thay Collabora         |
+| Đầu ra     | `docs/roadmap-web-office.md` · `docs/roadmap-web-office.html` |
+| Trạng thái | Đã chốt kiến trúc, chưa triển khai                            |
 
 ## Bối cảnh
 
@@ -13,16 +13,16 @@ Repo `onemail-docs` đã có Docs editor TipTap chạy được (106 file, React
 
 ## Ràng buộc do người dùng chốt
 
-| # | Ràng buộc | Nguồn |
-|---|---|---|
-| C1 | Chỉ OSS giấy phép dễ dãi (MIT/Apache-2.0/BSD) | chốt trong phiên |
-| C2 | Không mua bản quyền thương mại | chốt trong phiên |
-| C3 | Không mở mã nguồn sản phẩm iNET | chốt trong phiên |
-| C4 | Offline-first, không cần đăng nhập ở MVP | yêu cầu ban đầu |
-| C5 | 3 app chạy/triển khai độc lập | yêu cầu ban đầu |
-| C6 | Dùng chung OneMail SSO + Drive (lưu trên S3) | chốt trong phiên |
-| C7 | Round-trip `.docx` chất lượng cao | chốt trong phiên |
-| C8 | 1 dev + AI, muốn MVP càng sớm càng tốt | chốt trong phiên |
+| #   | Ràng buộc                                     | Nguồn            |
+| --- | --------------------------------------------- | ---------------- |
+| C1  | Chỉ OSS giấy phép dễ dãi (MIT/Apache-2.0/BSD) | chốt trong phiên |
+| C2  | Không mua bản quyền thương mại                | chốt trong phiên |
+| C3  | Không mở mã nguồn sản phẩm iNET               | chốt trong phiên |
+| C4  | Offline-first, không cần đăng nhập ở MVP      | yêu cầu ban đầu  |
+| C5  | 3 app chạy/triển khai độc lập                 | yêu cầu ban đầu  |
+| C6  | Dùng chung OneMail SSO + Drive (lưu trên S3)  | chốt trong phiên |
+| C7  | Round-trip `.docx` chất lượng cao             | chốt trong phiên |
+| C8  | 1 dev + AI, muốn MVP càng sớm càng tốt        | chốt trong phiên |
 
 ## Quyết định đã chốt
 
@@ -65,28 +65,28 @@ Loại: SuperDoc (AGPL/thương mại) · Univer Pro (thương mại — chứa 
 
 ## Diễn biến ước lượng trong phiên — 4 lần
 
-| Lần | Con số | Đánh giá |
-|---|---|---|
-| 1 | 5–7 tháng | Gần đúng, hơi lạc quan |
-| 2 | 90 ngày | **Sai — chiều theo áp lực.** Nhét quá nhiều vào 30 ngày đầu; ước lượng đuôi dài gỡ lỗi quá nhẹ. Không có cơ chế kỹ thuật biện minh |
-| 3 | 8–12 tháng | Quá thận trọng ở chiều ngược lại: coi vòng lặp gỡ lỗi là việc thủ công |
-| **4 (chốt)** | **6–9 tháng, điểm giữa ~7** | Có cơ chế cụ thể (Q10). Bóc tách 107–165 ngày, quy đổi 19–20 ngày/tháng |
+| Lần          | Con số                      | Đánh giá                                                                                                                           |
+| ------------ | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 1            | 5–7 tháng                   | Gần đúng, hơi lạc quan                                                                                                             |
+| 2            | 90 ngày                     | **Sai — chiều theo áp lực.** Nhét quá nhiều vào 30 ngày đầu; ước lượng đuôi dài gỡ lỗi quá nhẹ. Không có cơ chế kỹ thuật biện minh |
+| 3            | 8–12 tháng                  | Quá thận trọng ở chiều ngược lại: coi vòng lặp gỡ lỗi là việc thủ công                                                             |
+| **4 (chốt)** | **6–9 tháng, điểm giữa ~7** | Có cơ chế cụ thể (Q10). Bóc tách 107–165 ngày, quy đổi 19–20 ngày/tháng                                                            |
 
 **Q9 — Tách "xem" khỏi "sửa".**
-`docx-preview` (Apache-2.0) đã kết xuất `.docx` chất lượng cao sẵn → không cần tự viết phần hiển thị; chỉ chế độ *sửa* mới cần ánh xạ sang TipTap. Cho phép giao **trình xem `.docx` ở ngày 60** — mốc có giá trị nghiệp vụ thật sớm nhất, vì phần lớn lượt mở Collabora chỉ là xem file.
+`docx-preview` (Apache-2.0) đã kết xuất `.docx` chất lượng cao sẵn → không cần tự viết phần hiển thị; chỉ chế độ _sửa_ mới cần ánh xạ sang TipTap. Cho phép giao **trình xem `.docx` ở ngày 60** — mốc có giá trị nghiệp vụ thật sớm nhất, vì phần lớn lượt mở Collabora chỉ là xem file.
 
 **Q10 — `fidelity-harness` phải phát khác biệt máy đọc được. Quyết định đáng giá 1,5–2 tháng.**
 Vòng lặp gỡ lỗi fidelity (chạy bộ đo → đọc khác biệt → sửa ánh xạ → lặp) là dạng vòng lặp agentic AI làm tốt — **nhưng chỉ khi bộ đo trả về XPath phần tử lệch, tên thuộc tính, giá trị mong đợi vs thực tế, toạ độ pixel sai.** Nếu chỉ trả về "đạt 87%" thì con người phải mò và đuôi dài quay về 25–40 ngày. Đây là tiêu chí nghiệm thu của M2, không phải tính năng phụ.
 
 **Hỗ trợ AI — tính riêng theo loại việc:**
 
-| Loại việc | Tăng tốc |
-|---|---|
-| Sinh mã cơ học bám đặc tả | ≥2x |
-| Tra cứu ECMA-376 | Cao |
+| Loại việc                          | Tăng tốc                    |
+| ---------------------------------- | --------------------------- |
+| Sinh mã cơ học bám đặc tả          | ≥2x                         |
+| Tra cứu ECMA-376                   | Cao                         |
 | Vòng lặp gỡ lỗi có thước đo cơ học | Cao — **với điều kiện Q10** |
-| Thiết kế thuật toán | Trung bình |
-| Xác minh đúng đắn so với đặc tả | Không |
+| Thiết kế thuật toán                | Trung bình                  |
+| Xác minh đúng đắn so với đặc tả    | Không                       |
 
 **Năm thứ không nén được bằng tốc độ code:** thu thập corpus (phụ thuộc người khác) · 4 tuần dùng thử nội bộ (thời gian lịch) · xác minh đúng đắn OOXML · băng thông đọc hiểu của một người · quyết định kiến trúc.
 

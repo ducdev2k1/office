@@ -33,13 +33,21 @@ export const StatsCards = ({ files, storageMB }: StatsCardsProps) => {
   ];
 
   return (
-    <section className="grid grid-cols-2 gap-3 px-6 pt-4 sm:grid-cols-4" aria-label={t('home.statisticsLabel')}>
+    <section
+      className="grid grid-cols-2 gap-3 px-6 pt-4 sm:grid-cols-4"
+      aria-label={t('home.statisticsLabel')}
+    >
       {cards.map(({ label, value, icon }) => (
         <div
           key={label}
           className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3"
         >
-          <Icon name={icon} size={20} className="shrink-0 text-muted-foreground" aria-hidden="true" />
+          <Icon
+            name={icon}
+            size={20}
+            className="shrink-0 text-muted-foreground"
+            aria-hidden="true"
+          />
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-foreground" title={value}>
               {value}
