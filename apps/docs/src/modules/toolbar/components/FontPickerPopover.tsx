@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { cn, Popover, PopoverContent, PopoverTrigger, ScrollArea } from '@office/ui-kit';
+import { cn, Popover, PopoverContent, PopoverTrigger } from '@office/ui-kit';
 import {
   FONT_CATEGORIES,
   type FontVariant,
@@ -18,7 +18,7 @@ const VARIANT_WEIGHT: Record<string, number> = {
   'Semi Bold': 600,
   Bold: 700,
 };
-const CLOSE_DELAY = 120;
+const CLOSE_DELAY = 100;
 
 /* ── SVG Icons ── */
 const IconCheck = () => (
@@ -35,6 +35,7 @@ const IconCheck = () => (
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
+
 const IconChevronDown = ({ open }: { open?: boolean }) => (
   <svg
     width="12"
@@ -50,6 +51,7 @@ const IconChevronDown = ({ open }: { open?: boolean }) => (
     <polyline points="6 9 12 15 18 9" />
   </svg>
 );
+
 const IconChevronRight = () => (
   <svg
     width="13"
@@ -64,6 +66,7 @@ const IconChevronRight = () => (
     <polyline points="9 18 15 12 9 6" />
   </svg>
 );
+
 const IconSearch = () => (
   <svg
     width="13"
@@ -79,6 +82,7 @@ const IconSearch = () => (
     <line x1="21" y1="21" x2="16.65" y2="16.65" />
   </svg>
 );
+
 const IconX = () => (
   <svg
     width="12"
@@ -95,7 +99,6 @@ const IconX = () => (
   </svg>
 );
 
-
 /* ── FontRow – tự quản lý submenu qua portal để tránh bị clip ── */
 interface FontRowProps {
   font: string;
@@ -110,12 +113,14 @@ const FontRow = ({ font, isSelected, onSelect, onSelectVariant }: FontRowProps) 
   const rowRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    const handleScroll = () => setSubOpen(false);
+    window.addEventListener('scroll', handleScroll, true);
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
       if (timerRef.current) clearTimeout(timerRef.current);
-    },
-    [],
-  );
+    };
+  }, []);
 
   const openSub = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -291,48 +296,46 @@ export const FontPickerPopover = ({ currentFont, onSelectFont }: FontPickerPopov
           </div>
         </div>
 
-        {/* List – chiều cao 480px */}
-        <ScrollArea className="max-h-[480px]">
-          <div className="py-1">
-            {filteredFonts ? (
-              filteredFonts.length > 0 ? (
+        {/* List – cuộn mượt mà max-h 420px */}
+        <div className="max-h-[420px] overflow-y-auto overscroll-contain py-1">
+          {filteredFonts ? (
+            filteredFonts.length > 0 ? (
+              <>
+                <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Kết quả
+                </div>
+                {filteredFonts.map(renderFontRow)}
+              </>
+            ) : (
+              <div className="px-3 py-6 text-center text-[12px] text-muted-foreground">
+                Không tìm thấy font
+              </div>
+            )
+          ) : (
+            <>
+              {/* Recent */}
+              {recentFonts.length > 0 && (
                 <>
                   <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Kết quả
+                    Gần đây
                   </div>
-                  {filteredFonts.map(renderFontRow)}
+                  {recentFonts.map(renderFontRow)}
+                  <div className="mx-3 my-1 h-px bg-border/60" />
                 </>
-              ) : (
-                <div className="px-3 py-6 text-center text-[12px] text-muted-foreground">
-                  Không tìm thấy font
-                </div>
-              )
-            ) : (
-              <>
-                {/* Recent */}
-                {recentFonts.length > 0 && (
-                  <>
-                    <div className="px-3 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      Gần đây
-                    </div>
-                    {recentFonts.map(renderFontRow)}
-                    <div className="mx-3 my-1 h-px bg-border/60" />
-                  </>
-                )}
+              )}
 
-                {/* Categories với i18n label */}
-                {FONT_CATEGORIES.map((cat: FontCategory) => (
-                  <div key={cat.id}>
-                    <div className="px-3 pt-2 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      {t(`toolbar.${cat.labelKey}`)}
-                    </div>
-                    {cat.fonts.map(renderFontRow)}
+              {/* Categories với i18n label */}
+              {FONT_CATEGORIES.map((cat: FontCategory) => (
+                <div key={cat.id}>
+                  <div className="px-3 pt-2 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t(`toolbar.${cat.labelKey}`)}
                   </div>
-                ))}
-              </>
-            )}
-          </div>
-        </ScrollArea>
+                  {cat.fonts.map(renderFontRow)}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
       </PopoverContent>
     </Popover>
   );
