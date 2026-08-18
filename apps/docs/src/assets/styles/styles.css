@@ -2,7 +2,9 @@
 @import '@office/ui-kit/tokens.css';
 @import 'tailwindcss';
 
-@source "../../../packages";
+@source "../../../../../packages";
+@source "../../..";
+@source "../../../../../node_modules/@office";
 
 :root {
   color-scheme: light;
