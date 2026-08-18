@@ -231,5 +231,15 @@
   },
   "warnings": {
     "pageLimitExceeded": "Document is too long for page view MVP (maximum 50 pages)."
+  },
+  "ruler": {
+    "leftMargin": "Left margin",
+    "rightMargin": "Right margin",
+    "topMargin": "Top margin",
+    "bottomMargin": "Bottom margin",
+    "firstLineIndent": "First line indent",
+    "leftIndent": "Left indent",
+    "rightIndent": "Right indent",
+    "toggleUnitTip": "Double click to toggle cm / inch"
   }
 }

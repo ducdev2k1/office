@@ -3,8 +3,8 @@ import { FileHome, estimateStorageMB, type ProductConfig } from '@office/file-ho
 import { useTranslation } from '@office/i18n';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDocs } from '@/hooks/use-docs';
-import { useTheme } from '@/hooks/use-theme';
+import { useDocs } from '@/hooks/useDocs';
+import { useTheme } from '@/hooks/useTheme';
 
 const docsProduct: ProductIdentity = {
   kind: 'docs',

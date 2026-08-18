@@ -1,0 +1,130 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Editor } from '@tiptap/core';
+import { PAPER_SIZES, type DocRecord, type PageSetup } from '@/types/docs.types';
+import { HorizontalRuler } from './HorizontalRuler';
+import { RulerGuideLine } from './RulerGuideLine';
+import { type RulerUnit } from './ruler.utils';
+import { useRuler } from './useRuler';
+
+interface DocRulerProps {
+  editor: Editor | null;
+  activeDoc: DocRecord | undefined;
+  onPageSetupChange: (setup: PageSetup) => void;
+  onPaginationUpdate: (immediate?: boolean) => void;
+}
+
+export const DocRuler = ({
+  editor,
+  activeDoc,
+  onPageSetupChange,
+  onPaginationUpdate,
+}: DocRulerProps) => {
+  const [unit, setUnit] = useState<RulerUnit>(() => {
+    const saved = localStorage.getItem('office_ruler_unit');
+    return saved === 'in' ? 'in' : 'cm';
+  });
+
+  const [currentIndents, setCurrentIndents] = useState({
+    firstLineIndent: 0,
+    leftIndent: 0,
+    rightIndent: 0,
+  });
+
+  const pageSetup = activeDoc?.pageSetup;
+  const paperSize = pageSetup?.paperSize ?? 'a4';
+  const orientation = pageSetup?.orientation ?? 'portrait';
+  const rawSize = PAPER_SIZES[paperSize] ?? PAPER_SIZES.a4;
+
+  const paperWidthMm = orientation === 'landscape' ? rawSize.height : rawSize.width;
+  const paperHeightMm = orientation === 'landscape' ? rawSize.width : rawSize.height;
+
+  const margins = useMemo(
+    () => pageSetup?.margins ?? { top: 20, right: 15, bottom: 20, left: 15 },
+    [pageSetup?.margins],
+  );
+
+  // Sync indents from TipTap editor selection
+  useEffect(() => {
+    if (!editor) return;
+
+    const syncIndents = () => {
+      const attrs =
+        editor.getAttributes('paragraph') ??
+        editor.getAttributes('heading') ??
+        editor.getAttributes('blockquote') ??
+        {};
+
+      setCurrentIndents({
+        firstLineIndent: typeof attrs.firstLineIndent === 'number' ? attrs.firstLineIndent : 0,
+        leftIndent: typeof attrs.leftIndent === 'number' ? attrs.leftIndent : 0,
+        rightIndent: typeof attrs.rightIndent === 'number' ? attrs.rightIndent : 0,
+      });
+    };
+
+    editor.on('selectionUpdate', syncIndents);
+    editor.on('transaction', syncIndents);
+    syncIndents();
+
+    return () => {
+      editor.off('selectionUpdate', syncIndents);
+      editor.off('transaction', syncIndents);
+    };
+  }, [editor]);
+
+  const handleMarginChange = useCallback(
+    (nextMargins: typeof margins) => {
+      if (!activeDoc || !pageSetup) return;
+      const nextSetup: PageSetup = {
+        ...pageSetup,
+        margins: nextMargins,
+      };
+      onPageSetupChange(nextSetup);
+      onPaginationUpdate(true);
+    },
+    [activeDoc, pageSetup, onPageSetupChange, onPaginationUpdate],
+  );
+
+  const handleIndentChange = useCallback(
+    (nextIndents: typeof currentIndents) => {
+      setCurrentIndents(nextIndents);
+      if (!editor || !editor.isEditable) return;
+      editor.chain().setIndents(nextIndents).run();
+    },
+    [editor],
+  );
+
+  const handleToggleUnit = useCallback(() => {
+    setUnit((prev) => {
+      const next = prev === 'cm' ? 'in' : 'cm';
+      localStorage.setItem('office_ruler_unit', next);
+      return next;
+    });
+  }, []);
+
+  const rulerHook = useRuler({
+    unit,
+    paperWidthMm,
+    paperHeightMm,
+    margins,
+    indents: currentIndents,
+    onMarginChange: handleMarginChange,
+    onIndentChange: handleIndentChange,
+  });
+
+  return (
+    <>
+      <div className="flex justify-center w-full bg-card/60 border-b border-border/80 shrink-0 z-30">
+        <HorizontalRuler
+          paperWidthMm={paperWidthMm}
+          margins={margins}
+          indents={currentIndents}
+          unit={unit}
+          onToggleUnit={handleToggleUnit}
+          rulerHook={rulerHook}
+        />
+      </div>
+
+      <RulerGuideLine dragState={rulerHook.dragState} />
+    </>
+  );
+};

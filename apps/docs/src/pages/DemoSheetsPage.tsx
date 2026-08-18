@@ -3,7 +3,7 @@ import { FileHome, type FileRecord, type ProductConfig } from '@office/file-home
 import { useTranslation } from '@office/i18n';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '@/hooks/use-theme';
+import { useTheme } from '@/hooks/useTheme';
 
 const sheetsProduct: ProductIdentity = {
   kind: 'sheets',

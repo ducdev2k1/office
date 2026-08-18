@@ -231,5 +231,15 @@
   },
   "warnings": {
     "pageLimitExceeded": "Tài liệu quá dài cho chế độ xem phân trang (tối đa 50 trang)."
+  },
+  "ruler": {
+    "leftMargin": "Lề trái",
+    "rightMargin": "Lề phải",
+    "topMargin": "Lề trên",
+    "bottomMargin": "Lề dưới",
+    "firstLineIndent": "Thụt lề dòng đầu tiên",
+    "leftIndent": "Thụt lề trái",
+    "rightIndent": "Thụt lề phải",
+    "toggleUnitTip": "Nhấp đúp để chuyển đổi cm / inch"
   }
 }

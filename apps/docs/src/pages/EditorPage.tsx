@@ -1,35 +1,34 @@
-import { DocsSidebar } from '@/components/DocsSidebar';
-import { EditorContextMenu, type ContextMenuPosition } from '@/components/EditorContextMenu';
-import { Header } from '@/components/Header';
-import { HelpModal } from '@/components/HelpModal';
-import { PageSetupPanel } from '@/components/PageSetupPanel';
-import { SearchAndReplace } from '@/components/tiptap-ui/search-and-replace';
-import { Toolbar } from '@/components/Toolbar';
-import { PAGE_GAP } from '@/editor/pagination';
-import { useDocsEditor } from '@/editor/use-docs-editor';
-import { usePagination } from '@/editor/use-pagination';
-import { useDocs } from '@/hooks/use-docs';
-import { useEditorActions } from '@/hooks/use-editor-actions';
-import { useGlobalShortcuts } from '@/hooks/use-global-shortcuts';
-import { usePrintSetup } from '@/hooks/use-print-setup';
-import { useTheme } from '@/hooks/use-theme';
-import { getOutline } from '@/lib/utils';
-import { DEFAULT_PAGE_SETUP, getPaperSizePx, type PageSetup } from '@/types';
-import { useTranslation } from '@office/i18n';
-import { Icon } from '@office/ui-kit';
-import { EditorContent } from '@tiptap/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
-const QUOTA_WARN_BYTES = 4.5 * 1024 * 1024;
+import { useTranslation } from '@office/i18n';
+import type { PageSetup } from '@/types/docs.types';
+import { useDocs } from '@/hooks/useDocs';
+import { useTheme } from '@/hooks/useTheme';
+import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
+import { getOutline } from '@/utils/outline.utils';
+import { Header } from '@/modules/header';
+import { Toolbar } from '@/modules/toolbar';
+import { DocsSidebar } from '@/modules/sidebar';
+import {
+  EditorCanvas,
+  EditorContextMenu,
+  HelpModal,
+  PageSetupPanel,
+  Ruler,
+  Statusbar,
+  useDocsEditor,
+  useEditorActions,
+  usePagination,
+  usePrintSetup,
+  type ContextMenuPosition,
+} from '@/modules/editor';
+import { SearchAndReplace } from '@/modules/search-replace';
 
 export const EditorPage = () => {
-  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const {
     docs,
     activeDoc,
-    saveState,
     storageBytes,
     setActiveId,
     updateContent,
@@ -44,6 +43,7 @@ export const EditorPage = () => {
     trash,
   } = useDocs();
   const { theme, toggleTheme } = useTheme();
+
   const [query, setQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const saved = localStorage.getItem('docs-sidebar-open');
@@ -53,13 +53,9 @@ export const EditorPage = () => {
   const [pageSetupOpen, setPageSetupOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [showPageIndicator, setShowPageIndicator] = useState(false);
-  const [indicatorTop, setIndicatorTop] = useState(24);
+
   const fontPickerRef = useRef<HTMLSelectElement>(null);
   const colorPickerRef = useRef<HTMLInputElement>(null);
-  const paperWrapRef = useRef<HTMLElement>(null);
-  const indicatorTimerRef = useRef<number | null>(null);
 
   const handleToggleSidebar = () => {
     setSidebarOpen((prev) => {
@@ -82,8 +78,9 @@ export const EditorPage = () => {
   };
 
   const editor = useDocsEditor(activeDoc?.content ?? '', updateContent);
-  const { viewMode, pageCount, isOverLimit, viewportStyle, setViewMode, schedulePagination } =
-    usePagination(editor, activeDoc);
+  const paginationState = usePagination(editor, activeDoc);
+  const { viewMode, setViewMode, schedulePagination } = paginationState;
+
   const {
     setLink,
     exportHtml,
@@ -98,16 +95,20 @@ export const EditorPage = () => {
       setActiveId(id);
       markOpened(id);
     }
-  }, [id, setActiveId]);
+  }, [id, setActiveId, markOpened]);
+
   useEffect(() => {
-    if (editor && activeDoc && editor.getHTML() !== activeDoc.content)
+    if (editor && activeDoc && editor.getHTML() !== activeDoc.content) {
       editor.commands.setContent(activeDoc.content, { emitUpdate: false });
+    }
   }, [activeDoc, editor]);
+
   useEffect(() => {
     if (!editor) return;
     editor.storage.keyboardShortcuts.onFocusFontPicker = () => fontPickerRef.current?.focus();
     editor.storage.keyboardShortcuts.onFocusColorPicker = () => colorPickerRef.current?.click();
   }, [editor]);
+
   useGlobalShortcuts(
     () => setFindOpen((value) => !value),
     () => {
@@ -116,51 +117,16 @@ export const EditorPage = () => {
       setHelpOpen(false);
     },
   );
+
   usePrintSetup(activeDoc);
 
   const wordCount = useMemo(() => {
     const text = editor?.state.doc.textContent.trim() ?? '';
     return text ? text.split(/\s+/).length : 0;
   }, [editor?.state.doc.textContent]);
+
+  const charCount = editor?.state.doc.textContent.length ?? 0;
   const outline = useMemo(() => getOutline(activeDoc?.content ?? ''), [activeDoc?.content]);
-
-  const handlePaperScroll = () => {
-    const container = paperWrapRef.current;
-    if (!container) return;
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    const maxScroll = scrollHeight - clientHeight;
-    if (maxScroll <= 0) return;
-
-    const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
-    const { height: paperH } = getPaperSizePx(setup);
-    const totalPageH = paperH + PAGE_GAP;
-    const currPage = Math.min(
-      pageCount,
-      Math.max(1, Math.floor((scrollTop + clientHeight * 0.3) / totalPageH) + 1),
-    );
-    setCurrentPage(currPage);
-
-    const scrollRatio = Math.max(0, Math.min(1, scrollTop / maxScroll));
-    const topPx = 28 + scrollRatio * (clientHeight - 56);
-    setIndicatorTop(topPx);
-    setShowPageIndicator(true);
-
-    if (indicatorTimerRef.current !== null) {
-      window.clearTimeout(indicatorTimerRef.current);
-    }
-    indicatorTimerRef.current = window.setTimeout(() => {
-      setShowPageIndicator(false);
-      indicatorTimerRef.current = null;
-    }, 1400);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (indicatorTimerRef.current !== null) {
-        window.clearTimeout(indicatorTimerRef.current);
-      }
-    };
-  }, []);
 
   const handleApplyPageSetup = (setup: PageSetup): void => {
     setActiveDocPageSetup(setup);
@@ -169,8 +135,8 @@ export const EditorPage = () => {
   };
 
   return (
-    <div className="docs-shell">
-      <main className="doc-workspace">
+    <div className="l-shell">
+      <main className="l-work">
         <Header
           title={activeDoc?.title ?? ''}
           onTitleChange={updateTitle}
@@ -182,11 +148,11 @@ export const EditorPage = () => {
             viewMode,
             canDelete: docs.length > 1,
             wordCount,
-            charCount: editor?.state.doc.textContent.length ?? 0,
+            charCount,
             onNewDoc: addDoc,
             onToggleSidebar: handleToggleSidebar,
             onToggleFind: () => setFindOpen((value) => !value),
-            onPageSetup: () => setPageSetupOpen((value) => !value),
+            onPageSetup: () => setPageSetupOpen(true),
             onViewModeChange: setViewMode,
             onPrint: () => window.print(),
             onExportHtml: exportHtml,
@@ -198,6 +164,7 @@ export const EditorPage = () => {
             onHelp: () => setHelpOpen(true),
           }}
         />
+
         <Toolbar
           editor={editor}
           findOpen={findOpen}
@@ -217,12 +184,15 @@ export const EditorPage = () => {
           onPageSetup={() => setPageSetupOpen((value) => !value)}
           onViewModeChange={setViewMode}
         />
-        <div className="ruler" aria-hidden="true">
-          {Array.from({ length: 9 }, (_, i) => (
-            <span key={i}>{i}</span>
-          ))}
-        </div>
-        <div className="editor-stage">
+
+        <Ruler
+          editor={editor}
+          activeDoc={activeDoc}
+          onPageSetupChange={setActiveDocPageSetup}
+          onPaginationUpdate={schedulePagination}
+        />
+
+        <div className="l-stage">
           <DocsSidebar
             docs={docs}
             activeId={activeDoc?.id ?? ''}
@@ -238,86 +208,36 @@ export const EditorPage = () => {
             onStar={star}
             onTrash={trash}
           />
-          {!sidebarOpen && (
-            <button
-              type="button"
-              className="sidebar-open-floating-btn"
-              title={t('docs.header.toggleSidebar')}
-              aria-label={t('docs.header.toggleSidebar')}
-              onClick={handleToggleSidebar}
-            >
-              <Icon name="menu" />
-            </button>
-          )}
-          <section
-            ref={paperWrapRef}
-            onScroll={handlePaperScroll}
-            className="paper-wrap"
-            aria-label={t('docs.header.titleAriaLabel')}
-            onContextMenu={(event) => {
-              event.preventDefault();
-              setContextMenu({ x: event.clientX, y: event.clientY });
-            }}
-          >
-            {isOverLimit && (
-              <div className="page-limit-banner">{t('docs.warnings.pageLimitExceeded')}</div>
-            )}
-            <div
-              className={`page-viewport ${viewMode === 'paged' ? 'is-paged' : ''}`}
-              style={viewportStyle}
-            >
-              {viewMode === 'paged' && (
-                <div className="page-stack">
-                  {Array.from({ length: pageCount }, (_, index) => (
-                    <div className="page" key={index} />
-                  ))}
-                </div>
-              )}
-              <EditorContent editor={editor} />
-            </div>
-          </section>
-          {pageCount > 1 && (
-            <div
-              className={`page-scroll-indicator ${showPageIndicator ? 'visible' : ''}`}
-              style={{ top: `${indicatorTop}px` }}
-              aria-hidden="true"
-            >
-              {t('common.status.pageOf', { current: currentPage, total: pageCount })}
-            </div>
-          )}
+
+          <EditorCanvas
+            editor={editor}
+            paginationState={paginationState}
+            onContextMenu={setContextMenu}
+            sidebarOpen={sidebarOpen}
+            onOpenSidebar={handleToggleSidebar}
+            activeDoc={activeDoc}
+            onPageSetupChange={setActiveDocPageSetup}
+          />
         </div>
-        <footer className="statusbar">
-          <span>{t('common.status.wordsCount', { count: wordCount })}</span>
-          <span>
-            {t('common.status.charsCount', { count: editor?.state.doc.textContent.length ?? 0 })}
-          </span>
-          {viewMode === 'paged' && (
-            <span>{t('common.status.pagesCount', { count: pageCount })}</span>
-          )}
-          <span className={storageBytes > QUOTA_WARN_BYTES ? 'quota-warn' : ''}>
-            {t('common.status.quotaWarning', {
-              used: (storageBytes / (1024 * 1024)).toFixed(1),
-              total: '5',
-            })}
-          </span>
-          <span>
-            <Icon name="check" aria-hidden="true" /> {saveState}
-          </span>
-        </footer>
+
+        <Statusbar
+          wordCount={wordCount}
+          charCount={charCount}
+          pageCount={paginationState.pageCount}
+          viewMode={viewMode}
+          storageUsage={storageBytes}
+          lastSavedAt={activeDoc ? new Date(activeDoc.updatedAt) : null}
+        />
+
         {editor && (
           <SearchAndReplace
             editor={editor}
             open={findOpen}
             onOpen={() => setFindOpen(true)}
             onClose={() => setFindOpen(false)}
-            style={{
-              position: 'fixed',
-              top: '116px',
-              right: '20px',
-              zIndex: 50,
-            }}
           />
         )}
+
         {pageSetupOpen && activeDoc?.pageSetup && (
           <PageSetupPanel
             open={pageSetupOpen}
@@ -326,7 +246,9 @@ export const EditorPage = () => {
             onClose={() => setPageSetupOpen(false)}
           />
         )}
+
         <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
+
         <EditorContextMenu
           editor={editor}
           position={contextMenu}
