@@ -312,9 +312,9 @@ export const EditorPage = () => {
             onClose={() => setFindOpen(false)}
             style={{
               position: 'fixed',
-              top: '128px',
-              right: '16px',
-              zIndex: 40,
+              top: '116px',
+              right: '20px',
+              zIndex: 50,
             }}
           />
         )}

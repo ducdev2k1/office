@@ -5,8 +5,7 @@ import { useTranslation } from '@office/i18n';
 // --- Hooks ---
 import { useComposedRef } from '@/hooks/use-composed-ref';
 
-// --- Icons ---
-import { cn } from '@/lib/tiptap-utils';
+// --- UI Primitives ---
 import {
   Button,
   Icon,
@@ -16,6 +15,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  cn,
 } from '@office/ui-kit';
 
 // --- Tiptap UI ---
@@ -29,7 +29,8 @@ import {
 import '@/components/tiptap-ui/search-and-replace/search-and-replace.scss';
 
 export interface SearchAndReplaceProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>, UseSearchAndReplaceConfig {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>,
+    UseSearchAndReplaceConfig {
   open?: boolean;
   onClose?: () => void;
   onOpen?: () => void;
@@ -49,89 +50,6 @@ const REGEX_REPLACE_EXAMPLES = [
   { pattern: '(cat|tiptap)', replacement: '"$1"' },
 ];
 
-const ICON_SIZE = 16;
-
-interface ToolbarIconButtonProps {
-  label: string;
-  disabled?: boolean;
-  onClick: () => void;
-  icon: string;
-  dataAction?: string;
-}
-
-const ToolbarIconButton = ({
-  label,
-  disabled = false,
-  onClick,
-  icon,
-  dataAction,
-}: ToolbarIconButtonProps) => (
-  <Tooltip>
-    <TooltipTrigger
-      render={
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7"
-          disabled={disabled}
-          aria-label={label}
-          data-search-replace-action={dataAction}
-          onClick={onClick}
-        >
-          <Icon name={icon} size={ICON_SIZE} />
-        </Button>
-      }
-    />
-    <TooltipContent>{label}</TooltipContent>
-  </Tooltip>
-);
-
-const RegexExampleButton = ({
-  pattern,
-  onApply,
-  children,
-}: {
-  pattern: string;
-  onApply: () => void;
-  children: React.ReactNode;
-}) => (
-  <Button
-    type="button"
-    className="tiptap-search-replace-regex-example-button justify-start"
-    data-regex-example={pattern}
-    onClick={onApply}
-    variant="ghost"
-    size="sm"
-  >
-    <span className="tiptap-button-text">{children}</span>
-    <Icon name="arrow-right" size={ICON_SIZE} className="tiptap-button-icon" />
-  </Button>
-);
-
-export const SearchAndReplaceButton = forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<typeof Button>
->(({ className, children, ...props }, ref) => {
-  const { t } = useTranslation('docs');
-  return (
-    <Button
-      type="button"
-      className={className}
-      variant="ghost"
-      role="button"
-      tabIndex={-1}
-      aria-label={t('searchReplace.title')}
-      ref={ref}
-      {...props}
-    >
-      {children || <Icon name="search" size={ICON_SIZE} className="tiptap-button-icon" />}
-    </Button>
-  );
-});
-
-SearchAndReplaceButton.displayName = 'SearchAndReplaceButton';
-
 export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps>(
   (
     {
@@ -144,6 +62,7 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
       enableShortcut = true,
       autoFocusSearch = true,
       className,
+      style,
       ...divProps
     },
     ref,
@@ -153,33 +72,22 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
 
     const regexSearchExamples = useMemo(
       () => [
-        { label: t('searchReplace.regexAnyLetter'), pattern: 'c.t' },
-        { label: t('searchReplace.regexEitherTerm'), pattern: 'cat|tiptap' },
-        { label: t('searchReplace.regexCaseInsensitive'), pattern: '[Cc]at' },
+        { label: t('searchReplace.examples.digits'), pattern: '\\d+' },
+        { label: t('searchReplace.examples.words'), pattern: '\\b\\w+\\b' },
       ],
       [t],
     );
 
-    const searchAndReplace = useSearchAndReplace({
-      editor: providedEditor,
-      hideWhenUnavailable,
-      scrollIntoViewOptions,
-    });
-
     const {
-      isVisible,
-      resultCountLabel,
+      editor,
       searchTerm,
+      setSearchTerm,
       replaceTerm,
+      setReplaceTerm,
+      resultCountLabel,
       caseSensitive,
       wholeWord,
       useRegex,
-      canSearch,
-      canNavigate,
-      canReplace,
-      canReplaceAll,
-      setSearchTerm,
-      setReplaceTerm,
       toggleCaseSensitive,
       toggleWholeWord,
       toggleUseRegex,
@@ -187,110 +95,63 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
       goToPrevious,
       replaceCurrent,
       replaceAll,
-      applySearch,
-      suspendSearch,
-    } = searchAndReplace;
+      canSearch,
+      canReplace,
+      canReplaceAll,
+      canNavigate,
+    } = useSearchAndReplace({
+      editor: providedEditor,
+      hideWhenUnavailable,
+      scrollIntoViewOptions,
+    });
+
+    const isVisible = Boolean(editor) && (!hideWhenUnavailable || canSearch);
 
     const searchInputRef = useRef<HTMLInputElement>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const composedPanelRef = useComposedRef(panelRef, ref);
 
-    const focusSearchInput = useCallback(() => {
-      const input = searchInputRef.current;
-      if (!input) return;
-      input.focus();
-      input.select();
-    }, []);
-
-    const applyRegexExample = useCallback(
-      (pattern: string, replacement?: string) => {
-        setSearchTerm(pattern);
-        if (replacement !== undefined) {
-          setReplaceTerm(replacement);
-        }
-        focusSearchInput();
-      },
-      [setSearchTerm, setReplaceTerm, focusSearchInput],
-    );
-
     useHotkeys(
       SEARCH_AND_REPLACE_SHORTCUT_KEY,
       (event) => {
-        if (open) {
-          event.preventDefault();
-          focusSearchInput();
-          return;
-        }
-
-        if (!onOpen) return;
-
         event.preventDefault();
-        onOpen();
+        if (open) {
+          onClose?.();
+        } else {
+          onOpen?.();
+        }
       },
       {
-        enabled: enableShortcut && isVisible && canSearch,
-        enableOnContentEditable: true,
+        enabled: enableShortcut,
         enableOnFormTags: true,
       },
-      [open, onOpen, focusSearchInput],
     );
 
-    useHotkeys(
-      'up,down',
-      (event) => {
-        const target = event.target instanceof Node ? event.target : null;
-        if (panelRef.current?.contains(target)) return;
+    useEffect(() => {
+      if (open && autoFocusSearch && searchInputRef.current) {
+        searchInputRef.current.focus();
+        searchInputRef.current.select();
+      }
+    }, [open, autoFocusSearch]);
 
-        event.preventDefault();
-        if (event.key === 'ArrowDown') {
-          goToNext();
-        } else {
-          goToPrevious();
+    const applyRegexExample = useCallback(
+      (searchPattern: string, replacePattern?: string) => {
+        setSearchTerm(searchPattern);
+        if (replacePattern !== undefined) {
+          setReplaceTerm(replacePattern);
+        }
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
         }
       },
-      { enabled: open && canNavigate },
-      [goToNext, goToPrevious],
+      [setSearchTerm, setReplaceTerm],
     );
-
-    const applySearchRef = useRef(applySearch);
-    const suspendSearchRef = useRef(suspendSearch);
-    useEffect(() => {
-      applySearchRef.current = applySearch;
-      suspendSearchRef.current = suspendSearch;
-    });
-
-    const previousOpenRef = useRef(false);
-    useEffect(() => {
-      if (previousOpenRef.current === open) return;
-      previousOpenRef.current = open;
-
-      if (open) {
-        applySearchRef.current();
-      } else {
-        suspendSearchRef.current();
-      }
-    }, [open]);
-
-    const focusedForOpenRef = useRef(false);
-    useEffect(() => {
-      if (!open) {
-        focusedForOpenRef.current = false;
-        return;
-      }
-      if (focusedForOpenRef.current || !autoFocusSearch || !canSearch) return;
-
-      focusedForOpenRef.current = true;
-      focusSearchInput();
-    }, [open, canSearch, autoFocusSearch, focusSearchInput]);
 
     const handlePanelKeyDown = useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'Escape') {
-          if (onClose) {
-            event.preventDefault();
-            event.stopPropagation();
-            onClose();
-          }
+          event.preventDefault();
+          onClose?.();
           return;
         }
 
@@ -313,14 +174,12 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
 
         if (isModKey(event) && event.shiftKey && !event.altKey) {
           const key = event.key.toLowerCase();
-
           if (key === 'f' && canNavigate) {
             event.preventDefault();
             event.stopPropagation();
             goToNext();
             return;
           }
-
           if (key === 'd' && canNavigate) {
             event.preventDefault();
             event.stopPropagation();
@@ -363,231 +222,279 @@ export const SearchAndReplace = forwardRef<HTMLDivElement, SearchAndReplaceProps
       [canReplace, replaceCurrent],
     );
 
-    if (!isVisible) {
+    if (!isVisible || !open) {
       return null;
     }
 
     return (
       <div
         className={cn('tiptap-search-replace', className)}
-        data-open={open ? 'true' : 'false'}
+        data-open="true"
         role="dialog"
         aria-label={t('searchReplace.title')}
         onKeyDown={handlePanelKeyDown}
         ref={composedPanelRef}
+        style={style}
         {...divProps}
       >
-        <div className="tiptap-search-replace-header">
-          <span className="tiptap-search-replace-count" aria-live="polite">
+        {/* Header: count + navigation + close */}
+        <div className="flex items-center justify-between pb-1">
+          <span className="text-xs font-semibold tabular-nums text-muted-foreground" aria-live="polite">
             {resultCountLabel}
           </span>
 
-          <div className="tiptap-search-replace-nav-group">
-            <div className="button-group">
-              <ToolbarIconButton
-                label={t('searchReplace.previous')}
-                disabled={!canNavigate}
-                onClick={goToPrevious}
-                icon="chevron-up"
-                dataAction="prev"
-              />
-              <ToolbarIconButton
-                label={t('searchReplace.next')}
-                disabled={!canNavigate}
-                onClick={goToNext}
-                icon="chevron-down"
-                dataAction="next"
-              />
-            </div>
-            <div className="button-group">
-              <ToolbarIconButton
-                label={tCommon('actions.close')}
-                onClick={() => onClose?.()}
-                icon="x"
-                dataAction="close"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="tiptap-search-replace-body">
-          <div className="tiptap-search-replace-query-controls">
-            <div className="tiptap-search-replace-inputs">
-              <div className="tiptap-search-replace-input-group relative">
-                <Input
-                  data-field="search-query"
-                  placeholder={t('searchReplace.findPlaceholder')}
-                  aria-label={t('searchReplace.findPlaceholder')}
-                  value={searchTerm}
-                  autoFocus={open && autoFocusSearch}
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  spellCheck={false}
-                  disabled={!canSearch}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  onKeyDown={handleSearchKeyDown}
-                  ref={searchInputRef}
-                  className="pr-8"
-                />
-                <kbd
-                  className="tiptap-search-replace-keyboard-hint pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
-                  aria-hidden="true"
-                >
-                  ↵
-                </kbd>
-              </div>
-
-              <div className="tiptap-search-replace-input-group relative">
-                <Input
-                  data-field="replace-query"
-                  placeholder={t('searchReplace.replacePlaceholder')}
-                  aria-label={t('searchReplace.replacePlaceholder')}
-                  value={replaceTerm}
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  spellCheck={false}
-                  disabled={!canSearch}
-                  onChange={(event) => setReplaceTerm(event.target.value)}
-                  onKeyDown={handleReplaceKeyDown}
-                  className="pr-8"
-                />
-                <kbd
-                  className="tiptap-search-replace-keyboard-hint pointer-events-none absolute right-2 top-1/2 -translate-y-1/2"
-                  aria-hidden="true"
-                >
-                  ↵
-                </kbd>
-              </div>
-            </div>
-
-            <div className="tiptap-search-replace-options">
-              <Button
-                type="button"
-                data-option="match-case"
-                variant="ghost"
-                size="sm"
-                aria-pressed={caseSensitive}
-                disabled={!canSearch}
-                onClick={toggleCaseSensitive}
-                className={cn(caseSensitive && 'bg-accent text-accent-foreground')}
-              >
-                <Icon name="case-sensitive" size={ICON_SIZE} className="tiptap-button-icon" />
-                <span className="tiptap-button-text">{t('searchReplace.matchCase')}</span>
-              </Button>
-
-              <Button
-                type="button"
-                data-option="whole-words"
-                variant="ghost"
-                size="sm"
-                aria-pressed={wholeWord}
-                disabled={!canSearch}
-                onClick={toggleWholeWord}
-                className={cn(wholeWord && 'bg-accent text-accent-foreground')}
-              >
-                <Icon name="whole-word" size={ICON_SIZE} className="tiptap-button-icon" />
-                <span className="tiptap-button-text">{t('searchReplace.wholeWord')}</span>
-              </Button>
-            </div>
-          </div>
-
-          <Separator orientation="horizontal" />
-
-          <div className="tiptap-search-replace-regex-toggle">
-            <label data-option="use-regex" className="tiptap-search-replace-regex-toggle-row">
-              <span className="tiptap-search-replace-regex-toggle-label">
-                {t('searchReplace.useRegex')}
-              </span>
-              <Switch checked={useRegex} onCheckedChange={toggleUseRegex} disabled={!canSearch} />
-            </label>
-
-            {useRegex && (
-              <div className="tiptap-search-replace-regex-help">
-                <div className="tiptap-search-replace-regex-help-section">
-                  <span className="tiptap-search-replace-regex-help-label">
-                    {t('searchReplace.tryPattern')}
-                  </span>
-
-                  <div className="tiptap-search-replace-regex-example-list">
-                    {regexSearchExamples.map(({ label, pattern }) => (
-                      <RegexExampleButton
-                        key={pattern}
-                        pattern={pattern}
-                        onApply={() => applyRegexExample(pattern)}
-                      >
-                        {label} <code>{pattern}</code>
-                      </RegexExampleButton>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator
-                  orientation="horizontal"
-                  className="tiptap-search-replace-regex-help-separator"
-                />
-
-                <div className="tiptap-search-replace-regex-help-section">
-                  <span className="tiptap-search-replace-regex-help-label">
-                    {t('searchReplace.tryReplace')}
-                  </span>
-
-                  <div className="tiptap-search-replace-regex-example-list">
-                    {REGEX_REPLACE_EXAMPLES.map(({ pattern, replacement }) => (
-                      <RegexExampleButton
-                        key={pattern}
-                        pattern={pattern}
-                        onApply={() => applyRegexExample(pattern, replacement)}
-                      >
-                        <code>{pattern}</code> {t('searchReplace.to')} <code>{replacement}</code>
-                      </RegexExampleButton>
-                    ))}
-                  </div>
-
-                  <a
-                    className="tiptap-search-replace-regex-docs-link"
-                    data-search-replace-action="regex-docs"
-                    href={REGEX_DOCS_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
+          <div className="flex items-center gap-0.5">
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-7 text-muted-foreground hover:text-foreground"
+                    disabled={!canNavigate}
+                    onClick={goToPrevious}
+                    aria-label={t('searchReplace.previous')}
                   >
-                    {t('searchReplace.learnRegex')}
-                    <Icon
-                      name="external-link"
-                      size={ICON_SIZE}
-                      className="tiptap-search-replace-regex-docs-link-icon"
-                    />
-                  </a>
-                </div>
-              </div>
-            )}
-          </div>
+                    <Icon name="chevron-up" size={15} />
+                  </Button>
+                }
+              />
+              <TooltipContent>{t('searchReplace.previous')}</TooltipContent>
+            </Tooltip>
 
-          <Separator orientation="horizontal" />
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-7 text-muted-foreground hover:text-foreground"
+                    disabled={!canNavigate}
+                    onClick={goToNext}
+                    aria-label={t('searchReplace.next')}
+                  >
+                    <Icon name="chevron-down" size={15} />
+                  </Button>
+                }
+              />
+              <TooltipContent>{t('searchReplace.next')}</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-7 text-muted-foreground hover:text-foreground"
+                    onClick={() => onClose?.()}
+                    aria-label={tCommon('actions.close')}
+                  >
+                    <Icon name="x" size={15} />
+                  </Button>
+                }
+              />
+              <TooltipContent>{tCommon('actions.close')}</TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
-        <div className="tiptap-search-replace-actions">
-          <div className="button-group">
-            <Button
-              type="button"
-              data-search-replace-action="replace"
-              disabled={!canReplace}
-              aria-label={t('searchReplace.replace')}
-              onClick={replaceCurrent}
-            >
-              {t('searchReplace.replace')}
-            </Button>
-            <Button
-              type="button"
-              data-search-replace-action="replace-all"
-              disabled={!canReplaceAll}
-              aria-label={t('searchReplace.replaceAll')}
-              onClick={replaceAll}
-            >
-              {t('searchReplace.replaceAll')}
-            </Button>
+        {/* Inputs */}
+        <div className="flex flex-col gap-2">
+          <div className="relative">
+            <Input
+              data-field="search-query"
+              placeholder={t('searchReplace.findPlaceholder')}
+              aria-label={t('searchReplace.findPlaceholder')}
+              value={searchTerm}
+              autoFocus={open && autoFocusSearch}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              disabled={!canSearch}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              ref={searchInputRef}
+              className="h-9 pr-7 text-xs rounded-lg border-border bg-background focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+            />
+            <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/60">
+              ↵
+            </span>
           </div>
+
+          <div className="relative">
+            <Input
+              data-field="replace-query"
+              placeholder={t('searchReplace.replacePlaceholder')}
+              aria-label={t('searchReplace.replacePlaceholder')}
+              value={replaceTerm}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              disabled={!canSearch}
+              onChange={(event) => setReplaceTerm(event.target.value)}
+              onKeyDown={handleReplaceKeyDown}
+              className="h-9 pr-7 text-xs rounded-lg border-border bg-background focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+            />
+            <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/60">
+              ↵
+            </span>
+          </div>
+        </div>
+
+        {/* Checkbox Options */}
+        <div className="flex flex-col gap-0.5 pt-1">
+          <button
+            type="button"
+            onClick={toggleCaseSensitive}
+            disabled={!canSearch}
+            className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-xs text-foreground transition-colors hover:bg-hover cursor-pointer outline-none"
+          >
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-muted-foreground text-xs w-4">Aa</span>
+              <span>{t('searchReplace.matchCase')}</span>
+            </div>
+            <div
+              className={cn(
+                'flex size-4 items-center justify-center rounded border transition-colors shrink-0',
+                caseSensitive
+                  ? 'bg-primary border-primary text-primary-foreground'
+                  : 'border-border bg-muted/40 hover:border-foreground/50',
+              )}
+            >
+              {caseSensitive && <Icon name="check" size={11} />}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleWholeWord}
+            disabled={!canSearch}
+            className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-xs text-foreground transition-colors hover:bg-hover cursor-pointer outline-none"
+          >
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-muted-foreground text-xs w-4">ab</span>
+              <span>{t('searchReplace.wholeWord')}</span>
+            </div>
+            <div
+              className={cn(
+                'flex size-4 items-center justify-center rounded border transition-colors shrink-0',
+                wholeWord
+                  ? 'bg-primary border-primary text-primary-foreground'
+                  : 'border-border bg-muted/40 hover:border-foreground/50',
+              )}
+            >
+              {wholeWord && <Icon name="check" size={11} />}
+            </div>
+          </button>
+        </div>
+
+        <Separator orientation="horizontal" className="my-0.5" />
+
+        {/* Regex toggle */}
+        <div className="flex flex-col gap-2">
+          <label
+            data-option="use-regex"
+            className="flex items-center justify-between px-2 py-1 text-xs text-foreground cursor-pointer"
+          >
+            <span>{t('searchReplace.useRegex')}</span>
+            <Switch checked={useRegex} onCheckedChange={toggleUseRegex} disabled={!canSearch} />
+          </label>
+
+          {useRegex && (
+            <div className="flex flex-col gap-2 p-2.5 rounded-lg bg-muted/60 text-xs">
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-semibold text-muted-foreground">
+                  {t('searchReplace.tryPattern')}
+                </span>
+                <div className="flex flex-col gap-1">
+                  {regexSearchExamples.map(({ label, pattern }) => (
+                    <Button
+                      key={pattern}
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-xs justify-start px-1.5 gap-1 text-muted-foreground hover:text-foreground"
+                      onClick={() => applyRegexExample(pattern)}
+                    >
+                      <span>{label}</span>
+                      <code className="px-1 py-0.5 rounded bg-background border border-border text-[10px] font-mono text-foreground">
+                        {pattern}
+                      </code>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <Separator orientation="horizontal" />
+
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-semibold text-muted-foreground">
+                  {t('searchReplace.tryReplace')}
+                </span>
+                <div className="flex flex-col gap-1">
+                  {REGEX_REPLACE_EXAMPLES.map(({ pattern, replacement }) => (
+                    <Button
+                      key={pattern}
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-xs justify-start px-1.5 gap-1 text-muted-foreground hover:text-foreground"
+                      onClick={() => applyRegexExample(pattern, replacement)}
+                    >
+                      <code className="px-1 py-0.5 rounded bg-background border border-border text-[10px] font-mono text-foreground">
+                        {pattern}
+                      </code>
+                      <span>{t('searchReplace.to')}</span>
+                      <code className="px-1 py-0.5 rounded bg-background border border-border text-[10px] font-mono text-foreground">
+                        {replacement}
+                      </code>
+                    </Button>
+                  ))}
+                </div>
+                <a
+                  className="flex items-center gap-1 text-[11px] text-primary hover:underline pt-1"
+                  href={REGEX_DOCS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('searchReplace.learnRegex')}
+                  <Icon name="external-link" size={12} />
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Separator orientation="horizontal" className="my-0.5" />
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-2 pt-0.5">
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="h-8 rounded-lg px-3.5 text-xs font-medium bg-muted hover:bg-muted/80 text-foreground transition-all"
+            disabled={!canReplace}
+            onClick={replaceCurrent}
+          >
+            {t('searchReplace.replace')}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="h-8 rounded-lg px-3.5 text-xs font-medium bg-muted hover:bg-muted/80 text-foreground transition-all"
+            disabled={!canReplaceAll}
+            onClick={replaceAll}
+          >
+            {t('searchReplace.replaceAll')}
+          </Button>
         </div>
       </div>
     );
