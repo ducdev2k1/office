@@ -1,5 +1,5 @@
 import { cn } from '@office/ui-kit';
-import { type FontVariant } from '@office/fonts';
+import { type FontVariant, getFontFamilyCSS } from '@office/fonts';
 
 const FONT_VARIANTS: FontVariant[] = ['Normal', 'Medium', 'Semi Bold', 'Bold'];
 
@@ -45,7 +45,7 @@ export const FontVariantSubmenu = ({ font, onSelect }: FontVariantSubmenuProps) 
           'hover:bg-hover transition-colors cursor-pointer',
         )}
         style={{
-          fontFamily: font,
+          ...getFontFamilyCSS(font),
           fontWeight: VARIANT_WEIGHT[variant],
           fontStyle: VARIANT_STYLE[variant],
         }}
