@@ -46,14 +46,14 @@ export const DocsSidebar = ({
   return (
     <aside
       className={cn(
-        'absolute left-0 top-0 bottom-0 z-40 w-[290px] p-4 bg-card/95 backdrop-blur-md border-r border-border shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-y-auto overflow-x-hidden scrollbar-thin',
+        'shrink-0 h-full bg-card border-r border-border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden z-30',
         sidebarOpen
-          ? 'translate-x-0 opacity-100 visible pointer-events-auto'
-          : '-translate-x-full opacity-0 invisible pointer-events-none',
+          ? 'w-[260px] min-w-[260px] opacity-100 visible shadow-sm'
+          : 'w-0 min-w-0 opacity-0 invisible border-transparent pointer-events-none',
       )}
       aria-label={t('sidebar.title')}
     >
-      <div className="w-[247px] min-w-[247px]">
+      <div className="w-[260px] p-4 h-full overflow-y-auto scrollbar-thin">
         <div className="flex items-center gap-2 mb-3.5 text-foreground font-medium font-['Google_Sans',Roboto,sans-serif] text-sm">
           <button
             className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors"
