@@ -1,5 +1,6 @@
 export * from './types';
 export * from './formatters';
+export * from './translator';
 export * from './context';
-export { vi, viCommon, viDocs, viAppShell } from './locales/vi';
-export { en, enCommon, enDocs, enAppShell } from './locales/en';
+export { vi, viCommon, viDocs, viSheets, viAppShell } from './locales/vi';
+export { en, enCommon, enDocs, enSheets, enAppShell } from './locales/en';
