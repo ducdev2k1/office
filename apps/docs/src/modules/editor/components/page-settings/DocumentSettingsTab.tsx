@@ -44,7 +44,7 @@ export const DocumentSettingsTab = ({
   };
 
   const setMargin = (side: keyof PageSetup['margins'], valueInUnit: number) => {
-    const mm = Math.min(60, Math.max(5, unitToMm(valueInUnit)));
+    const mm = Math.min(100, Math.max(0, Math.round(unitToMm(valueInUnit) * 10) / 10));
     if (marginsLinked) {
       onPageSetupChange({
         ...setup,
@@ -163,24 +163,36 @@ export const DocumentSettingsTab = ({
             label={t('pageSetup.marginTop')}
             value={mmToUnit(setup.margins.top)}
             unit={unit}
+            step={unit === 'mm' ? 1 : 0.1}
+            min={0}
+            max={unit === 'mm' ? 100 : 10}
             onChange={(v) => setMargin('top', v)}
           />
           <NumberInputWithUnit
             label={t('pageSetup.marginBottom')}
             value={mmToUnit(setup.margins.bottom)}
             unit={unit}
+            step={unit === 'mm' ? 1 : 0.1}
+            min={0}
+            max={unit === 'mm' ? 100 : 10}
             onChange={(v) => setMargin('bottom', v)}
           />
           <NumberInputWithUnit
             label={t('pageSetup.marginLeft')}
             value={mmToUnit(setup.margins.left)}
             unit={unit}
+            step={unit === 'mm' ? 1 : 0.1}
+            min={0}
+            max={unit === 'mm' ? 100 : 10}
             onChange={(v) => setMargin('left', v)}
           />
           <NumberInputWithUnit
             label={t('pageSetup.marginRight')}
             value={mmToUnit(setup.margins.right)}
             unit={unit}
+            step={unit === 'mm' ? 1 : 0.1}
+            min={0}
+            max={unit === 'mm' ? 100 : 10}
             onChange={(v) => setMargin('right', v)}
           />
         </div>

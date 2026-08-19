@@ -8,6 +8,14 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "tsc -p tsconfig.json --noEmit"
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx src/__tests__/roundtrip.test.ts"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.0.8",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.12"
   }
 }

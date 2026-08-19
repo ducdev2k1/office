@@ -1,0 +1,52 @@
+{
+  "title": "Trình chiếu",
+  "untitled": "Trình chiếu chưa có tiêu đề",
+  "importedTitle": "Bài trình chiếu đã nhập",
+  "copyOf": "Bản sao của {title}",
+  "openPptx": "Mở từ máy (.pptx)",
+  "openError": "Không mở được file. Vui lòng chọn file .pptx hợp lệ.",
+  "newSlideDeck": "Bài trình chiếu mới",
+  "exportPptx": "Xuất .pptx",
+  "exporting": "Đang xuất...",
+  "exportError": "Xuất file thất bại.",
+  "slidesCount": "{count} trang chiếu",
+  "home": {
+    "createLabel": "Tạo bài trình chiếu mới",
+    "startLabel": "Bắt đầu bài trình chiếu mới",
+    "blankLabel": "Trình chiếu trống",
+    "templates": {
+      "blank": "Trình chiếu trống",
+      "business": "Giới thiệu doanh nghiệp",
+      "pitch": "Thuyết trình dự án"
+    }
+  },
+  "header": {
+    "back": "Quay lại danh sách Trình chiếu",
+    "titleAriaLabel": "Tiêu đề bài trình chiếu",
+    "star": "Gắn dấu sao",
+    "unstar": "Bỏ gắn dấu sao",
+    "savedTooltip": "Đã lưu vào bộ nhớ thiết bị",
+    "present": "Trình chiếu (F5)",
+    "addSlide": "Thêm trang chiếu"
+  },
+  "editor": {
+    "notFound": "Không tìm thấy bài trình chiếu yêu cầu.",
+    "backHome": "Quay lại trang chủ",
+    "slideNumber": "Trang {current} / {total}",
+    "noSlides": "Chưa có trang chiếu nào"
+  },
+  "toolbar": {
+    "ariaLabel": "Thanh công cụ Trình chiếu",
+    "undo": "Hoàn tác (Ctrl+Z)",
+    "redo": "Làm lại (Ctrl+Y)",
+    "addSlide": "Thêm slide",
+    "deleteSlide": "Xoá slide",
+    "duplicateSlide": "Nhân bản slide",
+    "zoom": "Thu phóng",
+    "fitScreen": "Vừa màn hình",
+    "shapes": "Hình khối",
+    "textBox": "Hộp văn bản",
+    "image": "Chèn ảnh",
+    "table": "Chèn bảng"
+  }
+}

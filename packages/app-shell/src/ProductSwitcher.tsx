@@ -11,8 +11,9 @@ import type { ShellKind } from './types';
 const PRODUCTS: { kind: ShellKind; available: boolean; icon: string }[] = [
   { kind: 'docs', available: true, icon: 'file-text' },
   { kind: 'sheets', available: true, icon: 'file-spreadsheet' },
-  { kind: 'slides', available: false, icon: 'presentation' },
+  { kind: 'slides', available: true, icon: 'presentation' },
 ];
+
 
 interface ProductSwitcherProps {
   current: ShellKind;

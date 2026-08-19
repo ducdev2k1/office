@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useTranslation } from '@office/i18n';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
+import { Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
 import type {
   HeaderFooterSlot,
   HFAlign,
@@ -23,6 +24,7 @@ export const HeaderFooterSettingsTab = ({
   onPageSetupChange,
 }: HeaderFooterSettingsTabProps) => {
   const { t } = useTranslation('docs');
+  const [activeSlot, setActiveSlot] = useState<keyof HeaderFooterSlot>('center');
 
   const header = setup.header ?? { left: '', center: '', right: '' };
   const footer = setup.footer ?? { left: '', center: '', right: '' };
@@ -35,8 +37,10 @@ export const HeaderFooterSettingsTab = ({
     skipFirstPage: false,
   };
 
-  const headerDistanceCm = ((setup.headerMargin ?? 12.5) / 10).toFixed(2);
-  const footerDistanceCm = ((setup.footerMargin ?? 12.5) / 10).toFixed(2);
+  const headerMarginMm = setup.headerMargin ?? 12.5;
+  const footerMarginMm = setup.footerMargin ?? 12.5;
+  const headerDistanceCm = Number((headerMarginMm / 10).toFixed(2));
+  const footerDistanceCm = Number((footerMarginMm / 10).toFixed(2));
 
   const updateHeaderSlot = (align: keyof HeaderFooterSlot, value: string) => {
     onPageSetupChange({ ...setup, header: { ...header, [align]: value } });
@@ -50,13 +54,14 @@ export const HeaderFooterSettingsTab = ({
     onPageSetupChange({ ...setup, pageNumber: { ...pageNumber, ...updates } });
   };
 
-  const insertTokenToActiveBand = (token: string) => {
-    const current = activeBand === 'header' ? header.center : footer.center;
+  const insertTokenToActiveBand = (token: string, targetSlot?: keyof HeaderFooterSlot) => {
+    const slot = targetSlot ?? activeSlot;
+    const current = (activeBand === 'header' ? header[slot] : footer[slot]) || '';
     const nextVal = current ? `${current} ${token}` : token;
     if (activeBand === 'header') {
-      updateHeaderSlot('center', nextVal);
+      updateHeaderSlot(slot, nextVal);
     } else {
-      updateFooterSlot('center', nextVal);
+      updateFooterSlot(slot, nextVal);
     }
   };
 
@@ -99,23 +104,25 @@ export const HeaderFooterSettingsTab = ({
             label={t('headerFooter.headerDistanceFromTop')}
             value={headerDistanceCm}
             unit="cm"
-            step={0.05}
+            step={0.1}
             min={0}
             max={10}
-            onChange={(val) =>
-              onPageSetupChange({ ...setup, headerMargin: Math.round(val * 10) })
-            }
+            onChange={(val) => {
+              const mm = Math.max(0, Math.min(100, Math.round(val * 100) / 10));
+              onPageSetupChange({ ...setup, headerMargin: mm });
+            }}
           />
           <NumberInputWithUnit
             label={t('headerFooter.footerDistanceFromBottom')}
             value={footerDistanceCm}
             unit="cm"
-            step={0.05}
+            step={0.1}
             min={0}
             max={10}
-            onChange={(val) =>
-              onPageSetupChange({ ...setup, footerMargin: Math.round(val * 10) })
-            }
+            onChange={(val) => {
+              const mm = Math.max(0, Math.min(100, Math.round(val * 100) / 10));
+              onPageSetupChange({ ...setup, footerMargin: mm });
+            }}
           />
         </div>
       </div>
@@ -133,19 +140,33 @@ export const HeaderFooterSettingsTab = ({
             const label = t(
               `headerFooter.align${slotKey.charAt(0).toUpperCase() + slotKey.slice(1)}` as any,
             );
+            const isSelected = activeSlot === slotKey;
             return (
               <div key={slotKey} className="space-y-1">
-                <span className="text-[11px] text-neutral-400">{label}</span>
+                <div className="flex items-center justify-between">
+                  <span className={cn('text-[11px] transition-colors', isSelected ? 'text-purple-400 font-medium' : 'text-neutral-400')}>
+                    {label}
+                  </span>
+                  {isSelected && (
+                    <span className="text-[10px] text-purple-400/80 font-mono">Đang chọn</span>
+                  )}
+                </div>
                 <input
                   type="text"
                   value={val}
                   placeholder={label}
+                  onFocus={() => setActiveSlot(slotKey)}
                   onChange={(e) =>
                     activeBand === 'header'
                       ? updateHeaderSlot(slotKey, e.target.value)
                       : updateFooterSlot(slotKey, e.target.value)
                   }
-                  className="w-full h-8.5 rounded-lg border border-neutral-800 bg-[#1c1c1f] px-3 text-xs font-medium text-neutral-100 focus:border-purple-500/60 focus:ring-1 focus:ring-purple-500/30 transition-all"
+                  className={cn(
+                    'w-full h-8.5 rounded-lg border bg-[#1c1c1f] px-3 text-xs font-medium text-neutral-100 transition-all',
+                    isSelected
+                      ? 'border-purple-500/80 ring-1 ring-purple-500/40'
+                      : 'border-neutral-800 focus:border-purple-500/60 focus:ring-1 focus:ring-purple-500/30',
+                  )}
                 />
               </div>
             );
@@ -163,9 +184,10 @@ export const HeaderFooterSettingsTab = ({
                 render={
                   <button
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => insertTokenToActiveBand(item.token)}
                     aria-label={item.title}
-                    className="inline-flex items-center rounded-md border border-neutral-800 bg-[#1c1c1f] px-2 py-0.5 font-mono text-[11px] text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 transition-colors cursor-pointer"
+                    className="inline-flex items-center rounded-md border border-neutral-800 bg-[#1c1c1f] px-2 py-0.5 font-mono text-[11px] text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 transition-colors cursor-pointer active:scale-95"
                   >
                     + {item.label}
                   </button>
@@ -187,8 +209,9 @@ export const HeaderFooterSettingsTab = ({
           <button
             type="button"
             onClick={() => {
+              const targetSlot = pageNumber.align || activeSlot;
               updatePageNumber({ enabled: true, format: '{page}' });
-              insertTokenToActiveBand('{page}');
+              insertTokenToActiveBand('{page}', targetSlot);
             }}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border border-neutral-800 bg-[#1c1c1f] hover:bg-[#27272a] text-left font-medium text-neutral-200 transition-all duration-150 cursor-pointer hover:border-purple-500/40"
           >
@@ -199,8 +222,9 @@ export const HeaderFooterSettingsTab = ({
           <button
             type="button"
             onClick={() => {
+              const targetSlot = pageNumber.align || activeSlot;
               updatePageNumber({ enabled: true, format: '{page} / {pages}' });
-              insertTokenToActiveBand('{page} / {pages}');
+              insertTokenToActiveBand('{page} / {pages}', targetSlot);
             }}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border border-neutral-800 bg-[#1c1c1f] hover:bg-[#27272a] text-left font-medium text-neutral-200 transition-all duration-150 cursor-pointer hover:border-purple-500/40"
           >
@@ -229,7 +253,11 @@ export const HeaderFooterSettingsTab = ({
             <span className="text-neutral-400 text-[11px]">{t('headerFooter.pageNumber.align')}</span>
             <SelectField
               value={pageNumber.align}
-              onChange={(val) => updatePageNumber({ align: val as HFAlign })}
+              onChange={(val) => {
+                const align = val as HFAlign;
+                updatePageNumber({ align });
+                setActiveSlot(align);
+              }}
               options={[
                 { value: 'left', label: t('headerFooter.alignLeft') },
                 { value: 'center', label: t('headerFooter.alignCenter') },

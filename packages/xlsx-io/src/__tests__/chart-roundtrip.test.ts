@@ -66,13 +66,15 @@ const run = async () => {
   const loaded = await parseXlsxBuffer(buffer);
   assert.equal(loaded.name, 'Test Chart Workbook');
   assert.ok(loaded.charts, 'Charts must be loaded back');
-  assert.equal(loaded.charts.length, 1);
-  assert.equal(loaded.charts[0].id, 'c1');
-  assert.equal(loaded.charts[0].title, 'Biểu đồ Doanh thu T1-T2');
-  assert.equal(loaded.charts[0].type, 'column');
-  assert.equal(loaded.charts[0].dataRange, 'A1:C3');
+  const chart = loaded.charts?.[0];
+  assert.ok(chart, 'First chart must exist');
+  assert.equal(chart.id, 'c1');
+  assert.equal(chart.title, 'Biểu đồ Doanh thu T1-T2');
+  assert.equal(chart.type, 'column');
+  assert.equal(chart.dataRange, 'A1:C3');
 
   console.log('CHART ROUND-TRIP TEST PASS');
+
 };
 
 void run();

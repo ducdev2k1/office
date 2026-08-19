@@ -1,0 +1,52 @@
+{
+  "title": "Slides",
+  "untitled": "Untitled presentation",
+  "importedTitle": "Imported presentation",
+  "copyOf": "Copy of {title}",
+  "openPptx": "Open from device (.pptx)",
+  "openError": "Failed to open file. Please select a valid .pptx file.",
+  "newSlideDeck": "New presentation",
+  "exportPptx": "Export .pptx",
+  "exporting": "Exporting...",
+  "exportError": "Failed to export file.",
+  "slidesCount": "{count} slides",
+  "home": {
+    "createLabel": "Create new presentation",
+    "startLabel": "Start a new presentation",
+    "blankLabel": "Blank presentation",
+    "templates": {
+      "blank": "Blank",
+      "business": "Business Overview",
+      "pitch": "Pitch Deck"
+    }
+  },
+  "header": {
+    "back": "Back to Slides list",
+    "titleAriaLabel": "Presentation title",
+    "star": "Star presentation",
+    "unstar": "Unstar presentation",
+    "savedTooltip": "Saved to device storage",
+    "present": "Present (F5)",
+    "addSlide": "Add slide"
+  },
+  "editor": {
+    "notFound": "Requested presentation not found.",
+    "backHome": "Back to home",
+    "slideNumber": "Slide {current} of {total}",
+    "noSlides": "No slides yet"
+  },
+  "toolbar": {
+    "ariaLabel": "Presentation toolbar",
+    "undo": "Undo (Ctrl+Z)",
+    "redo": "Redo (Ctrl+Y)",
+    "addSlide": "New slide",
+    "deleteSlide": "Delete slide",
+    "duplicateSlide": "Duplicate slide",
+    "zoom": "Zoom",
+    "fitScreen": "Fit to screen",
+    "shapes": "Shapes",
+    "textBox": "Text box",
+    "image": "Insert image",
+    "table": "Insert table"
+  }
+}
