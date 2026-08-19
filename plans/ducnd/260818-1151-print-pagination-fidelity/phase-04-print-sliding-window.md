@@ -1,7 +1,7 @@
 ---
 phase: 4
 title: "Print Sliding-Window"
-status: pending
+status: done
 priority: P1
 dependencies: [3]
 effort: "1.5-2d"

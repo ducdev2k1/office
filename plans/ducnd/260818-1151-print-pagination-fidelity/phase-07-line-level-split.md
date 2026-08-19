@@ -1,7 +1,7 @@
 ---
 phase: 7
 title: "Line-Level Split"
-status: pending
+status: done
 priority: P2
 dependencies: [2]
 effort: "4-6d"

@@ -59,9 +59,16 @@ export const usePrintDocument = (
     window.addEventListener('beforeprint', onBeforePrint);
     window.addEventListener('afterprint', onAfterPrint);
 
+    if (import.meta.env.DEV) {
+      (window as unknown as { __triggerPrintBuild?: () => boolean }).__triggerPrintBuild = buildOrBail;
+    }
+
     return () => {
       window.removeEventListener('beforeprint', onBeforePrint);
       window.removeEventListener('afterprint', onAfterPrint);
+      if (import.meta.env.DEV) {
+        delete (window as unknown as { __triggerPrintBuild?: () => boolean }).__triggerPrintBuild;
+      }
       teardownPrintRoot();
     };
   }, [buildOrBail]);

@@ -83,6 +83,7 @@ export const seedPrintFixture = async (spec: SeedDocSpec): Promise<string> => {
 declare global {
   interface Window {
     __seedDoc?: (spec: SeedDocSpec) => Promise<string>;
+    __latestBreaksRef?: { current: { breaks: number[]; contentOffsets: number[] } | null };
   }
 }
 

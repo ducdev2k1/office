@@ -221,12 +221,15 @@ export const measureLines = (
 
   if (rects.length === 0 || rects.length > MAX_MEASURED_LINES) return [];
 
-  // Group rects into lines with 1.5px epsilon on top
+  // Group rects into lines. Separate text nodes on the same visual line can
+  // produce glyph bounding rects at slightly different tops, so overlap-based
+  // merging (instead of a fixed top epsilon) keeps them on one line.
   rects.sort((a, b) => a.top - b.top || a.left - b.left);
   const grouped: { top: number; bottom: number; left: number; height: number }[] = [];
   for (const r of rects) {
     const last = grouped[grouped.length - 1];
-    if (last && Math.abs(r.top - last.top) <= 1.5) {
+    if (last && r.top <= last.bottom + 1.5 && r.bottom >= last.top - 1.5) {
+      last.top = Math.min(last.top, r.top);
       last.bottom = Math.max(last.bottom, r.bottom);
       last.left = Math.min(last.left, r.left);
       last.height = last.bottom - last.top;
@@ -302,10 +305,20 @@ export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreak
   const metrics = computeMetrics(setup);
   const blocks = measureBlocks(view, metrics);
   const result = computeBreaksFromMeasurements(blocks, metrics);
-  const byOffset = new Map(blocks.map((b) => [b.offset, b]));
+  const size = view.state.doc.content.size;
+  const rootTop = root.getBoundingClientRect().top;
+  // Real rendered position of each page boundary: the pagination spacer widgets
+  // physically push the next page's content down, so their bottom edge is the
+  // exact content top of the following page (works for block- and line-level
+  // breaks as well as forced page breaks).
+  const widgetEls = Array.from(root.querySelectorAll('.page-break-spacer, .page-break-marker'));
+  let widgetIdx = 0;
   const domTopOf = (offset: number): number | null => {
-    const block = byOffset.get(offset);
-    return block && block.type !== 'pageBreak' ? block.domTop : null;
+    if (offset === undefined || offset < 0 || offset > size) return null;
+    const el = widgetEls[widgetIdx];
+    if (!el) return null;
+    widgetIdx += 1;
+    return el.getBoundingClientRect().bottom - rootTop;
   };
   return {
     ...result,

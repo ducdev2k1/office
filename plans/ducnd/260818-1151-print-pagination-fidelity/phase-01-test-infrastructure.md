@@ -1,7 +1,7 @@
 ---
 phase: 1
 title: "Test Infrastructure"
-status: pending
+status: done
 priority: P1
 dependencies: []
 effort: "1d"

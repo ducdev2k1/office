@@ -1,7 +1,7 @@
 ---
 title: "Print fidelity & page numbering (apps/docs)"
 description: "Hợp nhất 2 engine phân trang để số trang in khớp màn hình; sửa bug pageCount đếm thiếu; thêm header/footer + số trang; line-level & table row split như Google Docs."
-status: pending
+status: done
 priority: P1
 branch: "main"
 tags: [docs, pagination, print, tiptap, tdd]

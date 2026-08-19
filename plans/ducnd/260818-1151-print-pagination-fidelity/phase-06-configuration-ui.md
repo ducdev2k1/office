@@ -1,7 +1,7 @@
 ---
 phase: 6
 title: "Configuration UI"
-status: pending
+status: done
 priority: P2
 dependencies: [3, 5]
 effort: "0.5d"

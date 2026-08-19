@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "Engine Seam Extraction"
-status: pending
+status: done
 priority: P1
 dependencies: [1]
 effort: "1.5-2d"

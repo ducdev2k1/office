@@ -107,9 +107,20 @@ export const buildPrintRoot = (
     clone.removeAttribute('id');
     clone.removeAttribute('contenteditable');
 
-    const markers = clone.querySelectorAll('.page-break-marker, .page-break-spacer');
-    markers.forEach((m) => {
-      (m as HTMLElement).style.height = '0px';
+    // Reproduce the live editor's content box (width + padding) so text wraps
+    // identically in print and contentOffsets slices stay aligned page-for-page.
+    try {
+      const liveRect = editorDom.getBoundingClientRect();
+      const liveStyle = getComputedStyle(editorDom);
+      clone.style.width = `${liveRect.width}px`;
+      clone.style.padding = `${liveStyle.paddingTop} ${liveStyle.paddingRight} ${liveStyle.paddingBottom} ${liveStyle.paddingLeft}`;
+      clone.style.boxSizing = liveStyle.boxSizing || 'border-box';
+    } catch {
+      /* non-browser environment (tests): keep clone's inherited box */
+    }
+
+    clone.querySelectorAll('.page-break-marker').forEach((m) => {
+      (m as HTMLElement).classList.add('print-hide-break-visual');
     });
 
     contentEl.appendChild(clone);

@@ -33,6 +33,13 @@ export const usePagination = (
   const activeDocRef = useRef(activeDoc);
 
   useEffect(() => {
+    if (import.meta.env.DEV) window.__latestBreaksRef = latestBreaksRef;
+    return () => {
+      if (import.meta.env.DEV) delete window.__latestBreaksRef;
+    };
+  }, []);
+
+  useEffect(() => {
     activeDocRef.current = activeDoc;
   }, [activeDoc]);
 
@@ -49,8 +56,10 @@ export const usePagination = (
 
     const paperH = computeMetrics(setup).paperH;
     const domTopOf = (offset: number): number | null => {
-      const el = editor.view.nodeDOM(offset) as HTMLElement | null;
-      if (!el || el.dataset.type === 'page-break') return null;
+      const node = editor.view.nodeDOM(offset);
+      if (!node || node.nodeType !== Node.ELEMENT_NODE) return null;
+      const el = node as HTMLElement;
+      if (el.dataset.type === 'page-break') return null;
       return el.offsetTop;
     };
     const realOffsets = resolveContentOffsets(result.breaks, result.contentOffsets, domTopOf, paperH);

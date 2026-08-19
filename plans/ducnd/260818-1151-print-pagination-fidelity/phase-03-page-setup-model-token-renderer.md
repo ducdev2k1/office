@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Page Setup Model & Token Renderer"
-status: pending
+status: done
 priority: P1
 dependencies: [2]
 effort: "0.75d"

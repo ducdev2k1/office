@@ -1,7 +1,7 @@
 ---
 phase: 8
 title: "Table Row Split"
-status: pending
+status: done
 priority: P3
 dependencies: [7]
 effort: "spike 0.5d + 1.5-2d"

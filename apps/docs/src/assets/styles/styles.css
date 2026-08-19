@@ -515,22 +515,26 @@ textarea:focus-visible {
     color: #202124 !important;
   }
 
-  body.printing #print-root .page-break-marker {
+  body.printing #print-root .page-break-marker,
+  body.printing #print-root .print-hide-break-visual {
     border: 0 !important;
     margin: 0 !important;
-    height: 0 !important;
+    background: none !important;
   }
 
   body.printing #print-root .page-break-marker::after {
     content: none !important;
   }
 
+  /* Spacers keep their measured height so the print clone reproduces the
+     exact screen flow; contentOffsets slices then align page for page. */
   body.printing #print-root .page-break-spacer {
-    display: none !important;
+    display: block !important;
+    background: none !important;
   }
 
   /* Fallback print styles (when body does NOT have .printing, e.g. continuous view, overlimit, build error) */
-  body:not(.printing) html,
+  html,
   body:not(.printing),
   body:not(.printing) #root {
     height: auto !important;

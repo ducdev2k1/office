@@ -7,8 +7,11 @@
  *   2. Spawn headless Chrome with a fresh profile and remote debugging.
  *   3. Seed a fixture doc via window.__seedDoc (DEV-only).
  *   4. Navigate to /edit/:docId, wait for fonts + stable .page-stack.
- *   5. Page.printToPDF { preferCSSPageSize, printBackground }.
- *   6. pdftotext + pdfinfo, then assert marker continuity.
+ *   5. Trigger the print-fidelity builder (window.__triggerPrintBuild, DEV-only;
+ *      equivalent to the beforeprint handler that real browsers run) and assert
+ *      the built .print-page count equals the screen page count.
+ *   6. Page.printToPDF { preferCSSPageSize, printBackground }.
+ *   7. pdftotext + pdfinfo, then assert marker continuity and pdf page count.
  *   7. finally: kill Chrome.
  *
  * Zero dependencies: uses global WebSocket (Node 22+).
@@ -234,6 +237,32 @@ const printPdf = async (cdp) => {
   return path;
 };
 
+/**
+ * Trigger the fidelity print builder (the code path a real browser runs on
+ * `beforeprint`) and report how many .print-page elements were built. If the
+ * DEV hook is absent we fall back to the native-repagination path.
+ */
+const buildPrintPages = async (cdp) => {
+  const result = await evaluate(
+    cdp,
+    `(async () => {
+      const trigger = window.__triggerPrintBuild;
+      if (typeof trigger !== 'function') return { built: false, printPages: 0 };
+      const ok = trigger();
+      await new Promise((r) => setTimeout(r, 150));
+      return {
+        built: Boolean(ok),
+        printing: document.body.classList.contains('printing'),
+        printPages: document.querySelectorAll('#print-root .print-page').length,
+      };
+    })()`,
+  );
+  if (result.printing && result.printPages === 0) {
+    throw new Error('fidelity build failed: body.printing set but zero .print-page built');
+  }
+  return result;
+};
+
 /* ------------------------------ assertions ------------------------------ */
 
 const markerRegex = /\[\[(\d+)\]\]/g;
@@ -246,7 +275,7 @@ const extractText = (pdfPath) =>
  * any of: missing/duplicate/out-of-order markers, truncated markers, blank
  * pages, or (strictPages) page-count mismatch.
  */
-const assertMarkers = (text, screenPageCount) => {
+const assertMarkers = (text, screenPageCount, expectedPdfPages = null) => {
   const pageTexts = text
     .split('\f')
     .filter((p, i, arr) => !(i === arr.length - 1 && p.trim() === ''));
@@ -280,11 +309,16 @@ const assertMarkers = (text, screenPageCount) => {
   if (emptyPages.length) throw new Error(`blank pages detected: ${emptyPages.join(', ')}`);
 
   const pdfPages = pageTexts.length;
+  if (expectedPdfPages !== null && pdfPages !== expectedPdfPages) {
+    throw new Error(
+      `pdf page count mismatch: pdf=${pdfPages}, expected ${expectedPdfPages} (built print pages)`,
+    );
+  }
   if (strictPages && pdfPages !== screenPageCount) {
     throw new Error(`page count mismatch: pdf=${pdfPages}, screen=${screenPageCount}`);
   }
   console.log(
-    `[print-check] markers: ${seen.length}/${expected.length} in order; pdf pages: ${pdfPages}${strictPages ? '' : ` (screen: ${screenPageCount})`}`,
+    `[print-check] markers: ${seen.length}/${expected.length} in order; pdf pages: ${pdfPages}${strictPages || expectedPdfPages !== null ? '' : ` (screen: ${screenPageCount})`}`,
   );
 };
 
@@ -341,6 +375,17 @@ const main = async () => {
     const docId = await seedDoc(cdp);
     await navigate(cdp, `${BASE_URL}/edit/${docId}`);
     const screenPageCount = await waitStable(cdp);
+    const { built, printPages } = await buildPrintPages(cdp);
+    if (built) {
+      console.log(`[print-check] fidelity build: ${printPages} print pages`);
+      if (printPages !== screenPageCount) {
+        throw new Error(
+          `fidelity page count mismatch: built=${printPages}, screen=${screenPageCount}`,
+        );
+      }
+    } else {
+      console.log('[print-check] no __triggerPrintBuild hook; using fallback print path');
+    }
     const pdfPath = await printPdf(cdp);
 
     const text = extractText(pdfPath);
@@ -348,7 +393,7 @@ const main = async () => {
     const pagesLine = info.split('\n').find((l) => l.startsWith('Pages:'));
     console.log(`[print-check] pdfinfo: ${pagesLine?.trim()}`);
 
-    assertMarkers(text, screenPageCount);
+    assertMarkers(text, screenPageCount, built ? printPages : null);
     console.log('[print-check] PASS');
   } finally {
     if (chrome) {
