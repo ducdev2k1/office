@@ -1,4 +1,4 @@
-import { Input, Switch } from '@office/ui-kit';
+import { Button, Input, Switch, cn } from '@office/ui-kit';
 import { DEFAULT_PALETTES } from '../../constants/charts.constants';
 import type { ChartSpec, LegendPosition } from '../../types/charts.types';
 
@@ -63,9 +63,11 @@ export const ChartCustomizeTab = ({ spec, onUpdateSpec }: ChartCustomizeTabProps
                 ? !spec.legend.show
                 : spec.legend.show && spec.legend.position === pos.value;
             return (
-              <button
+              <Button
                 key={pos.value}
-                type="button"
+                variant="outline"
+                size="sm"
+                aria-pressed={isSelected}
                 onClick={() =>
                   onUpdateSpec({
                     legend: {
@@ -74,14 +76,15 @@ export const ChartCustomizeTab = ({ spec, onUpdateSpec }: ChartCustomizeTabProps
                     },
                   })
                 }
-                className={`rounded-md border p-1.5 text-center text-xs transition-all ${
+                className={cn(
+                  'h-auto rounded-md px-1.5 py-1.5',
                   isSelected
-                    ? 'border-primary bg-primary/10 font-semibold text-primary'
-                    : 'border-border bg-card text-muted-foreground hover:text-foreground'
-                }`}
+                    ? 'border-primary bg-primary/10 font-semibold text-primary hover:bg-primary/15 hover:text-primary'
+                    : 'text-muted-foreground',
+                )}
               >
                 {pos.label}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -96,15 +99,16 @@ export const ChartCustomizeTab = ({ spec, onUpdateSpec }: ChartCustomizeTabProps
               JSON.stringify(spec.palette) === JSON.stringify(p.colors) ||
               (!spec.palette && p.key === 'inet');
             return (
-              <button
+              <Button
                 key={p.key}
-                type="button"
+                variant="outline"
+                size="sm"
+                aria-pressed={isSelected}
                 onClick={() => onUpdateSpec({ palette: p.colors })}
-                className={`flex items-center justify-between rounded-md border p-2 text-xs transition-all ${
-                  isSelected
-                    ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                    : 'border-border bg-card hover:bg-accent/40'
-                }`}
+                className={cn(
+                  'h-auto w-full justify-between rounded-md p-2',
+                  isSelected && 'border-primary bg-primary/5 ring-1 ring-primary',
+                )}
               >
                 <span className="font-medium text-foreground">{p.name}</span>
                 <div className="flex items-center gap-1">
@@ -116,7 +120,7 @@ export const ChartCustomizeTab = ({ spec, onUpdateSpec }: ChartCustomizeTabProps
                     />
                   ))}
                 </div>
-              </button>
+              </Button>
             );
           })}
         </div>

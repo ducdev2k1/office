@@ -28,7 +28,7 @@ const DEFAULT_STATE: ToolbarState = {
   isPaintingFormat: false,
   borderColor: '#000000',
   borderStyle: BorderStyleTypes.THIN,
-  borderType: BorderType.ALL,
+  borderType: undefined,
 };
 
 export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
@@ -386,12 +386,12 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
       [getActiveRange],
     ),
 
+    // Màu và kiểu nét chỉ là lựa chọn chờ: chỉ vẽ lại ngay khi vùng chọn đã có kiểu viền
     setBorderColor: useCallback(
       (color: string) => {
-        const range = getActiveRange();
-        const type = state.borderType || BorderType.ALL;
-        const style = state.borderStyle || BorderStyleTypes.THIN;
-        range?.setBorder(type, style, color);
+        if (state.borderType) {
+          getActiveRange()?.setBorder(state.borderType, state.borderStyle, color);
+        }
         setState((prev) => ({ ...prev, borderColor: color }));
       },
       [getActiveRange, state.borderType, state.borderStyle],
@@ -399,10 +399,9 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
 
     setBorderStyle: useCallback(
       (style: BorderStyleTypes) => {
-        const range = getActiveRange();
-        const type = state.borderType || BorderType.ALL;
-        const color = state.borderColor || '#000000';
-        range?.setBorder(type, style, color);
+        if (state.borderType) {
+          getActiveRange()?.setBorder(state.borderType, style, state.borderColor);
+        }
         setState((prev) => ({ ...prev, borderStyle: style }));
       },
       [getActiveRange, state.borderType, state.borderColor],
@@ -411,8 +410,8 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
     applyBorder: useCallback(
       (type: BorderType, style?: BorderStyleTypes, color?: string) => {
         const range = getActiveRange();
-        const targetStyle = style ?? state.borderStyle ?? BorderStyleTypes.THIN;
-        const targetColor = color ?? state.borderColor ?? '#000000';
+        const targetStyle = style ?? state.borderStyle;
+        const targetColor = color ?? state.borderColor;
         range?.setBorder(type, targetStyle, targetColor);
         setState((prev) => ({
           ...prev,

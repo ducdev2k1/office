@@ -1,4 +1,4 @@
-import { Icon } from '@office/ui-kit';
+import { Button, Icon, cn } from '@office/ui-kit';
 import { CHART_TYPES_METADATA } from '../../constants/charts.constants';
 import type { ChartType } from '../../types/charts.types';
 
@@ -18,19 +18,24 @@ export const ChartTypeSelector = ({
         {CHART_TYPES_METADATA.map((item) => {
           const isSelected = selectedType === item.type;
           return (
-            <button
+            <Button
               key={item.type}
-              type="button"
+              variant="outline"
+              size="sm"
+              aria-pressed={isSelected}
               onClick={() => onSelectType(item.type)}
-              className={`flex flex-col items-center justify-center gap-1 rounded-md border p-2 text-center text-xs transition-all hover:bg-accent/50 ${
+              className={cn(
+                'h-auto flex-col gap-1 rounded-md p-2 text-center',
                 isSelected
-                  ? 'border-primary bg-primary/10 font-semibold text-primary shadow-xs'
-                  : 'border-border bg-card text-muted-foreground hover:text-foreground'
-              }`}
+                  ? 'border-primary bg-primary/10 font-semibold text-primary shadow-xs hover:bg-primary/15 hover:text-primary'
+                  : 'text-muted-foreground',
+              )}
             >
               <Icon name={item.iconName} size={18} />
-              <span className="truncate text-[11px] leading-tight">{item.label.split(' ')[2] || item.label}</span>
-            </button>
+              <span className="truncate text-[11px] leading-tight">
+                {item.label.split(' ')[2] || item.label}
+              </span>
+            </Button>
           );
         })}
       </div>

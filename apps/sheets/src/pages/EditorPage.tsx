@@ -10,7 +10,7 @@ import {
 } from '@/modules/charts';
 import { SheetsToolbar } from '@/modules/toolbar';
 import { exportXlsxFile } from '@/services/xlsx.service';
-import { Skeleton } from '@office/ui-kit';
+import { Button, Skeleton } from '@office/ui-kit';
 import type { FUniver, IWorkbookData } from '@univerjs/presets';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -158,13 +158,7 @@ export const EditorPage = () => {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-background">
         <p className="text-muted-foreground">Không tìm thấy bảng tính yêu cầu.</p>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
-        >
-          Quay lại trang chủ
-        </button>
+        <Button onClick={() => navigate('/')}>Quay lại trang chủ</Button>
       </div>
     );
   }
