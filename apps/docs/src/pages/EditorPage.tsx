@@ -114,7 +114,7 @@ export const EditorPage = () => {
   }, [id, setActiveId, markOpened]);
 
   useEffect(() => {
-    if (editor && activeDoc && editor.getHTML() !== activeDoc.content) {
+    if (editor && !editor.isDestroyed && activeDoc && editor.getHTML() !== activeDoc.content) {
       editor.commands.setContent(activeDoc.content, { emitUpdate: false });
     }
   }, [activeDoc, editor]);
