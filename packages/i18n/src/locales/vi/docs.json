@@ -201,10 +201,12 @@
       "startAt": "Bắt đầu từ trang",
       "skipFirst": "Bỏ qua trang đầu tiên"
     },
-    "preview": "Xem trước",
-    "applied": "Đã áp dụng cấu hình đầu trang, chân trang và số trang",
-    "apply": "Áp dụng",
-    "cancel": "Hủy"
+"preview": "Xem trước",
+ "applied": "Đã áp dụng cấu hình đầu trang, chân trang và số trang",
+ "apply": "Áp dụng",
+ "cancel": "Hủy",
+ "done": "Xong",
+ "editHint": "Nhấp đúp vào vùng đầu trang / chân trang để chỉnh sửa"
   },
   "helpModal": {
     "title": "Phím tắt bàn phím",

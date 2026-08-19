@@ -150,19 +150,29 @@ textarea:focus-visible {
   right: var(--margin-r);
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 8px;
   font-size: 9pt;
   color: #5f6368;
-  pointer-events: none;
+  pointer-events: auto;
   user-select: none;
+  cursor: text;
+  border-radius: 4px;
+  transition: background-color 120ms ease;
+}
+
+.is-paged .page-hf:hover {
+  background: rgb(26 115 232 / 6%);
 }
 
 .is-paged .page-header {
   top: var(--header-margin, 38px);
+  height: calc(var(--margin-t, 76px) - var(--header-margin, 38px));
 }
 
 .is-paged .page-footer {
   bottom: var(--footer-margin, 38px);
+  height: calc(var(--margin-b, 76px) - var(--footer-margin, 38px));
 }
 
 .is-paged .page-hf > span {
@@ -179,6 +189,28 @@ textarea:focus-visible {
 
 .is-paged .page-hf > span:nth-child(3) {
   text-align: right;
+}
+
+/* Inline header/footer edit overlay (double-click header/footer band) */
+.hf-inline-card .hf-inline-editor {
+  min-height: 28px;
+  padding: 5px 10px;
+  font-size: 9pt;
+  line-height: 1.5;
+  color: var(--foreground);
+  outline: none;
+}
+
+.hf-inline-card .hf-inline-editor p {
+  margin: 0;
+}
+
+.hf-token {
+  color: var(--o-primary);
+  background: var(--o-primary-soft);
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 500;
 }
 
 @keyframes page-fade {

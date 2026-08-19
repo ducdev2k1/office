@@ -8,6 +8,8 @@ export * from '@/modules/editor/components/Ruler';
 export * from '@/modules/editor/components/Statusbar';
 export * from '@/modules/editor/components/PageScrollIndicator';
 export * from '@/modules/editor/components/PageStack';
+export * from '@/modules/editor/components/HeaderFooterInlineEditor';
+export * from '@/modules/editor/extensions/headerFooterTokens.extension';
 export * from '@/modules/editor/hooks/useDocsEditor';
 export * from '@/modules/editor/hooks/usePagination';
 export * from '@/modules/editor/hooks/useEditorActions';

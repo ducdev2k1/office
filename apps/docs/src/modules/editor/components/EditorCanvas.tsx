@@ -1,14 +1,20 @@
-import { useState, useRef, type MouseEvent } from 'react';
+import { useEffect, useState, useRef, type MouseEvent } from 'react';
 import type { Editor } from '@tiptap/core';
 import { EditorContent } from '@tiptap/react';
 import { useTranslation } from '@office/i18n';
 import { Icon, cn } from '@office/ui-kit';
 import { PageScrollIndicator } from '@/modules/editor/components/PageScrollIndicator';
-import { PageStack } from '@/modules/editor/components/PageStack';
+import { HeaderFooterInlineEditor } from '@/modules/editor/components/HeaderFooterInlineEditor';
+import { PageStack, type InlineEditRequest } from '@/modules/editor/components/PageStack';
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
-import { DEFAULT_PAGE_SETUP, type DocRecord, type PageSetup } from '@/types/docs.types';
+import {
+  DEFAULT_HEADER_FOOTER_SLOT,
+  DEFAULT_PAGE_SETUP,
+  type DocRecord,
+  type PageSetup,
+} from '@/types/docs.types';
 
 interface EditorCanvasProps {
   editor: Editor | null;
@@ -18,6 +24,11 @@ interface EditorCanvasProps {
   onOpenSidebar: () => void;
   activeDoc?: DocRecord;
   onPageSetupChange?: (setup: PageSetup) => void;
+}
+
+interface InlineEditState extends InlineEditRequest {
+  rect: { top: number; left: number; width: number; height: number };
+  initial: string;
 }
 
 export const EditorCanvas = ({
@@ -31,15 +42,21 @@ export const EditorCanvas = ({
 }: EditorCanvasProps) => {
   const { t } = useTranslation('docs');
   const paperWrapRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [scrollIndicator, setScrollIndicator] = useState({
     currentPage: 1,
     topPx: 0,
     visible: false,
   });
+  const [hfEdit, setHfEdit] = useState<InlineEditState | null>(null);
   const scrollTimerRef = useRef<number | null>(null);
 
   const { viewMode, pageCount, isOverLimit, viewportStyle, schedulePagination } = paginationState;
+
+  useEffect(() => {
+    setHfEdit(null);
+  }, [activeDoc?.id, viewMode]);
 
   const handleScroll = () => {
     const wrap = paperWrapRef.current;
@@ -79,6 +96,38 @@ export const EditorCanvas = ({
   const handleContextMenuEvent = (event: MouseEvent) => {
     event.preventDefault();
     onContextMenu({ x: event.clientX, y: event.clientY });
+  };
+
+  const handleEditBand = (request: InlineEditRequest) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const vpRect = viewport.getBoundingClientRect();
+    const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
+    const bandData = request.band === 'header' ? setup.header : setup.footer;
+    setHfEdit({
+      ...request,
+      rect: {
+        top: request.rect.top - vpRect.top,
+        left: request.rect.left - vpRect.left,
+        width: request.rect.width,
+        height: request.rect.height,
+      },
+      initial: bandData?.[request.slot] ?? '',
+    });
+  };
+
+  const handleHfCommit = (value: string) => {
+    const current = hfEdit;
+    if (!current) return;
+    const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
+    const bandData = setup[current.band] ?? DEFAULT_HEADER_FOOTER_SLOT();
+    const updated: PageSetup = {
+      ...setup,
+      [current.band]: { ...bandData, [current.slot]: value },
+    };
+    onPageSetupChange?.(updated);
+    schedulePagination(true);
+    setHfEdit(null);
   };
 
   return (
@@ -122,15 +171,27 @@ export const EditorCanvas = ({
           className={cn('page-viewport relative', viewMode === 'paged' && 'is-paged')}
           style={viewportStyle}
           onContextMenu={handleContextMenuEvent}
+          ref={viewportRef}
         >
           {viewMode === 'paged' && (
             <PageStack
               pageCount={pageCount}
               setup={activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP()}
               docTitle={activeDoc?.title ?? ''}
+              onEditBand={handleEditBand}
             />
           )}
           <EditorContent editor={editor} />
+          {hfEdit && (
+            <HeaderFooterInlineEditor
+              key={`${hfEdit.band}-${hfEdit.pageIndex}-${hfEdit.slot}`}
+              band={hfEdit.band}
+              rect={hfEdit.rect}
+              initialValue={hfEdit.initial}
+              onCommit={handleHfCommit}
+              onCancel={() => setHfEdit(null)}
+            />
+          )}
         </div>
       </div>
     </div>
