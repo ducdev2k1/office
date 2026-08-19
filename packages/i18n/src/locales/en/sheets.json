@@ -1,17 +1,282 @@
 {
   "title": "Spreadsheet",
   "untitled": "Untitled spreadsheet",
+  "importedTitle": "Imported spreadsheet",
+  "copyOf": "Copy of {title}",
   "openXlsx": "Open from device (.xlsx)",
   "openError": "Could not open file. Please choose a valid .xlsx file.",
   "newSheet": "New spreadsheet",
   "exportXlsx": "Export .xlsx",
   "exporting": "Exporting...",
   "exportError": "Export failed.",
-  "insertChart": "Insert chart",
-  "chartInspector": "Chart editor",
-  "chartSetup": "Setup",
-  "chartCustomize": "Customize",
-  "chartType": "Chart type",
-  "dataRange": "Data range",
-  "deleteChart": "Delete chart"
+  "home": {
+    "createLabel": "Create new spreadsheet",
+    "startLabel": "Start a new spreadsheet",
+    "blankLabel": "Blank spreadsheet",
+    "templates": {
+      "blank": "Blank spreadsheet",
+      "budget": "Income & expenses",
+      "schedule": "Weekly plan"
+    }
+  },
+  "header": {
+    "back": "Back to spreadsheet list",
+    "titleAriaLabel": "Spreadsheet title",
+    "star": "Add star",
+    "unstar": "Remove star",
+    "savedTooltip": "Saved to device storage"
+  },
+  "editor": {
+    "notFound": "The requested spreadsheet was not found.",
+    "backHome": "Back to home"
+  },
+  "toolbar": {
+    "ariaLabel": "Spreadsheet toolbar",
+    "undo": "Undo (Ctrl+Z)",
+    "redo": "Redo (Ctrl+Y)",
+    "print": "Print (Ctrl+P)",
+    "paintFormat": "Paint format",
+    "zoom": "Zoom",
+    "font": {
+      "ariaLabel": "Font: {font}",
+      "search": "Search fonts...",
+      "notFound": "No font found",
+      "clearSearch": "Clear search",
+      "size": "Font size",
+      "decreaseSize": "Decrease font size (Ctrl+Shift+,)",
+      "increaseSize": "Increase font size (Ctrl+Shift+.)"
+    },
+    "text": {
+      "bold": "Bold (Ctrl+B)",
+      "italic": "Italic (Ctrl+I)",
+      "underline": "Underline (Ctrl+U)",
+      "strikethrough": "Strikethrough (Alt+Shift+5)",
+      "color": "Text color",
+      "colorReset": "Default",
+      "fill": "Cell fill color",
+      "fillReset": "Reset fill color"
+    },
+    "align": {
+      "horizontalAriaLabel": "Horizontal align",
+      "left": "Left",
+      "center": "Center",
+      "right": "Right",
+      "verticalAriaLabel": "Vertical align",
+      "top": "Top",
+      "middle": "Middle",
+      "bottom": "Bottom",
+      "wrapAriaLabel": "Text wrapping",
+      "overflow": "Overflow",
+      "wrap": "Wrap",
+      "clip": "Clip",
+      "rotationAriaLabel": "Text rotation",
+      "rotation": {
+        "none": "No rotation (default)",
+        "up45": "Tilt up 45°",
+        "down45": "Tilt down -45°",
+        "up90": "Rotate up 90°",
+        "down90": "Rotate down -90°"
+      }
+    },
+    "number": {
+      "label": "Number format",
+      "moreAriaLabel": "More number formats",
+      "currency": "Currency format ($ / ₫)",
+      "percent": "Percent format (%)",
+      "decreaseDecimal": "Decrease decimal places (.00 → .0)",
+      "increaseDecimal": "Increase decimal places (.0 → .00)",
+      "formats": {
+        "general": "Automatic (General)",
+        "number": "Number (1,000.12)",
+        "percent": "Percent (12.34%)",
+        "currencyVnd": "Currency (1,000 ₫)",
+        "currencyUsd": "Currency ($1,000.00)",
+        "date": "Date (yyyy-mm-dd)",
+        "time": "Time (hh:mm:ss)",
+        "text": "Plain text (@)"
+      }
+    },
+    "formula": {
+      "insertAriaLabel": "Insert function",
+      "commonGroup": "Common functions",
+      "advancedGroup": "Logic & statistics",
+      "clearFormatting": "Clear formatting (Ctrl+\\)",
+      "findReplace": "Find and replace (Ctrl+H)",
+      "functions": {
+        "SUM": "Sum the values",
+        "AVERAGE": "Average of the values",
+        "COUNT": "Count numeric values",
+        "MAX": "Find the largest value",
+        "MIN": "Find the smallest value",
+        "IF": "Test a logical condition",
+        "VLOOKUP": "Vertical lookup",
+        "COUNTIF": "Count by condition",
+        "SUMIF": "Sum by condition",
+        "CONCATENATE": "Join text strings",
+        "TRIM": "Remove extra spaces",
+        "ROUND": "Round a number",
+        "TODAY": "Current date",
+        "NOW": "Current date and time"
+      }
+    },
+    "insert": {
+      "chart": "Insert chart",
+      "link": "Insert link (Ctrl+K)",
+      "linkPrompt": "Enter the link address (URL):",
+      "checkbox": "Insert checkbox",
+      "filter": "Create a data filter"
+    },
+    "border": {
+      "ariaLabel": "Cell borders",
+      "sectionTitle": "Border type",
+      "colorLabel": "Border color:",
+      "colorPick": "Pick border color",
+      "styleLabel": "Line style:",
+      "stylePick": "Pick line style",
+      "types": {
+        "all": "All borders",
+        "inside": "Inner borders",
+        "horizontal": "Inner horizontal borders",
+        "vertical": "Inner vertical borders",
+        "outside": "Outer borders",
+        "left": "Left border",
+        "top": "Top border",
+        "right": "Right border",
+        "bottom": "Bottom border",
+        "none": "Clear borders"
+      },
+      "styles": {
+        "thin": "Thin",
+        "medium": "Medium",
+        "thick": "Thick",
+        "dashed": "Dashed",
+        "dotted": "Dotted",
+        "double": "Double"
+      }
+    },
+    "merge": {
+      "merge": "Merge cells",
+      "unmerge": "Unmerge cells",
+      "optionsAriaLabel": "Merge options",
+      "all": "Merge all",
+      "horizontal": "Merge horizontally",
+      "vertical": "Merge vertically"
+    }
+  },
+  "chart": {
+    "inspectorTitle": "Chart editor",
+    "deleteThis": "Delete this chart",
+    "untitled": "Untitled chart",
+    "fallbackTitle": "Chart",
+    "noData": "No data for the selected range",
+    "seriesFallback": "Data",
+    "fallback": {
+      "series": "Series {index}",
+      "category": "Item {index}",
+      "radarIndicator": "Metric"
+    },
+    "tabs": {
+      "setup": "Setup",
+      "customize": "Customize"
+    },
+    "typeLabel": "Chart type",
+    "types": {
+      "column": {
+        "label": "Column",
+        "description": "Compare values across categories with vertical columns"
+      },
+      "bar": {
+        "label": "Bar",
+        "description": "Compare categories with long names using horizontal bars"
+      },
+      "line": {
+        "label": "Line",
+        "description": "Track how data changes over time"
+      },
+      "pie": {
+        "label": "Pie",
+        "description": "Show each part's percentage of the whole"
+      },
+      "area": {
+        "label": "Area",
+        "description": "Show volume and cumulative trends over time"
+      },
+      "scatter": {
+        "label": "Scatter",
+        "description": "Explore the correlation between two variables"
+      },
+      "radar": {
+        "label": "Radar",
+        "description": "Assess multiple criteria or overall capability"
+      },
+      "funnel": {
+        "label": "Funnel",
+        "description": "Track conversion rates across process stages"
+      },
+      "combo": {
+        "label": "Combo",
+        "description": "Combine columns and lines for multi-dimensional comparison"
+      }
+    },
+    "setup": {
+      "rangeLabel": "Data range",
+      "rangePlaceholder": "Example: A1:C10",
+      "rangeHint": "Example: A1:D10 or Sheet1!A1:D10",
+      "structure": "Data structure",
+      "headerRow": "Use row 1 as series headers",
+      "headerColumn": "Use the first column as labels (X axis)",
+      "stack": "Stack",
+      "stackHint": "Accumulate series values",
+      "smooth": "Smooth lines",
+      "smoothHint": "Render curves instead of sharp corners"
+    },
+    "customize": {
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter a title...",
+      "subtitleLabel": "Subtitle",
+      "subtitlePlaceholder": "Additional description (optional)...",
+      "legendLabel": "Legend position",
+      "legend": {
+        "top": "Top",
+        "bottom": "Bottom",
+        "left": "Left",
+        "right": "Right",
+        "none": "Hidden"
+      },
+      "paletteLabel": "Color palette",
+      "palettes": {
+        "inet": "iNET Default",
+        "warm": "Warm",
+        "cool": "Cool",
+        "pastel": "Soft pastel"
+      },
+      "donut": "Donut style",
+      "donutHint": "Cut out the center of the pie"
+    },
+    "floating": {
+      "edit": "Edit chart",
+      "exportPng": "Download PNG",
+      "delete": "Delete chart"
+    }
+  },
+  "sample": {
+    "defaultSheetName": "Sheet 1",
+    "budget": {
+      "title": "Project budget report",
+      "reportHeading": "PROJECT BUDGET REPORT",
+      "colIndex": "No.",
+      "colItem": "Work item",
+      "colQuantity": "Quantity",
+      "colUnitPrice": "Unit price (VND)",
+      "colAmount": "Amount",
+      "item1": "UI/UX interface design",
+      "item2": "React frontend development",
+      "item3": "Univer Sheets & ExcelJS integration",
+      "total": "Total",
+      "chartTitle": "Amount by work item"
+    },
+    "plan": {
+      "title": "Q3 plan spreadsheet"
+    }
+  }
 }

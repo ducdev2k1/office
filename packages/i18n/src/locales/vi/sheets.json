@@ -1,17 +1,282 @@
 {
   "title": "Bảng tính",
   "untitled": "Bảng tính chưa có tiêu đề",
+  "importedTitle": "Bảng tính đã nhập",
+  "copyOf": "Bản sao của {title}",
   "openXlsx": "Mở từ máy (.xlsx)",
   "openError": "Không mở được file. Vui lòng chọn file .xlsx hợp lệ.",
   "newSheet": "Bảng tính mới",
   "exportXlsx": "Xuất .xlsx",
   "exporting": "Đang xuất...",
   "exportError": "Xuất file thất bại.",
-  "insertChart": "Chèn biểu đồ",
-  "chartInspector": "Trình chỉnh sửa biểu đồ",
-  "chartSetup": "Thiết lập",
-  "chartCustomize": "Tùy chỉnh",
-  "chartType": "Loại biểu đồ",
-  "dataRange": "Dải ô dữ liệu",
-  "deleteChart": "Xoá biểu đồ"
+  "home": {
+    "createLabel": "Tạo bảng tính mới",
+    "startLabel": "Bắt đầu bảng tính mới",
+    "blankLabel": "Bảng tính trống",
+    "templates": {
+      "blank": "Bảng tính trống",
+      "budget": "Ngân sách thu chi",
+      "schedule": "Kế hoạch tuần"
+    }
+  },
+  "header": {
+    "back": "Quay lại danh sách Bảng tính",
+    "titleAriaLabel": "Tiêu đề bảng tính",
+    "star": "Gắn dấu sao",
+    "unstar": "Bỏ gắn dấu sao",
+    "savedTooltip": "Đã lưu vào bộ nhớ thiết bị"
+  },
+  "editor": {
+    "notFound": "Không tìm thấy bảng tính yêu cầu.",
+    "backHome": "Quay lại trang chủ"
+  },
+  "toolbar": {
+    "ariaLabel": "Thanh công cụ Bảng tính",
+    "undo": "Hoàn tác (Ctrl+Z)",
+    "redo": "Làm lại (Ctrl+Y)",
+    "print": "In (Ctrl+P)",
+    "paintFormat": "Sao chép định dạng",
+    "zoom": "Thu phóng",
+    "font": {
+      "ariaLabel": "Font chữ: {font}",
+      "search": "Tìm font chữ...",
+      "notFound": "Không tìm thấy font",
+      "clearSearch": "Xoá từ khoá tìm kiếm",
+      "size": "Cỡ chữ",
+      "decreaseSize": "Giảm cỡ chữ (Ctrl+Shift+,)",
+      "increaseSize": "Tăng cỡ chữ (Ctrl+Shift+.)"
+    },
+    "text": {
+      "bold": "In đậm (Ctrl+B)",
+      "italic": "In nghiêng (Ctrl+I)",
+      "underline": "Gạch chân (Ctrl+U)",
+      "strikethrough": "Gạch ngang chữ (Alt+Shift+5)",
+      "color": "Màu văn bản",
+      "colorReset": "Mặc định",
+      "fill": "Màu nền ô (Tô màu)",
+      "fillReset": "Đặt lại màu nền"
+    },
+    "align": {
+      "horizontalAriaLabel": "Căn chỉnh theo chiều ngang",
+      "left": "Trái",
+      "center": "Giữa",
+      "right": "Phải",
+      "verticalAriaLabel": "Căn chỉnh theo chiều dọc",
+      "top": "Trên cùng",
+      "middle": "Ở giữa",
+      "bottom": "Dưới cùng",
+      "wrapAriaLabel": "Xuống dòng tự động",
+      "overflow": "Tràn ô (Overflow)",
+      "wrap": "Xuống dòng (Wrap)",
+      "clip": "Cắt tỉa (Clip)",
+      "rotationAriaLabel": "Xoay hướng chữ",
+      "rotation": {
+        "none": "Không xoay (Mặc định)",
+        "up45": "Nghiêng lên 45°",
+        "down45": "Nghiêng xuống -45°",
+        "up90": "Xoay lên 90°",
+        "down90": "Xoay xuống -90°"
+      }
+    },
+    "number": {
+      "label": "Định dạng số",
+      "moreAriaLabel": "Định dạng số khác",
+      "currency": "Định dạng tiền tệ ($ / ₫)",
+      "percent": "Định dạng phần trăm (%)",
+      "decreaseDecimal": "Giảm chữ số thập phân (.00 → .0)",
+      "increaseDecimal": "Tăng chữ số thập phân (.0 → .00)",
+      "formats": {
+        "general": "Tự động (General)",
+        "number": "Số (1,000.12)",
+        "percent": "Phần trăm (12.34%)",
+        "currencyVnd": "Tiền tệ (1,000 ₫)",
+        "currencyUsd": "Tiền tệ ($1,000.00)",
+        "date": "Ngày tháng (yyyy-mm-dd)",
+        "time": "Giờ (hh:mm:ss)",
+        "text": "Văn bản thuần (@)"
+      }
+    },
+    "formula": {
+      "insertAriaLabel": "Chèn hàm tính toán",
+      "commonGroup": "Hàm phổ biến",
+      "advancedGroup": "Logic & Thống kê",
+      "clearFormatting": "Xóa định dạng (Ctrl+\\)",
+      "findReplace": "Tìm kiếm và thay thế (Ctrl+H)",
+      "functions": {
+        "SUM": "Tính tổng các giá trị",
+        "AVERAGE": "Tính giá trị trung bình",
+        "COUNT": "Đếm số lượng giá trị số",
+        "MAX": "Tìm giá trị lớn nhất",
+        "MIN": "Tìm giá trị nhỏ nhất",
+        "IF": "Kiểm tra điều kiện logic",
+        "VLOOKUP": "Tìm kiếm theo chiều dọc",
+        "COUNTIF": "Đếm theo điều kiện",
+        "SUMIF": "Tính tổng theo điều kiện",
+        "CONCATENATE": "Nối chuỗi văn bản",
+        "TRIM": "Xóa khoảng trắng thừa",
+        "ROUND": "Làm tròn số",
+        "TODAY": "Lấy ngày hiện tại",
+        "NOW": "Lấy ngày giờ hiện tại"
+      }
+    },
+    "insert": {
+      "chart": "Chèn biểu đồ (Chart)",
+      "link": "Chèn đường liên kết (Ctrl+K)",
+      "linkPrompt": "Nhập địa chỉ liên kết (URL):",
+      "checkbox": "Chèn hộp kiểm (Checkbox)",
+      "filter": "Tạo bộ lọc dữ liệu"
+    },
+    "border": {
+      "ariaLabel": "Kẻ viền ô",
+      "sectionTitle": "Kiểu viền ô",
+      "colorLabel": "Màu viền:",
+      "colorPick": "Chọn màu viền",
+      "styleLabel": "Kiểu nét:",
+      "stylePick": "Chọn kiểu nét",
+      "types": {
+        "all": "Tất cả viền",
+        "inside": "Viền bên trong",
+        "horizontal": "Viền ngang bên trong",
+        "vertical": "Viền dọc bên trong",
+        "outside": "Viền ngoài cùng",
+        "left": "Viền bên trái",
+        "top": "Viền bên trên",
+        "right": "Viền bên phải",
+        "bottom": "Viền bên dưới",
+        "none": "Xóa viền"
+      },
+      "styles": {
+        "thin": "Nét mảnh",
+        "medium": "Nét vừa",
+        "thick": "Nét đậm",
+        "dashed": "Nét đứt",
+        "dotted": "Nét chấm",
+        "double": "Nét đôi"
+      }
+    },
+    "merge": {
+      "merge": "Gộp các ô",
+      "unmerge": "Hủy gộp ô",
+      "optionsAriaLabel": "Tùy chọn gộp ô",
+      "all": "Gộp tất cả",
+      "horizontal": "Gộp theo chiều ngang",
+      "vertical": "Gộp theo chiều dọc"
+    }
+  },
+  "chart": {
+    "inspectorTitle": "Trình chỉnh sửa biểu đồ",
+    "deleteThis": "Xoá biểu đồ này",
+    "untitled": "Biểu đồ không có tiêu đề",
+    "fallbackTitle": "Biểu đồ",
+    "noData": "Chưa có dữ liệu cho dải ô đã chọn",
+    "seriesFallback": "Dữ liệu",
+    "fallback": {
+      "series": "Chuỗi {index}",
+      "category": "Mục {index}",
+      "radarIndicator": "Chỉ số"
+    },
+    "tabs": {
+      "setup": "Thiết lập",
+      "customize": "Tùy chỉnh"
+    },
+    "typeLabel": "Loại biểu đồ",
+    "types": {
+      "column": {
+        "label": "Cột",
+        "description": "So sánh giá trị giữa các danh mục bằng cột đứng"
+      },
+      "bar": {
+        "label": "Thanh",
+        "description": "So sánh danh mục có tên dài bằng thanh ngang"
+      },
+      "line": {
+        "label": "Đường",
+        "description": "Theo dõi xu hướng biến đổi dữ liệu theo thời gian"
+      },
+      "pie": {
+        "label": "Tròn",
+        "description": "Hiển thị tỉ lệ phần trăm đóng góp vào tổng thể"
+      },
+      "area": {
+        "label": "Miền",
+        "description": "Thể hiện khối lượng và xu hướng tích luỹ theo thời gian"
+      },
+      "scatter": {
+        "label": "Phân tán",
+        "description": "Khám phá mối tương quan giữa hai biến số"
+      },
+      "radar": {
+        "label": "Radar",
+        "description": "Đánh giá đa tiêu chí hoặc năng lực tổng hợp"
+      },
+      "funnel": {
+        "label": "Phễu",
+        "description": "Theo dõi tỷ lệ chuyển đổi qua các giai đoạn quy trình"
+      },
+      "combo": {
+        "label": "Kết hợp",
+        "description": "Kết hợp cột và đường để so sánh đa chiều"
+      }
+    },
+    "setup": {
+      "rangeLabel": "Dải ô dữ liệu (Data Range)",
+      "rangePlaceholder": "Ví dụ: A1:C10",
+      "rangeHint": "Ví dụ: A1:D10 hoặc Sheet1!A1:D10",
+      "structure": "Cấu trúc dữ liệu",
+      "headerRow": "Sử dụng hàng 1 làm tiêu đề chuỗi",
+      "headerColumn": "Sử dụng cột đầu tiên làm nhãn (Trục X)",
+      "stack": "Xếp chồng (Stack)",
+      "stackHint": "Cộng dồn giá trị các chuỗi",
+      "smooth": "Làm mịn đường vẽ",
+      "smoothHint": "Đường cong uốn lượn mượt mà"
+    },
+    "customize": {
+      "titleLabel": "Tiêu đề chính",
+      "titlePlaceholder": "Nhập tiêu đề...",
+      "subtitleLabel": "Phụ đề (Subtitle)",
+      "subtitlePlaceholder": "Mô tả bổ sung (nếu có)...",
+      "legendLabel": "Vị trí chú giải (Legend)",
+      "legend": {
+        "top": "Trên cùng",
+        "bottom": "Dưới cùng",
+        "left": "Bên trái",
+        "right": "Bên phải",
+        "none": "Không hiển thị"
+      },
+      "paletteLabel": "Bảng màu sắc",
+      "palettes": {
+        "inet": "iNET Chuẩn",
+        "warm": "Ấm áp (Warm)",
+        "cool": "Mát mẻ (Cool)",
+        "pastel": "Pastel nhẹ"
+      },
+      "donut": "Dạng bánh Donut",
+      "donutHint": "Khoét rỗng tâm hình tròn"
+    },
+    "floating": {
+      "edit": "Chỉnh sửa biểu đồ",
+      "exportPng": "Tải ảnh PNG",
+      "delete": "Xoá biểu đồ"
+    }
+  },
+  "sample": {
+    "defaultSheetName": "Trang tính 1",
+    "budget": {
+      "title": "Báo cáo thu chi dự án",
+      "reportHeading": "BÁO CÁO THU CHI DỰ ÁN",
+      "colIndex": "STT",
+      "colItem": "Hạng mục công việc",
+      "colQuantity": "Số lượng",
+      "colUnitPrice": "Đơn giá (VNĐ)",
+      "colAmount": "Thành tiền",
+      "item1": "Thiết kế giao diện UI/UX",
+      "item2": "Lập trình Frontend React",
+      "item3": "Tích hợp Univer Sheets & ExcelJS",
+      "total": "Tổng cộng",
+      "chartTitle": "Thành tiền theo Hạng mục công việc"
+    },
+    "plan": {
+      "title": "Bảng tính kế hoạch Q3"
+    }
+  }
 }
