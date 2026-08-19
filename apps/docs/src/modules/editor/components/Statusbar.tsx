@@ -8,6 +8,7 @@ interface StatusbarProps {
   pageCount: number;
   viewMode: ViewMode;
   storageUsage: number;
+  saveState?: 'loading' | 'saving' | 'saved';
   lastSavedAt: Date | null;
 }
 
@@ -17,6 +18,7 @@ export const Statusbar = ({
   pageCount,
   viewMode,
   storageUsage,
+  saveState,
   lastSavedAt,
 }: StatusbarProps) => {
   const { t, formatDateTime } = useTranslation('docs');
@@ -39,8 +41,11 @@ export const Statusbar = ({
         </span>
       )}
       <span className={cn('inline-flex items-center gap-1', isNearQuota && 'text-destructive font-semibold')}>
-        {t('statusbar.storageUsage', { size: (storageUsage / 1024).toFixed(1) })}
+        {t('statusbar.storageUsage', { size: (storageUsage / (1024 * 1024)).toFixed(1) })}
       </span>
+      {saveState === 'saving' && (
+        <span className="inline-flex items-center gap-1">{t('statusbar.saving')}</span>
+      )}
       {lastSavedAt && (
         <span className="inline-flex items-center gap-1 ml-auto opacity-75">
           {t('statusbar.lastSaved', {

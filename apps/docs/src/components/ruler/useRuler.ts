@@ -105,9 +105,13 @@ export const useRuler = ({
 
       const initialGuidePx =
         orientation === 'horizontal'
-          ? target === 'right-margin' || target === 'right-indent'
+          ? target === 'right-margin'
             ? rect.left + rect.width - mmToPx(initialMm)
-            : rect.left + mmToPx(initialMm + (target.includes('indent') ? margins.left : 0))
+            : target === 'right-indent'
+              ? rect.left + rect.width - mmToPx(initialMm + margins.right)
+              : target === 'first-line-indent'
+                ? rect.left + mmToPx(initialMm + margins.left + indents.leftIndent)
+                : rect.left + mmToPx(initialMm + (target === 'left-indent' ? margins.left : 0))
           : target === 'bottom-margin'
             ? rect.top + rect.height - mmToPx(initialMm)
             : rect.top + mmToPx(initialMm);

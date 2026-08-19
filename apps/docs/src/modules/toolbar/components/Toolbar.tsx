@@ -14,8 +14,8 @@ export interface ToolbarProps {
   editor: Editor | null;
   findOpen: boolean;
   viewMode: ViewMode;
-  fontPickerRef?: RefObject<HTMLSelectElement | null>;
-  colorPickerRef?: RefObject<HTMLInputElement | null>;
+  fontPickerRef?: RefObject<HTMLButtonElement | null>;
+  colorPickerRef?: RefObject<HTMLButtonElement | null>;
   canDelete: boolean;
   onSetLink: () => void;
   onExportHtml: () => void;
@@ -38,6 +38,8 @@ export const Toolbar = ({
   editor,
   findOpen,
   viewMode,
+  fontPickerRef,
+  colorPickerRef,
   canDelete,
   onSetLink,
   onExportHtml,
@@ -105,7 +107,11 @@ export const Toolbar = ({
 
       <Sep />
 
-      <ColorFontTools editor={editor} />
+      <ColorFontTools
+        editor={editor}
+        fontPickerRef={fontPickerRef}
+        colorPickerRef={colorPickerRef}
+      />
 
       <Sep />
 

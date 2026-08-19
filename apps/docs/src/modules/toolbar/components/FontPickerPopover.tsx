@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
+import { useState, useRef, useEffect, type KeyboardEvent, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { cn, Popover, PopoverContent, PopoverTrigger } from '@office/ui-kit';
 import {
@@ -12,7 +12,7 @@ import { useFontPicker } from '@/modules/toolbar/hooks/useFontPicker';
 
 /* ── Constants ── */
 const FONT_VARIANTS: FontVariant[] = ['Normal', 'Medium', 'Semi Bold', 'Bold'];
-const VARIANT_WEIGHT: Record<string, number> = {
+export const FONT_VARIANT_WEIGHTS: Partial<Record<FontVariant, number>> = {
   Normal: 400,
   Medium: 500,
   'Semi Bold': 600,
@@ -184,7 +184,7 @@ const FontRow = ({ font, isSelected, onSelect, onSelectVariant }: FontRowProps) 
                 className="w-full px-4 py-1.5 text-left text-[13px] text-foreground hover:bg-hover transition-colors cursor-pointer"
                 style={{
                   ...fontStyle,
-                  fontWeight: VARIANT_WEIGHT[variant],
+                  fontWeight: FONT_VARIANT_WEIGHTS[variant],
                 }}
               >
                 {variant}
@@ -201,9 +201,16 @@ const FontRow = ({ font, isSelected, onSelect, onSelectVariant }: FontRowProps) 
 interface FontPickerPopoverProps {
   currentFont: string;
   onSelectFont: (font: string) => void;
+  onSelectVariant?: (font: string, variant: FontVariant) => void;
+  triggerRef?: RefObject<HTMLButtonElement | null>;
 }
 
-export const FontPickerPopover = ({ currentFont, onSelectFont }: FontPickerPopoverProps) => {
+export const FontPickerPopover = ({
+  currentFont,
+  onSelectFont,
+  onSelectVariant,
+  triggerRef,
+}: FontPickerPopoverProps) => {
   const { t } = useTranslation('docs');
   const {
     open,
@@ -218,7 +225,12 @@ export const FontPickerPopover = ({ currentFont, onSelectFont }: FontPickerPopov
   const searchRef = useRef<HTMLInputElement>(null);
   const displayName = currentFont || 'Arial';
 
-  const handleVariantSelect = (font: string, _variant: FontVariant) => {
+  const handleVariantSelect = (font: string, variant: FontVariant) => {
+    if (onSelectVariant) {
+      onSelectVariant(font, variant);
+      handleOpenChange(false);
+      return;
+    }
     handleSelectFont(font, onSelectFont);
   };
 
@@ -244,6 +256,7 @@ export const FontPickerPopover = ({ currentFont, onSelectFont }: FontPickerPopov
         render={
           <button
             id="font-picker-trigger"
+            ref={triggerRef}
             type="button"
             aria-label={`Font: ${displayName}`}
             className={cn(

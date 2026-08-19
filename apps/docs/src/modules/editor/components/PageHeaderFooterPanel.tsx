@@ -188,7 +188,7 @@ export const PageHeaderFooterPanel = ({
                     value={header[align]}
                     onFocus={() => setLastFocusedField(`header-${align}`)}
                     onChange={(e) => updateHeaderSlot(align, e.target.value)}
-                    placeholder={`Header ${align}...`}
+                    placeholder={t(`headerFooter.align${align.charAt(0).toUpperCase() + align.slice(1)}` as any)}
                     className="w-full rounded border border-input bg-background px-2.5 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                 </div>
@@ -225,7 +225,7 @@ export const PageHeaderFooterPanel = ({
                     value={footer[align]}
                     onFocus={() => setLastFocusedField(`footer-${align}`)}
                     onChange={(e) => updateFooterSlot(align, e.target.value)}
-                    placeholder={`Footer ${align}...`}
+                    placeholder={t(`headerFooter.align${align.charAt(0).toUpperCase() + align.slice(1)}` as any)}
                     className="w-full rounded border border-input bg-background px-2.5 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                 </div>

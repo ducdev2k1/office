@@ -33,6 +33,7 @@ export const EditorPage = () => {
     docs,
     activeDoc,
     storageBytes,
+    saveState,
     setActiveId,
     updateContent,
     updateTitle,
@@ -59,8 +60,8 @@ export const EditorPage = () => {
   const [helpOpen, setHelpOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
 
-  const fontPickerRef = useRef<HTMLSelectElement>(null);
-  const colorPickerRef = useRef<HTMLInputElement>(null);
+  const fontPickerRef = useRef<HTMLButtonElement>(null);
+  const colorPickerRef = useRef<HTMLButtonElement>(null);
 
   const handleToggleSidebar = () => {
     setSidebarOpen((prev) => {
@@ -77,12 +78,22 @@ export const EditorPage = () => {
 
   const handleSelectDoc = (docId: string) => {
     setActiveId(docId);
+    navigate(`/edit/${docId}`);
     if (window.innerWidth < 768) {
       handleCloseSidebar();
     }
   };
 
-  const editor = useDocsEditor(activeDoc?.content ?? '', updateContent);
+  const handleDeleteDoc = () => {
+    const current = activeDoc;
+    if (!current) return;
+    const remaining = docs.filter((doc) => !doc.deletedAt && doc.id !== current.id);
+    if (remaining.length === 0) return;
+    deleteDoc();
+    navigate(`/edit/${remaining[0]!.id}`);
+  };
+
+  const editor = useDocsEditor(activeDoc?.id ?? '', activeDoc?.content ?? '', updateContent);
   const paginationState = usePagination(editor, activeDoc);
   const { viewMode, setViewMode, schedulePagination } = paginationState;
 
@@ -110,9 +121,10 @@ export const EditorPage = () => {
 
   useEffect(() => {
     if (!editor) return;
-    editor.storage.keyboardShortcuts.onFocusFontPicker = () => fontPickerRef.current?.focus();
+    editor.storage.keyboardShortcuts.onFocusFontPicker = () => fontPickerRef.current?.click();
     editor.storage.keyboardShortcuts.onFocusColorPicker = () => colorPickerRef.current?.click();
-  }, [editor]);
+    editor.storage.keyboardShortcuts.onSetLink = setLink;
+  }, [editor, setLink]);
 
   useGlobalShortcuts(
     () => setFindOpen((value) => !value),
@@ -133,6 +145,9 @@ export const EditorPage = () => {
 
   const charCount = editor?.state.doc.textContent.length ?? 0;
   const outline = useMemo(() => getOutline(activeDoc?.content ?? ''), [activeDoc?.content]);
+
+  const activeDocCount = useMemo(() => docs.filter((doc) => !doc.deletedAt).length, [docs]);
+  const canDelete = activeDocCount > 1;
 
   const handleApplyPageSetup = (setup: PageSetup): void => {
     setActiveDocPageSetup(setup);
@@ -155,10 +170,12 @@ export const EditorPage = () => {
           onMenuToggle={handleToggleSidebar}
           theme={theme}
           onToggleTheme={toggleTheme}
+          starred={Boolean(activeDoc?.starred)}
+          onToggleStar={() => activeDoc && star(activeDoc.id)}
           menuActions={{
             editor,
             viewMode,
-            canDelete: docs.length > 1,
+            canDelete,
             wordCount,
             charCount,
             onNewDoc: addDoc,
@@ -170,7 +187,7 @@ export const EditorPage = () => {
             onPrint: () => void printDocument(),
             onExportHtml: exportHtml,
             onExportText: exportText,
-            onDelete: deleteDoc,
+            onDelete: handleDeleteDoc,
             onInsertImage: handleImageUpload,
             onInsertTable: handleInsertTable,
             onInsertPageBreak: handleInsertPageBreak,
@@ -185,12 +202,12 @@ export const EditorPage = () => {
           viewMode={viewMode}
           fontPickerRef={fontPickerRef}
           colorPickerRef={colorPickerRef}
-          canDelete={docs.length > 1}
+          canDelete={canDelete}
           onSetLink={setLink}
           onExportHtml={exportHtml}
           onExportText={exportText}
           onPrint={() => void printDocument()}
-          onDelete={deleteDoc}
+          onDelete={handleDeleteDoc}
           onToggleFind={() => setFindOpen((value) => !value)}
           onInsertImage={handleImageUpload}
           onInsertTable={handleInsertTable}
@@ -240,6 +257,7 @@ export const EditorPage = () => {
           pageCount={paginationState.pageCount}
           viewMode={viewMode}
           storageUsage={storageBytes}
+          saveState={saveState}
           lastSavedAt={activeDoc ? new Date(activeDoc.updatedAt) : null}
         />
 

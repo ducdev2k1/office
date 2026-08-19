@@ -17,6 +17,5 @@ export * from '@/modules/editor/hooks/useTiptapEditor';
 export * from '@/modules/editor/utils/pagination.utils';
 export * from '@/modules/editor/utils/tiptap.utils';
 export * from '@/modules/editor/utils/shortcuts.utils';
-export * from '@/modules/editor/utils/table.utils';
 export * from '@/modules/editor/utils/image.utils';
 export * from '@/modules/editor/print/page-tokens.utils';

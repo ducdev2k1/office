@@ -34,7 +34,7 @@ export const PageSetupPanel = ({ open, setup, onApply, onClose }: PageSetupPanel
     if (Number.isNaN(num)) return;
     setDraft((current) => ({
       ...current,
-      margins: { ...current.margins, [side]: num },
+      margins: { ...current.margins, [side]: Math.min(50, Math.max(5, num)) },
     }));
   };
 

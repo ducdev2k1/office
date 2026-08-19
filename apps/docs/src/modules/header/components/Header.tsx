@@ -2,7 +2,7 @@ import { MenuBar } from '@/modules/header/components/MenuBar';
 import { TitleInput } from '@/modules/header/components/TitleInput';
 import type { HeaderMenuActions } from '@/modules/header/types/header.types';
 import { useTranslation } from '@office/i18n';
-import { Button, Icon } from '@office/ui-kit';
+import { Button, Icon, cn } from '@office/ui-kit';
 import { Link } from 'react-router-dom';
 
 interface HeaderProps {
@@ -12,6 +12,8 @@ interface HeaderProps {
   menuActions: HeaderMenuActions;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  starred?: boolean;
+  onToggleStar?: () => void;
 }
 
 export const Header = ({
@@ -20,6 +22,8 @@ export const Header = ({
   menuActions,
   theme,
   onToggleTheme,
+  starred = false,
+  onToggleStar,
 }: HeaderProps) => {
   const { t, locale, setLocale } = useTranslation('docs');
   const { t: tCommon } = useTranslation('common');
@@ -45,20 +49,22 @@ export const Header = ({
             <Button
               className="size-7.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover shrink-0"
               type="button"
-              aria-label={t('header.star')}
-              title={t('header.star')}
+              aria-label={starred ? t('header.unstar') : t('header.star')}
+              title={starred ? t('header.unstar') : t('header.star')}
               variant="ghost"
               size="icon"
+              onClick={onToggleStar}
             >
-              <Icon name="star" className="size-4.5" />
+              <Icon name="star" className={cn('size-4.5', starred && 'text-amber-500 fill-amber-500')} />
             </Button>
             <Button
               className="size-7.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover shrink-0"
               type="button"
               aria-label={t('header.moveToFolder')}
-              title={t('header.moveToFolder')}
+              title={`${t('header.moveToFolder')} · ${t('header.comingSoon')}`}
               variant="ghost"
               size="icon"
+              disabled
             >
               <Icon name="folder-closed" className="size-4.5" />
             </Button>
@@ -106,9 +112,10 @@ export const Header = ({
           className="size-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover hidden sm:inline-flex"
           type="button"
           aria-label={t('header.versionHistory')}
-          title={t('header.versionHistory')}
+          title={`${t('header.versionHistory')} · ${t('header.comingSoon')}`}
           variant="ghost"
           size="icon"
+          disabled
         >
           <Icon name="history" className="size-4.5" />
         </Button>
@@ -116,9 +123,10 @@ export const Header = ({
           className="size-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover hidden sm:inline-flex"
           type="button"
           aria-label={t('header.comments')}
-          title={t('header.comments')}
+          title={`${t('header.comments')} · ${t('header.comingSoon')}`}
           variant="ghost"
           size="icon"
+          disabled
         >
           <Icon name="message-square" className="size-4.5" />
         </Button>
@@ -126,8 +134,9 @@ export const Header = ({
           className="h-8 px-2 gap-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover hidden md:inline-flex"
           type="button"
           aria-label={t('header.videoMeeting')}
-          title={t('header.videoMeeting')}
+          title={`${t('header.videoMeeting')} · ${t('header.comingSoon')}`}
           variant="ghost"
+          disabled
         >
           <Icon name="video" className="size-4.5" />
           <Icon name="chevron-down" size={10} className="-ml-0.5" />
@@ -135,6 +144,7 @@ export const Header = ({
         <Button
           className="h-9 px-4 gap-1.5 rounded-full bg-primary/15 text-primary hover:bg-primary/25 font-medium text-sm border-0 transition-colors"
           type="button"
+          disabled
         >
           <Icon name="share-2" className="size-4" /> {tCommon('actions.share')}{' '}
           <Icon name="chevron-down" className="size-3.5" />

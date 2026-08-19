@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, type RefObject } from 'react';
 import { useTranslation } from '@office/i18n';
 import {
   Icon,
@@ -28,6 +28,7 @@ interface ColorPalettePopoverProps {
   label: string;
   currentColor?: string;
   active?: boolean;
+  triggerRef?: RefObject<HTMLButtonElement | null>;
   onSelectColor: (color: string) => void;
   onResetColor?: () => void;
 }
@@ -37,6 +38,7 @@ export const ColorPalettePopover = ({
   label,
   currentColor,
   active = false,
+  triggerRef,
   onSelectColor,
   onResetColor,
 }: ColorPalettePopoverProps) => {
@@ -85,6 +87,7 @@ export const ColorPalettePopover = ({
             <PopoverTrigger
               render={
                 <Button
+                  ref={triggerRef}
                   aria-label={label}
                   variant="ghost"
                   size="sm"

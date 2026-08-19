@@ -10,7 +10,7 @@ export interface DocsState {
   loading: boolean;
   activeId: string;
   activeDoc: DocRecord | undefined;
-  saveState: string;
+  saveState: 'loading' | 'saving' | 'saved';
   storageBytes: number;
   setActiveId: (id: string) => void;
   updateContent: (html: string) => void;
@@ -34,7 +34,7 @@ export const useDocs = (): DocsState => {
   const [docs, setDocs] = useState<DocRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState(() => 'doc-roadmap');
-  const [saveState, setSaveState] = useState('Đang tải...');
+  const [saveState, setSaveState] = useState<'loading' | 'saving' | 'saved'>('loading');
   const activeDoc =
     docs.find((doc) => doc.id === activeId && !doc.deletedAt) ?? docs.find((doc) => !doc.deletedAt);
   const activeDocRef = useRef(activeDoc);
@@ -47,7 +47,7 @@ export const useDocs = (): DocsState => {
       const hasUrlDoc = urlId !== undefined && loaded.some((doc) => doc.id === urlId && !doc.deletedAt);
       setActiveId(hasUrlDoc ? urlId : first?.id ?? loaded[0]?.id ?? '');
       setLoading(false);
-      setSaveState('Đã lưu');
+      setSaveState('saved');
     });
   }, []);
 
@@ -57,7 +57,8 @@ export const useDocs = (): DocsState => {
 
   useEffect(() => {
     if (docs.length === 0) return;
-    void saveDocs(docs);
+    const timeout = window.setTimeout(() => void saveDocs(docs), 400);
+    return () => window.clearTimeout(timeout);
   }, [docs]);
 
   const updateDoc = useCallback((id: string, updater: (doc: DocRecord) => DocRecord): void => {
@@ -67,9 +68,9 @@ export const useDocs = (): DocsState => {
   const updateContent = useCallback((html: string): void => {
     const currentDoc = activeDocRef.current;
     if (!currentDoc) return;
-    setSaveState('Đang lưu...');
+    setSaveState('saving');
     updateDoc(currentDoc.id, (doc) => ({ ...doc, content: html, updatedAt: now() }));
-    window.setTimeout(() => setSaveState('Đã lưu'), 250);
+    window.setTimeout(() => setSaveState('saved'), 250);
   }, [updateDoc]);
 
   const updateTitle = useCallback((title: string): void => {
@@ -77,7 +78,7 @@ export const useDocs = (): DocsState => {
     if (!currentDoc) return;
     updateDoc(currentDoc.id, (doc) => ({
       ...doc,
-      title: title || 'Chưa có tiêu đề',
+      title,
       updatedAt: now(),
     }));
   }, [updateDoc]);
@@ -121,6 +122,7 @@ export const useDocs = (): DocsState => {
         lastOpenedAt: now(),
         starred: false,
         deletedAt: null,
+        sourceType: undefined,
       };
       return [copy, ...current];
     });

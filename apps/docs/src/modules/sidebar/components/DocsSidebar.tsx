@@ -39,9 +39,10 @@ export const DocsSidebar = ({
   const { t } = useTranslation('docs');
 
   const normalized = query.trim().toLowerCase();
+  const visibleDocs = docs.filter((doc) => !doc.deletedAt);
   const filtered = normalized
-    ? docs.filter((doc) => doc.title.toLowerCase().includes(normalized))
-    : docs;
+    ? visibleDocs.filter((doc) => doc.title.toLowerCase().includes(normalized))
+    : visibleDocs;
 
   return (
     <aside

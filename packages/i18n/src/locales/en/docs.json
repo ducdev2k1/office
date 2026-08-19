@@ -12,7 +12,8 @@
     "videoMeeting": "Video meeting",
     "share": "Share",
     "account": "{name} account",
-    "toggleSidebar": "Open document tabs"
+    "toggleSidebar": "Open document tabs",
+    "comingSoon": "Coming soon"
   },
   "menu": {
     "ariaLabel": "Menu bar",
@@ -305,7 +306,8 @@
     "characters": "{count} characters",
     "pages": "{count} pages",
     "storageUsage": "~{size} MB used",
-    "lastSaved": "Last saved {time}"
+    "lastSaved": "Last saved {time}",
+    "saving": "Saving..."
   },
   "pagination": {
     "maxPagesWarning": "Document is too long for page view (maximum 50 pages)."

@@ -12,7 +12,8 @@
     "videoMeeting": "Cuộc họp video",
     "share": "Chia sẻ",
     "account": "Tài khoản {name}",
-    "toggleSidebar": "Mở danh sách tài liệu"
+    "toggleSidebar": "Mở danh sách tài liệu",
+    "comingSoon": "Sắp ra mắt"
   },
   "menu": {
     "ariaLabel": "Thanh thực đơn",
@@ -305,7 +306,8 @@
     "characters": "{count} ký tự",
     "pages": "{count} trang",
     "storageUsage": "~{size} MB đã dùng",
-    "lastSaved": "Lưu lần cuối {time}"
+    "lastSaved": "Lưu lần cuối {time}",
+    "saving": "Đang lưu..."
   },
   "pagination": {
     "maxPagesWarning": "Tài liệu quá dài cho chế độ xem phân trang (tối đa 50 trang)."

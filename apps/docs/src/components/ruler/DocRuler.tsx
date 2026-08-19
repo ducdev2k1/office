@@ -49,11 +49,8 @@ export const DocRuler = ({
     if (!editor) return;
 
     const syncIndents = () => {
-      const attrs =
-        editor.getAttributes('paragraph') ??
-        editor.getAttributes('heading') ??
-        editor.getAttributes('blockquote') ??
-        {};
+      const parent = editor.state.selection.$from.parent;
+      const attrs = parent?.attrs ?? {};
 
       setCurrentIndents({
         firstLineIndent: typeof attrs.firstLineIndent === 'number' ? attrs.firstLineIndent : 0,

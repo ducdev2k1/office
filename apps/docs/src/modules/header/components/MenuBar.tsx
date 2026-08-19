@@ -213,6 +213,7 @@ export const MenuBar = ({
     ];
   }, [
     editor,
+    editor?.state,
     viewMode,
     canDelete,
     wordCount,

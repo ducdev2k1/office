@@ -3,7 +3,6 @@ export * from '@/modules/toolbar/components/ToolbarButton';
 export * from '@/modules/toolbar/components/ColorPalettePopover';
 export * from '@/modules/toolbar/components/ColorFontTools';
 export * from '@/modules/toolbar/components/FontPickerPopover';
-export * from '@/modules/toolbar/components/FontVariantSubmenu';
 export * from '@/modules/toolbar/components/FontSizePicker';
 export * from '@/modules/toolbar/components/DocTools';
 export * from '@/modules/toolbar/components/InsertTools';

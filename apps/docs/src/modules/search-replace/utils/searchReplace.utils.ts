@@ -3,8 +3,8 @@ import type { FindAndReplaceStorage } from '@tiptap/extension-find-and-replace';
 import { isExtensionAvailable } from '@/modules/editor/utils/tiptap.utils';
 
 export const SEARCH_AND_REPLACE_SHORTCUT_KEY = 'mod+h';
-export const NEXT_RESULT_SHORTCUT_KEY = 'mod+shift+f';
-export const PREVIOUS_RESULT_SHORTCUT_KEY = 'mod+shift+d';
+export const NEXT_RESULT_SHORTCUT_KEY = 'mod+g';
+export const PREVIOUS_RESULT_SHORTCUT_KEY = 'mod+shift+g';
 
 export const SEARCH_RESULT_CLASS = 'find-and-replace-result';
 export const SEARCH_RESULT_CURRENT_CLASS = 'find-and-replace-result-current';

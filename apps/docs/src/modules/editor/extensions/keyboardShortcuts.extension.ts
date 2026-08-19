@@ -3,6 +3,7 @@ import { Extension, type Editor } from '@tiptap/core';
 export interface ShortcutStorage {
   onFocusFontPicker: (() => void) | null;
   onFocusColorPicker: (() => void) | null;
+  onSetLink: (() => void) | null;
 }
 
 declare module '@tiptap/core' {
@@ -20,7 +21,7 @@ export const keyboardShortcuts = Extension.create({
   name: 'keyboardShortcuts',
 
   addStorage(): ShortcutStorage {
-    return { onFocusFontPicker: null, onFocusColorPicker: null };
+    return { onFocusFontPicker: null, onFocusColorPicker: null, onSetLink: null };
   },
 
   addKeyboardShortcuts() {
@@ -38,6 +39,10 @@ export const keyboardShortcuts = Extension.create({
       },
       'Mod-Shift-f': () => {
         this.editor.storage.keyboardShortcuts?.onFocusFontPicker?.();
+        return true;
+      },
+      'Mod-k': () => {
+        this.editor.storage.keyboardShortcuts?.onSetLink?.();
         return true;
       },
     };
