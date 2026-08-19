@@ -13,7 +13,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { pagination } from '@/modules/editor/utils/pagination.utils';
+import { Pagination } from '@/modules/editor/extensions/pagination.extension';
 import { FontSize } from '@/modules/editor/extensions/fontSize.extension';
 import { FontWeight } from '@/modules/editor/extensions/fontWeight.extension';
 import { keyboardShortcuts } from '@/modules/editor/extensions/keyboardShortcuts.extension';
@@ -56,7 +56,7 @@ export const useDocsEditor = (
           injectCSS: false,
         }),
         Indent,
-        pagination,
+        Pagination,
         keyboardShortcuts,
       ],
       content,

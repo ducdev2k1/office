@@ -1,16 +1,18 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { Editor } from '@tiptap/core';
 import {
-  computeMetrics,
   computePageBreaks,
   EMPTY_BREAKS,
   MAX_PAGES,
   PAGE_GAP,
-  resolveContentOffsets,
   type PageBreaks,
 } from '@/modules/editor/utils/pagination.utils';
 import { DEFAULT_PAGE_SETUP, getPaperSizePx, mmToPx, type DocRecord } from '@/types/docs.types';
 import type { ViewMode } from '@/modules/editor/types/editor.types';
+import {
+  computePaginationMetrics,
+  measureDocPageCount,
+} from '@/modules/editor/extensions/pagination.extension';
 
 export interface PaginationState {
   viewMode: ViewMode;
@@ -28,16 +30,8 @@ export const usePagination = (
   const [viewMode, setViewMode] = useState<ViewMode>('paged');
   const [pageCount, setPageCount] = useState(1);
   const rafRef = useRef<number | null>(null);
-  const lastBreaksRef = useRef<number[]>([]);
   const latestBreaksRef = useRef<PageBreaks | null>(null);
   const activeDocRef = useRef(activeDoc);
-
-  useEffect(() => {
-    if (import.meta.env.DEV) window.__latestBreaksRef = latestBreaksRef;
-    return () => {
-      if (import.meta.env.DEV) delete window.__latestBreaksRef;
-    };
-  }, []);
 
   useEffect(() => {
     activeDocRef.current = activeDoc;
@@ -50,42 +44,21 @@ export const usePagination = (
       schedulePagination();
       return null;
     }
+
     const setup = activeDocRef.current?.pageSetup ?? DEFAULT_PAGE_SETUP();
+    const docTitle = activeDocRef.current?.title ?? '';
+    const metrics = computePaginationMetrics(setup, PAGE_GAP);
+    const measuredCount = measureDocPageCount(editor.view, metrics, MAX_PAGES);
+
+    editor.commands.setPageSetup(setup);
+    editor.commands.setDocTitle(docTitle);
+    editor.commands.setPageCount(measuredCount);
+    editor.commands.setPagedMode(viewMode === 'paged');
+
     const result = computePageBreaks(editor.view, setup);
-    dispatchBreaks(result);
-
-    const paperH = computeMetrics(setup).paperH;
-    const domTopOf = (offset: number): number | null => {
-      const node = editor.view.nodeDOM(offset);
-      if (!node || node.nodeType !== Node.ELEMENT_NODE) return null;
-      const el = node as HTMLElement;
-      if (el.dataset.type === 'page-break') return null;
-      return el.offsetTop;
-    };
-    const realOffsets = resolveContentOffsets(result.breaks, result.contentOffsets, domTopOf, paperH);
-    if (realOffsets.some((value, i) => value !== (result.contentOffsets[i] ?? value))) {
-      const corrected = { ...result, contentOffsets: realOffsets };
-      dispatchBreaks(corrected);
-      latestBreaksRef.current = corrected;
-      setPageCount(corrected.contentOffsets.length);
-      return corrected;
-    }
-
     latestBreaksRef.current = result;
-    setPageCount(result.contentOffsets.length);
+    setPageCount(measuredCount);
     return result;
-  };
-
-  const dispatchBreaks = (result: PageBreaks): void => {
-    if (!editor || !editor.view) return;
-    const prev = lastBreaksRef.current;
-    if (
-      result.breaks.length !== prev.length ||
-      result.breaks.some((breakPos, i) => breakPos !== prev[i])
-    ) {
-      lastBreaksRef.current = result.breaks;
-      editor.view.dispatch(editor.view.state.tr.setMeta('paginationBreaks', result));
-    }
   };
 
   const schedulePagination = (immediate = false): PageBreaks | null => {
@@ -96,8 +69,10 @@ export const usePagination = (
     if (immediate) {
       return runPagination();
     }
-    rafRef.current = window.requestAnimationFrame(runPagination);
-    return null;
+    rafRef.current = window.requestAnimationFrame(() => {
+      runPagination();
+    });
+    return latestBreaksRef.current;
   };
 
   useEffect(
@@ -119,15 +94,13 @@ export const usePagination = (
   }, [editor, viewMode]);
 
   useLayoutEffect(() => {
-    lastBreaksRef.current = [];
-    setPageCount(1);
     if (!editor) return;
     if (viewMode === 'paged') {
       schedulePagination(true);
     } else {
-      editor.view.dispatch(editor.view.state.tr.setMeta('paginationBreaks', EMPTY_BREAKS));
+      editor.commands.setPagedMode(false);
     }
-  }, [activeDoc?.id, viewMode, editor]);
+  }, [activeDoc?.id, activeDoc?.pageSetup, activeDoc?.title, viewMode, editor]);
 
   useEffect(() => {
     if (viewMode !== 'paged') return;

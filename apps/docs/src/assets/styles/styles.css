@@ -241,11 +241,73 @@ textarea:focus-visible {
 .is-paged .doc-editor {
   position: relative;
   z-index: 1;
+  width: var(--paper-w, 793.701px);
   min-height: var(--stack-h);
-  padding: var(--margin-t) var(--margin-r) var(--margin-b) var(--margin-l);
-  border: 0;
-  background: transparent;
-  box-shadow: none;
+  padding: 0 var(--margin-r) 0 var(--margin-l) !important;
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  box-shadow:
+    0 1px 3px rgb(60 64 67 / 15%),
+    0 4px 12px rgb(60 64 67 / 10%);
+}
+
+/* TipTap Pro Pagination Classes */
+[data-tiptap-pagination="true"] {
+  position: relative;
+  user-select: none;
+}
+
+.tiptap-page-break {
+  position: relative;
+}
+
+.tiptap-page-break .page {
+  position: relative;
+  float: left;
+  clear: both;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.tiptap-page-break .breaker {
+  position: relative;
+  float: left;
+  clear: both;
+  left: 0px;
+  right: 0px;
+  z-index: 2;
+  user-select: none;
+}
+
+.tiptap-page-header,
+.tiptap-page-footer {
+  width: 100%;
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.tiptap-page-header:hover,
+.tiptap-page-footer:hover {
+  background-color: rgb(26 115 232 / 5%);
+}
+
+.tiptap-pagination-gap {
+  height: 16px;
+  background-color: var(--workspace, #f0f2f5);
+  border-left: 1px solid var(--workspace, #f0f2f5);
+  border-right: 1px solid var(--workspace, #f0f2f5);
+  position: relative;
+  width: calc(100% + 2px) !important;
+  left: -1px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.tiptap-page-number-mention {
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
 }
 
 .is-paged [data-type='page-break'] {

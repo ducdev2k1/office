@@ -5,7 +5,6 @@ import { useTranslation } from '@office/i18n';
 import { Icon, cn } from '@office/ui-kit';
 import { PageScrollIndicator } from '@/modules/editor/components/PageScrollIndicator';
 import { HeaderFooterInlineEditor } from '@/modules/editor/components/HeaderFooterInlineEditor';
-import { PageStack, type InlineEditRequest } from '@/modules/editor/components/PageStack';
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
@@ -13,6 +12,7 @@ import {
   DEFAULT_HEADER_FOOTER_SLOT,
   DEFAULT_PAGE_SETUP,
   type DocRecord,
+  type HeaderFooterSlot,
   type PageSetup,
 } from '@/types/docs.types';
 
@@ -26,7 +26,10 @@ interface EditorCanvasProps {
   onPageSetupChange?: (setup: PageSetup) => void;
 }
 
-interface InlineEditState extends InlineEditRequest {
+interface InlineEditState {
+  band: 'header' | 'footer';
+  pageIndex: number;
+  slot: keyof HeaderFooterSlot;
   rect: { top: number; left: number; width: number; height: number };
   initial: string;
 }
@@ -98,22 +101,41 @@ export const EditorCanvas = ({
     onContextMenu({ x: event.clientX, y: event.clientY });
   };
 
-  const handleEditBand = (request: InlineEditRequest) => {
+  const handleDoubleClick = (e: MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement | null;
+    const td = target?.closest('td');
+    const headerOrFooter = target?.closest('.tiptap-page-header, .tiptap-page-footer') as HTMLElement | null;
     const viewport = viewportRef.current;
-    if (!viewport) return;
-    const vpRect = viewport.getBoundingClientRect();
-    const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
-    const bandData = request.band === 'header' ? setup.header : setup.footer;
-    setHfEdit({
-      ...request,
-      rect: {
-        top: request.rect.top - vpRect.top,
-        left: request.rect.left - vpRect.left,
-        width: request.rect.width,
-        height: request.rect.height,
-      },
-      initial: bandData?.[request.slot] ?? '',
-    });
+
+    if (td && headerOrFooter && viewport) {
+      const isHeader = headerOrFooter.classList.contains('tiptap-page-header');
+      const band: 'header' | 'footer' = isHeader ? 'header' : 'footer';
+      const pageNumAttr = isHeader
+        ? headerOrFooter.getAttribute('data-header-page-number')
+        : headerOrFooter.getAttribute('data-footer-page-number');
+      const pageNum = parseInt(pageNumAttr || '1', 10);
+      const cellIndex = (td as HTMLTableCellElement).cellIndex;
+      const slots: Array<keyof HeaderFooterSlot> = ['left', 'center', 'right'];
+      const slot = slots[cellIndex] ?? 'center';
+
+      const tdRect = td.getBoundingClientRect();
+      const vpRect = viewport.getBoundingClientRect();
+      const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
+      const bandData = band === 'header' ? setup.header : setup.footer;
+
+      setHfEdit({
+        band,
+        pageIndex: pageNum - 1,
+        slot,
+        rect: {
+          top: tdRect.top - vpRect.top,
+          left: tdRect.left - vpRect.left,
+          width: tdRect.width,
+          height: tdRect.height,
+        },
+        initial: bandData?.[slot] ?? '',
+      });
+    }
   };
 
   const handleHfCommit = (value: string) => {
@@ -171,16 +193,9 @@ export const EditorCanvas = ({
           className={cn('page-viewport relative', viewMode === 'paged' && 'is-paged')}
           style={viewportStyle}
           onContextMenu={handleContextMenuEvent}
+          onDoubleClick={handleDoubleClick}
           ref={viewportRef}
         >
-          {viewMode === 'paged' && (
-            <PageStack
-              pageCount={pageCount}
-              setup={activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP()}
-              docTitle={activeDoc?.title ?? ''}
-              onEditBand={handleEditBand}
-            />
-          )}
           <EditorContent editor={editor} />
           {hfEdit && (
             <HeaderFooterInlineEditor
