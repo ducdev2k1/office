@@ -26,6 +26,9 @@ const DEFAULT_STATE: ToolbarState = {
   numberFormat: 'General',
   zoom: 100,
   isPaintingFormat: false,
+  borderColor: '#000000',
+  borderStyle: BorderStyleTypes.THIN,
+  borderType: BorderType.ALL,
 };
 
 export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
@@ -84,6 +87,12 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
       const wsExt = ws as unknown as { getZoomRatio?: () => number };
       const zoomRatio = wsExt?.getZoomRatio?.() ? Math.round(wsExt.getZoomRatio() * 100) : 100;
 
+      // Detect border info from active cell
+      const bdData = styleData?.bd;
+      const anyBd = bdData?.t || bdData?.b || bdData?.l || bdData?.r;
+      const detectedBdColor = anyBd?.cl?.rgb;
+      const detectedBdStyle = anyBd?.s;
+
       // Handle format painter apply on destination selection
       if (copiedFormatRef.current && state.isPaintingFormat) {
         const cf = copiedFormatRef.current;
@@ -125,6 +134,8 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
         isMerged,
         numberFormat: numFmt,
         zoom: zoomRatio,
+        borderColor: detectedBdColor || prev.borderColor,
+        borderStyle: detectedBdStyle !== undefined ? detectedBdStyle : prev.borderStyle,
       }));
     } catch {
       // ignore
@@ -375,12 +386,42 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
       [getActiveRange],
     ),
 
-    applyBorder: useCallback(
-      (type: BorderType, style = BorderStyleTypes.THIN, color = '#000000') => {
+    setBorderColor: useCallback(
+      (color: string) => {
         const range = getActiveRange();
+        const type = state.borderType || BorderType.ALL;
+        const style = state.borderStyle || BorderStyleTypes.THIN;
         range?.setBorder(type, style, color);
+        setState((prev) => ({ ...prev, borderColor: color }));
       },
-      [getActiveRange],
+      [getActiveRange, state.borderType, state.borderStyle],
+    ),
+
+    setBorderStyle: useCallback(
+      (style: BorderStyleTypes) => {
+        const range = getActiveRange();
+        const type = state.borderType || BorderType.ALL;
+        const color = state.borderColor || '#000000';
+        range?.setBorder(type, style, color);
+        setState((prev) => ({ ...prev, borderStyle: style }));
+      },
+      [getActiveRange, state.borderType, state.borderColor],
+    ),
+
+    applyBorder: useCallback(
+      (type: BorderType, style?: BorderStyleTypes, color?: string) => {
+        const range = getActiveRange();
+        const targetStyle = style ?? state.borderStyle ?? BorderStyleTypes.THIN;
+        const targetColor = color ?? state.borderColor ?? '#000000';
+        range?.setBorder(type, targetStyle, targetColor);
+        setState((prev) => ({
+          ...prev,
+          borderType: type === BorderType.NONE ? undefined : type,
+          borderStyle: targetStyle,
+          borderColor: targetColor,
+        }));
+      },
+      [getActiveRange, state.borderStyle, state.borderColor],
     ),
 
     insertFormula: useCallback(

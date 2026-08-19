@@ -79,8 +79,8 @@ export const DEFAULT_PAGE_SETUP = (): PageSetup => ({
   margins: { top: 20, right: 15, bottom: 20, left: 15 },
   header: DEFAULT_HEADER_FOOTER_SLOT(),
   footer: DEFAULT_HEADER_FOOTER_SLOT(),
-  headerMargin: 10,
-  footerMargin: 10,
+  headerMargin: 12.5,
+  footerMargin: 12.5,
   pageNumber: DEFAULT_PAGE_NUMBER_SETUP(),
 });
 

@@ -21,8 +21,8 @@ describe('withDefaults', () => {
     expect(result.pageSetup?.paperSize).toBe('a4');
     expect(result.pageSetup?.orientation).toBe('portrait');
     expect(result.pageSetup?.margins).toEqual({ top: 20, right: 15, bottom: 20, left: 15 });
-    expect(result.pageSetup?.headerMargin).toBe(10);
-    expect(result.pageSetup?.footerMargin).toBe(10);
+    expect(result.pageSetup?.headerMargin).toBe(12.5);
+    expect(result.pageSetup?.footerMargin).toBe(12.5);
     expect(result.pageSetup?.pageNumber).toEqual({
       enabled: false,
       position: 'footer',
@@ -55,8 +55,8 @@ describe('withDefaults', () => {
     expect(result.pageSetup?.paperSize).toBe('letter');
     expect(result.pageSetup?.orientation).toBe('landscape');
     expect(result.pageSetup?.margins).toEqual({ top: 25, right: 25, bottom: 25, left: 25 });
-    expect(result.pageSetup?.headerMargin).toBe(10);
-    expect(result.pageSetup?.footerMargin).toBe(10);
+    expect(result.pageSetup?.headerMargin).toBe(12.5);
+    expect(result.pageSetup?.footerMargin).toBe(12.5);
     expect(result.pageSetup?.pageNumber?.enabled).toBe(false);
   });
 

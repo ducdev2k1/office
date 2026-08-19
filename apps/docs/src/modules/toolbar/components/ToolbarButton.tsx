@@ -23,7 +23,6 @@ export const ToolbarButton = ({
       render={
         <Button
           aria-label={label}
-          title={tone === 'danger' ? label : undefined}
           variant={tone === 'danger' ? 'destructive' : 'ghost'}
           size="sm"
           disabled={disabled}

@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { useTranslation } from '@office/i18n';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
 import { generateVerticalTicks, mmToPx, type RulerUnit } from './ruler.utils';
 import type { useRuler } from './useRuler';
 
@@ -110,28 +111,46 @@ export const VerticalRuler = ({
         </svg>
 
         {/* Top Margin Drag Handle */}
-        <div
-          className="absolute left-0 right-0 h-2 -mt-1 cursor-ns-resize z-10 group"
-          style={{ top: `${topMarginPx}px` }}
-          onPointerDown={(e) => {
-            if (containerRef.current) startDrag(e, 'top-margin', containerRef.current);
-          }}
-          title={`${t('ruler.topMargin')}: ${(margins.top / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
-        >
-          <div className="size-full group-hover:bg-primary/30 transition-colors" />
-        </div>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <div
+                className="absolute left-0 right-0 h-2 -mt-1 cursor-ns-resize z-10 group"
+                style={{ top: `${topMarginPx}px` }}
+                onPointerDown={(e) => {
+                  if (containerRef.current) startDrag(e, 'top-margin', containerRef.current);
+                }}
+                aria-label={`${t('ruler.topMargin')}: ${(margins.top / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+              >
+                <div className="size-full group-hover:bg-primary/30 transition-colors" />
+              </div>
+            }
+          />
+          <TooltipContent side="right">
+            {`${t('ruler.topMargin')}: ${(margins.top / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+          </TooltipContent>
+        </Tooltip>
 
         {/* Bottom Margin Drag Handle */}
-        <div
-          className="absolute left-0 right-0 h-2 -mt-1 cursor-ns-resize z-10 group"
-          style={{ top: `${paperHeightPx - bottomMarginPx}px` }}
-          onPointerDown={(e) => {
-            if (containerRef.current) startDrag(e, 'bottom-margin', containerRef.current);
-          }}
-          title={`${t('ruler.bottomMargin')}: ${(margins.bottom / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
-        >
-          <div className="size-full group-hover:bg-primary/30 transition-colors" />
-        </div>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <div
+                className="absolute left-0 right-0 h-2 -mt-1 cursor-ns-resize z-10 group"
+                style={{ top: `${paperHeightPx - bottomMarginPx}px` }}
+                onPointerDown={(e) => {
+                  if (containerRef.current) startDrag(e, 'bottom-margin', containerRef.current);
+                }}
+                aria-label={`${t('ruler.bottomMargin')}: ${(margins.bottom / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+              >
+                <div className="size-full group-hover:bg-primary/30 transition-colors" />
+              </div>
+            }
+          />
+          <TooltipContent side="right">
+            {`${t('ruler.bottomMargin')}: ${(margins.bottom / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

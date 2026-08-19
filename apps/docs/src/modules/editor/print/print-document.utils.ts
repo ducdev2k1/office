@@ -49,8 +49,8 @@ export const buildPrintRoot = (
   const paperHMm = setup.orientation === 'landscape' ? paper.width : paper.height;
 
   const { top: mtMm, right: mrMm, bottom: mbMm, left: mlMm } = setup.margins;
-  const headerMarginMm = setup.headerMargin ?? 10;
-  const footerMarginMm = setup.footerMargin ?? 10;
+  const headerMarginMm = setup.headerMargin ?? 12.5;
+  const footerMarginMm = setup.footerMargin ?? 12.5;
   const metrics = computeMetrics(setup);
 
   printRoot.style.setProperty('--paper-w-mm', `${paperWMm}mm`);
@@ -61,7 +61,11 @@ export const buildPrintRoot = (
   printRoot.style.setProperty('--margin-l-mm', `${mlMm}mm`);
   printRoot.style.setProperty('--header-margin-mm', `${headerMarginMm}mm`);
   printRoot.style.setProperty('--footer-margin-mm', `${footerMarginMm}mm`);
+  // px-based value — used by JS layout during screen rendering
   printRoot.style.setProperty('--usable-px', `${metrics.usable}px`);
+  // mm-based value — used by @media print CSS for resolution-independent clip height
+  const usableMm = paperHMm - mtMm - mbMm;
+  printRoot.style.setProperty('--usable-mm', `${usableMm}mm`);
 
   const pageCount = breaks.contentOffsets.length;
   const tokenCtx = {
@@ -109,12 +113,21 @@ export const buildPrintRoot = (
 
     // Reproduce the live editor's content box (width + padding) so text wraps
     // identically in print and contentOffsets slices stay aligned page-for-page.
+    // Also forward key computed typography so the print clone is pixel-accurate.
     try {
       const liveRect = editorDom.getBoundingClientRect();
       const liveStyle = getComputedStyle(editorDom);
       clone.style.width = `${liveRect.width}px`;
       clone.style.padding = `${liveStyle.paddingTop} ${liveStyle.paddingRight} ${liveStyle.paddingBottom} ${liveStyle.paddingLeft}`;
       clone.style.boxSizing = liveStyle.boxSizing || 'border-box';
+      // Forward typography that may differ from default print UA stylesheet
+      clone.style.fontFamily = liveStyle.fontFamily;
+      clone.style.fontSize = liveStyle.fontSize;
+      clone.style.lineHeight = liveStyle.lineHeight;
+      clone.style.color = liveStyle.color;
+      // Ensure browser keeps background-colors & colors in print (no stripping)
+      (clone.style as CSSStyleDeclaration & { printColorAdjust?: string; webkitPrintColorAdjust?: string }).printColorAdjust = 'exact';
+      (clone.style as CSSStyleDeclaration & { printColorAdjust?: string; webkitPrintColorAdjust?: string }).webkitPrintColorAdjust = 'exact';
     } catch {
       /* non-browser environment (tests): keep clone's inherited box */
     }

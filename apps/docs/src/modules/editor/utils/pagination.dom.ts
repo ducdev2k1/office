@@ -68,6 +68,34 @@ const renderSlotContent = (
   return resolved || '&nbsp;';
 };
 
+// ── Pencil icon (inline SVG, no external dep) ──────────────────────────────
+const PENCIL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>`;
+
+const createEditButton = (
+  band: 'header' | 'footer',
+  pageNum: number,
+  onEditBand: NonNullable<DomBuilderOptions['onEditBand']>,
+  getBandRect: () => DOMRect,
+): HTMLButtonElement => {
+  const btn = document.createElement('button');
+  btn.className = 'hf-edit-btn';
+  btn.setAttribute('type', 'button');
+  btn.setAttribute('title', band === 'header' ? 'Chỉnh sửa đầu trang' : 'Chỉnh sửa chân trang');
+  btn.setAttribute('contenteditable', 'false');
+  btn.innerHTML = PENCIL_SVG;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.dispatchEvent(
+      new CustomEvent('doc-open-hf-panel', {
+        detail: { band, pageIndex: pageNum - 1, slot: 'center' },
+      }),
+    );
+    const rect = getBandRect();
+    onEditBand(band, pageNum - 1, 'center', rect);
+  });
+  return btn;
+};
+
 const createBandTable = (
   band: 'header' | 'footer',
   pageNum: number,
@@ -105,12 +133,17 @@ const createBandTable = (
 
     td.innerHTML = renderSlotContent(key, band, setup, pageNum, totalPages, docTitle);
 
-    if (onEditBand) {
-      td.addEventListener('dblclick', (e) => {
-        e.stopPropagation();
+    td.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dispatchEvent(
+        new CustomEvent('doc-open-hf-panel', {
+          detail: { band, pageIndex: pageNum - 1, slot: key },
+        }),
+      );
+      if (onEditBand) {
         onEditBand(band, pageNum - 1, key, td.getBoundingClientRect());
-      });
-    }
+      }
+    });
 
     tr.appendChild(td);
   }
@@ -118,6 +151,57 @@ const createBandTable = (
   tbody.appendChild(tr);
   table.appendChild(tbody);
   return table;
+};
+
+const createBandDiv = (
+  band: 'header' | 'footer',
+  pageNum: number,
+  totalPages: number,
+  metrics: PaginationMetrics,
+  setup: PageSetup,
+  docTitle: string,
+  onEditBand?: DomBuilderOptions['onEditBand'],
+): HTMLDivElement => {
+  const div = document.createElement('div');
+  div.className = band === 'header' ? 'tiptap-page-header' : 'tiptap-page-footer';
+  div.setAttribute('data-editable', 'true');
+  div.setAttribute(`data-${band}-page-number`, String(pageNum));
+  div.setAttribute(`data-${band}-type`, 'default');
+  div.style.position = 'relative';
+
+  if (band === 'header') {
+    div.style.minHeight = `${metrics.headerH}px`;
+    div.style.height = `${metrics.headerH}px`;
+    div.style.padding = `${metrics.headerPaddingTop}px ${metrics.marginR}px 0px ${metrics.marginL}px`;
+  } else {
+    div.style.minHeight = `${metrics.footerH}px`;
+    div.style.height = `${metrics.footerH}px`;
+    div.style.padding = `0px ${metrics.marginR}px ${metrics.footerPaddingBottom}px ${metrics.marginL}px`;
+    div.style.display = 'flex';
+    div.style.flexDirection = 'column';
+    div.style.justifyContent = 'flex-end';
+  }
+
+  // Visual badge indicator (TipTap style)
+  const badge = document.createElement('span');
+  badge.className = 'hf-band-badge';
+  badge.textContent = band === 'header' ? 'Page header' : 'Page footer';
+  badge.setAttribute('contenteditable', 'false');
+  div.appendChild(badge);
+
+  div.appendChild(createBandTable(band, pageNum, totalPages, setup, docTitle, onEditBand));
+
+  // Edit button
+  div.appendChild(
+    createEditButton(
+      band,
+      pageNum,
+      onEditBand ?? (() => {}),
+      () => div.getBoundingClientRect(),
+    ),
+  );
+
+  return div;
 };
 
 export const buildPagesWidget = ({
@@ -164,38 +248,13 @@ export const buildPagesWidget = ({
     breaker.style.zIndex = '2';
 
     if (i === 0) {
-      // Header for Page 1
-      const headerDiv = document.createElement('div');
-      headerDiv.className = 'tiptap-page-header';
-      headerDiv.setAttribute('data-editable', 'true');
-      headerDiv.setAttribute('data-header-page-number', '1');
-      headerDiv.setAttribute('data-header-type', 'default');
-      headerDiv.style.minHeight = `${metrics.headerH}px`;
-      headerDiv.style.height = `${metrics.headerH}px`;
-      headerDiv.style.padding = `${metrics.headerPaddingTop}px ${metrics.marginR}px 0px ${metrics.marginL}px`;
-      headerDiv.style.cursor = 'pointer';
-      headerDiv.appendChild(
-        createBandTable('header', 1, totalPages, setup, docTitle, onEditBand),
+      breaker.appendChild(
+        createBandDiv('header', 1, totalPages, metrics, setup, docTitle, onEditBand),
       );
-      breaker.appendChild(headerDiv);
     } else {
-      // Footer for Page i
-      const footerDiv = document.createElement('div');
-      footerDiv.className = 'tiptap-page-footer';
-      footerDiv.setAttribute('data-editable', 'true');
-      footerDiv.setAttribute('data-footer-page-number', String(i));
-      footerDiv.setAttribute('data-footer-type', 'default');
-      footerDiv.style.minHeight = `${metrics.footerH}px`;
-      footerDiv.style.height = `${metrics.footerH}px`;
-      footerDiv.style.padding = `0px ${metrics.marginR}px ${metrics.footerPaddingBottom}px ${metrics.marginL}px`;
-      footerDiv.style.display = 'flex';
-      footerDiv.style.flexDirection = 'column';
-      footerDiv.style.justifyContent = 'flex-end';
-      footerDiv.style.cursor = 'pointer';
-      footerDiv.appendChild(
-        createBandTable('footer', i, totalPages, setup, docTitle, onEditBand),
+      breaker.appendChild(
+        createBandDiv('footer', i, totalPages, metrics, setup, docTitle, onEditBand),
       );
-      breaker.appendChild(footerDiv);
 
       // Pagination gap (nền xám ngăn cách 2 trang)
       const gapDiv = document.createElement('div');
@@ -209,27 +268,16 @@ export const buildPagesWidget = ({
       gapDiv.style.backgroundColor = 'var(--workspace)';
       breaker.appendChild(gapDiv);
 
-      // Header for Page i + 1
-      const headerDiv = document.createElement('div');
-      headerDiv.className = 'tiptap-page-header';
-      headerDiv.setAttribute('data-editable', 'true');
-      headerDiv.setAttribute('data-header-page-number', String(i + 1));
-      headerDiv.setAttribute('data-header-type', 'default');
-      headerDiv.style.minHeight = `${metrics.headerH}px`;
-      headerDiv.style.height = `${metrics.headerH}px`;
-      headerDiv.style.padding = `${metrics.headerPaddingTop}px ${metrics.marginR}px 0px ${metrics.marginL}px`;
-      headerDiv.style.cursor = 'pointer';
-      headerDiv.appendChild(
-        createBandTable('header', i + 1, totalPages, setup, docTitle, onEditBand),
+      breaker.appendChild(
+        createBandDiv('header', i + 1, totalPages, metrics, setup, docTitle, onEditBand),
       );
-      breaker.appendChild(headerDiv);
     }
 
     pageBreak.appendChild(breaker);
     root.appendChild(pageBreak);
   }
 
-  // Last page footer breaker (hiển thị footer cho trang cuối cùng)
+  // Last page footer breaker
   if (totalPages >= 1) {
     const lastFooterBreaker = document.createElement('div');
     lastFooterBreaker.className = 'tiptap-page-break tiptap-page-break-last';
@@ -254,22 +302,9 @@ export const buildPagesWidget = ({
     lastBreaker.style.right = '0px';
     lastBreaker.style.zIndex = '2';
 
-    const lastFooterDiv = document.createElement('div');
-    lastFooterDiv.className = 'tiptap-page-footer';
-    lastFooterDiv.setAttribute('data-editable', 'true');
-    lastFooterDiv.setAttribute('data-footer-page-number', String(totalPages));
-    lastFooterDiv.setAttribute('data-footer-type', 'default');
-    lastFooterDiv.style.minHeight = `${metrics.footerH}px`;
-    lastFooterDiv.style.height = `${metrics.footerH}px`;
-    lastFooterDiv.style.padding = `0px ${metrics.marginR}px ${metrics.footerPaddingBottom}px ${metrics.marginL}px`;
-    lastFooterDiv.style.display = 'flex';
-    lastFooterDiv.style.flexDirection = 'column';
-    lastFooterDiv.style.justifyContent = 'flex-end';
-    lastFooterDiv.style.cursor = 'pointer';
-    lastFooterDiv.appendChild(
-      createBandTable('footer', totalPages, totalPages, setup, docTitle, onEditBand),
+    lastBreaker.appendChild(
+      createBandDiv('footer', totalPages, totalPages, metrics, setup, docTitle, onEditBand),
     );
-    lastBreaker.appendChild(lastFooterDiv);
 
     lastFooterBreaker.appendChild(lastBreaker);
     root.appendChild(lastFooterBreaker);

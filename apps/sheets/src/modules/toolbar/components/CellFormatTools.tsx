@@ -11,17 +11,23 @@ import {
   PopoverTrigger,
   Separator,
   ToolbarButton,
+  cn,
 } from '@office/ui-kit';
 import { BorderStyleTypes, BorderType } from '@univerjs/presets';
 import { useState } from 'react';
 
 export interface CellFormatToolsProps {
   isMerged: boolean;
+  borderColor?: string;
+  borderStyle?: BorderStyleTypes;
+  borderType?: BorderType;
   onToggleMerge: () => void;
   onMergeAll: () => void;
   onMergeHorizontal: () => void;
   onMergeVertical: () => void;
   onUnmerge: () => void;
+  onSetBorderColor?: (color: string) => void;
+  onSetBorderStyle?: (style: BorderStyleTypes) => void;
   onApplyBorder: (type: BorderType, style?: BorderStyleTypes, color?: string) => void;
 }
 
@@ -47,25 +53,62 @@ const BORDER_STYLES: Array<{
   label: string;
   borderClass: string;
 }> = [
-  { style: BorderStyleTypes.THIN, label: 'Nét mảnh', borderClass: 'border-t border-foreground' },
-  { style: BorderStyleTypes.MEDIUM, label: 'Nét vừa', borderClass: 'border-t-2 border-foreground' },
-  { style: BorderStyleTypes.THICK, label: 'Nét đậm', borderClass: 'border-t-4 border-foreground' },
-  { style: BorderStyleTypes.DASHED, label: 'Nét đứt', borderClass: 'border-t border-dashed border-foreground' },
-  { style: BorderStyleTypes.DOTTED, label: 'Nét chấm', borderClass: 'border-t border-dotted border-foreground' },
-  { style: BorderStyleTypes.DOUBLE, label: 'Nét đôi', borderClass: 'border-t-4 border-double border-foreground' },
+  { style: BorderStyleTypes.THIN, label: 'Nét mảnh', borderClass: 'border-t' },
+  { style: BorderStyleTypes.MEDIUM, label: 'Nét vừa', borderClass: 'border-t-2' },
+  { style: BorderStyleTypes.THICK, label: 'Nét đậm', borderClass: 'border-t-4' },
+  { style: BorderStyleTypes.DASHED, label: 'Nét đứt', borderClass: 'border-t border-dashed' },
+  { style: BorderStyleTypes.DOTTED, label: 'Nét chấm', borderClass: 'border-t border-dotted' },
+  { style: BorderStyleTypes.DOUBLE, label: 'Nét đôi', borderClass: 'border-t-4 border-double' },
 ];
 
 export const CellFormatTools = ({
   isMerged,
+  borderColor = '#000000',
+  borderStyle = BorderStyleTypes.THIN,
+  borderType,
   onToggleMerge,
   onMergeAll,
   onMergeHorizontal,
   onMergeVertical,
   onUnmerge,
+  onSetBorderColor,
+  onSetBorderStyle,
   onApplyBorder,
 }: CellFormatToolsProps) => {
-  const [borderColor, setBorderColor] = useState('#000000');
-  const [borderStyle, setBorderStyle] = useState<BorderStyleTypes>(BorderStyleTypes.THIN);
+  const [localColor, setLocalColor] = useState(borderColor);
+  const [localStyle, setLocalStyle] = useState<BorderStyleTypes>(borderStyle);
+
+  const activeColor = borderColor || localColor;
+  const activeStyle = borderStyle !== undefined ? borderStyle : localStyle;
+
+  const currentStyleObj =
+    BORDER_STYLES.find((s) => s.style === activeStyle) || BORDER_STYLES[0] || {
+      style: BorderStyleTypes.THIN,
+      label: 'Nét mảnh',
+      borderClass: 'border-t',
+    };
+
+  const handleSelectColor = (color: string) => {
+    setLocalColor(color);
+    if (onSetBorderColor) {
+      onSetBorderColor(color);
+    } else {
+      onApplyBorder(borderType || BorderType.ALL, activeStyle, color);
+    }
+  };
+
+  const handleSelectStyle = (style: BorderStyleTypes) => {
+    setLocalStyle(style);
+    if (onSetBorderStyle) {
+      onSetBorderStyle(style);
+    } else {
+      onApplyBorder(borderType || BorderType.ALL, style, activeColor);
+    }
+  };
+
+  const handleSelectBorderType = (type: BorderType) => {
+    onApplyBorder(type, activeStyle, activeColor);
+  };
 
   return (
     <div className="flex items-center gap-0.5">
@@ -90,7 +133,8 @@ export const CellFormatTools = ({
               <ToolbarButton
                 key={b.type}
                 label={b.label}
-                onClick={() => onApplyBorder(b.type, borderStyle, borderColor)}
+                active={borderType === b.type && b.type !== BorderType.NONE}
+                onClick={() => handleSelectBorderType(b.type)}
                 className="h-7 w-7"
               >
                 <Icon name={b.icon} size={15} />
@@ -105,8 +149,8 @@ export const CellFormatTools = ({
             <span className="text-[11px] text-muted-foreground">Màu viền:</span>
             <ColorPalettePopover
               iconName="brush"
-              currentColor={borderColor}
-              onSelectColor={setBorderColor}
+              currentColor={activeColor}
+              onSelectColor={handleSelectColor}
               label="Chọn màu viền"
             />
           </div>
@@ -120,22 +164,31 @@ export const CellFormatTools = ({
                     variant="outline"
                     size="sm"
                     aria-label="Chọn kiểu nét"
-                    className="flex h-6 w-24 items-center justify-center px-1 text-[11px]"
+                    className="flex h-6 w-24 items-center justify-between px-1.5 text-[11px]"
                   />
                 }
               >
-                <span className="w-12 border-t-2 border-foreground" />
-                <Icon name="chevron-down" size={10} className="ml-1 opacity-60" />
+                <span
+                  className={cn('w-14 shrink-0', currentStyleObj.borderClass)}
+                  style={{ borderTopColor: activeColor }}
+                />
+                <Icon name="chevron-down" size={10} className="opacity-60" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-28 text-xs">
+              <DropdownMenuContent align="end" className="w-32 text-xs">
                 {BORDER_STYLES.map((bs) => (
                   <DropdownMenuItem
                     key={bs.style}
-                    onClick={() => setBorderStyle(bs.style)}
-                    className="flex items-center justify-between py-1 text-xs"
+                    onClick={() => handleSelectStyle(bs.style)}
+                    className={cn(
+                      'flex items-center justify-between py-1 px-2 text-xs cursor-pointer',
+                      activeStyle === bs.style && 'bg-accent font-medium',
+                    )}
                   >
                     <span className="text-[11px]">{bs.label}</span>
-                    <span className={`w-8 ${bs.borderClass}`} />
+                    <span
+                      className={cn('w-10 shrink-0', bs.borderClass)}
+                      style={{ borderTopColor: activeColor }}
+                    />
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>

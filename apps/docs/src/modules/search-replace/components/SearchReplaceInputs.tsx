@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { Button, Icon, Input } from '@office/ui-kit';
+import { Button, Icon, Input, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
 import type { KeyboardEvent, RefObject } from 'react';
 
 interface SearchReplaceInputsProps {
@@ -34,49 +34,69 @@ export const SearchReplaceInputs = ({
   const { t } = useTranslation('docs');
   const { t: tCommon } = useTranslation('common');
 
-return (
+  return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground select-none">
           {resultCountLabel || '0/0'}
         </span>
         <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground"
-            onClick={onGoToPrevious}
-            disabled={!resultCountLabel || resultCountLabel === '0/0'}
-            title={t('searchReplace.previous')}
-            aria-label={t('searchReplace.previous')}
-          >
-            <Icon name="chevron-up" size={15} />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground"
-            onClick={onGoToNext}
-            disabled={!resultCountLabel || resultCountLabel === '0/0'}
-            title={t('searchReplace.next')}
-            aria-label={t('searchReplace.next')}
-          >
-            <Icon name="chevron-down" size={15} />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground"
+                  onClick={onGoToPrevious}
+                  disabled={!resultCountLabel || resultCountLabel === '0/0'}
+                  aria-label={t('searchReplace.previous')}
+                >
+                  <Icon name="chevron-up" size={15} />
+                </Button>
+              }
+            />
+            <TooltipContent side="bottom">{t('searchReplace.previous')}</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground"
+                  onClick={onGoToNext}
+                  disabled={!resultCountLabel || resultCountLabel === '0/0'}
+                  aria-label={t('searchReplace.next')}
+                >
+                  <Icon name="chevron-down" size={15} />
+                </Button>
+              }
+            />
+            <TooltipContent side="bottom">{t('searchReplace.next')}</TooltipContent>
+          </Tooltip>
+
           {onClose && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground"
-              onClick={onClose}
-              title={tCommon('actions.close')}
-              aria-label={tCommon('actions.close')}
-            >
-              <Icon name="x" size={15} />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground"
+                    onClick={onClose}
+                    aria-label={tCommon('actions.close')}
+                  >
+                    <Icon name="x" size={15} />
+                  </Button>
+                }
+              />
+              <TooltipContent side="bottom">{tCommon('actions.close')}</TooltipContent>
+            </Tooltip>
           )}
         </div>
       </div>

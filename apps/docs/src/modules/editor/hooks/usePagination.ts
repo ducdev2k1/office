@@ -7,7 +7,7 @@ import {
   PAGE_GAP,
   type PageBreaks,
 } from '@/modules/editor/utils/pagination.utils';
-import { DEFAULT_PAGE_SETUP, getPaperSizePx, mmToPx, type DocRecord } from '@/types/docs.types';
+import { DEFAULT_PAGE_SETUP, getPaperSizePx, mmToPx, type DocRecord, type PageSetup } from '@/types/docs.types';
 import type { ViewMode } from '@/modules/editor/types/editor.types';
 import {
   computePaginationMetrics,
@@ -20,7 +20,7 @@ export interface PaginationState {
   isOverLimit: boolean;
   viewportStyle: CSSProperties;
   setViewMode: (mode: ViewMode) => void;
-  schedulePagination: (immediate?: boolean) => PageBreaks | null;
+  schedulePagination: (immediate?: boolean, overrideSetup?: PageSetup) => PageBreaks | null;
 }
 
 export const usePagination = (
@@ -32,12 +32,9 @@ export const usePagination = (
   const rafRef = useRef<number | null>(null);
   const latestBreaksRef = useRef<PageBreaks | null>(null);
   const activeDocRef = useRef(activeDoc);
+  activeDocRef.current = activeDoc;
 
-  useEffect(() => {
-    activeDocRef.current = activeDoc;
-  }, [activeDoc]);
-
-  const runPagination = (): PageBreaks | null => {
+  const runPagination = (overrideSetup?: PageSetup): PageBreaks | null => {
     rafRef.current = null;
     if (!editor || editor.isDestroyed || !editor.view) return null;
     if (editor.view.composing) {
@@ -45,15 +42,18 @@ export const usePagination = (
       return null;
     }
 
-    const setup = activeDocRef.current?.pageSetup ?? DEFAULT_PAGE_SETUP();
+    const setup = overrideSetup ?? activeDocRef.current?.pageSetup ?? DEFAULT_PAGE_SETUP();
     const docTitle = activeDocRef.current?.title ?? '';
     const metrics = computePaginationMetrics(setup, PAGE_GAP);
     const measuredCount = measureDocPageCount(editor.view, metrics, MAX_PAGES);
 
-    editor.commands.setPageSetup(setup);
-    editor.commands.setDocTitle(docTitle);
-    editor.commands.setPageCount(measuredCount);
-    editor.commands.setPagedMode(viewMode === 'paged');
+    editor.commands.setPaginationData({
+      setup,
+      metrics,
+      docTitle,
+      pageCount: measuredCount,
+      isPaged: viewMode === 'paged',
+    });
 
     const result = computePageBreaks(editor.view, setup);
     latestBreaksRef.current = result;
@@ -61,16 +61,16 @@ export const usePagination = (
     return result;
   };
 
-  const schedulePagination = (immediate = false): PageBreaks | null => {
+  const schedulePagination = (immediate = false, overrideSetup?: PageSetup): PageBreaks | null => {
     if (rafRef.current !== null) {
       window.cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
     if (immediate) {
-      return runPagination();
+      return runPagination(overrideSetup);
     }
     rafRef.current = window.requestAnimationFrame(() => {
-      runPagination();
+      runPagination(overrideSetup);
     });
     return latestBreaksRef.current;
   };
@@ -111,8 +111,8 @@ export const usePagination = (
     const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
     const { width, height } = getPaperSizePx(setup);
     const { top, right, bottom, left } = setup.margins;
-    const headerMargin = setup.headerMargin ?? 10;
-    const footerMargin = setup.footerMargin ?? 10;
+    const headerMargin = setup.headerMargin ?? 12.5;
+    const footerMargin = setup.footerMargin ?? 12.5;
     return {
       '--paper-w': `${width}px`,
       '--paper-h': `${height}px`,

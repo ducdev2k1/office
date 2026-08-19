@@ -130,7 +130,6 @@ export const ColorPalettePopover = ({
                 <button
                   key={`${rIdx}-${color}`}
                   type="button"
-                  title={color}
                   aria-label={color}
                   onClick={() => handlePickColor(color)}
                   className={cn(
@@ -156,15 +155,21 @@ export const ColorPalettePopover = ({
             {t('toolbar.custom')}
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <button
-              type="button"
-              title={t('toolbar.customColor')}
-              aria-label={t('toolbar.customColor')}
-              onClick={() => customInputRef.current?.click()}
-              className="size-5 rounded-full border border-dashed border-border hover:border-foreground/60 flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer transition-colors bg-muted/30"
-            >
-              <Icon name="plus" size={12} />
-            </button>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    aria-label={t('toolbar.customColor')}
+                    onClick={() => customInputRef.current?.click()}
+                    className="size-5 rounded-full border border-dashed border-border hover:border-foreground/60 flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer transition-colors bg-muted/30"
+                  >
+                    <Icon name="plus" size={12} />
+                  </button>
+                }
+              />
+              <TooltipContent side="top">{t('toolbar.customColor')}</TooltipContent>
+            </Tooltip>
             <input
               ref={customInputRef}
               type="color"
@@ -177,7 +182,6 @@ export const ColorPalettePopover = ({
               <button
                 key={color}
                 type="button"
-                title={color}
                 aria-label={color}
                 onClick={() => handlePickColor(color)}
                 className="size-4.5 rounded-full cursor-pointer flex items-center justify-center transition-transform hover:scale-125 focus:outline-none"

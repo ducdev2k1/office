@@ -1,19 +1,16 @@
-import { useEffect, useState, useRef, type MouseEvent } from 'react';
+import { useState, useRef, type MouseEvent } from 'react';
 import type { Editor } from '@tiptap/core';
 import { EditorContent } from '@tiptap/react';
 import { useTranslation } from '@office/i18n';
-import { Icon, cn } from '@office/ui-kit';
+import { Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
 import { PageScrollIndicator } from '@/modules/editor/components/PageScrollIndicator';
-import { HeaderFooterInlineEditor } from '@/modules/editor/components/HeaderFooterInlineEditor';
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
-import {
-  DEFAULT_HEADER_FOOTER_SLOT,
-  DEFAULT_PAGE_SETUP,
-  type DocRecord,
-  type HeaderFooterSlot,
-  type PageSetup,
+import type {
+  DocRecord,
+  HeaderFooterSlot,
+  PageSetup,
 } from '@/types/docs.types';
 
 interface EditorCanvasProps {
@@ -24,14 +21,6 @@ interface EditorCanvasProps {
   onOpenSidebar: () => void;
   activeDoc?: DocRecord;
   onPageSetupChange?: (setup: PageSetup) => void;
-}
-
-interface InlineEditState {
-  band: 'header' | 'footer';
-  pageIndex: number;
-  slot: keyof HeaderFooterSlot;
-  rect: { top: number; left: number; width: number; height: number };
-  initial: string;
 }
 
 export const EditorCanvas = ({
@@ -52,14 +41,9 @@ export const EditorCanvas = ({
     topPx: 0,
     visible: false,
   });
-  const [hfEdit, setHfEdit] = useState<InlineEditState | null>(null);
   const scrollTimerRef = useRef<number | null>(null);
 
   const { viewMode, pageCount, isOverLimit, viewportStyle, schedulePagination } = paginationState;
-
-  useEffect(() => {
-    setHfEdit(null);
-  }, [activeDoc?.id, viewMode]);
 
   const handleScroll = () => {
     const wrap = paperWrapRef.current;
@@ -105,9 +89,8 @@ export const EditorCanvas = ({
     const target = e.target as HTMLElement | null;
     const td = target?.closest('td');
     const headerOrFooter = target?.closest('.tiptap-page-header, .tiptap-page-footer') as HTMLElement | null;
-    const viewport = viewportRef.current;
 
-    if (td && headerOrFooter && viewport) {
+    if (td && headerOrFooter) {
       const isHeader = headerOrFooter.classList.contains('tiptap-page-header');
       const band: 'header' | 'footer' = isHeader ? 'header' : 'footer';
       const pageNumAttr = isHeader
@@ -118,52 +101,32 @@ export const EditorCanvas = ({
       const slots: Array<keyof HeaderFooterSlot> = ['left', 'center', 'right'];
       const slot = slots[cellIndex] ?? 'center';
 
-      const tdRect = td.getBoundingClientRect();
-      const vpRect = viewport.getBoundingClientRect();
-      const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
-      const bandData = band === 'header' ? setup.header : setup.footer;
-
-      setHfEdit({
-        band,
-        pageIndex: pageNum - 1,
-        slot,
-        rect: {
-          top: tdRect.top - vpRect.top,
-          left: tdRect.left - vpRect.left,
-          width: tdRect.width,
-          height: tdRect.height,
-        },
-        initial: bandData?.[slot] ?? '',
-      });
+      window.dispatchEvent(
+        new CustomEvent('doc-open-hf-panel', {
+          detail: { band, pageIndex: pageNum - 1, slot },
+        }),
+      );
     }
-  };
-
-  const handleHfCommit = (value: string) => {
-    const current = hfEdit;
-    if (!current) return;
-    const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
-    const bandData = setup[current.band] ?? DEFAULT_HEADER_FOOTER_SLOT();
-    const updated: PageSetup = {
-      ...setup,
-      [current.band]: { ...bandData, [current.slot]: value },
-    };
-    onPageSetupChange?.(updated);
-    schedulePagination(true);
-    setHfEdit(null);
   };
 
   return (
     <div className="editor-canvas flex flex-1 min-h-0 min-w-0 relative overflow-hidden">
       {!sidebarOpen && (
-        <button
-          type="button"
-          className="sidebar-open-floating-btn absolute top-3.5 left-7 z-25 grid place-items-center size-9 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-hover shadow-sm hover:shadow transition-all cursor-pointer"
-          title={t('sidebar.title')}
-          aria-label={t('sidebar.title')}
-          onClick={onOpenSidebar}
-        >
-          <Icon name="panel-left-open" size={16} />
-        </button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                type="button"
+                className="sidebar-open-floating-btn absolute top-3.5 left-7 z-25 grid place-items-center size-9 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-hover shadow-sm hover:shadow transition-all cursor-pointer"
+                aria-label={t('sidebar.title')}
+                onClick={onOpenSidebar}
+              >
+                <Icon name="panel-left-open" size={16} />
+              </button>
+            }
+          />
+          <TooltipContent side="right">{t('sidebar.title')}</TooltipContent>
+        </Tooltip>
       )}
 
       {/* Left-aligned Vertical Ruler (Sát mép màn hình bên trái) */}
@@ -197,16 +160,6 @@ export const EditorCanvas = ({
           ref={viewportRef}
         >
           <EditorContent editor={editor} />
-          {hfEdit && (
-            <HeaderFooterInlineEditor
-              key={`${hfEdit.band}-${hfEdit.pageIndex}-${hfEdit.slot}`}
-              band={hfEdit.band}
-              rect={hfEdit.rect}
-              initialValue={hfEdit.initial}
-              onCommit={handleHfCommit}
-              onCancel={() => setHfEdit(null)}
-            />
-          )}
         </div>
       </div>
     </div>

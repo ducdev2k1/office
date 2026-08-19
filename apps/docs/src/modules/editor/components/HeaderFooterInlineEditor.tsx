@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useTranslation } from '@office/i18n';
-import { cn } from '@office/ui-kit';
+import { Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
 import { HeaderFooterTokens, type TokenName } from '@/modules/editor/extensions/headerFooterTokens.extension';
 
 export interface InlineBandRect {
@@ -120,18 +120,31 @@ export const HeaderFooterInlineEditor = ({
         style={{ position: 'absolute', top: toolbarTop, left: rect.left }}
         onMouseDown={(e) => e.preventDefault()}
       >
-        {TOKEN_DEFS.map((def) => (
-          <button
-            key={def.name}
-            type="button"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => insertToken(def.name)}
-            title={t(`headerFooter.tokens.${def.i18nKey}`)}
-            className="inline-flex items-center rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px] font-medium text-foreground shadow-2xs hover:bg-muted focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
-          >
-            {def.token}
-          </button>
-        ))}
+        {TOKEN_DEFS.map((def) => {
+          const label = t(`headerFooter.tokens.${def.i18nKey}`);
+          return (
+            <Tooltip key={def.name}>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      if (editor) {
+                        editor.commands.insertContent(def.token);
+                      }
+                    }}
+                    aria-label={label}
+                    className="inline-flex items-center rounded-md border border-border bg-background px-2 py-1 font-mono text-[11px] font-medium text-foreground shadow-2xs hover:bg-muted focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
+                  >
+                    {def.token}
+                  </button>
+                }
+              />
+              <TooltipContent side="top">{label}</TooltipContent>
+            </Tooltip>
+          );
+        })}
         <span className="mx-0.5 h-4 w-px bg-border" />
         <button
           type="button"

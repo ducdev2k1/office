@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { useTranslation } from '@office/i18n';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
 import { generateHorizontalTicks, mmToPx, type RulerUnit } from './ruler.utils';
 import type { useRuler } from './useRuler';
 
@@ -52,7 +53,7 @@ export const HorizontalRuler = ({
       className="relative h-4 select-none border-b border-border bg-muted/30 text-[9px] font-mono text-muted-foreground overflow-hidden"
       style={{ width: `${paperWidthPx}px`, minWidth: `${paperWidthPx}px` }}
       onDoubleClick={onToggleUnit}
-      title={t('ruler.toggleUnitTip')}
+      aria-label={t('ruler.toggleUnitTip')}
     >
       {/* Usable content area */}
       <div
@@ -75,7 +76,7 @@ export const HorizontalRuler = ({
         style={{ width: `${rightMarginPx}px` }}
       />
 
-      {/* Ticks and Numbers */}
+      {/* SVG Ruler markings */}
       <svg
         className="absolute inset-0 size-full pointer-events-none"
         width={paperWidthPx}
@@ -84,6 +85,7 @@ export const HorizontalRuler = ({
         {ticks.map((tick, i) => {
           const isMajor = tick.heightRatio === 1.0;
           const tickHeight = isMajor ? 7 : tick.heightRatio > 0.5 ? 5 : 3;
+
           return (
             <g key={i} transform={`translate(${tick.positionPx}, 0)`}>
               <line
@@ -114,74 +116,113 @@ export const HorizontalRuler = ({
       </svg>
 
       {/* Left Margin Drag Handle */}
-      <div
-        className="absolute top-0 bottom-0 w-2 -ml-1 cursor-ew-resize z-10 group"
-        style={{ left: `${leftMarginPx}px` }}
-        onPointerDown={(e) => {
-          if (containerRef.current) startDrag(e, 'left-margin', containerRef.current);
-        }}
-        title={`${t('ruler.leftMargin')}: ${(margins.left / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
-      >
-        <div className="size-full group-hover:bg-primary/30 transition-colors" />
-      </div>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <div
+              className="absolute top-0 bottom-0 w-2 -ml-1 cursor-ew-resize z-10 group"
+              style={{ left: `${leftMarginPx}px` }}
+              onPointerDown={(e) => {
+                if (containerRef.current) startDrag(e, 'left-margin', containerRef.current);
+              }}
+              aria-label={`${t('ruler.leftMargin')}: ${(margins.left / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+            >
+              <div className="size-full group-hover:bg-primary/30 transition-colors" />
+            </div>
+          }
+        />
+        <TooltipContent side="top">
+          {`${t('ruler.leftMargin')}: ${(margins.left / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+        </TooltipContent>
+      </Tooltip>
 
       {/* Right Margin Drag Handle */}
-      <div
-        className="absolute top-0 bottom-0 w-2 -ml-1 cursor-ew-resize z-10 group"
-        style={{ left: `${paperWidthPx - rightMarginPx}px` }}
-        onPointerDown={(e) => {
-          if (containerRef.current) startDrag(e, 'right-margin', containerRef.current);
-        }}
-        title={`${t('ruler.rightMargin')}: ${(margins.right / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
-      >
-        <div className="size-full group-hover:bg-primary/30 transition-colors" />
-      </div>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <div
+              className="absolute top-0 bottom-0 w-2 -ml-1 cursor-ew-resize z-10 group"
+              style={{ left: `${paperWidthPx - rightMarginPx}px` }}
+              onPointerDown={(e) => {
+                if (containerRef.current) startDrag(e, 'right-margin', containerRef.current);
+              }}
+              aria-label={`${t('ruler.rightMargin')}: ${(margins.right / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+            >
+              <div className="size-full group-hover:bg-primary/30 transition-colors" />
+            </div>
+          }
+        />
+        <TooltipContent side="top">
+          {`${t('ruler.rightMargin')}: ${(margins.right / (unit === 'cm' ? 10 : 25.4)).toFixed(1)}${unit}`}
+        </TooltipContent>
+      </Tooltip>
 
       {/* Markers: First Line Indent (Top Rectangle) */}
-      <div
-        className="absolute top-0 z-20 cursor-ew-resize -translate-x-1/2 group"
-        style={{
-          left: `${leftMarginPx + leftIndentPx + firstLineIndentPx}px`,
-        }}
-        onPointerDown={(e) => {
-          if (containerRef.current) startDrag(e, 'first-line-indent', containerRef.current);
-        }}
-        title={t('ruler.firstLineIndent')}
-      >
-        <div className="w-2.5 h-1 bg-primary rounded-t-sm shadow-sm group-hover:brightness-110" />
-      </div>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <div
+              className="absolute top-0 z-20 cursor-ew-resize -translate-x-1/2 group"
+              style={{
+                left: `${leftMarginPx + leftIndentPx + firstLineIndentPx}px`,
+              }}
+              onPointerDown={(e) => {
+                if (containerRef.current) startDrag(e, 'first-line-indent', containerRef.current);
+              }}
+              aria-label={t('ruler.firstLineIndent')}
+            >
+              <div className="w-2.5 h-1 bg-primary rounded-t-sm shadow-sm group-hover:brightness-110" />
+            </div>
+          }
+        />
+        <TooltipContent side="top">{t('ruler.firstLineIndent')}</TooltipContent>
+      </Tooltip>
 
       {/* Markers: Left Indent (Bottom Triangle) */}
-      <div
-        className="absolute top-[4px] z-20 cursor-ew-resize -translate-x-1/2 group"
-        style={{
-          left: `${leftMarginPx + leftIndentPx}px`,
-        }}
-        onPointerDown={(e) => {
-          if (containerRef.current) startDrag(e, 'left-indent', containerRef.current);
-        }}
-        title={t('ruler.leftIndent')}
-      >
-        <div
-          className="w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-t-[7px] border-t-primary shadow-sm group-hover:brightness-110"
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <div
+              className="absolute top-[4px] z-20 cursor-ew-resize -translate-x-1/2 group"
+              style={{
+                left: `${leftMarginPx + leftIndentPx}px`,
+              }}
+              onPointerDown={(e) => {
+                if (containerRef.current) startDrag(e, 'left-indent', containerRef.current);
+              }}
+              aria-label={t('ruler.leftIndent')}
+            >
+              <div
+                className="w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-t-[7px] border-t-primary shadow-sm group-hover:brightness-110"
+              />
+            </div>
+          }
         />
-      </div>
+        <TooltipContent side="top">{t('ruler.leftIndent')}</TooltipContent>
+      </Tooltip>
 
       {/* Markers: Right Indent (Bottom Triangle at right) */}
-      <div
-        className="absolute top-[4px] z-20 cursor-ew-resize -translate-x-1/2 group"
-        style={{
-          left: `${paperWidthPx - rightMarginPx - rightIndentPx}px`,
-        }}
-        onPointerDown={(e) => {
-          if (containerRef.current) startDrag(e, 'right-indent', containerRef.current);
-        }}
-        title={t('ruler.rightIndent')}
-      >
-        <div
-          className="w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-t-[7px] border-t-primary shadow-sm group-hover:brightness-110"
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <div
+              className="absolute top-[4px] z-20 cursor-ew-resize -translate-x-1/2 group"
+              style={{
+                left: `${paperWidthPx - rightMarginPx - rightIndentPx}px`,
+              }}
+              onPointerDown={(e) => {
+                if (containerRef.current) startDrag(e, 'right-indent', containerRef.current);
+              }}
+              aria-label={t('ruler.rightIndent')}
+            >
+              <div
+                className="w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-t-[7px] border-t-primary shadow-sm group-hover:brightness-110"
+              />
+            </div>
+          }
         />
-      </div>
+        <TooltipContent side="top">{t('ruler.rightIndent')}</TooltipContent>
+      </Tooltip>
     </div>
   );
 };

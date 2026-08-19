@@ -285,11 +285,183 @@ textarea:focus-visible {
   width: 100%;
   transition: background-color 0.15s ease;
   user-select: none;
+  cursor: pointer;
+  position: relative;
 }
 
 .tiptap-page-header:hover,
 .tiptap-page-footer:hover {
-  background-color: rgb(26 115 232 / 5%);
+  background-color: rgb(99 102 241 / 4%);
+}
+
+.tiptap-page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 1.5px dashed #6366f1;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.tiptap-page-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-top: 1.5px dashed #6366f1;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.tiptap-page-header:hover::after,
+.tiptap-page-footer:hover::before {
+  opacity: 1;
+}
+
+/* ── TipTap style header/footer badge ─────────────────────── */
+.hf-band-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: #6366f1;
+  color: #ffffff;
+  font-size: 10px;
+  font-family: inherit;
+  font-weight: 600;
+  padding: 1.5px 8px;
+  border-radius: 4px 4px 0 0;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+  box-shadow: 0 1px 4px rgb(99 102 241 / 30%);
+}
+
+.tiptap-page-footer .hf-band-badge {
+  bottom: auto;
+  top: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+.tiptap-page-header:hover .hf-band-badge,
+.tiptap-page-footer:hover .hf-band-badge {
+  opacity: 1;
+}
+
+/* ── Edit button (pencil icon) — circular floating button ── */
+.hf-edit-btn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%) scale(0.9);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #18181b;
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  z-index: 15;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.tiptap-page-header:hover .hf-edit-btn,
+.tiptap-page-footer:hover .hf-edit-btn {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+  pointer-events: auto;
+}
+
+.hf-edit-btn:hover {
+  background: #09090b;
+  transform: translateY(-50%) scale(1.1);
+  color: #a5b4fc;
+}
+
+@keyframes doc-panel-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes doc-panel-slide-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.96);
+  }
+}
+
+.doc-settings-nav-panel {
+  will-change: transform, opacity;
+}
+
+.doc-settings-nav-panel[data-state='open'] {
+  animation: doc-panel-slide-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.doc-settings-nav-panel[data-state='closed'] {
+  animation: doc-panel-slide-out 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}
+
+/* ── Header/Footer band table — reset content-table borders ── */
+.tiptap-page-header table,
+.tiptap-page-footer table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.tiptap-page-header td,
+.tiptap-page-footer td,
+.tiptap-page-header th,
+.tiptap-page-footer th {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 4px !important;
+  font-size: 9pt;
+  color: #5f6368;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0 !important;
+  font-weight: normal !important;
+}
+
+/* Also reset inside the main doc-editor when table is nested in hf zones */
+.doc-editor .tiptap-page-header td,
+.doc-editor .tiptap-page-footer td,
+.doc-editor .tiptap-page-header th,
+.doc-editor .tiptap-page-footer th {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 4px !important;
+  font-weight: normal !important;
 }
 
 .tiptap-pagination-gap {
@@ -441,6 +613,7 @@ textarea:focus-visible {
   margin: 18px 0;
 }
 
+/* Content table cells */
 .doc-editor th,
 .doc-editor td {
   border: 1px solid #c8cacc;
@@ -536,6 +709,8 @@ textarea:focus-visible {
     padding: 0 !important;
     background: #fff !important;
     color: #202124 !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
   }
 
   body.printing #print-root .print-page {
@@ -602,11 +777,177 @@ textarea:focus-visible {
     padding: 0 !important;
   }
 
+  /* ── Editor container ─────────────────────────────────── */
   body.printing #print-root .doc-editor {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 var(--margin-r-mm) 0 var(--margin-l-mm) !important;
+    box-sizing: border-box !important;
     border: 0 !important;
     box-shadow: none !important;
     background: #fff !important;
     color: #202124 !important;
+    font-family: Roboto, Arial, sans-serif !important;
+    font-size: 11pt !important;
+    line-height: 1.15 !important;
+    overflow-wrap: anywhere !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* ── Headings ─────────────────────────────────────────── */
+  body.printing #print-root .doc-editor h1,
+  body.printing #print-root .doc-editor h2,
+  body.printing #print-root .doc-editor h3 {
+    line-height: 1.2 !important;
+    color: #202124 !important;
+    font-weight: 600 !important;
+    font-family: Roboto, Arial, sans-serif !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  body.printing #print-root .doc-editor h1 {
+    margin: 16px 0 6px !important;
+    font-size: 24pt !important;
+  }
+
+  body.printing #print-root .doc-editor h2 {
+    margin: 14px 0 4px !important;
+    font-size: 18pt !important;
+  }
+
+  body.printing #print-root .doc-editor h3 {
+    margin: 12px 0 4px !important;
+    font-size: 14pt !important;
+  }
+
+  /* ── Paragraphs & lists ───────────────────────────────── */
+  body.printing #print-root .doc-editor p,
+  body.printing #print-root .doc-editor li {
+    color: #202124 !important;
+    font-size: 11pt !important;
+    line-height: 1.15 !important;
+  }
+
+  body.printing #print-root .doc-editor p {
+    margin: 0 !important;
+    min-height: 1.15em !important;
+  }
+
+  body.printing #print-root .doc-editor li > p {
+    margin: 0 !important;
+  }
+
+  body.printing #print-root .doc-editor ul,
+  body.printing #print-root .doc-editor ol {
+    margin: 4px 0 !important;
+    padding-left: 24px !important;
+  }
+
+  body.printing #print-root .doc-editor li {
+    margin: 2px 0 !important;
+    line-height: 1.15 !important;
+  }
+
+  /* ── Inline formatting ────────────────────────────────── */
+  body.printing #print-root .doc-editor a {
+    color: #1a73e8 !important;
+    text-decoration-thickness: 1px !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  body.printing #print-root .doc-editor strong,
+  body.printing #print-root .doc-editor b {
+    font-weight: 700 !important;
+  }
+
+  body.printing #print-root .doc-editor em,
+  body.printing #print-root .doc-editor i {
+    font-style: italic !important;
+  }
+
+  body.printing #print-root .doc-editor u {
+    text-decoration: underline !important;
+  }
+
+  body.printing #print-root .doc-editor s {
+    text-decoration: line-through !important;
+  }
+
+  /* User-set inline color/bg/font (TipTap marks write span[style]) */
+  body.printing #print-root .doc-editor span[style] {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* ── Blockquote ───────────────────────────────────────── */
+  body.printing #print-root .doc-editor blockquote {
+    margin: 22px 0 !important;
+    padding-left: 18px !important;
+    border-left: 4px solid #dadce0 !important;
+    color: #5f6368 !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* ── Code ─────────────────────────────────────────────── */
+  body.printing #print-root .doc-editor code {
+    padding: 2px 5px !important;
+    border-radius: 3px !important;
+    background: #f1f3f4 !important;
+    font-size: 0.92em !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  body.printing #print-root .doc-editor pre {
+    overflow-x: auto !important;
+    padding: 16px !important;
+    border-radius: 4px !important;
+    background: #202124 !important;
+    color: #e8eaed !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* ── Images ────────────────────────────────────────────── */
+  body.printing #print-root .doc-editor img {
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 3px !important;
+  }
+
+  /* ── Tables ────────────────────────────────────────────── */
+  body.printing #print-root .doc-editor table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 18px 0 !important;
+  }
+
+  body.printing #print-root .doc-editor th,
+  body.printing #print-root .doc-editor td {
+    border: 1px solid #c8cacc !important;
+    padding: 8px 10px !important;
+    min-width: 40px !important;
+    vertical-align: top !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  body.printing #print-root .doc-editor th {
+    background: #f8f9fa !important;
+    font-weight: 600 !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* Hide table selection highlight */
+  body.printing #print-root .doc-editor .selectedCell::after {
+    display: none !important;
   }
 
   body.printing #print-root .page-break-marker,
@@ -614,10 +955,15 @@ textarea:focus-visible {
     border: 0 !important;
     margin: 0 !important;
     background: none !important;
+    height: 0 !important;
   }
 
   body.printing #print-root .page-break-marker::after {
     content: none !important;
+  }
+
+  body.printing #print-root .doc-editor [data-type='page-break'] {
+    display: none !important;
   }
 
   /* Spacers keep their measured height so the print clone reproduces the
@@ -627,7 +973,29 @@ textarea:focus-visible {
     background: none !important;
   }
 
-  /* Fallback print styles (when body does NOT have .printing, e.g. continuous view, overlimit, build error) */
+  /* ── TipTap pagination decorations — hide in print ───── */
+  body.printing #print-root .tiptap-pagination-gap,
+  body.printing #print-root .tiptap-page-header,
+  body.printing #print-root .tiptap-page-footer,
+  body.printing #print-root .tiptap-page-break,
+  body.printing #print-root [data-tiptap-pagination='true'],
+  body.printing #print-root .hf-edit-btn,
+  body.printing #print-root .hf-band-badge,
+  .hf-edit-btn,
+  .hf-band-badge {
+    display: none !important;
+  }
+
+  /* ── ProseMirror shell ─────────────────────────────────── */
+  body.printing #print-root .ProseMirror {
+    outline: none !important;
+  }
+
+  body.printing #print-root .ProseMirror p.is-editor-empty:first-child::before {
+    content: none !important;
+  }
+
+  /* ── Fallback print styles (body does NOT have .printing) ── */
   html,
   body:not(.printing),
   body:not(.printing) #root {

@@ -125,6 +125,7 @@ export const FontSizePicker = ({ currentSize, onChangeSize }: FontSizePickerProp
       {/* Ô nhập cỡ chữ ở giữa + Dropdown Popover các cỡ preset */}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
+          nativeButton={false}
           render={
             <div
               className={cn(

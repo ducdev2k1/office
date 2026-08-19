@@ -3,7 +3,7 @@ import type { DocRecord } from '@/types/docs.types';
 import { DocRow } from '@/modules/sidebar/components/DocRow';
 import { OutlineList } from '@/modules/sidebar/components/OutlineList';
 import { useTranslation } from '@office/i18n';
-import { Icon, cn } from '@office/ui-kit';
+import { Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
 
 interface DocsSidebarProps {
   docs: DocRecord[];
@@ -48,7 +48,6 @@ export const DocsSidebar = ({
     <aside
       className={cn(
         'docs-sidebar absolute top-0 bottom-0 z-30 w-[260px] bg-card/95 backdrop-blur-md border-r border-border shadow-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-y-auto overflow-x-hidden scrollbar-thin',
-        // left-4 = 16px = chiều rộng thước dọc (w-4), sidebar bắt đầu ngay bên phải thước
         sidebarOpen
           ? 'left-4 translate-x-0 opacity-100 visible pointer-events-auto'
           : 'left-4 -translate-x-full opacity-0 invisible pointer-events-none',
@@ -57,25 +56,39 @@ export const DocsSidebar = ({
     >
       <div className="w-full p-4 h-full overflow-y-auto scrollbar-thin">
         <div className="flex items-center gap-2 mb-3.5 text-foreground font-medium font-['Google_Sans',Roboto,sans-serif] text-sm">
-          <button
-            className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors"
-            type="button"
-            title={t('sidebar.closeAria')}
-            aria-label={t('sidebar.closeAria')}
-            onClick={onClose}
-          >
-            <Icon name="chevron-left" size={18} />
-          </button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors cursor-pointer"
+                  type="button"
+                  aria-label={t('sidebar.closeAria')}
+                  onClick={onClose}
+                >
+                  <Icon name="chevron-left" size={18} />
+                </button>
+              }
+            />
+            <TooltipContent side="bottom">{t('sidebar.closeAria')}</TooltipContent>
+          </Tooltip>
+
           <span className="flex-1 font-medium text-sm text-foreground">{t('sidebar.title')}</span>
-          <button
-            className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors"
-            type="button"
-            title={t('sidebar.addAria')}
-            aria-label={t('sidebar.addAria')}
-            onClick={onAdd}
-          >
-            <Icon name="plus" size={18} />
-          </button>
+
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors cursor-pointer"
+                  type="button"
+                  aria-label={t('sidebar.addAria')}
+                  onClick={onAdd}
+                >
+                  <Icon name="plus" size={18} />
+                </button>
+              }
+            />
+            <TooltipContent side="bottom">{t('sidebar.addAria')}</TooltipContent>
+          </Tooltip>
         </div>
         <label className="flex items-center gap-2 h-8.5 px-2.5 mb-3 border border-border focus-within:border-primary rounded-md bg-background text-muted-foreground transition-colors">
           <Icon name="search" size={15} aria-hidden="true" className="shrink-0" />

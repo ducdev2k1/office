@@ -13,6 +13,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Icon,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
   cn,
 } from '@office/ui-kit';
 
@@ -153,7 +156,7 @@ export const DocRow = ({
             />
           ) : (
             <>
-              <strong className="block text-xs font-medium text-inherit truncate" title={doc.title}>
+              <strong className="block text-xs font-medium text-inherit truncate">
                 {doc.title}
               </strong>
               <small className="block text-[11px] text-muted-foreground truncate mt-0.5">
@@ -163,18 +166,24 @@ export const DocRow = ({
           )}
         </div>
         {doc.starred && (
-          <span className="inline-flex items-center text-amber-500 shrink-0 mr-0.5" title={tShell('fileActions.star')}>
-            <Icon name="star" size={13} preferDuotone aria-hidden="true" />
-          </span>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <span className="inline-flex items-center text-amber-500 shrink-0 mr-0.5 cursor-default">
+                  <Icon name="star" size={13} preferDuotone aria-hidden="true" />
+                </span>
+              }
+            />
+            <TooltipContent side="top">{tShell('fileActions.star')}</TooltipContent>
+          </Tooltip>
         )}
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
               <button
                 type="button"
-                className="grid place-items-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100 shrink-0 ml-auto transition-opacity"
+                className="grid place-items-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100 shrink-0 ml-auto transition-opacity cursor-pointer"
                 aria-label={tShell('fileActions.moreOptions')}
-                title={tShell('fileActions.moreOptions')}
                 onClick={(event: MouseEvent) => event.stopPropagation()}
               />
             }

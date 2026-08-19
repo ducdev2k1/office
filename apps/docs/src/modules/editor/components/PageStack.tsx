@@ -67,7 +67,6 @@ export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackP
         <div key={p.key} className="page">
           <div
             className="page-hf page-header"
-            title={t('headerFooter.editHint')}
             onDoubleClick={(e) => handleBandDoubleClick('header', p.key, e)}
           >
             <span>{p.header.left}</span>
@@ -76,7 +75,6 @@ export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackP
           </div>
           <div
             className="page-hf page-footer"
-            title={t('headerFooter.editHint')}
             onDoubleClick={(e) => handleBandDoubleClick('footer', p.key, e)}
           >
             <span>{p.footer.left}</span>

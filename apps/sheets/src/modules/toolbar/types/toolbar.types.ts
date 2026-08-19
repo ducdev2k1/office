@@ -36,6 +36,9 @@ export interface ToolbarState {
   numberFormat: string;
   zoom: number;
   isPaintingFormat: boolean;
+  borderColor: string;
+  borderStyle: BorderStyleTypes;
+  borderType?: BorderType;
 }
 
 export interface SheetsToolbarActions {
@@ -64,6 +67,8 @@ export interface SheetsToolbarActions {
   unmerge: () => void;
   setNumberFormat: (pattern: string) => void;
   adjustDecimals: (delta: number) => void;
+  setBorderColor: (color: string) => void;
+  setBorderStyle: (style: BorderStyleTypes) => void;
   applyBorder: (type: BorderType, style?: BorderStyleTypes, color?: string) => void;
   insertFormula: (formula: string) => void;
   insertLink: (url?: string, text?: string) => void;

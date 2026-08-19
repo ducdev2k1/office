@@ -7,7 +7,6 @@ import {
   EditorContextMenu,
   HelpModal,
   PageHeaderFooterPanel,
-  PageSetupPanel,
   Ruler,
   Statusbar,
   useDocsEditor,
@@ -55,13 +54,30 @@ export const EditorPage = () => {
     return saved !== null ? saved === 'true' : true;
   });
   const [findOpen, setFindOpen] = useState(false);
-  const [pageSetupOpen, setPageSetupOpen] = useState(false);
-  const [headerFooterOpen, setHeaderFooterOpen] = useState(false);
+  const [docSettingsOpen, setDocSettingsOpen] = useState(false);
+  const [docSettingsTab, setDocSettingsTab] = useState<'document' | 'headerFooter'>('headerFooter');
+  const [activeBand, setActiveBand] = useState<'header' | 'footer'>('header');
   const [helpOpen, setHelpOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
 
   const fontPickerRef = useRef<HTMLButtonElement>(null);
   const colorPickerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleOpenHf = (event: Event) => {
+      const customEvent = event as CustomEvent<{ band?: 'header' | 'footer' }>;
+      if (customEvent.detail?.band) {
+        setActiveBand(customEvent.detail.band);
+      }
+      setDocSettingsTab('headerFooter');
+      setDocSettingsOpen(true);
+    };
+
+    window.addEventListener('doc-open-hf-panel', handleOpenHf);
+    return () => {
+      window.removeEventListener('doc-open-hf-panel', handleOpenHf);
+    };
+  }, []);
 
   const handleToggleSidebar = () => {
     setSidebarOpen((prev) => {
@@ -130,8 +146,7 @@ export const EditorPage = () => {
     () => setFindOpen((value) => !value),
     () => {
       setFindOpen(false);
-      setPageSetupOpen(false);
-      setHeaderFooterOpen(false);
+      setDocSettingsOpen(false);
       setHelpOpen(false);
     },
   );
@@ -151,7 +166,7 @@ export const EditorPage = () => {
 
   const handleApplyPageSetup = (setup: PageSetup): void => {
     setActiveDocPageSetup(setup);
-    setPageSetupOpen(false);
+    setDocSettingsOpen(false);
     schedulePagination(true);
   };
 
@@ -182,7 +197,10 @@ export const EditorPage = () => {
             onOpenFromDevice: handleOpenFromDevice,
             onToggleSidebar: handleToggleSidebar,
             onToggleFind: () => setFindOpen((value) => !value),
-            onPageSetup: () => setPageSetupOpen(true),
+            onPageSetup: () => {
+              setDocSettingsTab('document');
+              setDocSettingsOpen(true);
+            },
             onViewModeChange: setViewMode,
             onPrint: () => void printDocument(),
             onExportHtml: exportHtml,
@@ -191,7 +209,10 @@ export const EditorPage = () => {
             onInsertImage: handleImageUpload,
             onInsertTable: handleInsertTable,
             onInsertPageBreak: handleInsertPageBreak,
-            onHeaderFooter: () => setHeaderFooterOpen(true),
+            onHeaderFooter: () => {
+              setDocSettingsTab('headerFooter');
+              setDocSettingsOpen(true);
+            },
             onHelp: () => setHelpOpen(true),
           }}
         />
@@ -212,7 +233,10 @@ export const EditorPage = () => {
           onInsertImage={handleImageUpload}
           onInsertTable={handleInsertTable}
           onInsertPageBreak={handleInsertPageBreak}
-          onPageSetup={() => setPageSetupOpen((value) => !value)}
+          onPageSetup={() => {
+            setDocSettingsTab('document');
+            setDocSettingsOpen((value) => !value);
+          }}
           onViewModeChange={setViewMode}
         />
 
@@ -270,22 +294,19 @@ export const EditorPage = () => {
           />
         )}
 
-        {pageSetupOpen && activeDoc?.pageSetup && (
-          <PageSetupPanel
-            open={pageSetupOpen}
-            setup={activeDoc.pageSetup}
-            onApply={handleApplyPageSetup}
-            onClose={() => setPageSetupOpen(false)}
-          />
-        )}
-
-        {headerFooterOpen && activeDoc?.pageSetup && (
+        {docSettingsOpen && activeDoc?.pageSetup && (
           <PageHeaderFooterPanel
-            open={headerFooterOpen}
+            open={docSettingsOpen}
             setup={activeDoc.pageSetup}
             docTitle={activeDoc.title}
-            onApply={handleApplyPageSetup}
-            onClose={() => setHeaderFooterOpen(false)}
+            defaultTab={docSettingsTab}
+            activeBand={activeBand}
+            onActiveBandChange={setActiveBand}
+            onPageSetupChange={(setup) => {
+              setActiveDocPageSetup(setup);
+              schedulePagination(true, setup);
+            }}
+            onClose={() => setDocSettingsOpen(false)}
           />
         )}
 

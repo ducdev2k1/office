@@ -22,8 +22,8 @@ export const computePaginationMetrics = (
   const marginL = mmToPx(setup.margins.left) || 57;
   const headerH = marginT;
   const footerH = marginB;
-  const headerPaddingTop = mmToPx(setup.headerMargin ?? 10) || 38;
-  const footerPaddingBottom = mmToPx(setup.footerMargin ?? 10) || 38;
+  const headerPaddingTop = mmToPx(setup.headerMargin ?? 12.5) || 47;
+  const footerPaddingBottom = mmToPx(setup.footerMargin ?? 12.5) || 47;
   const usableH = Math.max(100, paperH - headerH - footerH);
 
   return {
@@ -76,6 +76,7 @@ declare module '@tiptap/core' {
       setPageCount: (count: number) => ReturnType;
       setDocTitle: (title: string) => ReturnType;
       setPagedMode: (isPaged: boolean) => ReturnType;
+      setPaginationData: (data: Partial<PaginationPluginState>) => ReturnType;
     };
   }
 }
@@ -135,6 +136,20 @@ export const Pagination = Extension.create<PaginationOptions>({
           }
           return true;
         },
+      setPaginationData:
+        (data) =>
+        ({ tr, dispatch }) => {
+          if (dispatch) {
+            const metrics = data.setup
+              ? computePaginationMetrics(data.setup, this.options.gapHeight)
+              : undefined;
+            tr.setMeta(PAGINATION_PLUGIN_KEY, {
+              ...data,
+              ...(metrics ? { metrics } : {}),
+            });
+          }
+          return true;
+        },
     };
   },
 
@@ -170,6 +185,8 @@ export const Pagination = Extension.create<PaginationOptions>({
             if (!pluginState || !pluginState.isPaged) return null;
 
             const { pageCount, metrics, setup, docTitle } = pluginState;
+            const setupKey = `${pageCount}_${docTitle}_${setup.paperSize}_${setup.orientation}_${setup.headerMargin}_${setup.footerMargin}_${JSON.stringify(setup.margins)}_${JSON.stringify(setup.header)}_${JSON.stringify(setup.footer)}_${JSON.stringify(setup.pageNumber)}`;
+
             const widget = Decoration.widget(
               0,
               () =>
@@ -182,7 +199,7 @@ export const Pagination = Extension.create<PaginationOptions>({
                 }),
               {
                 side: -1,
-                key: `tiptap-pages-${pageCount}-${setup.paperSize}-${setup.orientation}`,
+                key: `tiptap-pages-${setupKey}`,
               },
             );
 

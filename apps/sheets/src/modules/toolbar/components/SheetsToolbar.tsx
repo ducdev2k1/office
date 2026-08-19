@@ -76,11 +76,16 @@ export const SheetsToolbar = ({ univerAPI, onPrint, onInsertChart }: SheetsToolb
       {/* 5. Cell Borders & Merge */}
       <CellFormatTools
         isMerged={state.isMerged}
+        borderColor={state.borderColor}
+        borderStyle={state.borderStyle}
+        borderType={state.borderType}
         onToggleMerge={actions.toggleMerge}
         onMergeAll={actions.mergeAll}
         onMergeHorizontal={actions.mergeHorizontal}
         onMergeVertical={actions.mergeVertical}
         onUnmerge={actions.unmerge}
+        onSetBorderColor={actions.setBorderColor}
+        onSetBorderStyle={actions.setBorderStyle}
         onApplyBorder={actions.applyBorder}
       />
 
