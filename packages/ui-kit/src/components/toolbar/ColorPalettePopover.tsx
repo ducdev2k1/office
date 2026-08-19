@@ -16,6 +16,38 @@ export const GOOGLE_PALETTE_ROWS: string[][] = [
   ['#5b0f00', '#660000', '#783f04', '#7f6000', '#274e13', '#0c343d', '#1c4587', '#073763', '#20124d', '#4c1130'],
 ];
 
+/** Các mã màu sáng cần thêm viền để không lẫn vào nền popover */
+const LIGHT_COLORS = new Set(['#ffffff', '#f3f3f3', '#efefef', '#fff2cc', '#d9ead3']);
+
+interface ColorSwatchProps {
+  color: string;
+  checked: boolean;
+  onPick: (color: string) => void;
+}
+
+/** Ô màu tròn trong bảng chọn; dùng chung cho bảng màu mặc định và màu tự chọn */
+const ColorSwatch = ({ color, checked, onPick }: ColorSwatchProps) => {
+  const isLight = LIGHT_COLORS.has(color);
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon-xs"
+      aria-label={color}
+      aria-pressed={checked}
+      onClick={() => onPick(color)}
+      style={{ backgroundColor: color }}
+      className={cn(
+        'size-4.5 rounded-full p-0 transition-transform hover:scale-125 active:scale-110',
+        checked && 'ring-2 ring-primary ring-offset-1',
+        isLight && 'border border-border/80',
+      )}
+    >
+      {checked && <span className={cn('size-1.5 rounded-full', isLight ? 'bg-black' : 'bg-white')} />}
+    </Button>
+  );
+};
+
 export interface ColorPalettePopoverProps {
   iconName: string;
   label: string;
@@ -120,36 +152,14 @@ export const ColorPalettePopover = ({
       >
         <div className="grid grid-cols-10 gap-1">
           {GOOGLE_PALETTE_ROWS.map((row, rIdx) =>
-            row.map((color) => {
-              const checked = isSelected(color);
-              const isLight =
-                color === '#ffffff' ||
-                color === '#f3f3f3' ||
-                color === '#efefef' ||
-                color === '#fff2cc' ||
-                color === '#d9ead3';
-
-              return (
-                <button
-                  key={`${rIdx}-${color}`}
-                  type="button"
-                  aria-label={color}
-                  onClick={() => handlePickColor(color)}
-                  className={cn(
-                    'size-4.5 rounded-full cursor-pointer flex items-center justify-center transition-transform hover:scale-125 focus:outline-none',
-                    checked && 'ring-2 ring-primary ring-offset-1',
-                    isLight && 'border border-border/80',
-                  )}
-                  style={{ backgroundColor: color }}
-                >
-                  {checked && (
-                    <span
-                      className={cn('size-1.5 rounded-full', isLight ? 'bg-black' : 'bg-white')}
-                    />
-                  )}
-                </button>
-              );
-            }),
+            row.map((color) => (
+              <ColorSwatch
+                key={`${rIdx}-${color}`}
+                color={color}
+                checked={Boolean(isSelected(color))}
+                onPick={handlePickColor}
+              />
+            )),
           )}
         </div>
 
@@ -161,14 +171,15 @@ export const ColorPalettePopover = ({
             <Tooltip>
               <TooltipTrigger
                 render={
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     aria-label={customLabel}
                     onClick={() => customInputRef.current?.click()}
-                    className="size-5 rounded-full border border-dashed border-border hover:border-foreground/60 flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer transition-colors bg-muted/30"
+                    className="size-5 rounded-full border border-dashed border-border bg-muted/30 p-0 text-muted-foreground hover:border-foreground/60 hover:text-foreground"
                   >
                     <Icon name="plus" size={12} />
-                  </button>
+                  </Button>
                 }
               />
               <TooltipContent side="top">{customLabel}</TooltipContent>
@@ -182,16 +193,12 @@ export const ColorPalettePopover = ({
             />
 
             {customColors.map((color) => (
-              <button
+              <ColorSwatch
                 key={color}
-                type="button"
-                aria-label={color}
-                onClick={() => handlePickColor(color)}
-                className="size-4.5 rounded-full cursor-pointer flex items-center justify-center transition-transform hover:scale-125 focus:outline-none"
-                style={{ backgroundColor: color }}
-              >
-                {isSelected(color) && <span className="size-1.5 rounded-full bg-white shadow-xs" />}
-              </button>
+                color={color}
+                checked={Boolean(isSelected(color))}
+                onPick={handlePickColor}
+              />
             ))}
           </div>
         </div>

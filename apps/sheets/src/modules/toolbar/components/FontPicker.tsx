@@ -1,6 +1,16 @@
 import { FONT_CATEGORIES, getFontFamilyCSS, type FontCategory } from '@office/fonts';
-import { cn, Icon, Popover, PopoverContent, PopoverTrigger } from '@office/ui-kit';
-import { useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useTranslation } from '@office/i18n';
+import {
+  Button,
+  Icon,
+  Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  ScrollArea,
+  cn,
+} from '@office/ui-kit';
+import { useMemo, useState, type KeyboardEvent } from 'react';
 
 const ALL_FONTS = FONT_CATEGORIES.flatMap((c) => c.fonts);
 
@@ -9,10 +19,32 @@ interface FontPickerProps {
   onSelectFont: (font: string) => void;
 }
 
+interface FontOptionProps {
+  font: string;
+  isSelected: boolean;
+  onSelect: (font: string) => void;
+}
+
+/** Một dòng font trong danh sách, dùng cho cả kết quả tìm kiếm và danh sách theo nhóm */
+const FontOption = ({ font, isSelected, onSelect }: FontOptionProps) => (
+  <Button
+    variant="ghost"
+    size="sm"
+    aria-pressed={isSelected}
+    onClick={() => onSelect(font)}
+    className="h-auto w-full justify-between rounded-none px-3 py-1.5 text-[13px] font-normal text-foreground"
+  >
+    <span className="truncate" style={getFontFamilyCSS(font)}>
+      {font}
+    </span>
+    {isSelected && <Icon name="check" size={14} className="shrink-0 text-primary" />}
+  </Button>
+);
+
 export const FontPicker = ({ currentFont, onSelectFont }: FontPickerProps) => {
+  const { t } = useTranslation('sheets');
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const searchRef = useRef<HTMLInputElement>(null);
   const displayName = currentFont || 'Arial';
 
   const filteredFonts = useMemo(() => {
@@ -31,23 +63,22 @@ export const FontPicker = ({ currentFont, onSelectFont }: FontPickerProps) => {
     if (e.key === 'Escape') setOpen(false);
   };
 
-  const triggerStyle = getFontFamilyCSS(displayName);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
-          <button
-            type="button"
-            aria-label={`Font chữ: ${displayName}`}
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label={t('toolbar.font.ariaLabel', { font: displayName })}
             className={cn(
-              'flex h-7 min-w-[105px] max-w-[155px] items-center justify-between gap-1 rounded border border-transparent px-2 text-[13px] text-foreground transition-colors hover:border-border hover:bg-hover',
+              'h-7 min-w-[105px] max-w-[155px] justify-between gap-1 rounded border border-transparent px-2 text-[13px] font-normal text-foreground hover:border-border hover:bg-hover',
               open && 'border-border bg-hover',
             )}
           />
         }
       >
-        <span className="truncate flex-1 text-left" style={triggerStyle}>
+        <span className="flex-1 truncate text-left" style={getFontFamilyCSS(displayName)}>
           {displayName}
         </span>
         <Icon
@@ -65,70 +96,62 @@ export const FontPicker = ({ currentFont, onSelectFont }: FontPickerProps) => {
       >
         <div className="border-b border-border p-2">
           <div className="flex h-7 items-center gap-1.5 rounded-md border border-border/60 bg-muted/50 px-2">
-            <Icon name="search" size={13} className="text-muted-foreground shrink-0" />
-            <input
-              ref={searchRef}
-              type="text"
+            <Icon name="search" size={13} className="shrink-0 text-muted-foreground" />
+            <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Tìm font chữ..."
-              className="flex-1 bg-transparent text-[12px] text-foreground outline-none placeholder:text-muted-foreground"
+              placeholder={t('toolbar.font.search')}
+              className="h-full flex-1 rounded-none border-0 bg-transparent px-0 py-0 text-[12px] shadow-none focus-visible:ring-0"
             />
             {search && (
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label={t('toolbar.font.clearSearch')}
                 onClick={() => setSearch('')}
-                className="text-muted-foreground hover:text-foreground"
+                className="size-4 shrink-0 rounded-sm text-muted-foreground hover:bg-transparent hover:text-foreground"
               >
                 <Icon name="x" size={12} />
-              </button>
+              </Button>
             )}
           </div>
         </div>
 
-        <div className="max-h-[360px] overflow-y-auto overscroll-contain py-1">
+        <ScrollArea className="max-h-[360px] py-1">
           {filteredFonts ? (
             filteredFonts.length > 0 ? (
               filteredFonts.map((font) => (
-                <button
+                <FontOption
                   key={font}
-                  type="button"
-                  onClick={() => handleSelect(font)}
-                  className="flex w-full items-center justify-between px-3 py-1.5 text-left text-[13px] text-foreground hover:bg-hover"
-                >
-                  <span style={getFontFamilyCSS(font)}>{font}</span>
-                  {font === currentFont && (
-                    <Icon name="check" size={14} className="text-primary shrink-0" />
-                  )}
-                </button>
+                  font={font}
+                  isSelected={font === currentFont}
+                  onSelect={handleSelect}
+                />
               ))
             ) : (
-              <div className="py-4 text-center text-xs text-muted-foreground">Không tìm thấy font</div>
+              <div className="py-4 text-center text-xs text-muted-foreground">
+                {t('toolbar.font.notFound')}
+              </div>
             )
           ) : (
             FONT_CATEGORIES.map((cat: FontCategory) => (
               <div key={cat.id}>
-                <div className="px-3 pt-2 pb-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <div className="px-3 pt-2 pb-0.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
                   {cat.labelKey}
                 </div>
                 {cat.fonts.map((font) => (
-                  <button
+                  <FontOption
                     key={font}
-                    type="button"
-                    onClick={() => handleSelect(font)}
-                    className="flex w-full items-center justify-between px-3 py-1.5 text-left text-[13px] text-foreground hover:bg-hover"
-                  >
-                    <span style={getFontFamilyCSS(font)}>{font}</span>
-                    {font === currentFont && (
-                      <Icon name="check" size={14} className="text-primary shrink-0" />
-                    )}
-                  </button>
+                    font={font}
+                    isSelected={font === currentFont}
+                    onSelect={handleSelect}
+                  />
                 ))}
               </div>
             ))
           )}
-        </div>
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );

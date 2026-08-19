@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { Button, Icon, cn } from '@office/ui-kit';
+import { Button, Icon, Input, cn } from '@office/ui-kit';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -63,29 +63,29 @@ export const SheetsHeader = ({
           to="/"
           className="flex size-9 shrink-0 items-center justify-center rounded-lg text-white transition-opacity hover:opacity-90"
           style={{ backgroundColor: 'var(--o-kind-sheets)' }}
-          title="Quay lại danh sách Bảng tính"
-          aria-label="Quay lại danh sách Bảng tính"
+          title={t('header.back')}
+          aria-label={t('header.back')}
         >
           <Icon name="file-spreadsheet" size={20} />
         </Link>
 
         <div className="flex min-w-0 flex-1 flex-col justify-center">
           <div className="flex items-center gap-1.5">
-            <input
+            <Input
               type="text"
               value={localTitle}
               onChange={(e) => setLocalTitle(e.target.value)}
               onBlur={handleTitleBlur}
               onKeyDown={handleTitleKeyDown}
-              className="h-7 max-w-[320px] rounded px-1.5 text-base font-medium text-foreground outline-none transition-colors hover:bg-hover focus:bg-background focus:ring-1 focus:ring-ring sm:max-w-[450px]"
+              className="h-7 max-w-[320px] rounded border-0 bg-transparent px-1.5 text-base font-medium text-foreground shadow-none transition-colors hover:bg-hover focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring sm:max-w-[450px]"
               placeholder={t('untitled')}
-              aria-label="Tiêu đề bảng tính"
+              aria-label={t('header.titleAriaLabel')}
             />
             <Button
               className="size-7 rounded-full text-muted-foreground hover:bg-hover hover:text-foreground shrink-0"
               type="button"
-              aria-label={starred ? 'Bỏ gắn dấu sao' : 'Gắn dấu sao'}
-              title={starred ? 'Bỏ gắn dấu sao' : 'Gắn dấu sao'}
+              aria-label={starred ? t('header.unstar') : t('header.star')}
+              title={starred ? t('header.unstar') : t('header.star')}
               variant="ghost"
               size="icon"
               onClick={onToggleStar}
@@ -97,14 +97,16 @@ export const SheetsHeader = ({
             </Button>
             <span
               className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground pl-1"
-              title={saveState === 'saving' ? 'Đang lưu...' : 'Đã lưu vào bộ nhớ thiết bị'}
+              title={
+                saveState === 'saving' ? tCommon('actions.saving') : t('header.savedTooltip')
+              }
             >
               <Icon
                 name="cloud"
                 className={cn('size-3.5', saveState === 'saving' && 'animate-pulse text-primary')}
               />
               <span className="hidden md:inline">
-                {saveState === 'saving' ? 'Đang lưu...' : 'Đã lưu'}
+                {saveState === 'saving' ? tCommon('actions.saving') : tCommon('actions.saved')}
               </span>
             </span>
           </div>

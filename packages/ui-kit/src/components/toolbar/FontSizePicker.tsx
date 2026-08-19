@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback, type KeyboardEvent, type ChangeEvent } from 'react';
 import { cn } from '../../cn';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { ScrollArea } from '../ui/scroll-area';
 import { ToolbarButton } from './ToolbarButton';
@@ -120,7 +122,7 @@ export const FontSizePicker = ({
             />
           }
         >
-          <input
+          <Input
             ref={inputRef}
             id="font-size-input"
             type="text"
@@ -133,8 +135,9 @@ export const FontSizePicker = ({
             onFocus={handleInputFocus}
             onClick={() => setOpen(true)}
             className={cn(
-              'w-full h-full bg-transparent text-center text-[12px] font-normal text-foreground',
-              'outline-none cursor-text select-all',
+              'h-full w-full rounded-none border-0 bg-transparent px-0 py-0 shadow-none',
+              'text-center text-[12px] font-normal text-foreground',
+              'cursor-text select-all focus-visible:ring-0',
             )}
           />
         </PopoverTrigger>
@@ -150,23 +153,21 @@ export const FontSizePicker = ({
               {FONT_SIZES.map((size) => {
                 const isSelected = size === currentNum;
                 return (
-                  <button
+                  <Button
                     key={size}
-                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    aria-pressed={isSelected}
                     onClick={() => handleSelectSize(size)}
                     className={cn(
-                      'w-full flex items-center justify-between px-2.5 py-[5px]',
-                      'text-[13px] text-foreground hover:bg-hover transition-colors cursor-pointer text-left',
-                      isSelected && 'text-primary font-semibold bg-primary/10',
+                      'h-auto w-full justify-between rounded-none px-2.5 py-[5px]',
+                      'text-[13px] font-normal text-foreground hover:bg-hover',
+                      isSelected && 'bg-primary/10 font-semibold text-primary hover:text-primary',
                     )}
                   >
                     <span>{size}</span>
-                    {isSelected && (
-                      <span className="text-primary shrink-0">
-                        <Icon name="check" size={13} />
-                      </span>
-                    )}
-                  </button>
+                    {isSelected && <Icon name="check" size={13} className="shrink-0 text-primary" />}
+                  </Button>
                 );
               })}
             </div>
