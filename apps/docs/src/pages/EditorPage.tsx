@@ -120,7 +120,7 @@ export const EditorPage = () => {
   }, [activeDoc, editor]);
 
   useEffect(() => {
-    if (!editor) return;
+    if (!editor || editor.isDestroyed) return;
     editor.storage.keyboardShortcuts.onFocusFontPicker = () => fontPickerRef.current?.click();
     editor.storage.keyboardShortcuts.onFocusColorPicker = () => colorPickerRef.current?.click();
     editor.storage.keyboardShortcuts.onSetLink = setLink;
