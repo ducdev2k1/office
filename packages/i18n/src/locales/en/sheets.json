@@ -1,0 +1,17 @@
+{
+  "title": "Spreadsheet",
+  "untitled": "Untitled spreadsheet",
+  "openXlsx": "Open from device (.xlsx)",
+  "openError": "Could not open file. Please choose a valid .xlsx file.",
+  "newSheet": "New spreadsheet",
+  "exportXlsx": "Export .xlsx",
+  "exporting": "Exporting...",
+  "exportError": "Export failed.",
+  "insertChart": "Insert chart",
+  "chartInspector": "Chart editor",
+  "chartSetup": "Setup",
+  "chartCustomize": "Customize",
+  "chartType": "Chart type",
+  "dataRange": "Data range",
+  "deleteChart": "Delete chart"
+}

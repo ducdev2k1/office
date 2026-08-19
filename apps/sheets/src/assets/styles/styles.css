@@ -1,0 +1,75 @@
+@import '@office/fonts/fonts.css';
+@import '@office/ui-kit/tokens.css';
+@import 'tailwindcss';
+
+@source "../../../../../packages";
+@source "../../..";
+@source "../../../../../node_modules/@office";
+
+:root {
+  color-scheme: light;
+  --blue: var(--o-primary);
+  --blue-soft: var(--o-primary-soft);
+  --ink: var(--foreground);
+  --line: var(--border);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-hover: var(--hover);
+  --color-active: var(--active);
+  --color-active-foreground: var(--active-foreground);
+  --color-workspace: var(--workspace);
+  --color-kind-docs: var(--o-kind-docs);
+  --color-kind-sheets: var(--o-kind-sheets);
+  --color-kind-slides: var(--o-kind-slides);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Hide bottom footer zoom slider and stats so user controls zoom exclusively via top toolbar */
+footer section.univer-justify-end,
+footer .univer-justify-end,
+footer [class*="univer-justify-end"] {
+  display: none !important;
+}
+
+

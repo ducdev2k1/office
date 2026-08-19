@@ -80,6 +80,10 @@ export function DocumentList() {
 
 - **Ưu tiên sử dụng Shadcn UI & Base UI Primitives**: Tận dụng tối đa các UI component có sẵn từ `@office/ui-kit` (Button, Dialog, Dropdown Menu, Tooltip, Popover, Input, Switch, Tabs, Card, ScrollArea, v.v.).
 - **Hạn chế viết lại từ đầu**: Không tự code HTML/CSS thô khi đã có component tương đương từ design system.
+- **Quy tắc bắt buộc về Tooltip (Cấm dùng HTML `title`)**:
+  - **Tuyệt đối không dùng thuộc tính HTML thuần `title="..."`** cho các icon, button, badge, action controls để làm chú thích.
+  - **Bắt buộc sử dụng component `Tooltip`** (`Tooltip`, `TooltipTrigger`, `TooltipContent`, `TooltipProvider` từ `@office/ui-kit` chuẩn Shadcn UI + Base UI) để đảm bảo giao diện đồng bộ, hiển thị animation mượt mà và tương thích dark/light mode hoàn hảo.
+  - Đối với các nút trên toolbar, bắt buộc dùng `ToolbarButton` (đã đóng gói sẵn Tooltip và accessibility attributes).
 - **Tùy biến linh hoạt**: Tùy biến style component qua `className`, `cva` (Class Variance Authority), Tailwind/SCSS tokens mà vẫn giữ nguyên cấu trúc chuẩn và headless logic.
 - **Icons**: Sử dụng icon chuẩn iNET Design System (`<Icon name="..." />` từ `@office/ui-kit`) hoặc `lucide-react` cho các app shell controls.
 
@@ -182,3 +186,13 @@ src/assets/
 - **Quy tắc Stylesheet (`styles.css`)**:
   - Chỉ chứa các định nghĩa CSS đặc thù không thuận tiện viết inline trong JSX như: Google Fonts, import Tokens Design System (`@office/ui-kit/tokens.css`), cấu hình `@theme inline`, typography của nội dung ProseMirror TipTap editor (`.doc-editor`, `.tiptap`, bảng table, blockquote), ruler canvas, và `@media print`.
   - Mọi giao diện khác (Header, Menu, Toolbar, Sidebar, Dialog, Modal, Statusbar...) đều dùng utility classes Tailwind trực tiếp trên JSX.
+
+---
+
+## 12. Univer (Sheets) — Ghi chú bắt buộc
+
+- **Pin `@univerjs/icons@1.2.0`** qua `pnpm.overrides` trong root `package.json` (XEM BÊN DƯỚI) — KHÔNG được nâng/xoá. Univer v0.23 có bug dependency: `@univerjs/design@0.23` và `@univerjs/ui@0.23` đều khai `^1.2.0` nhưng cần hai tập icon khác nhau; chỉ `1.2.0` export đủ toàn bộ icon Univer cần. Xem `docs/report-sheets-univer-survey.md` mục 2.1.
+- Khi nâng Univer lên version mới: phải kiểm tra lại pin này và license (bắt buộc Apache-2.0, không AGPL/Pro).
+- `@univerjs/preset-sheets-ui` KHÔNG tồn tại trên npm — UI nằm trong `@univerjs/preset-sheets-core`.
+- `univerAPI.createWorkbook(initialData)` nhận `Partial<IWorkbookData>` (không phải `loadSnapshot`); remount qua React `key` khi đổi dữ liệu (vì `useEffect` mount 1 lần).
+- Univer OSS không import/export xlsx — pipeline bắt buộc qua `xlsx-io`/ExcelJS (`exceljsToUniver.utils.ts`).

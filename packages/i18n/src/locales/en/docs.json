@@ -149,12 +149,21 @@
   },
   "pageSetup": {
     "title": "Page setup",
+    "pageFormat": "Page format",
     "paperSize": "Paper size",
     "paperSizes": {
-      "a4": "A4 (210 × 297 mm)",
-      "a5": "A5 (148 × 210 mm)",
-      "letter": "Letter (8.5 × 11 in)"
+      "a4": "A4",
+      "a5": "A5",
+      "letter": "Letter"
     },
+    "unit": "Unit",
+    "units": {
+      "cm": "Centimeter",
+      "mm": "Millimeter",
+      "inch": "Inch"
+    },
+    "width": "Width",
+    "height": "Height",
     "orientation": "Orientation",
     "orientations": {
       "portrait": "Portrait",
@@ -162,17 +171,40 @@
     },
     "portrait": "Portrait",
     "landscape": "Landscape",
-    "margins": "Margins (mm)",
+    "pageMargins": "Page margins",
+    "margins": "Margins",
     "marginTop": "Top",
     "marginBottom": "Bottom",
     "marginLeft": "Left",
     "marginRight": "Right",
+    "pageStyling": "Page styling",
+    "pageGap": "Page gap",
+    "backgroundColor": "Background color",
+    "backgrounds": {
+      "default": "Default (transparent)",
+      "white": "White",
+      "gray": "Light gray",
+      "cream": "Warm cream"
+    },
     "apply": "Apply",
     "cancel": "Cancel"
   },
   "headerFooter": {
     "title": "Header, Footer & Page Numbers",
     "description": "Customize header, footer text content and page numbering layout.",
+    "tabs": {
+      "document": "Document",
+      "headersFooters": "Headers & footers"
+    },
+    "layout": "Layout",
+    "differentFirstPage": "Different first page",
+    "differentOddEven": "Different odd and even pages",
+    "distanceToEdge": "Distance to page edge",
+    "headerDistanceFromTop": "Header distance from top",
+    "footerDistanceFromBottom": "Footer distance from bottom",
+    "insertPageNumber": "Insert page number",
+    "insertTotalPages": "Insert total pages",
+    "content": "Content",
     "header": "Header",
     "footer": "Footer",
     "alignLeft": "Left",
@@ -201,12 +233,12 @@
       "startAt": "Start at page",
       "skipFirst": "Skip first page"
     },
-"preview": "Preview",
- "applied": "Applied header, footer and page number settings",
- "apply": "Apply",
- "cancel": "Cancel",
- "done": "Done",
- "editHint": "Double-click the header / footer area to edit"
+    "preview": "Preview",
+    "applied": "Applied header, footer and page number settings",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "done": "Done",
+    "editHint": "Double-click the header / footer area to edit"
   },
   "helpModal": {
     "title": "Keyboard Shortcuts",

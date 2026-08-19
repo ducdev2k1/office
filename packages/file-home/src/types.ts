@@ -22,6 +22,8 @@ export interface ProductConfig {
   createLabel: string;
   startLabel: string;
   blankLabel: string;
+  openFromDeviceLabel?: string;
+  acceptExtension?: string;
   editorPath: (id: string) => string;
   accentVar: string;
   templates: TemplateDef[];

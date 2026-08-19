@@ -34,9 +34,8 @@ export const FileRowMenu = ({
         render={
           <button
             type="button"
-            aria-label={t('fileActions.open')}
-            title={t('fileActions.moreOptions')}
-            className="flex size-8 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-hover hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={t('fileActions.moreOptions')}
+            className="flex size-8 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-hover hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
           />
         }
       >

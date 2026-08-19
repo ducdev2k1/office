@@ -1,0 +1,17 @@
+{
+  "title": "Bảng tính",
+  "untitled": "Bảng tính chưa có tiêu đề",
+  "openXlsx": "Mở từ máy (.xlsx)",
+  "openError": "Không mở được file. Vui lòng chọn file .xlsx hợp lệ.",
+  "newSheet": "Bảng tính mới",
+  "exportXlsx": "Xuất .xlsx",
+  "exporting": "Đang xuất...",
+  "exportError": "Xuất file thất bại.",
+  "insertChart": "Chèn biểu đồ",
+  "chartInspector": "Trình chỉnh sửa biểu đồ",
+  "chartSetup": "Thiết lập",
+  "chartCustomize": "Tùy chỉnh",
+  "chartType": "Loại biểu đồ",
+  "dataRange": "Dải ô dữ liệu",
+  "deleteChart": "Xoá biểu đồ"
+}

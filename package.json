@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "turbo dev",
     "dev:docs": "pnpm --filter @office/docs dev",
+    "dev:sheets": "pnpm --filter @office/sheets dev",
     "build": "turbo build",
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",
@@ -19,5 +20,10 @@
     "prettier": "^3.3.3",
     "turbo": "^2.5.6",
     "typescript": "^5.8.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@univerjs/icons": "1.2.0"
+    }
   }
 }

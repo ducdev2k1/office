@@ -149,30 +149,62 @@
   },
   "pageSetup": {
     "title": "Cấu hình trang",
+    "pageFormat": "Định dạng trang",
     "paperSize": "Khổ giấy",
     "paperSizes": {
-      "a4": "A4 (210 × 297 mm)",
-      "a5": "A5 (148 × 210 mm)",
-      "letter": "Letter (216 × 279 mm)"
+      "a4": "A4",
+      "a5": "A5",
+      "letter": "Letter"
     },
+    "unit": "Đơn vị",
+    "units": {
+      "cm": "Centimeter",
+      "mm": "Millimeter",
+      "inch": "Inch"
+    },
+    "width": "Chiều rộng",
+    "height": "Chiều cao",
     "orientation": "Hướng giấy",
     "orientations": {
-      "portrait": "Dọc (Portrait)",
-      "landscape": "Ngang (Landscape)"
+      "portrait": "Dọc",
+      "landscape": "Ngang"
     },
-    "portrait": "Dọc (Portrait)",
-    "landscape": "Ngang (Landscape)",
-    "margins": "Lề giấy (mm)",
+    "portrait": "Dọc",
+    "landscape": "Ngang",
+    "pageMargins": "Lề trang",
+    "margins": "Lề giấy",
     "marginTop": "Trên",
     "marginBottom": "Dưới",
     "marginLeft": "Trái",
     "marginRight": "Phải",
+    "pageStyling": "Kiểu trang",
+    "pageGap": "Khoảng cách trang",
+    "backgroundColor": "Màu nền",
+    "backgrounds": {
+      "default": "Mặc định (Trong suốt)",
+      "white": "Trắng",
+      "gray": "Xám nhạt",
+      "cream": "Kem ấm"
+    },
     "apply": "Áp dụng",
     "cancel": "Hủy"
   },
   "headerFooter": {
     "title": "Đầu trang, chân trang & số trang",
     "description": "Tùy chỉnh nội dung tiêu đề đầu trang, chân trang và định dạng đánh số trang.",
+    "tabs": {
+      "document": "Tài liệu",
+      "headersFooters": "Đầu & chân trang"
+    },
+    "layout": "Bố cục",
+    "differentFirstPage": "Trang đầu tiên khác biệt",
+    "differentOddEven": "Trang chẵn và lẻ khác nhau",
+    "distanceToEdge": "Khoảng cách đến mép trang",
+    "headerDistanceFromTop": "Đầu trang cách mép trên",
+    "footerDistanceFromBottom": "Chân trang cách mép dưới",
+    "insertPageNumber": "Chèn số trang",
+    "insertTotalPages": "Chèn tổng số trang",
+    "content": "Nội dung văn bản",
     "header": "Đầu trang (Header)",
     "footer": "Chân trang (Footer)",
     "alignLeft": "Trái",
@@ -201,12 +233,12 @@
       "startAt": "Bắt đầu từ trang",
       "skipFirst": "Bỏ qua trang đầu tiên"
     },
-"preview": "Xem trước",
- "applied": "Đã áp dụng cấu hình đầu trang, chân trang và số trang",
- "apply": "Áp dụng",
- "cancel": "Hủy",
- "done": "Xong",
- "editHint": "Nhấp đúp vào vùng đầu trang / chân trang để chỉnh sửa"
+    "preview": "Xem trước",
+    "applied": "Đã áp dụng cấu hình đầu trang, chân trang và số trang",
+    "apply": "Áp dụng",
+    "cancel": "Hủy",
+    "done": "Xong",
+    "editHint": "Nhấp đúp vào vùng đầu trang / chân trang để chỉnh sửa"
   },
   "helpModal": {
     "title": "Phím tắt bàn phím",

@@ -10,7 +10,7 @@ import type { ShellKind } from './types';
 
 const PRODUCTS: { kind: ShellKind; available: boolean; icon: string }[] = [
   { kind: 'docs', available: true, icon: 'file-text' },
-  { kind: 'sheets', available: false, icon: 'file-spreadsheet' },
+  { kind: 'sheets', available: true, icon: 'file-spreadsheet' },
   { kind: 'slides', available: false, icon: 'presentation' },
 ];
 

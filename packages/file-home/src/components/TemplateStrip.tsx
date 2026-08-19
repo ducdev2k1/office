@@ -16,6 +16,17 @@ export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateSt
   const IconName = KIND_ICON[config.kind];
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const defaultAccept =
+    config.kind === 'sheets' ? '.xlsx' : config.kind === 'slides' ? '.pptx' : '.docx';
+  const acceptExt = config.acceptExtension ?? defaultAccept;
+  const openLabel =
+    config.openFromDeviceLabel ??
+    (config.kind === 'sheets'
+      ? 'Mở từ máy (.xlsx)'
+      : config.kind === 'slides'
+        ? 'Mở từ máy (.pptx)'
+        : t('home.openFromDevice'));
+
   return (
     <section className="px-6 pt-6" aria-label={config.startLabel}>
       <div className="mb-3 flex items-center justify-between">
@@ -44,7 +55,7 @@ export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateSt
             type="button"
             onClick={() => fileInputRef.current?.click()}
             className="group flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition-shadow hover:shadow-md"
-            aria-label={t('home.openFromDevice')}
+            aria-label={openLabel}
           >
             <span className="flex h-28 items-center justify-center bg-muted">
               <Icon
@@ -55,7 +66,7 @@ export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateSt
               />
             </span>
             <span className="truncate px-2 py-2 text-sm text-foreground">
-              {t('home.openFromDevice')}
+              {openLabel}
             </span>
           </button>
         )}
@@ -80,7 +91,7 @@ export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateSt
         ref={fileInputRef}
         className="hidden"
         type="file"
-        accept=".docx"
+        accept={acceptExt}
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file && onOpenFromDevice) {

@@ -1,4 +1,4 @@
-import type { viAppShell, viCommon, viDocs } from './locales/vi';
+import type { viAppShell, viCommon, viDocs, viSheets } from './locales/vi';
 
 export type Locale = 'vi' | 'en';
 
@@ -8,11 +8,13 @@ export type DeepStringMap<T> = {
 
 export type CommonDictionary = DeepStringMap<typeof viCommon>;
 export type DocsDictionary = DeepStringMap<typeof viDocs>;
+export type SheetsDictionary = DeepStringMap<typeof viSheets>;
 export type AppShellDictionary = DeepStringMap<typeof viAppShell>;
 
 export interface TranslationSchema {
   common: CommonDictionary;
   docs: DocsDictionary;
+  sheets: SheetsDictionary;
   appShell: AppShellDictionary;
 }
 

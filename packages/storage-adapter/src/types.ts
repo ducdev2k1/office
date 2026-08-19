@@ -10,6 +10,8 @@ export interface StoredDocument {
   id: string;
   title: string;
   updatedAt: string;
+  /** Du lieu rieng cua tung loai document (VD: IWorkbookData cua sheets). */
+  data?: unknown;
 }
 
 export interface DocumentStore<T extends StoredDocument = StoredDocument> {
