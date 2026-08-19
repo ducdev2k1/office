@@ -2,10 +2,20 @@ import type { EChartsOption } from 'echarts';
 import { DEFAULT_PALETTES } from '../constants/charts.constants';
 import type { ChartSpec, ParsedDataMatrix } from '../types/charts.types';
 
+/** Nhãn hiển thị do component truyền vào để util giữ được tính thuần khiết */
+export interface ChartOptionLabels {
+  noData: string;
+  seriesFallback: string;
+  /** Mẫu tên danh mục dự phòng, ví dụ "Mục {index}" */
+  categoryFallback: string;
+  radarIndicator: string;
+}
+
 export const buildEChartsOption = (
   spec: ChartSpec,
   data: ParsedDataMatrix,
-  isDark: boolean
+  isDark: boolean,
+  labels: ChartOptionLabels,
 ): EChartsOption => {
   const textColor = isDark ? '#e2e8f0' : '#1e293b';
   const textMuted = isDark ? '#94a3b8' : '#64748b';
@@ -82,7 +92,7 @@ export const buildEChartsOption = (
         top: 'middle',
         style: {
           fill: textMuted,
-          text: 'Chưa có dữ liệu cho dải ô đã chọn',
+          text: labels.noData,
           fontSize: 13,
         },
       },
@@ -179,7 +189,7 @@ export const buildEChartsOption = (
     case 'pie': {
       const primarySeries = data.seriesData[0];
       const pieData = data.categories.map((cat, idx) => ({
-        name: cat || `Mục ${idx + 1}`,
+        name: cat || labels.categoryFallback.replace('{index}', String(idx + 1)),
         value: primarySeries?.values[idx] ?? 0,
       }));
 
@@ -196,7 +206,7 @@ export const buildEChartsOption = (
         legend: legendOption,
         series: [
           {
-            name: primarySeries?.name || spec.title || 'Dữ liệu',
+            name: primarySeries?.name || spec.title || labels.seriesFallback,
             type: 'pie' as const,
             radius: spec.isDonut ? ['42%', '72%'] : '72%',
             center: ['50%', spec.title ? '56%' : '50%'],
@@ -259,7 +269,8 @@ export const buildEChartsOption = (
         tooltip: commonTooltip,
         legend: legendOption,
         radar: {
-          indicator: indicator.length > 0 ? indicator : [{ name: 'Chỉ số', max: 100 }],
+          indicator:
+            indicator.length > 0 ? indicator : [{ name: labels.radarIndicator, max: 100 }],
           radius: '65%',
           center: ['50%', spec.title ? '56%' : '50%'],
           axisName: { color: textMuted, fontSize: 11 },

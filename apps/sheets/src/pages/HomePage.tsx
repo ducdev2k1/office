@@ -6,39 +6,42 @@ import { useTranslation } from '@office/i18n';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const sheetsProduct: ProductIdentity = {
-  kind: 'sheets',
-  name: 'Bảng tính',
-  accentVar: 'var(--o-kind-sheets)',
-};
-
 /** Trang home: Quản lý danh sách bảng tính Sheets. */
 export const HomePage = () => {
-  const { t } = useTranslation('appShell');
+  const { t } = useTranslation('sheets');
   const { theme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [storageMB, setStorageMB] = useState<number | undefined>(undefined);
   const navigate = useNavigate();
   const sheetsApi = useSheets();
 
+  const sheetsProduct = useMemo<ProductIdentity>(
+    () => ({
+      kind: 'sheets',
+      name: t('title'),
+      accentVar: 'var(--o-kind-sheets)',
+    }),
+    [t],
+  );
+
   const sheetsConfig = useMemo<ProductConfig>(
     () => ({
       kind: 'sheets',
-      name: 'Bảng tính',
-      createLabel: 'Tạo bảng tính mới',
-      startLabel: 'Bắt đầu bảng tính mới',
-      blankLabel: 'Bảng tính trống',
-      openFromDeviceLabel: 'Mở từ máy (.xlsx)',
+      name: t('title'),
+      createLabel: t('home.createLabel'),
+      startLabel: t('home.startLabel'),
+      blankLabel: t('home.blankLabel'),
+      openFromDeviceLabel: t('openXlsx'),
       acceptExtension: '.xlsx',
       editorPath: (id) => `/edit/${id}`,
       accentVar: 'var(--o-kind-sheets)',
       templates: [
-        { id: 'blank', label: 'Bảng tính trống' },
-        { id: 'budget', label: 'Ngân sách thu chi' },
-        { id: 'schedule', label: 'Kế hoạch tuần' },
+        { id: 'blank', label: t('home.templates.blank') },
+        { id: 'budget', label: t('home.templates.budget') },
+        { id: 'schedule', label: t('home.templates.schedule') },
       ],
     }),
-    [],
+    [t],
   );
 
   useEffect(() => {
@@ -70,7 +73,7 @@ export const HomePage = () => {
               const id = await sheetsApi.importFile(file);
               navigate(`/edit/${id}`);
             } catch {
-              window.alert('Không mở được file. Vui lòng chọn file .xlsx hợp lệ.');
+              window.alert(t('openError'));
             }
           },
           onOpen: (id) => {

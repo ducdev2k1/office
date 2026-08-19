@@ -1,8 +1,13 @@
-import { createBlankSheetRecord, createDefaultWorkbookData } from '@/constants/sheets.constants';
+import {
+  createBlankSheetRecord,
+  createDefaultWorkbookData,
+  getUntitledTitle,
+} from '@/constants/sheets.constants';
 import { DEFAULT_PALETTES } from '@/modules/charts/constants/charts.constants';
 import type { ChartSpec } from '@/modules/charts/types/charts.types';
 import { parseXlsxFile } from '@/services/xlsx.service';
 import type { SheetDocRecord } from '@/types/sheets.types';
+import { getStoredLocale, translate } from '@office/i18n';
 import { createDocumentStore, type StoredDocument } from '@office/storage-adapter';
 import { CellValueType, LocaleType, type IWorkbookData } from '@univerjs/presets';
 
@@ -14,6 +19,9 @@ export interface XlsxSourceRecord extends StoredDocument {
 
 export const documentStore = createDocumentStore<SheetDocRecord>('sheets-documents');
 export const xlsxSourceStore = createDocumentStore<XlsxSourceRecord>('sheets-sources');
+
+/** Chuỗi mẫu dịch tại thời điểm seed; tài liệu đã lưu giữ nguyên ngôn ngữ lúc tạo */
+const sampleText = (key: string): string => translate(getStoredLocale(), `sheets.sample.${key}`);
 
 const buildSampleWorkbook = (id: string, name: string): IWorkbookData => {
   const sheetId = 'sheet-01';
@@ -30,43 +38,43 @@ const buildSampleWorkbook = (id: string, name: string): IWorkbookData => {
     sheets: {
       [sheetId]: {
         id: sheetId,
-        name: 'Trang tính 1',
+        name: sampleText('defaultSheetName'),
         rowCount: 100,
         columnCount: 26,
         cellData: {
           0: {
-            0: { v: 'BÁO CÁO THU CHI DỰ ÁN', s: 's2', t: CellValueType.STRING },
+            0: { v: sampleText('budget.reportHeading'), s: 's2', t: CellValueType.STRING },
           },
           2: {
-            0: { v: 'STT', s: 's1', t: CellValueType.STRING },
-            1: { v: 'Hạng mục công việc', s: 's1', t: CellValueType.STRING },
-            2: { v: 'Số lượng', s: 's1', t: CellValueType.STRING },
-            3: { v: 'Đơn giá (VNĐ)', s: 's1', t: CellValueType.STRING },
-            4: { v: 'Thành tiền', s: 's1', t: CellValueType.STRING },
+            0: { v: sampleText('budget.colIndex'), s: 's1', t: CellValueType.STRING },
+            1: { v: sampleText('budget.colItem'), s: 's1', t: CellValueType.STRING },
+            2: { v: sampleText('budget.colQuantity'), s: 's1', t: CellValueType.STRING },
+            3: { v: sampleText('budget.colUnitPrice'), s: 's1', t: CellValueType.STRING },
+            4: { v: sampleText('budget.colAmount'), s: 's1', t: CellValueType.STRING },
           },
           3: {
             0: { v: 1, t: CellValueType.NUMBER },
-            1: { v: 'Thiết kế giao diện UI/UX', t: CellValueType.STRING },
+            1: { v: sampleText('budget.item1'), t: CellValueType.STRING },
             2: { v: 1, t: CellValueType.NUMBER },
             3: { v: 15000000, t: CellValueType.NUMBER },
             4: { f: '=C4*D4', v: 15000000, t: CellValueType.NUMBER },
           },
           4: {
             0: { v: 2, t: CellValueType.NUMBER },
-            1: { v: 'Lập trình Frontend React', t: CellValueType.STRING },
+            1: { v: sampleText('budget.item2'), t: CellValueType.STRING },
             2: { v: 2, t: CellValueType.NUMBER },
             3: { v: 20000000, t: CellValueType.NUMBER },
             4: { f: '=C5*D5', v: 40000000, t: CellValueType.NUMBER },
           },
           5: {
             0: { v: 3, t: CellValueType.NUMBER },
-            1: { v: 'Tích hợp Univer Sheets & ExcelJS', t: CellValueType.STRING },
+            1: { v: sampleText('budget.item3'), t: CellValueType.STRING },
             2: { v: 1, t: CellValueType.NUMBER },
             3: { v: 18000000, t: CellValueType.NUMBER },
             4: { f: '=C6*D6', v: 18000000, t: CellValueType.NUMBER },
           },
           6: {
-            1: { v: 'Tổng cộng', s: 's1', t: CellValueType.STRING },
+            1: { v: sampleText('budget.total'), s: 's1', t: CellValueType.STRING },
             4: { f: '=SUM(E4:E6)', v: 73000000, s: 's1', t: CellValueType.NUMBER },
           },
         },
@@ -80,9 +88,9 @@ const buildSampleWorkbook = (id: string, name: string): IWorkbookData => {
   };
 };
 
-const sampleChart: ChartSpec = {
+const createSampleChart = (): ChartSpec => ({
   id: 'chart-sample-budget-1',
-  title: 'Thành tiền theo Hạng mục công việc',
+  title: sampleText('budget.chartTitle'),
   type: 'column',
   sheetId: 'sheet-01',
   dataRange: 'B3:E6',
@@ -106,45 +114,52 @@ const sampleChart: ChartSpec = {
   palette: DEFAULT_PALETTES.inet,
   isSmooth: true,
   isStacked: false,
+});
+
+/** Bảng tính mẫu khi mở app lần đầu, nhãn theo ngôn ngữ đang chọn */
+export const createStarterSheets = (): SheetDocRecord[] => {
+  const budgetTitle = sampleText('budget.title');
+  const planTitle = sampleText('plan.title');
+
+  return [
+    {
+      id: 'sheet-sample-budget',
+      title: budgetTitle,
+      kind: 'sheets',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      lastOpenedAt: new Date().toISOString(),
+      starred: true,
+      deletedAt: null,
+      data: buildSampleWorkbook('sheet-sample-budget', budgetTitle),
+      charts: [createSampleChart()],
+    },
+    {
+      id: 'sheet-sample-blank',
+      title: planTitle,
+      kind: 'sheets',
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+      updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+      lastOpenedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+      starred: false,
+      deletedAt: null,
+      data: createDefaultWorkbookData('sheet-sample-blank', planTitle),
+      charts: [],
+    },
+  ];
 };
 
-export const starterSheets: SheetDocRecord[] = [
-  {
-    id: 'sheet-sample-budget',
-    title: 'Báo cáo thu chi dự án',
-    kind: 'sheets',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    lastOpenedAt: new Date().toISOString(),
-    starred: true,
-    deletedAt: null,
-    data: buildSampleWorkbook('sheet-sample-budget', 'Báo cáo thu chi dự án'),
-    charts: [sampleChart],
-  },
-  {
-    id: 'sheet-sample-blank',
-    title: 'Bảng tính kế hoạch Q3',
-    kind: 'sheets',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-    lastOpenedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-    starred: false,
-    deletedAt: null,
-    data: createDefaultWorkbookData('sheet-sample-blank', 'Bảng tính kế hoạch Q3'),
-    charts: [],
-  },
-];
-
 export const loadSheets = async (): Promise<SheetDocRecord[]> => {
+  const starters = createStarterSheets();
   try {
     const stored = await documentStore.list();
     if (stored.length === 0) {
-      await documentStore.putMany(starterSheets);
-      return starterSheets;
+      await documentStore.putMany(starters);
+      return starters;
     }
     return stored;
   } catch {
-    return starterSheets;
+    return starters;
   }
 };
 
@@ -183,7 +198,8 @@ export const importSheetFile = async (file: File): Promise<SheetDocRecord> => {
   const data = await parseXlsxFile(file);
   const now = new Date().toISOString();
   const id = `sheet-${crypto.randomUUID()}`;
-  const title = file.name.replace(/\.[^/.]+$/, '') || 'Bảng tính đã nhập';
+  const title =
+    file.name.replace(/\.[^/.]+$/, '') || translate(getStoredLocale(), 'sheets.importedTitle');
 
   const record: SheetDocRecord = {
     id,
@@ -209,7 +225,7 @@ export const importSheetFile = async (file: File): Promise<SheetDocRecord> => {
 };
 
 export const createBlankSheet = (title?: string): SheetDocRecord => {
-  return createBlankSheetRecord(title);
+  return createBlankSheetRecord(title ?? getUntitledTitle());
 };
 
 export const getStorageUsageBytes = (sheets: SheetDocRecord[]): number => {

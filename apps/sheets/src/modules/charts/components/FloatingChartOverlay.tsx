@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import type { IWorkbookData } from '@univerjs/presets';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ChartPosition, ChartSpec } from '../types/charts.types';
@@ -27,6 +28,7 @@ export const FloatingChartOverlay = ({
   onUpdateChartPosition,
   onDeleteChart,
 }: FloatingChartOverlayProps) => {
+  const { t } = useTranslation('sheets');
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerBounds, setContainerBounds] = useState({ width: 1920, height: 1080 });
 
@@ -63,7 +65,10 @@ export const FloatingChartOverlay = ({
       className="pointer-events-none absolute inset-0 z-10 overflow-hidden"
     >
       {visibleCharts.map((spec) => {
-        const data = extractDataFromWorkbook(workbookData, activeSheetId, spec);
+        const data = extractDataFromWorkbook(workbookData, activeSheetId, spec, {
+          series: t('chart.fallback.series'),
+          category: t('chart.fallback.category'),
+        });
         return (
           <div key={spec.id} className="pointer-events-auto contents">
             <FloatingChartContainer

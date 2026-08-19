@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import {
   Button,
   Icon,
@@ -29,6 +30,8 @@ export const ChartInspector = ({
   onUpdateSpec,
   onDeleteChart,
 }: ChartInspectorProps) => {
+  const { t } = useTranslation('sheets');
+
   // Giữ spec cuối cùng để panel vẫn còn nội dung trong lúc chạy animation đóng
   const lastSpecRef = useRef<ChartSpec | null>(null);
   if (spec) lastSpecRef.current = spec;
@@ -41,7 +44,7 @@ export const ChartInspector = ({
 
   return (
     <aside
-      aria-label="Trình chỉnh sửa biểu đồ"
+      aria-label={t('chart.inspectorTitle')}
       aria-hidden={!isVisible}
       // Panel đóng vẫn nằm trong DOM: chặn focus/tab vào nội dung bị che
       inert={!isVisible}
@@ -60,7 +63,7 @@ export const ChartInspector = ({
         <div className="flex h-12 shrink-0 items-center justify-between border-b border-border px-4">
           <div className="flex items-center gap-2">
             <Icon name="bar-chart-2" size={16} className="text-primary" />
-            <h3 className="text-sm font-semibold">Trình chỉnh sửa biểu đồ</h3>
+            <h3 className="text-sm font-semibold">{t('chart.inspectorTitle')}</h3>
           </div>
           <Button
             variant="ghost"
@@ -78,11 +81,11 @@ export const ChartInspector = ({
             <TabsIndicator />
             <TabsTrigger value="setup">
               <Icon name="settings" size={13} />
-              <span>Thiết lập</span>
+              <span>{t('chart.tabs.setup')}</span>
             </TabsTrigger>
             <TabsTrigger value="customize">
               <Icon name="palette" size={13} />
-              <span>Tùy chỉnh</span>
+              <span>{t('chart.tabs.customize')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -106,7 +109,7 @@ export const ChartInspector = ({
               className="w-full text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
             >
               <Icon name="trash-2" size={14} className="mr-1.5" />
-              Xoá biểu đồ này
+              {t('chart.deleteThis')}
             </Button>
           </div>
         )}

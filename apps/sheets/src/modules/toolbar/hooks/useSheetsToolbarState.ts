@@ -5,6 +5,7 @@ import type {
   TextWrapMode,
   ToolbarState,
 } from '@/modules/toolbar/types/toolbar.types';
+import { useTranslation } from '@office/i18n';
 import { BorderStyleTypes, BorderType, WrapStrategy, type FUniver } from '@univerjs/presets';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -32,6 +33,7 @@ const DEFAULT_STATE: ToolbarState = {
 };
 
 export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
+  const { t } = useTranslation('sheets');
   const [state, setState] = useState<ToolbarState>(DEFAULT_STATE);
   const copiedFormatRef = useRef<CopiedFormat | null>(null);
 
@@ -436,7 +438,7 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
       (url?: string, text?: string) => {
         const range = getActiveRange();
         if (!range) return;
-        const targetUrl = url || window.prompt('Nhập địa chỉ liên kết (URL):', 'https://');
+        const targetUrl = url || window.prompt(t('toolbar.insert.linkPrompt'), 'https://');
         if (!targetUrl) return;
         const label = text || range.getValue() || targetUrl;
         range.setValue({
@@ -444,7 +446,7 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
           v: String(label),
         });
       },
-      [getActiveRange],
+      [getActiveRange, t],
     ),
 
     insertCheckbox: useCallback(() => {

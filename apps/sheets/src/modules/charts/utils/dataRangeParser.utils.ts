@@ -80,10 +80,30 @@ const getCellValue = (cell?: ICellData): string | number => {
   return '';
 };
 
+/**
+ * Nhãn dự phòng khi dải ô không có tiêu đề hàng/cột.
+ * Component truyền vào để util không phụ thuộc i18n runtime.
+ */
+export interface DataFallbackLabels {
+  /** Mẫu tên chuỗi, ví dụ "Chuỗi {index}" */
+  series: string;
+  /** Mẫu tên danh mục, ví dụ "Mục {index}" */
+  category: string;
+}
+
+const DEFAULT_FALLBACK_LABELS: DataFallbackLabels = {
+  series: 'Chuỗi {index}',
+  category: 'Mục {index}',
+};
+
+const fillIndex = (template: string, index: number): string =>
+  template.replace('{index}', String(index));
+
 export const extractDataFromWorkbook = (
   workbook: IWorkbookData | undefined | null,
   activeSheetId: string | undefined,
-  spec: ChartSpec
+  spec: ChartSpec,
+  labels: DataFallbackLabels = DEFAULT_FALLBACK_LABELS,
 ): ParsedDataMatrix => {
   if (!workbook || !workbook.sheets) {
     return { headers: [], categories: [], seriesData: [] };
@@ -134,18 +154,18 @@ export const extractDataFromWorkbook = (
     dataRows = rawMatrix.slice(1);
   } else {
     const colCount = hasHeaderCol ? (rawMatrix[0]?.length ?? 1) - 1 : (rawMatrix[0]?.length ?? 1);
-    headers = Array.from({ length: colCount }, (_, i) => `Chuỗi ${i + 1}`);
+    headers = Array.from({ length: colCount }, (_, i) => fillIndex(labels.series, i + 1));
   }
 
   const categories: string[] = [];
   const seriesValues: number[][] = headers.map(() => []);
 
   dataRows.forEach((row, rowIdx) => {
-    let cat = `Mục ${rowIdx + 1}`;
+    let cat = fillIndex(labels.category, rowIdx + 1);
     let valCols = row;
 
     if (hasHeaderCol) {
-      cat = String(row[0] || `Mục ${rowIdx + 1}`);
+      cat = String(row[0] || fillIndex(labels.category, rowIdx + 1));
       valCols = row.slice(1);
     }
     categories.push(cat);
@@ -161,7 +181,7 @@ export const extractDataFromWorkbook = (
   });
 
   const seriesData = headers.map((name, i) => ({
-    name: name || `Chuỗi ${i + 1}`,
+    name: name || fillIndex(labels.series, i + 1),
     values: seriesValues[i] || [],
   }));
 

@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import * as echarts from 'echarts';
 import { useEffect, useRef } from 'react';
 import type { ChartSpec, ParsedDataMatrix } from '../types/charts.types';
@@ -18,6 +19,7 @@ export const ChartRenderer = ({
   className = '',
   onInstanceReady,
 }: ChartRendererProps) => {
+  const { t } = useTranslation('sheets');
   const containerRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<echarts.ECharts | null>(null);
 
@@ -33,7 +35,12 @@ export const ChartRenderer = ({
     }
 
     const chart = chartInstanceRef.current;
-    const option = buildEChartsOption(spec, data, isDark);
+    const option = buildEChartsOption(spec, data, isDark, {
+      noData: t('chart.noData'),
+      seriesFallback: t('chart.seriesFallback'),
+      categoryFallback: t('chart.fallback.category'),
+      radarIndicator: t('chart.fallback.radarIndicator'),
+    });
     chart.setOption(option, true);
 
     const resizeObserver = new ResizeObserver(() => {
@@ -44,7 +51,7 @@ export const ChartRenderer = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [spec, data, isDark, onInstanceReady]);
+  }, [spec, data, isDark, onInstanceReady, t]);
 
   useEffect(() => {
     return () => {

@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import {
   Button,
   DropdownMenu,
@@ -17,24 +18,19 @@ export interface FormulaToolsProps {
   onOpenFindReplace: () => void;
 }
 
-const COMMON_FUNCTIONS = [
-  { name: 'SUM', desc: 'Tính tổng các giá trị' },
-  { name: 'AVERAGE', desc: 'Tính giá trị trung bình' },
-  { name: 'COUNT', desc: 'Đếm số lượng giá trị số' },
-  { name: 'MAX', desc: 'Tìm giá trị lớn nhất' },
-  { name: 'MIN', desc: 'Tìm giá trị nhỏ nhất' },
-];
+/** Mô tả hàm lấy từ i18n theo khoá toolbar.formula.functions.<name> */
+const COMMON_FUNCTIONS = ['SUM', 'AVERAGE', 'COUNT', 'MAX', 'MIN'];
 
 const ADVANCED_FUNCTIONS = [
-  { name: 'IF', desc: 'Kiểm tra điều kiện logic' },
-  { name: 'VLOOKUP', desc: 'Tìm kiếm theo chiều dọc' },
-  { name: 'COUNTIF', desc: 'Đếm theo điều kiện' },
-  { name: 'SUMIF', desc: 'Tính tổng theo điều kiện' },
-  { name: 'CONCATENATE', desc: 'Nối chuỗi văn bản' },
-  { name: 'TRIM', desc: 'Xóa khoảng trắng thừa' },
-  { name: 'ROUND', desc: 'Làm tròn số' },
-  { name: 'TODAY', desc: 'Lấy ngày hiện tại' },
-  { name: 'NOW', desc: 'Lấy ngày giờ hiện tại' },
+  'IF',
+  'VLOOKUP',
+  'COUNTIF',
+  'SUMIF',
+  'CONCATENATE',
+  'TRIM',
+  'ROUND',
+  'TODAY',
+  'NOW',
 ];
 
 export const FormulaTools = ({
@@ -42,6 +38,8 @@ export const FormulaTools = ({
   onClearFormatting,
   onOpenFindReplace,
 }: FormulaToolsProps) => {
+  const { t } = useTranslation('sheets');
+
   return (
     <div className="flex items-center gap-0.5">
       {/* Formula Σ Functions Dropdown */}
@@ -51,7 +49,7 @@ export const FormulaTools = ({
             <Button
               variant="ghost"
               size="sm"
-              aria-label="Chèn hàm tính toán"
+              aria-label={t('toolbar.formula.insertAriaLabel')}
               className="flex h-7 items-center gap-0.5 rounded px-1.5 text-foreground hover:bg-accent/70"
             />
           }
@@ -62,16 +60,18 @@ export const FormulaTools = ({
         <DropdownMenuContent align="end" className="w-56 text-xs">
           <DropdownMenuGroup>
             <DropdownMenuLabel className="text-[11px] text-muted-foreground">
-              Hàm phổ biến
+              {t('toolbar.formula.commonGroup')}
             </DropdownMenuLabel>
-            {COMMON_FUNCTIONS.map((f) => (
+            {COMMON_FUNCTIONS.map((name) => (
               <DropdownMenuItem
-                key={f.name}
-                onClick={() => onInsertFormula(f.name)}
+                key={name}
+                onClick={() => onInsertFormula(name)}
                 className="flex items-center justify-between py-1 text-xs font-medium"
               >
-                <span>{f.name}</span>
-                <span className="text-[10px] font-normal text-muted-foreground">{f.desc}</span>
+                <span>{name}</span>
+                <span className="text-[10px] font-normal text-muted-foreground">
+                  {t(`toolbar.formula.functions.${name}`)}
+                </span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuGroup>
@@ -80,16 +80,18 @@ export const FormulaTools = ({
 
           <DropdownMenuGroup>
             <DropdownMenuLabel className="text-[11px] text-muted-foreground">
-              Logic & Thống kê
+              {t('toolbar.formula.advancedGroup')}
             </DropdownMenuLabel>
-            {ADVANCED_FUNCTIONS.map((f) => (
+            {ADVANCED_FUNCTIONS.map((name) => (
               <DropdownMenuItem
-                key={f.name}
-                onClick={() => onInsertFormula(f.name)}
+                key={name}
+                onClick={() => onInsertFormula(name)}
                 className="flex items-center justify-between py-1 text-xs"
               >
-                <span className="font-medium">{f.name}</span>
-                <span className="text-[10px] text-muted-foreground">{f.desc}</span>
+                <span className="font-medium">{name}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {t(`toolbar.formula.functions.${name}`)}
+                </span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuGroup>
@@ -98,7 +100,7 @@ export const FormulaTools = ({
 
       {/* Clear Formatting */}
       <ToolbarButton
-        label="Xóa định dạng (Ctrl+\)"
+        label={t('toolbar.formula.clearFormatting')}
         onClick={onClearFormatting}
       >
         <Icon name="remove-formatting" size={16} />
@@ -106,7 +108,7 @@ export const FormulaTools = ({
 
       {/* Find & Replace */}
       <ToolbarButton
-        label="Tìm kiếm và thay thế (Ctrl+H)"
+        label={t('toolbar.formula.findReplace')}
         onClick={onOpenFindReplace}
       >
         <Icon name="search" size={16} />

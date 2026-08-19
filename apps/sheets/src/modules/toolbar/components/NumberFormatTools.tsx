@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import {
   Button,
   cn,
@@ -19,14 +20,14 @@ interface NumberFormatToolsProps {
 }
 
 const NUMBER_FORMATS = [
-  { label: 'Tự động (General)', pattern: 'General' },
-  { label: 'Số (1,000.12)', pattern: '#,##0.00' },
-  { label: 'Phần trăm (12.34%)', pattern: '0.00%' },
-  { label: 'Tiền tệ (1,000 ₫)', pattern: '#,##0" ₫"' },
-  { label: 'Tiền tệ ($1,000.00)', pattern: '$#,##0.00' },
-  { label: 'Ngày tháng (yyyy-mm-dd)', pattern: 'yyyy-mm-dd' },
-  { label: 'Giờ (hh:mm:ss)', pattern: 'hh:mm:ss' },
-  { label: 'Văn bản thuần (@)', pattern: '@' },
+  { labelKey: 'toolbar.number.formats.general', pattern: 'General' },
+  { labelKey: 'toolbar.number.formats.number', pattern: '#,##0.00' },
+  { labelKey: 'toolbar.number.formats.percent', pattern: '0.00%' },
+  { labelKey: 'toolbar.number.formats.currencyVnd', pattern: '#,##0" ₫"' },
+  { labelKey: 'toolbar.number.formats.currencyUsd', pattern: '$#,##0.00' },
+  { labelKey: 'toolbar.number.formats.date', pattern: 'yyyy-mm-dd' },
+  { labelKey: 'toolbar.number.formats.time', pattern: 'hh:mm:ss' },
+  { labelKey: 'toolbar.number.formats.text', pattern: '@' },
 ];
 
 export const NumberFormatTools = ({
@@ -34,31 +35,33 @@ export const NumberFormatTools = ({
   onSetNumberFormat,
   onAdjustDecimals,
 }: NumberFormatToolsProps) => {
+  const { t } = useTranslation('sheets');
+
   return (
     <div className="flex items-center gap-0.5">
       <ToolbarButton
-        label="Định dạng tiền tệ ($ / ₫)"
+        label={t('toolbar.number.currency')}
         onClick={() => onSetNumberFormat('#,##0" ₫"')}
       >
         <Icon name="dollar-sign" size={16} />
       </ToolbarButton>
 
       <ToolbarButton
-        label="Định dạng phần trăm (%)"
+        label={t('toolbar.number.percent')}
         onClick={() => onSetNumberFormat('0.00%')}
       >
         <Icon name="percent" size={16} />
       </ToolbarButton>
 
       <ToolbarButton
-        label="Giảm chữ số thập phân (.00 → .0)"
+        label={t('toolbar.number.decreaseDecimal')}
         onClick={() => onAdjustDecimals(-1)}
       >
         <Icon name="arrow-left-to-line" size={15} />
       </ToolbarButton>
 
       <ToolbarButton
-        label="Tăng chữ số thập phân (.0 → .00)"
+        label={t('toolbar.number.increaseDecimal')}
         onClick={() => onAdjustDecimals(1)}
       >
         <Icon name="arrow-right-to-line" size={15} />
@@ -73,7 +76,7 @@ export const NumberFormatTools = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    aria-label="Định dạng số khác"
+                    aria-label={t('toolbar.number.moreAriaLabel')}
                     className="h-7 min-w-7 px-1.5 rounded text-foreground/80 hover:text-foreground hover:bg-hover transition-colors"
                   />
                 }
@@ -85,7 +88,7 @@ export const NumberFormatTools = ({
             {null}
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={4}>
-            Định dạng số
+            {t('toolbar.number.label')}
           </TooltipContent>
         </Tooltip>
         <DropdownMenuContent align="start" sideOffset={4} className="min-w-44">
@@ -95,7 +98,7 @@ export const NumberFormatTools = ({
               onClick={() => onSetNumberFormat(item.pattern)}
               className={cn(currentFormat === item.pattern && 'bg-primary/10 text-primary font-medium')}
             >
-              <span>{item.label}</span>
+              <span>{t(item.labelKey)}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

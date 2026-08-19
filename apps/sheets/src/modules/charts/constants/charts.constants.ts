@@ -1,9 +1,11 @@
+import { getStoredLocale, translate } from '@office/i18n';
 import type { ChartSpec, ChartType } from '../types/charts.types';
 
 export interface ChartTypeMetadata {
   type: ChartType;
-  label: string;
-  description: string;
+  /** Khoá i18n trong namespace sheets, ví dụ chart.types.column.label */
+  labelKey: string;
+  descriptionKey: string;
   iconName: string;
   category: 'comparison' | 'trend' | 'part-to-whole' | 'distribution';
 }
@@ -11,64 +13,64 @@ export interface ChartTypeMetadata {
 export const CHART_TYPES_METADATA: ChartTypeMetadata[] = [
   {
     type: 'column',
-    label: 'Biểu đồ Cột (Column)',
-    description: 'So sánh giá trị giữa các danh mục bằng cột đứng',
+    labelKey: 'chart.types.column.label',
+    descriptionKey: 'chart.types.column.description',
     iconName: 'bar-chart-2',
     category: 'comparison',
   },
   {
     type: 'bar',
-    label: 'Biểu đồ Thanh ngang (Bar)',
-    description: 'So sánh danh mục có tên dài bằng thanh ngang',
+    labelKey: 'chart.types.bar.label',
+    descriptionKey: 'chart.types.bar.description',
     iconName: 'align-left',
     category: 'comparison',
   },
   {
     type: 'line',
-    label: 'Biểu đồ Đường (Line)',
-    description: 'Theo dõi xu hướng biến đổi dữ liệu theo thời gian',
+    labelKey: 'chart.types.line.label',
+    descriptionKey: 'chart.types.line.description',
     iconName: 'trending-up',
     category: 'trend',
   },
   {
     type: 'pie',
-    label: 'Biểu đồ Tròn (Pie / Donut)',
-    description: 'Hiển thị tỉ lệ phần trăm đóng góp vào tổng thể',
+    labelKey: 'chart.types.pie.label',
+    descriptionKey: 'chart.types.pie.description',
     iconName: 'pie-chart',
     category: 'part-to-whole',
   },
   {
     type: 'area',
-    label: 'Biểu đồ Miền (Area)',
-    description: 'Thể hiện khối lượng và xu hướng tích luỹ theo thời gian',
+    labelKey: 'chart.types.area.label',
+    descriptionKey: 'chart.types.area.description',
     iconName: 'layers',
     category: 'trend',
   },
   {
     type: 'scatter',
-    label: 'Biểu đồ Phân tán (Scatter)',
-    description: 'Khám phá mối tương quan giữa hai biến số',
+    labelKey: 'chart.types.scatter.label',
+    descriptionKey: 'chart.types.scatter.description',
     iconName: 'target',
     category: 'distribution',
   },
   {
     type: 'radar',
-    label: 'Biểu đồ Radar (Mạng nhện)',
-    description: 'Đánh giá đa tiêu chí hoặc năng lực tổng hợp',
+    labelKey: 'chart.types.radar.label',
+    descriptionKey: 'chart.types.radar.description',
     iconName: 'compass',
     category: 'distribution',
   },
   {
     type: 'funnel',
-    label: 'Biểu đồ Phễu (Funnel)',
-    description: 'Theo dõi tỷ lệ chuyển đổi qua các giai đoạn quy trình',
+    labelKey: 'chart.types.funnel.label',
+    descriptionKey: 'chart.types.funnel.description',
     iconName: 'filter',
     category: 'part-to-whole',
   },
   {
     type: 'combo',
-    label: 'Biểu đồ Kết hợp (Combo)',
-    description: 'Kết hợp cột và đường để so sánh đa chiều',
+    labelKey: 'chart.types.combo.label',
+    descriptionKey: 'chart.types.combo.description',
     iconName: 'sliders',
     category: 'comparison',
   },
@@ -91,10 +93,11 @@ export const DEFAULT_CHART_SIZE = {
 export const createDefaultChartSpec = (
   sheetId: string,
   dataRange = 'A1:C6',
-  type: ChartType = 'column'
+  type: ChartType = 'column',
+  title = translate(getStoredLocale(), 'sheets.chart.untitled'),
 ): ChartSpec => ({
   id: `chart_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-  title: 'Biểu đồ không có tiêu đề',
+  title,
   type,
   sheetId,
   dataRange,

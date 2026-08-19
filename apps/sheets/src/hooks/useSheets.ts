@@ -9,6 +9,7 @@ import {
 } from '@/services/sheets.service';
 import type { SheetDocRecord } from '@/types/sheets.types';
 import type { FileRecord } from '@office/file-home';
+import { useTranslation } from '@office/i18n';
 import type { IWorkbookData } from '@univerjs/presets';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -38,6 +39,7 @@ export interface SheetsState {
 const now = (): string => new Date().toISOString();
 
 export const useSheets = (): SheetsState => {
+  const { t } = useTranslation('sheets');
   const [sheets, setSheets] = useState<SheetDocRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState(() => 'sheet-sample-budget');
@@ -103,11 +105,11 @@ export const useSheets = (): SheetsState => {
     if (!currentSheet) return;
     updateSheet(currentSheet.id, (s) => ({
       ...s,
-      title: title.trim() || 'Bảng tính chưa có tiêu đề',
-      data: s.data ? { ...s.data, name: title.trim() || 'Bảng tính chưa có tiêu đề' } : undefined,
+      title: title.trim() || t('untitled'),
+      data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
       updatedAt: now(),
     }));
-  }, [updateSheet]);
+  }, [updateSheet, t]);
 
   const addSheet = useCallback((title?: string): string => {
     const nextSheet = createBlankSheet(title);
@@ -130,18 +132,18 @@ export const useSheets = (): SheetsState => {
   const rename = useCallback((id: string, title: string): void => {
     updateSheet(id, (s) => ({
       ...s,
-      title: title.trim() || 'Bảng tính chưa có tiêu đề',
-      data: s.data ? { ...s.data, name: title.trim() || 'Bảng tính chưa có tiêu đề' } : undefined,
+      title: title.trim() || t('untitled'),
+      data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
       updatedAt: now(),
     }));
-  }, [updateSheet]);
+  }, [updateSheet, t]);
 
   const duplicate = useCallback((id: string): void => {
     setSheets((current) => {
       const source = current.find((s) => s.id === id);
       if (!source) return current;
       const copyId = `sheet-${crypto.randomUUID()}`;
-      const copyTitle = `Bản sao của ${source.title}`;
+      const copyTitle = t('copyOf', { title: source.title });
       const copyData = source.data ? { ...source.data, id: copyId, name: copyTitle } : undefined;
       const copy: SheetDocRecord = {
         ...source,
@@ -157,7 +159,7 @@ export const useSheets = (): SheetsState => {
       };
       return [copy, ...current];
     });
-  }, []);
+  }, [t]);
 
   const trash = useCallback((id: string): void => {
     updateSheet(id, (s) => ({ ...s, deletedAt: now() }));

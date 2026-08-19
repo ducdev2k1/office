@@ -8,6 +8,7 @@ import { QuickActions } from '@/modules/toolbar/components/QuickActions';
 import { TextFormatTools } from '@/modules/toolbar/components/TextFormatTools';
 import { useSheetsToolbarState } from '@/modules/toolbar/hooks/useSheetsToolbarState';
 import type { SheetsToolbarProps } from '@/modules/toolbar/types/toolbar.types';
+import { useTranslation } from '@office/i18n';
 import { Separator } from '@office/ui-kit';
 
 const Sep = () => (
@@ -15,12 +16,13 @@ const Sep = () => (
 );
 
 export const SheetsToolbar = ({ univerAPI, onPrint, onInsertChart }: SheetsToolbarProps) => {
+  const { t } = useTranslation('sheets');
   const { state, actions } = useSheetsToolbarState(univerAPI);
 
   return (
     <div
       role="toolbar"
-      aria-label="Thanh công cụ Bảng tính"
+      aria-label={t('toolbar.ariaLabel')}
       className="flex h-10 min-w-0 shrink-0 items-center gap-0.5 overflow-x-auto border-b border-border bg-background px-3 py-1 text-xs select-none"
     >
       {/* 1. History, Print, Paint Format & Zoom */}

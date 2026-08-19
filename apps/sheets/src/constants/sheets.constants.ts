@@ -1,11 +1,15 @@
 import type { SheetDocRecord } from '@/types/sheets.types';
+import { getStoredLocale, translate } from '@office/i18n';
 import { LocaleType, type IWorkbookData } from '@univerjs/presets';
 
 export const SHEETS_NS = 'sheets';
 
+/** Tiêu đề mặc định theo ngôn ngữ đang chọn, chốt lại tại thời điểm tạo tài liệu */
+export const getUntitledTitle = (): string => translate(getStoredLocale(), 'sheets.untitled');
+
 export const createDefaultWorkbookData = (
   id = `sheet-${crypto.randomUUID()}`,
-  title = 'Bảng tính chưa có tiêu đề',
+  title = getUntitledTitle(),
 ): IWorkbookData => {
   const sheetId = 'sheet-01';
   return {
@@ -32,7 +36,7 @@ export const createDefaultWorkbookData = (
   };
 };
 
-export const createBlankSheetRecord = (title = 'Bảng tính chưa có tiêu đề'): SheetDocRecord => {
+export const createBlankSheetRecord = (title = getUntitledTitle()): SheetDocRecord => {
   const id = `sheet-${crypto.randomUUID()}`;
   const now = new Date().toISOString();
   return {

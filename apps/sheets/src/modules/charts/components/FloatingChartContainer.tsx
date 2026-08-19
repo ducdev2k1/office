@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import { Icon, ToolbarButton } from '@office/ui-kit';
 import * as echarts from 'echarts';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -34,6 +35,7 @@ export const FloatingChartContainer = ({
   onUpdatePosition,
   onDelete,
 }: FloatingChartContainerProps) => {
+  const { t } = useTranslation('sheets');
   const chartInstanceRef = useRef<echarts.ECharts | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -219,12 +221,12 @@ export const FloatingChartContainer = ({
       >
         <div className="flex items-center gap-1 truncate font-medium">
           <Icon name="grid" size={13} className="opacity-70" />
-          <span className="truncate">{spec.title || 'Biểu đồ'}</span>
+          <span className="truncate">{spec.title || t('chart.fallbackTitle')}</span>
         </div>
 
         <div className="flex items-center gap-0.5" onPointerDown={(e) => e.stopPropagation()}>
           <ToolbarButton
-            label="Chỉnh sửa biểu đồ"
+            label={t('chart.floating.edit')}
             onClick={onDoubleClick}
             className="h-5 w-5 p-0"
           >
@@ -232,7 +234,7 @@ export const FloatingChartContainer = ({
           </ToolbarButton>
 
           <ToolbarButton
-            label="Tải ảnh PNG"
+            label={t('chart.floating.exportPng')}
             onClick={handleExportPng}
             className="h-5 w-5 p-0"
           >
@@ -240,7 +242,7 @@ export const FloatingChartContainer = ({
           </ToolbarButton>
 
           <ToolbarButton
-            label="Xoá biểu đồ"
+            label={t('chart.floating.delete')}
             onClick={onDelete}
             className="h-5 w-5 p-0 text-destructive/80 hover:bg-destructive/10 hover:text-destructive"
           >

@@ -1,4 +1,5 @@
 import type { TextRotationAngle, TextWrapMode } from '@/modules/toolbar/types/toolbar.types';
+import { useTranslation } from '@office/i18n';
 import {
   Button,
   DropdownMenu,
@@ -21,14 +22,14 @@ export interface AlignmentToolsProps {
 
 const ROTATION_PRESETS: Array<{
   angle: TextRotationAngle;
-  label: string;
+  labelKey: string;
   icon: string;
 }> = [
-  { angle: 0, label: 'Không xoay (Mặc định)', icon: 'minus' },
-  { angle: 45, label: 'Nghiêng lên 45°', icon: 'trending-up' },
-  { angle: -45, label: 'Nghiêng xuống -45°', icon: 'trending-down' },
-  { angle: 90, label: 'Xoay lên 90°', icon: 'arrow-up' },
-  { angle: -90, label: 'Xoay xuống -90°', icon: 'arrow-down' },
+  { angle: 0, labelKey: 'toolbar.align.rotation.none', icon: 'minus' },
+  { angle: 45, labelKey: 'toolbar.align.rotation.up45', icon: 'trending-up' },
+  { angle: -45, labelKey: 'toolbar.align.rotation.down45', icon: 'trending-down' },
+  { angle: 90, labelKey: 'toolbar.align.rotation.up90', icon: 'arrow-up' },
+  { angle: -90, labelKey: 'toolbar.align.rotation.down90', icon: 'arrow-down' },
 ];
 
 export const AlignmentTools = ({
@@ -41,6 +42,8 @@ export const AlignmentTools = ({
   onSetWrapMode,
   onSetTextRotation,
 }: AlignmentToolsProps) => {
+  const { t } = useTranslation('sheets');
+
   return (
     <div className="flex items-center gap-0.5">
       {/* Horizontal Alignment Dropdown */}
@@ -50,7 +53,7 @@ export const AlignmentTools = ({
             <Button
               variant="ghost"
               size="sm"
-              aria-label="Căn chỉnh theo chiều ngang"
+              aria-label={t('toolbar.align.horizontalAriaLabel')}
               className="flex h-7 items-center gap-0.5 rounded px-1 text-foreground hover:bg-accent/70"
             />
           }
@@ -73,21 +76,21 @@ export const AlignmentTools = ({
             className="flex items-center gap-2 py-1 text-xs"
           >
             <Icon name="align-left" size={15} />
-            <span>Trái</span>
+            <span>{t('toolbar.align.left')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => onHorizontalAlignChange('center')}
             className="flex items-center gap-2 py-1 text-xs"
           >
             <Icon name="align-center" size={15} />
-            <span>Giữa</span>
+            <span>{t('toolbar.align.center')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => onHorizontalAlignChange('right')}
             className="flex items-center gap-2 py-1 text-xs"
           >
             <Icon name="align-right" size={15} />
-            <span>Phải</span>
+            <span>{t('toolbar.align.right')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -99,7 +102,7 @@ export const AlignmentTools = ({
             <Button
               variant="ghost"
               size="sm"
-              aria-label="Căn chỉnh theo chiều dọc"
+              aria-label={t('toolbar.align.verticalAriaLabel')}
               className="flex h-7 items-center gap-0.5 rounded px-1 text-foreground hover:bg-accent/70"
             />
           }
@@ -122,21 +125,21 @@ export const AlignmentTools = ({
             className="flex items-center gap-2 py-1 text-xs"
           >
             <Icon name="arrow-up-to-line" size={15} />
-            <span>Trên cùng</span>
+            <span>{t('toolbar.align.top')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => onVerticalAlignChange('middle')}
             className="flex items-center gap-2 py-1 text-xs"
           >
             <Icon name="align-vertical-space-around" size={15} />
-            <span>Ở giữa</span>
+            <span>{t('toolbar.align.middle')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => onVerticalAlignChange('bottom')}
             className="flex items-center gap-2 py-1 text-xs"
           >
             <Icon name="arrow-down-to-line" size={15} />
-            <span>Dưới cùng</span>
+            <span>{t('toolbar.align.bottom')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -148,7 +151,7 @@ export const AlignmentTools = ({
             <Button
               variant="ghost"
               size="sm"
-              aria-label="Xuống dòng tự động"
+              aria-label={t('toolbar.align.wrapAriaLabel')}
               className="flex h-7 items-center gap-0.5 rounded px-1 text-foreground hover:bg-accent/70"
             />
           }
@@ -161,21 +164,21 @@ export const AlignmentTools = ({
             onClick={() => onSetWrapMode('overflow')}
             className="flex items-center justify-between py-1 text-xs"
           >
-            <span>Tràn ô (Overflow)</span>
+            <span>{t('toolbar.align.overflow')}</span>
             {wrapMode === 'overflow' && <Icon name="check" size={14} className="text-primary" />}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => onSetWrapMode('wrap')}
             className="flex items-center justify-between py-1 text-xs"
           >
-            <span>Xuống dòng (Wrap)</span>
+            <span>{t('toolbar.align.wrap')}</span>
             {wrapMode === 'wrap' && <Icon name="check" size={14} className="text-primary" />}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => onSetWrapMode('clip')}
             className="flex items-center justify-between py-1 text-xs"
           >
-            <span>Cắt tỉa (Clip)</span>
+            <span>{t('toolbar.align.clip')}</span>
             {wrapMode === 'clip' && <Icon name="check" size={14} className="text-primary" />}
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -188,7 +191,7 @@ export const AlignmentTools = ({
             <Button
               variant="ghost"
               size="sm"
-              aria-label="Xoay hướng chữ"
+              aria-label={t('toolbar.align.rotationAriaLabel')}
               className="flex h-7 items-center gap-0.5 rounded px-1 text-foreground hover:bg-accent/70"
             />
           }
@@ -205,7 +208,7 @@ export const AlignmentTools = ({
             >
               <div className="flex items-center gap-2">
                 <Icon name={rp.icon} size={14} />
-                <span>{rp.label}</span>
+                <span>{t(rp.labelKey)}</span>
               </div>
               {textRotation === rp.angle && (
                 <Icon name="check" size={14} className="text-primary" />

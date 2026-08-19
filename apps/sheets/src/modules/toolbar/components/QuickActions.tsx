@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import {
   Button,
   DropdownMenu,
@@ -29,28 +30,30 @@ export const QuickActions = ({
   zoom,
   onSetZoom,
 }: QuickActionsProps) => {
+  const { t } = useTranslation('sheets');
+
   return (
     <div className="flex items-center gap-0.5">
       {/* Undo */}
-      <ToolbarButton label="Hoàn tác (Ctrl+Z)" onClick={onUndo}>
+      <ToolbarButton label={t('toolbar.undo')} onClick={onUndo}>
         <Icon name="undo" size={16} />
       </ToolbarButton>
 
       {/* Redo */}
-      <ToolbarButton label="Làm lại (Ctrl+Y)" onClick={onRedo}>
+      <ToolbarButton label={t('toolbar.redo')} onClick={onRedo}>
         <Icon name="redo" size={16} />
       </ToolbarButton>
 
       {/* Print */}
       {onPrint && (
-        <ToolbarButton label="In (Ctrl+P)" onClick={onPrint}>
+        <ToolbarButton label={t('toolbar.print')} onClick={onPrint}>
           <Icon name="printer" size={16} />
         </ToolbarButton>
       )}
 
       {/* Format Painter */}
       <ToolbarButton
-        label="Sao chép định dạng"
+        label={t('toolbar.paintFormat')}
         active={isPaintingFormat}
         onClick={onTogglePaintFormat}
       >
@@ -64,7 +67,7 @@ export const QuickActions = ({
             <Button
               variant="ghost"
               size="sm"
-              aria-label="Thu phóng"
+              aria-label={t('toolbar.zoom')}
               className="flex h-7 items-center gap-1 rounded px-1.5 text-xs text-foreground hover:bg-accent/70"
             />
           }

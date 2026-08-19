@@ -10,6 +10,7 @@ import {
 } from '@/modules/charts';
 import { SheetsToolbar } from '@/modules/toolbar';
 import { exportXlsxFile } from '@/services/xlsx.service';
+import { useTranslation } from '@office/i18n';
 import { Button, Skeleton } from '@office/ui-kit';
 import type { FUniver, IWorkbookData } from '@univerjs/presets';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,6 +26,7 @@ const downloadBlob = (blob: Blob, filename: string): void => {
 };
 
 export const EditorPage = () => {
+  const { t } = useTranslation('sheets');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
@@ -126,7 +128,7 @@ export const EditorPage = () => {
       const filename = `${activeSheet?.title || 'workbook'}.xlsx`;
       downloadBlob(blob, filename);
     } catch {
-      window.alert('Xuất file thất bại.');
+      window.alert(t('exportError'));
     } finally {
       setExporting(false);
     }
@@ -137,7 +139,7 @@ export const EditorPage = () => {
       const nextId = await importFile(file);
       navigate(`/edit/${nextId}`);
     } catch {
-      window.alert('Không mở được file. Vui lòng chọn file .xlsx hợp lệ.');
+      window.alert(t('openError'));
     }
   };
 
@@ -157,8 +159,8 @@ export const EditorPage = () => {
   if (!activeSheet) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4 bg-background">
-        <p className="text-muted-foreground">Không tìm thấy bảng tính yêu cầu.</p>
-        <Button onClick={() => navigate('/')}>Quay lại trang chủ</Button>
+        <p className="text-muted-foreground">{t('editor.notFound')}</p>
+        <Button onClick={() => navigate('/')}>{t('editor.backHome')}</Button>
       </div>
     );
   }

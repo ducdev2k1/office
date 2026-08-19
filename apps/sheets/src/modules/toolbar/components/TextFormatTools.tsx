@@ -1,3 +1,4 @@
+import { useTranslation } from '@office/i18n';
 import { ColorPalettePopover, FontSizePicker, Icon, ToolbarButton } from '@office/ui-kit';
 
 interface TextFormatToolsProps {
@@ -33,18 +34,20 @@ export const TextFormatTools = ({
   onTextColorChange,
   onFillColorChange,
 }: TextFormatToolsProps) => {
+  const { t } = useTranslation('sheets');
+
   return (
     <div className="flex items-center gap-0.5">
       <FontSizePicker
         currentSize={fontSize}
         onChangeSize={onFontSizeChange}
-        decreaseLabel="Giảm cỡ chữ (Ctrl+Shift+,)"
-        increaseLabel="Tăng cỡ chữ (Ctrl+Shift+.)"
-        fontSizeLabel="Cỡ chữ"
+        decreaseLabel={t('toolbar.font.decreaseSize')}
+        increaseLabel={t('toolbar.font.increaseSize')}
+        fontSizeLabel={t('toolbar.font.size')}
       />
 
       <ToolbarButton
-        label="In đậm (Ctrl+B)"
+        label={t('toolbar.text.bold')}
         active={bold}
         onClick={onToggleBold}
       >
@@ -52,7 +55,7 @@ export const TextFormatTools = ({
       </ToolbarButton>
 
       <ToolbarButton
-        label="In nghiêng (Ctrl+I)"
+        label={t('toolbar.text.italic')}
         active={italic}
         onClick={onToggleItalic}
       >
@@ -60,7 +63,7 @@ export const TextFormatTools = ({
       </ToolbarButton>
 
       <ToolbarButton
-        label="Gạch chân (Ctrl+U)"
+        label={t('toolbar.text.underline')}
         active={underline}
         onClick={onToggleUnderline}
       >
@@ -68,7 +71,7 @@ export const TextFormatTools = ({
       </ToolbarButton>
 
       <ToolbarButton
-        label="Gạch ngang chữ (Alt+Shift+5)"
+        label={t('toolbar.text.strikethrough')}
         active={strikethrough}
         onClick={onToggleStrikethrough}
       >
@@ -77,20 +80,20 @@ export const TextFormatTools = ({
 
       <ColorPalettePopover
         iconName="baseline"
-        label="Màu văn bản"
+        label={t('toolbar.text.color')}
         currentColor={textColor}
         onSelectColor={onTextColorChange}
         onResetColor={() => onTextColorChange('#000000')}
-        resetLabel="Mặc định"
+        resetLabel={t('toolbar.text.colorReset')}
       />
 
       <ColorPalettePopover
         iconName="palette"
-        label="Màu nền ô (Tô màu)"
+        label={t('toolbar.text.fill')}
         currentColor={fillColor}
         onSelectColor={onFillColorChange}
         onResetColor={() => onFillColorChange('')}
-        resetLabel="Đặt lại màu nền"
+        resetLabel={t('toolbar.text.fillReset')}
       />
     </div>
   );
