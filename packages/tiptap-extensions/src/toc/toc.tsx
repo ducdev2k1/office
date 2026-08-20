@@ -74,7 +74,13 @@ export const Toc = Node.create({
 });
 
 const collectHeadings = (doc: {
-  nodesBetween: (
+  descendants?: (
+    f: (
+      node: { type: { name: string }; attrs: Record<string, unknown>; textContent?: string },
+      pos: number,
+    ) => void,
+  ) => void;
+  nodesBetween?: (
     from: number,
     to: number,
     f: (
@@ -82,15 +88,27 @@ const collectHeadings = (doc: {
       pos: number,
     ) => void,
   ) => void;
+  content?: { size: number };
 }): TocEntry[] => {
   const entries: TocEntry[] = [];
-  doc.nodesBetween(0, Number.MAX_SAFE_INTEGER, (node, pos) => {
-    if (node.type.name === 'heading') {
-      const level = Number(node.attrs.level ?? 1);
-      const id = (node.attrs.id as string) || `h-${pos}`;
-      entries.push({ id, level, text: node.textContent ?? '', pos });
-    }
-  });
+  if (!doc) return entries;
+  if (typeof doc.descendants === 'function') {
+    doc.descendants((node, pos) => {
+      if (node.type.name === 'heading') {
+        const level = Number(node.attrs.level ?? 1);
+        const id = (node.attrs.id as string) || `h-${pos}`;
+        entries.push({ id, level, text: node.textContent ?? '', pos });
+      }
+    });
+  } else if (typeof doc.nodesBetween === 'function' && doc.content?.size !== undefined) {
+    doc.nodesBetween(0, doc.content.size, (node, pos) => {
+      if (node.type.name === 'heading') {
+        const level = Number(node.attrs.level ?? 1);
+        const id = (node.attrs.id as string) || `h-${pos}`;
+        entries.push({ id, level, text: node.textContent ?? '', pos });
+      }
+    });
+  }
   return entries;
 };
 
@@ -105,17 +123,7 @@ const TocView = ({ editor }: NodeViewProps) => {
         | undefined;
       const pluginEntries = plugin?.getState(stateEditor.state) ?? [];
       if (pluginEntries.length > 0) return pluginEntries;
-      const doc = stateEditor.state.doc as {
-        nodesBetween: (
-          from: number,
-          to: number,
-          f: (
-            node: { type: { name: string }; attrs: Record<string, unknown>; textContent?: string },
-            pos: number,
-          ) => void,
-        ) => void;
-      };
-      return collectHeadings(doc);
+      return collectHeadings(stateEditor.state.doc);
     },
   });
 
