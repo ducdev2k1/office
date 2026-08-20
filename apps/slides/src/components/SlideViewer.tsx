@@ -14,12 +14,21 @@ interface SlideViewerProps {
 
 type ResizeHandle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w';
 
-interface PreviewPatch {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+interface DragSession {
+  type: 'move' | 'resize';
+  handle?: ResizeHandle;
+  startX: number;
+  startY: number;
+  initialX: number;
+  initialY: number;
+  initialW: number;
+  initialH: number;
+  currentX: number;
+  currentY: number;
+  currentW: number;
+  currentH: number;
+  elementId: string;
+  domElement: HTMLElement | null;
 }
 
 export const SlideViewer = ({
@@ -33,31 +42,15 @@ export const SlideViewer = ({
 }: SlideViewerProps) => {
   const { t } = useTranslation('slides');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [previewPatch, setPreviewPatch] = useState<PreviewPatch | null>(null);
 
   const canvasRef = useRef<HTMLDivElement>(null);
-  const previewPatchRef = useRef<PreviewPatch | null>(null);
-  const dragRef = useRef<{
-    type: 'move' | 'resize';
-    handle?: ResizeHandle;
-    startX: number;
-    startY: number;
-    initialX: number;
-    initialY: number;
-    initialW: number;
-    initialH: number;
-    elementId: string;
-  } | null>(null);
-
-  useEffect(() => {
-    previewPatchRef.current = previewPatch;
-  }, [previewPatch]);
+  const dragRef = useRef<DragSession | null>(null);
+  const rafIdRef = useRef<number | null>(null);
 
   // Keyboard navigation & deletion on selected element
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!selectedElementId || editingId) return;
-
       const el = slide?.elements.find((item) => item.id === selectedElementId);
       if (!el) return;
 
@@ -93,87 +86,121 @@ export const SlideViewer = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedElementId, editingId, slide, onDeleteElement, onDuplicateElement, onUpdateElement]);
 
-  // Global mouse move & mouse up for dragging / resizing
+  // 120 FPS+ GPU-accelerated Pointer Move engine using requestAnimationFrame
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const applyDirectTransform = () => {
+      const session = dragRef.current;
+      if (!session || !session.domElement) return;
+
+      const leftPercent = (session.currentX / 960) * 100;
+      const topPercent = (session.currentY / 540) * 100;
+      const widthPercent = (session.currentW / 960) * 100;
+      const heightPercent = (session.currentH / 540) * 100;
+
+      session.domElement.style.left = `${leftPercent}%`;
+      session.domElement.style.top = `${topPercent}%`;
+      session.domElement.style.width = `${widthPercent}%`;
+      session.domElement.style.height = `${heightPercent}%`;
+      session.domElement.style.willChange = 'left, top, width, height';
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
       if (!dragRef.current || !canvasRef.current) return;
-      const { type, handle, startX, startY, initialX, initialY, initialW, initialH, elementId } = dragRef.current;
+      const session = dragRef.current;
+
       const rect = canvasRef.current.getBoundingClientRect();
       const scaleFactor = rect.width / 960;
 
-      const deltaX = (e.clientX - startX) / scaleFactor;
-      const deltaY = (e.clientY - startY) / scaleFactor;
+      // Extract high-frequency sub-frame event if available (ProMotion 120Hz+ / 1000Hz mice)
+      const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+      const lastEvent = events[events.length - 1] || e;
 
-      if (type === 'move') {
-        const newX = Math.round(Math.max(0, Math.min(960 - initialW, initialX + deltaX)));
-        const newY = Math.round(Math.max(0, Math.min(540 - initialH, initialY + deltaY)));
-        setPreviewPatch({ id: elementId, x: newX, y: newY, width: initialW, height: initialH });
-      } else if (type === 'resize' && handle) {
-        let newX = initialX;
-        let newY = initialY;
-        let newW = initialW;
-        let newH = initialH;
+      const deltaX = (lastEvent.clientX - session.startX) / scaleFactor;
+      const deltaY = (lastEvent.clientY - session.startY) / scaleFactor;
 
-        if (handle.includes('e')) newW = Math.max(30, initialW + deltaX);
-        if (handle.includes('s')) newH = Math.max(20, initialH + deltaY);
+      if (session.type === 'move') {
+        session.currentX = Math.round(Math.max(0, Math.min(960 - session.initialW, session.initialX + deltaX)));
+        session.currentY = Math.round(Math.max(0, Math.min(540 - session.initialH, session.initialY + deltaY)));
+      } else if (session.type === 'resize' && session.handle) {
+        const handle = session.handle;
+        let newX = session.initialX;
+        let newY = session.initialY;
+        let newW = session.initialW;
+        let newH = session.initialH;
+
+        if (handle.includes('e')) newW = Math.max(30, session.initialW + deltaX);
+        if (handle.includes('s')) newH = Math.max(20, session.initialH + deltaY);
         if (handle.includes('w')) {
-          const maxDelta = initialW - 30;
+          const maxDelta = session.initialW - 30;
           const appliedDelta = Math.min(maxDelta, deltaX);
-          newX = initialX + appliedDelta;
-          newW = initialW - appliedDelta;
+          newX = session.initialX + appliedDelta;
+          newW = session.initialW - appliedDelta;
         }
         if (handle.includes('n')) {
-          const maxDelta = initialH - 20;
+          const maxDelta = session.initialH - 20;
           const appliedDelta = Math.min(maxDelta, deltaY);
-          newY = initialY + appliedDelta;
-          newH = initialH - appliedDelta;
+          newY = session.initialY + appliedDelta;
+          newH = session.initialH - appliedDelta;
         }
 
-        setPreviewPatch({
-          id: elementId,
-          x: Math.round(newX),
-          y: Math.round(newY),
-          width: Math.round(newW),
-          height: Math.round(newH),
+        session.currentX = Math.round(newX);
+        session.currentY = Math.round(newY);
+        session.currentW = Math.round(newW);
+        session.currentH = Math.round(newH);
+      }
+
+      // Schedule hardware-accelerated GPU render tick
+      if (rafIdRef.current === null) {
+        rafIdRef.current = window.requestAnimationFrame(() => {
+          applyDirectTransform();
+          rafIdRef.current = null;
         });
       }
     };
 
-    const handleMouseUp = () => {
-      if (dragRef.current && previewPatchRef.current) {
-        const patch = previewPatchRef.current;
-        if (patch.id === dragRef.current.elementId) {
-          const { initialX, initialY, initialW, initialH } = dragRef.current;
-          if (
-            patch.x !== initialX ||
-            patch.y !== initialY ||
-            patch.width !== initialW ||
-            patch.height !== initialH
-          ) {
-            onUpdateElement(patch.id, {
-              x: patch.x,
-              y: patch.y,
-              width: patch.width,
-              height: patch.height,
-            });
-          }
+    const handlePointerUp = () => {
+      if (rafIdRef.current !== null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+
+      const session = dragRef.current;
+      if (session) {
+        if (session.domElement) {
+          session.domElement.style.willChange = 'auto';
+        }
+        if (
+          session.currentX !== session.initialX ||
+          session.currentY !== session.initialY ||
+          session.currentW !== session.initialW ||
+          session.currentH !== session.initialH
+        ) {
+          onUpdateElement(session.elementId, {
+            x: session.currentX,
+            y: session.currentY,
+            width: session.currentW,
+            height: session.currentH,
+          });
         }
       }
       dragRef.current = null;
-      setPreviewPatch(null);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerup', handlePointerUp);
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      if (rafIdRef.current !== null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+      }
     };
   }, [onUpdateElement]);
 
-  const handleStartMove = useCallback((e: React.MouseEvent, el: SlideElement) => {
+  const handleStartMove = useCallback((e: React.PointerEvent, el: SlideElement) => {
     e.stopPropagation();
     onSelectElement(el.id);
+    const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
     dragRef.current = {
       type: 'move',
       startX: e.clientX,
@@ -182,12 +209,18 @@ export const SlideViewer = ({
       initialY: el.y,
       initialW: el.width,
       initialH: el.height,
+      currentX: el.x,
+      currentY: el.y,
+      currentW: el.width,
+      currentH: el.height,
       elementId: el.id,
+      domElement: dom,
     };
   }, [onSelectElement]);
 
-  const handleStartResize = useCallback((e: React.MouseEvent, el: SlideElement, handle: ResizeHandle) => {
+  const handleStartResize = useCallback((e: React.PointerEvent, el: SlideElement, handle: ResizeHandle) => {
     e.stopPropagation();
+    const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
     dragRef.current = {
       type: 'resize',
       handle,
@@ -197,7 +230,12 @@ export const SlideViewer = ({
       initialY: el.y,
       initialW: el.width,
       initialH: el.height,
+      currentX: el.x,
+      currentY: el.y,
+      currentW: el.width,
+      currentH: el.height,
       elementId: el.id,
+      domElement: dom,
     };
   }, []);
 
@@ -271,7 +309,7 @@ export const SlideViewer = ({
     return handles.map((h) => (
       <div
         key={h}
-        onMouseDown={(e) => handleStartResize(e, el, h)}
+        onPointerDown={(e) => handleStartResize(e, el, h)}
         className={`absolute z-30 h-2.5 w-2.5 rounded-xs border border-white bg-[var(--o-kind-slides)] shadow-xs ${handlePositions[h]}`}
       />
     ));
@@ -281,29 +319,16 @@ export const SlideViewer = ({
     const isSelected = selectedElementId === el.id;
     const isEditing = editingId === el.id;
 
-    const isPreviewed = previewPatch?.id === el.id;
-    const posX = isPreviewed && previewPatch ? previewPatch.x : el.x;
-    const posY = isPreviewed && previewPatch ? previewPatch.y : el.y;
-    const posW = isPreviewed && previewPatch ? previewPatch.width : el.width;
-    const posH = isPreviewed && previewPatch ? previewPatch.height : el.height;
-
-    const currentElState: SlideElement = {
-      ...el,
-      x: posX,
-      y: posY,
-      width: posW,
-      height: posH,
-    };
-
-    const leftPercent = (posX / 960) * 100;
-    const topPercent = (posY / 540) * 100;
-    const widthPercent = (posW / 960) * 100;
-    const heightPercent = (posH / 540) * 100;
+    const leftPercent = (el.x / 960) * 100;
+    const topPercent = (el.y / 540) * 100;
+    const widthPercent = (el.width / 960) * 100;
+    const heightPercent = (el.height / 540) * 100;
 
     return (
       <div
         key={el.id}
-        onMouseDown={(e) => handleStartMove(e, currentElState)}
+        data-slide-element={el.id}
+        onPointerDown={(e) => handleStartMove(e, el)}
         onDoubleClick={(e) => {
           e.stopPropagation();
           if (el.type === 'text') setEditingId(el.id);
@@ -314,14 +339,16 @@ export const SlideViewer = ({
           top: `${topPercent}%`,
           width: `${widthPercent}%`,
           height: `${heightPercent}%`,
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
         }}
-        className={`group select-none ${
+        className={`group select-none touch-none ${
           isSelected
             ? 'ring-2 ring-[var(--o-kind-slides)] ring-offset-1 ring-offset-background'
             : 'hover:ring-1 hover:ring-[var(--o-kind-slides)]/50'
         }`}
       >
-        {isSelected && renderHandles(currentElState)}
+        {isSelected && renderHandles(el)}
 
         {el.type === 'text' && (
           <div
@@ -371,7 +398,8 @@ export const SlideViewer = ({
           <img
             src={el.url}
             alt={el.content || 'Hình ảnh slide'}
-            className="h-full w-full rounded object-contain"
+            className="h-full w-full rounded object-contain pointer-events-none"
+            draggable={false}
           />
         )}
       </div>
