@@ -1174,4 +1174,28 @@ textarea:focus-visible {
   pointer-events: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   z-index: 10;
+  transition: transform 0.15s ease-out;
+}
+
+.collaboration-cursor__caret.collaboration-cursor--following {
+  border-left-width: 3px !important;
+  filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.75));
+  animation: pulse-cursor-glow 1.6s infinite ease-in-out;
+  z-index: 20;
+}
+
+.collaboration-cursor__caret.collaboration-cursor--following .collaboration-cursor__label {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  font-weight: 700;
+}
+
+@keyframes pulse-cursor-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(37, 99, 235, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(37, 99, 235, 1));
+  }
 }

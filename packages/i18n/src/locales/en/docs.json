@@ -356,6 +356,11 @@
     "moreUsers": "+{count} others",
     "save": "Save changes",
     "onlineCollaborators": "Online collaborators ({count})",
-    "you": "You"
+    "you": "You",
+    "following": "Following {name}",
+    "stopFollowing": "Stop following",
+    "clickToFollow": "Click to follow {name}'s cursor",
+    "clickToUnfollow": "Following {name} · Click to stop",
+    "escToStop": "Esc"
   }
 }

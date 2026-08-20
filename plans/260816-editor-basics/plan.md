@@ -1,7 +1,7 @@
 ---
 title: 'OneMail Docs - Hoan thien editor basics (format, image, table, find-replace, pagination)'
 description: '6 phase: extensions dinh dang nang cao, anh + bang, find & replace, page setup + page break, page view phan trang tren man hinh, modularize + verify'
-status: pending
+status: completed
 priority: P1
 effort: 22.5h
 branch: main

@@ -25,6 +25,8 @@ interface HeaderProps {
   collaborators?: CollabUser[];
   currentUser?: CollabUser;
   onUpdateCurrentUserProfile?: (partial: Partial<CollabUser>) => void;
+  followedClientId?: number | null;
+  onToggleFollow?: (user: CollabUser) => void;
 }
 
 export const Header = ({
@@ -39,6 +41,8 @@ export const Header = ({
   collaborators = [],
   currentUser,
   onUpdateCurrentUserProfile,
+  followedClientId,
+  onToggleFollow,
 }: HeaderProps) => {
   const { t, locale, setLocale } = useTranslation('docs');
   const { t: tCommon } = useTranslation('common');
@@ -140,7 +144,12 @@ export const Header = ({
       </div>
       <div className="flex items-center shrink-0 gap-1.5">
         {collaborators.length > 0 && (
-          <CollaboratorAvatarStack collaborators={collaborators} className="mr-1" />
+          <CollaboratorAvatarStack
+            collaborators={collaborators}
+            followedClientId={followedClientId}
+            onToggleFollow={onToggleFollow}
+            className="mr-1"
+          />
         )}
 
         <Tooltip>

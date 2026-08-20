@@ -17,6 +17,7 @@ import {
   usePrintDocument,
   type ContextMenuPosition,
 } from '@/modules/editor';
+import { FollowBanner, useFollowCollaborator } from '@/modules/collab';
 import { Header } from '@/modules/header';
 import { SearchAndReplace } from '@/modules/search-replace';
 import { DocsSidebar } from '@/modules/sidebar';
@@ -109,10 +110,14 @@ export const EditorPage = () => {
     navigate(`/edit/${remaining[0]!.id}`);
   };
 
-  const { editor, collabStatus, collaborators, currentUser, updateProfile } = useCollabEditor(
-    activeDoc,
-    updateContent,
-  );
+  const { editor, collabStatus, collaborators, currentUser, updateProfile, collabRoom } =
+    useCollabEditor(activeDoc, updateContent);
+
+  const { followedUser, followedClientId, stopFollow, toggleFollow } = useFollowCollaborator({
+    editor,
+    provider: collabRoom.provider,
+    collaborators,
+  });
 
   const paginationState = usePagination(editor, activeDoc);
   const { viewMode, setViewMode, schedulePagination } = paginationState;
@@ -189,6 +194,8 @@ export const EditorPage = () => {
           collaborators={collaborators}
           currentUser={currentUser}
           onUpdateCurrentUserProfile={updateProfile}
+          followedClientId={followedClientId}
+          onToggleFollow={toggleFollow}
           menuActions={{
             editor,
             viewMode,
@@ -250,6 +257,8 @@ export const EditorPage = () => {
         />
 
         <div className="editor-stage flex flex-1 min-h-0 relative overflow-y-hidden overflow-x-clip">
+          <FollowBanner followedUser={followedUser} onStopFollow={stopFollow} />
+
           <DocsSidebar
             docs={docs}
             activeId={activeDoc?.id ?? ''}

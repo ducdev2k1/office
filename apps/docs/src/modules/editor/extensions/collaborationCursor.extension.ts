@@ -31,6 +31,12 @@ const awarenessStatesToArray = (states: Map<number, Record<string, any>>) => {
 const defaultRender = (user: Record<string, any>): HTMLElement => {
   const cursor = document.createElement('span');
   cursor.classList.add('collaboration-cursor__caret');
+  if (user.clientId) {
+    cursor.setAttribute('data-client-id', String(user.clientId));
+  }
+  if (user.id) {
+    cursor.setAttribute('data-user-id', String(user.id));
+  }
   cursor.setAttribute('style', `border-color: ${user.color ?? '#2563eb'}`);
 
   const label = document.createElement('div');
@@ -69,7 +75,11 @@ export const CollaborationCursor = Extension.create<
   addCommands() {
     return {
       updateUser: (attributes: Record<string, any>) => () => {
-        this.options.user = attributes;
+        const localClientId = this.options.provider?.awareness?.clientID;
+        this.options.user = {
+          ...attributes,
+          clientId: localClientId,
+        };
         this.options.provider?.awareness?.setLocalStateField('user', this.options.user);
         return true;
       },
@@ -84,7 +94,12 @@ export const CollaborationCursor = Extension.create<
     return [
       yCursorPlugin(
         (() => {
-          this.options.provider.awareness.setLocalStateField('user', this.options.user);
+          const localClientId = this.options.provider.awareness.clientID;
+          const userWithClientId = {
+            ...this.options.user,
+            clientId: localClientId,
+          };
+          this.options.provider.awareness.setLocalStateField('user', userWithClientId);
 
           this.storage.users = awarenessStatesToArray(this.options.provider.awareness.states);
 

@@ -356,6 +356,11 @@
     "moreUsers": "+{count} người khác",
     "save": "Lưu thay đổi",
     "onlineCollaborators": "Người cộng tác trực tuyến ({count})",
-    "you": "Bạn"
+    "you": "Bạn",
+    "following": "Đang theo dõi {name}",
+    "stopFollowing": "Dừng theo dõi",
+    "clickToFollow": "Bấm để theo dõi con trỏ {name}",
+    "clickToUnfollow": "Đang theo dõi {name} · Bấm để dừng",
+    "escToStop": "Esc"
   }
 }
