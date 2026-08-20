@@ -1,8 +1,10 @@
 import type { Editor } from '@tiptap/core';
+import type { CommentsStore, CommentThread } from '@office/tiptap-extensions';
 import type { DocRecord, PageSetup } from '@/types/docs.types';
 import { HelpModal } from '@/modules/editor/components/HelpModal';
 import { PageHeaderFooterPanel } from '@/modules/editor/components/PageHeaderFooterPanel';
 import { WatermarkDialog } from '@/modules/editor/components/WatermarkDialog';
+import { CommentsPanel } from '@/modules/editor/components/comments/CommentsPanel';
 import { ShareDialog } from '@/modules/collab/components/ShareDialog';
 import { VersionHistoryDialog } from '@/modules/collab/components/VersionHistoryDialog';
 import type { useVersionHistory } from '@/modules/collab/hooks/useVersionHistory';
@@ -16,6 +18,15 @@ interface EditorDialogsHostProps {
   docs: DocRecord[];
   modals: ReturnType<typeof useEditorModals>;
   versionHistory: ReturnType<typeof useVersionHistory>;
+  commentsStore: CommentsStore;
+  threads: CommentThread[];
+  currentUserId?: string;
+  currentUserName?: string;
+  selectedThreadId?: string | null;
+  onSelectThread?: (threadId: string | null) => void;
+  pendingComment?: { from: number; to: number; text: string } | null;
+  onCancelPending?: () => void;
+  onCommitPending?: (content: string) => void;
   onPageSetupChange: (setup: PageSetup) => void;
   onMoveToFolder: (docId: string, folderId: string | null) => void;
 }
@@ -26,6 +37,15 @@ export const EditorDialogsHost = ({
   docs,
   modals,
   versionHistory,
+  commentsStore,
+  threads,
+  currentUserId,
+  currentUserName,
+  selectedThreadId,
+  onSelectThread,
+  pendingComment,
+  onCancelPending,
+  onCommitPending,
   onPageSetupChange,
   onMoveToFolder,
 }: EditorDialogsHostProps) => {
@@ -39,6 +59,7 @@ export const EditorDialogsHost = ({
     shareOpen,
     watermarkOpen,
     moveToFolderOpen,
+    commentsOpen,
     setFindOpen,
     setDocSettingsOpen,
     setActiveBand,
@@ -47,6 +68,7 @@ export const EditorDialogsHost = ({
     setShareOpen,
     setWatermarkOpen,
     setMoveToFolderOpen,
+    setCommentsOpen,
   } = modals;
 
   return (
@@ -112,6 +134,20 @@ export const EditorDialogsHost = ({
           onMoveToFolder={onMoveToFolder}
         />
       )}
+
+      <CommentsPanel
+        open={commentsOpen}
+        onClose={() => setCommentsOpen(false)}
+        commentsStore={commentsStore}
+        threads={threads}
+        currentUserId={currentUserId}
+        currentUserName={currentUserName}
+        selectedThreadId={selectedThreadId}
+        onSelectThread={onSelectThread}
+        pendingComment={pendingComment}
+        onCancelPending={onCancelPending}
+        onCommitPending={onCommitPending}
+      />
     </>
   );
 };

@@ -8,9 +8,10 @@ import { getSelectionRect, mountPopup } from '@office/tiptap-extensions';
 interface BubbleToolbarProps {
   editor: Editor;
   onSetLink: () => void;
+  onAddComment?: () => void;
 }
 
-export const BubbleToolbar = ({ editor, onSetLink }: BubbleToolbarProps) => {
+export const BubbleToolbar = ({ editor, onSetLink, onAddComment }: BubbleToolbarProps) => {
   const { t } = useTranslation('docs');
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -125,6 +126,11 @@ export const BubbleToolbar = ({ editor, onSetLink }: BubbleToolbarProps) => {
       <ToolbarButton label={t('toolbar.link')} onClick={onSetLink}>
         <Icon name="link" />
       </ToolbarButton>
+      {onAddComment && (
+        <ToolbarButton label="Thêm bình luận" onClick={onAddComment}>
+          <Icon name="comment" className="text-amber-500" />
+        </ToolbarButton>
+      )}
     </div>
   );
 };

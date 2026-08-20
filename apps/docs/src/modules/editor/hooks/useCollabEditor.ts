@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCollabAwareness, useCollabRoom, useCollabStatus } from '@office/collab-core';
+import { CommentsStore, type CommentThread } from '@office/tiptap-extensions';
 import { useCurrentUserProfile } from '@/modules/collab';
 import { useDocsEditor } from '@/modules/editor/hooks/useDocsEditor';
 import type { DocRecord } from '@/types/docs.types';
@@ -8,6 +9,7 @@ export const useCollabEditor = (
   activeDoc: DocRecord | undefined,
   updateContent: (html: string) => void,
   isReadOnly = false,
+  onSelectCommentThread?: (threadId: string) => void,
 ) => {
   const { profile: currentUser, updateProfile } = useCurrentUserProfile();
 
@@ -23,6 +25,22 @@ export const useCollabEditor = (
   const collabRoom = useCollabRoom(collabRoomConfig);
   const { status: collabStatus, isSynced } = useCollabStatus(collabRoom.provider);
   const { collaborators, presences } = useCollabAwareness(collabRoom.provider);
+
+  const commentsStore = useMemo(
+    () => new CommentsStore(collabRoom.doc),
+    [collabRoom.doc],
+  );
+  const [threads, setThreads] = useState<CommentThread[]>(() => commentsStore.getThreads());
+
+  useEffect(() => {
+    commentsStore.setYDoc(collabRoom.doc);
+    setThreads(commentsStore.getThreads());
+
+    const unsubscribe = commentsStore.subscribe(() => {
+      setThreads([...commentsStore.getThreads()]);
+    });
+    return unsubscribe;
+  }, [commentsStore, collabRoom.doc]);
 
   const collabConfig = useMemo(() => {
     if (!collabRoom.doc || !collabRoom.provider) return null;
@@ -43,6 +61,8 @@ export const useCollabEditor = (
     activeDoc?.content ?? '',
     updateContent,
     collabConfig,
+    commentsStore,
+    onSelectCommentThread,
   );
 
   // Periodic offline local cache update (only when editing)
@@ -75,5 +95,7 @@ export const useCollabEditor = (
     currentUser,
     updateProfile,
     collabRoom,
+    commentsStore,
+    threads,
   };
 };

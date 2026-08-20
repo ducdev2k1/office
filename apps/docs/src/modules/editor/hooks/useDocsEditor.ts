@@ -4,6 +4,8 @@ import {
   Bookmark,
   Checklist,
   ClearFormatting,
+  Comments,
+  type CommentsStore,
   ImageResize,
   LineSpacing,
   LinkPopover,
@@ -53,6 +55,8 @@ export const useDocsEditor = (
   content: string,
   onUpdate: (html: string) => void,
   collabConfig?: DocsCollabConfig | null,
+  commentsStore?: CommentsStore,
+  onSelectCommentThread?: (threadId: string) => void,
 ) => {
   const isCollab = Boolean(collabConfig?.ydoc && collabConfig?.provider);
 
@@ -124,6 +128,14 @@ export const useDocsEditor = (
     Toc,
     SectionBreak,
     Bookmark,
+    ...(commentsStore
+      ? [
+          Comments.configure({
+            store: commentsStore,
+            onSelectThread: onSelectCommentThread,
+          }),
+        ]
+      : []),
     Mention.configure({}),
     MentionSuggestion.configure({
       users: mentionUsers,
@@ -139,7 +151,7 @@ export const useDocsEditor = (
       editorProps: { attributes: { class: 'doc-editor' } },
       onUpdate: isCollab ? undefined : ({ editor }) => onUpdate(editor.getHTML()),
     },
-    [docId, isCollab, collabConfig?.provider],
+    [docId, isCollab, collabConfig?.provider, commentsStore],
   );
   editorRef.current = editor;
 

@@ -16,6 +16,7 @@ export const useEditorModals = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [watermarkOpen, setWatermarkOpen] = useState(false);
   const [moveToFolderOpen, setMoveToFolderOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   useEffect(() => {
     const handleOpenHf = (event: Event) => {
@@ -57,12 +58,15 @@ export const useEditorModals = () => {
   };
 
   const toggleFind = () => setFindOpen((prev) => !prev);
+  const toggleComments = () => setCommentsOpen((prev) => !prev);
+
   const closeAllModals = () => {
     setFindOpen(false);
     setDocSettingsOpen(false);
     setHelpOpen(false);
     setWatermarkOpen(false);
     setMoveToFolderOpen(false);
+    setCommentsOpen(false);
   };
 
   return {
@@ -77,6 +81,7 @@ export const useEditorModals = () => {
     shareOpen,
     watermarkOpen,
     moveToFolderOpen,
+    commentsOpen,
     setFindOpen,
     setDocSettingsOpen,
     setDocSettingsTab,
@@ -87,11 +92,13 @@ export const useEditorModals = () => {
     setShareOpen,
     setWatermarkOpen,
     setMoveToFolderOpen,
+    setCommentsOpen,
     handleToggleSidebar,
     handleCloseSidebar,
     openPageSetup,
     openHeaderFooter,
     toggleFind,
+    toggleComments,
     closeAllModals,
   };
 };

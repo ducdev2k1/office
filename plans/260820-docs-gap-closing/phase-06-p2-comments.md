@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P2 | **Status**: pending | **Effort**: 40h
+- **Priority**: P2 | **Status**: done | **Effort**: 40h
 - Xây tính năng bình luận (comments + threads) tương tự gg docs, tự build trên Yjs — thay cho `@tiptap/extension-comments` (Pro). Header đã có nút comments disabled — bật lên.
 
 ## Context
@@ -66,12 +66,12 @@
 
 ## Todo List
 
-- [ ] comments-store (Y.Map CRUD + observer)
-- [ ] anchor lưu/đọc relative position
-- [ ] decoration highlight + gutter
-- [ ] Comment popup + panel + thread
-- [ ] Wire bubble/context menu + header
-- [ ] i18n + verify 2 tab
+- [x] comments-store (Y.Map CRUD + observer)
+- [x] anchor lưu/đọc relative position
+- [x] decoration highlight + gutter
+- [x] Comment popup + panel + thread
+- [x] Wire bubble/context menu + header
+- [x] i18n + verify 2 tab
 
 ## Success Criteria
 

@@ -14,7 +14,6 @@ import {
   useEditorModals,
   usePagination,
   usePrintDocument,
-  type ContextMenuPosition,
 } from '@/modules/editor';
 import { EditorDialogsHost } from '@/modules/editor/components/EditorDialogsHost';
 import { FollowBanner, useFollowCollaborator } from '@/modules/collab';
@@ -69,13 +68,22 @@ export const EditorPage = () => {
     setShareOpen,
     setWatermarkOpen,
     setMoveToFolderOpen,
+    setCommentsOpen,
     handleToggleSidebar,
     handleCloseSidebar,
     openPageSetup,
     openHeaderFooter,
     toggleFind,
+    toggleComments,
     closeAllModals,
   } = modals;
+
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+  const [pendingComment, setPendingComment] = useState<{
+    from: number;
+    to: number;
+    text: string;
+  } | null>(null);
 
   const fontPickerRef = useRef<HTMLButtonElement>(null);
   const colorPickerRef = useRef<HTMLButtonElement>(null);
@@ -95,8 +103,21 @@ export const EditorPage = () => {
     navigate(`/edit/${remaining[0]!.id}`);
   };
 
-  const { editor, collabStatus, collaborators, currentUser, updateProfile, collabRoom } =
-    useCollabEditor(activeDoc, updateContent, isReadOnly);
+  const handleSelectCommentThread = (threadId: string) => {
+    setSelectedThreadId(threadId);
+    setCommentsOpen(true);
+  };
+
+  const {
+    editor,
+    collabStatus,
+    collaborators,
+    currentUser,
+    updateProfile,
+    collabRoom,
+    commentsStore,
+    threads,
+  } = useCollabEditor(activeDoc, updateContent, isReadOnly, handleSelectCommentThread);
 
   const { followedUser, followedClientId, stopFollow, toggleFollow } = useFollowCollaborator({
     editor,
@@ -155,6 +176,27 @@ export const EditorPage = () => {
     schedulePagination(true, setup);
   };
 
+  const handleStartAddComment = () => {
+    if (!editor || editor.state.selection.empty) return;
+    const { from, to } = editor.state.selection;
+    const text = editor.state.doc.textBetween(from, to, ' ');
+    setPendingComment({ from, to, text });
+    setCommentsOpen(true);
+  };
+
+  const handleCommitPendingComment = (content: string) => {
+    if (!pendingComment) return;
+    commentsStore.addThread({
+      fromIndex: pendingComment.from,
+      toIndex: pendingComment.to,
+      text: content,
+      authorId: currentUser?.id || 'me',
+      authorName: currentUser?.name || 'Bạn',
+      highlightedText: pendingComment.text,
+    });
+    setPendingComment(null);
+  };
+
   return (
     <div className="app-shell-root h-screen min-h-screen overflow-hidden">
       <main className="doc-workspace flex flex-col h-screen min-h-screen bg-workspace overflow-hidden">
@@ -167,6 +209,8 @@ export const EditorPage = () => {
           starred={Boolean(activeDoc?.starred)}
           onToggleStar={() => activeDoc && star(activeDoc.id)}
           onMoveToFolder={() => setMoveToFolderOpen(true)}
+          onToggleComments={toggleComments}
+          commentsCount={threads.filter((t) => !t.resolved).length}
           collabStatus={collabStatus}
           collaborators={collaborators}
           currentUser={currentUser}
@@ -261,7 +305,13 @@ export const EditorPage = () => {
             onPageSetupChange={handlePageSetupChange}
           />
 
-          {editor && <BubbleToolbar editor={editor} onSetLink={setLink} />}
+          {editor && (
+            <BubbleToolbar
+              editor={editor}
+              onSetLink={setLink}
+              onAddComment={handleStartAddComment}
+            />
+          )}
           {editor && <LinkPopoverHost editor={editor} />}
           {editor && <MentionPopover editor={editor} />}
           {editor && (
@@ -304,6 +354,15 @@ export const EditorPage = () => {
           docs={docs}
           modals={modals}
           versionHistory={versionHistory}
+          commentsStore={commentsStore}
+          threads={threads}
+          currentUserId={currentUser?.id}
+          currentUserName={currentUser?.name}
+          selectedThreadId={selectedThreadId}
+          onSelectThread={setSelectedThreadId}
+          pendingComment={pendingComment}
+          onCancelPending={() => setPendingComment(null)}
+          onCommitPending={handleCommitPendingComment}
           onPageSetupChange={handlePageSetupChange}
           onMoveToFolder={moveToFolder}
         />
@@ -316,6 +375,7 @@ export const EditorPage = () => {
           onInsertTable={handleInsertTable}
           onInsertPageBreak={handleInsertPageBreak}
           onToggleFind={toggleFind}
+          onAddComment={handleStartAddComment}
           isReadOnly={isReadOnly}
         />
       </main>

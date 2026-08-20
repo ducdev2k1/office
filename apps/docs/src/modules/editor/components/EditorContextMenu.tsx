@@ -12,6 +12,7 @@ interface EditorContextMenuProps {
   onInsertTable: () => void;
   onInsertPageBreak: () => void;
   onToggleFind: () => void;
+  onAddComment?: () => void;
   isReadOnly?: boolean;
 }
 
@@ -32,6 +33,7 @@ export const EditorContextMenu = ({
   onInsertTable,
   onInsertPageBreak,
   onToggleFind,
+  onAddComment,
   isReadOnly = false,
 }: EditorContextMenuProps) => {
   const { t } = useTranslation('docs');
@@ -160,6 +162,15 @@ export const EditorContextMenu = ({
           shortcut: 'Ctrl+V',
           onClick: () => handlePaste(),
         },
+        ...(hasSelection && onAddComment
+          ? [
+              {
+                label: 'Bình luận',
+                icon: 'message-square',
+                onClick: () => runAndClose(onAddComment),
+              },
+            ]
+          : []),
       ];
 
   const formatGroup: ContextActionItem[] = isViewOnly

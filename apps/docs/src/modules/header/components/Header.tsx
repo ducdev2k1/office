@@ -22,6 +22,8 @@ interface HeaderProps {
   starred?: boolean;
   onToggleStar?: () => void;
   onMoveToFolder?: () => void;
+  onToggleComments?: () => void;
+  commentsCount?: number;
   collabStatus?: CollabStatus;
   collaborators?: CollabUser[];
   currentUser?: CollabUser;
@@ -40,6 +42,8 @@ export const Header = ({
   starred = false,
   onToggleStar,
   onMoveToFolder,
+  onToggleComments,
+  commentsCount = 0,
   collabStatus,
   collaborators = [],
   currentUser,
@@ -242,19 +246,24 @@ export const Header = ({
           <TooltipTrigger
             render={
               <Button
-                className="size-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover hidden sm:inline-flex"
+                className="relative size-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-hover hidden sm:inline-flex"
                 type="button"
                 aria-label={t('header.comments')}
                 variant="ghost"
                 size="icon"
-                disabled
+                onClick={onToggleComments}
               >
                 <Icon name="message-square" className="size-4.5" />
+                {commentsCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                    {commentsCount > 9 ? '9+' : commentsCount}
+                  </span>
+                )}
               </Button>
             }
           />
           <TooltipContent side="bottom">
-            {`${t('header.comments')} · ${t('header.comingSoon')}`}
+            {t('header.comments')}
           </TooltipContent>
         </Tooltip>
 
