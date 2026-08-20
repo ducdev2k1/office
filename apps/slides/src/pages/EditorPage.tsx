@@ -207,7 +207,7 @@ export const EditorPage = () => {
           onAddTextBox={() =>
             slidesApi.addElement({
               type: 'text',
-              content: 'Văn bản mới',
+              content: t('editor.defaultNewText'),
               fontSize: 24,
               width: 400,
               height: 100,

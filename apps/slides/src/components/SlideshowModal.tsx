@@ -176,13 +176,13 @@ export const SlideshowModal = ({
     >
       {isBlackout && (
         <div onClick={() => setIsBlackout(false)} className="absolute inset-0 z-40 flex items-center justify-center bg-black text-xs text-white/30">
-          Nhấn phím B để tiếp tục trình chiếu
+          {t('slideshow.blackoutHint')}
         </div>
       )}
 
       {isWhiteout && (
         <div onClick={() => setIsWhiteout(false)} className="absolute inset-0 z-40 flex items-center justify-center bg-white text-xs text-black/30">
-          Nhấn phím W để tiếp tục trình chiếu
+          {t('slideshow.whiteoutHint')}
         </div>
       )}
 
@@ -304,7 +304,7 @@ export const SlideshowModal = ({
             >
               <Icon name="chevron-left" size={16} />
             </TooltipTrigger>
-            <TooltipContent>Trang trước (← / P)</TooltipContent>
+            <TooltipContent>{t('slideshow.prev')}</TooltipContent>
           </Tooltip>
 
           <DropdownMenu>
@@ -326,7 +326,7 @@ export const SlideshowModal = ({
                   onClick={() => goToSlide(idx)}
                   className={idx === currentIndex ? 'bg-accent font-semibold' : ''}
                 >
-                  <span>Trang {idx + 1}: {s.title || 'Slide'}</span>
+                  <span>{t('slideshow.slideItem', { index: idx + 1, title: s.title || 'Slide' })}</span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -346,7 +346,7 @@ export const SlideshowModal = ({
             >
               <Icon name="chevron-right" size={16} />
             </TooltipTrigger>
-            <TooltipContent>Trang sau (→ / Space / N)</TooltipContent>
+            <TooltipContent>{t('slideshow.next')}</TooltipContent>
           </Tooltip>
 
           <div className="mx-1 h-4 w-px bg-white/20" />
@@ -366,7 +366,7 @@ export const SlideshowModal = ({
             >
               <Icon name="crosshair" size={15} />
             </TooltipTrigger>
-            <TooltipContent>Bút laser ảo (L)</TooltipContent>
+            <TooltipContent>{t('slideshow.laser')}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -387,7 +387,7 @@ export const SlideshowModal = ({
             >
               <Icon name="moon" size={15} />
             </TooltipTrigger>
-            <TooltipContent>Màn hình đen (B)</TooltipContent>
+            <TooltipContent>{t('slideshow.blackout')}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -405,7 +405,7 @@ export const SlideshowModal = ({
             >
               <Icon name={isAutoPlay ? 'pause' : 'play'} size={15} />
             </TooltipTrigger>
-            <TooltipContent>{isAutoPlay ? 'Dừng tự động chạy' : 'Tự động chạy (4s)'}</TooltipContent>
+            <TooltipContent>{isAutoPlay ? t('slideshow.pauseAutoPlay') : t('slideshow.autoPlay')}</TooltipContent>
           </Tooltip>
 
           <div className="mx-1 h-4 w-px bg-white/20" />
@@ -423,7 +423,7 @@ export const SlideshowModal = ({
             >
               <Icon name="x" size={16} />
             </TooltipTrigger>
-            <TooltipContent>Thoát trình chiếu (ESC)</TooltipContent>
+            <TooltipContent>{t('slideshow.exit')}</TooltipContent>
           </Tooltip>
         </div>
       </TooltipProvider>

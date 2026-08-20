@@ -1,4 +1,5 @@
 import type { SlideElement } from '@/types/slides.types';
+import { useTranslation } from '@office/i18n';
 import {
   Button,
   DropdownMenu,
@@ -53,6 +54,7 @@ export const ElementFormattingBar = ({
   onBringToFront,
   onSendToBack,
 }: ElementFormattingBarProps) => {
+  const { t } = useTranslation('slides');
   const replaceImgInputRef = useRef<HTMLInputElement>(null);
 
   const handleReplaceFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +94,7 @@ export const ElementFormattingBar = ({
           </div>
 
           <ToolbarButton
-            label="Đậm (Ctrl+B)"
+            label={t('formatting.bold')}
             active={element.fontWeight === 'bold'}
             onClick={() => onUpdate({ fontWeight: element.fontWeight === 'bold' ? 'normal' : 'bold' })}
           >
@@ -100,7 +102,7 @@ export const ElementFormattingBar = ({
           </ToolbarButton>
 
           <ToolbarButton
-            label="Nghiêng (Ctrl+I)"
+            label={t('formatting.italic')}
             active={element.fontStyle === 'italic'}
             onClick={() => onUpdate({ fontStyle: element.fontStyle === 'italic' ? 'normal' : 'italic' })}
           >
@@ -134,7 +136,7 @@ export const ElementFormattingBar = ({
 
           {/* Text Align Toggle */}
           <ToolbarButton
-            label="Căn lề (Trái / Giữa / Phải)"
+            label={t('formatting.align')}
             onClick={() => {
               const nextAlign =
                 element.align === 'left' ? 'center' : element.align === 'center' ? 'right' : 'left';
@@ -155,7 +157,7 @@ export const ElementFormattingBar = ({
             }
           >
             <Icon name="edit" size={13} />
-            <span>Màu tô</span>
+            <span>{t('formatting.fillColor')}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="grid grid-cols-4 gap-1 p-2">
             <button
@@ -163,7 +165,7 @@ export const ElementFormattingBar = ({
               onClick={() => onUpdate({ fill: undefined })}
               className="col-span-4 rounded border border-dashed py-1 text-[11px] text-muted-foreground hover:bg-muted"
             >
-              Không màu nền
+              {t('formatting.noBorder')}
             </button>
             {PALETTE_COLORS.map((c) => (
               <button
@@ -189,12 +191,12 @@ export const ElementFormattingBar = ({
             onChange={handleReplaceFile}
           />
           <ToolbarButton
-            label="Thay thế ảnh từ máy tính"
+            label={t('formatting.replaceImage')}
             onClick={() => replaceImgInputRef.current?.click()}
             className="gap-1.5 px-2 text-xs font-medium border border-border"
           >
             <Icon name="image" size={13} />
-            <span>Thay thế ảnh</span>
+            <span>{t('formatting.replaceImage')}</span>
           </ToolbarButton>
 
           {/* Border Stroke Width */}
@@ -205,21 +207,21 @@ export const ElementFormattingBar = ({
               }
             >
               <Icon name="square" size={13} />
-              <span>Viền</span>
+              <span>{t('formatting.borderStyle')}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem onClick={() => onUpdate({ stroke: undefined, strokeWidth: 0 })}>
-                Không viền
+                {t('formatting.noBorder')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onUpdate({ stroke: '#0f172a', strokeWidth: 1 })}>
-                Viền mỏng (1px)
+              <DropdownMenuItem onClick={() => onUpdate({ stroke: '#0f172a', strokeWidth: 2 })}>
+                {t('formatting.borderBlack')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onUpdate({ stroke: '#0f172a', strokeWidth: 3 })}>
-                Viền vừa (3px)
+              <DropdownMenuItem onClick={() => onUpdate({ stroke: '#1e40af', strokeWidth: 3 })}>
+                {t('formatting.borderPrimary')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onUpdate({ stroke: '#1e40af', strokeWidth: 4 })}>
-                Viền dày iNET (4px)
+              <DropdownMenuItem onClick={() => onUpdate({ stroke: '#dc2626', strokeWidth: 3 })}>
+                {t('formatting.borderRed')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -230,7 +232,7 @@ export const ElementFormattingBar = ({
 
       {/* 4. COMMON ACTIONS: ROTATE, CENTER, Z-INDEX, DUPLICATE, DELETE */}
       {onRotate && (
-        <ToolbarButton label="Xoay 90°" onClick={() => onRotate(90)}>
+        <ToolbarButton label={t('formatting.rotate90')} onClick={() => onRotate(90)}>
           <Icon name="rotate-cw" size={14} />
         </ToolbarButton>
       )}
@@ -246,14 +248,14 @@ export const ElementFormattingBar = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DropdownMenuItem onClick={() => onCenter('horizontal')}>
-              Căn giữa theo chiều ngang
+              {t('formatting.centerHorizontally')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onCenter('vertical')}>
-              Căn giữa theo chiều dọc
+              {t('formatting.centerVertically')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => onCenter('both')}>
-              Căn giữa toàn màn hình
+              {t('formatting.centerBoth')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -269,20 +271,20 @@ export const ElementFormattingBar = ({
           <Icon name="layers" size={14} className="text-muted-foreground" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={onBringForward}>Lên trước 1 lớp</DropdownMenuItem>
-          <DropdownMenuItem onClick={onBringToFront}>Lên trên cùng</DropdownMenuItem>
+          <DropdownMenuItem onClick={onBringForward}>{t('formatting.bringForward')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={onBringToFront}>{t('formatting.bringToFront')}</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={onSendBackward}>Xuống sau 1 lớp</DropdownMenuItem>
-          <DropdownMenuItem onClick={onSendToBack}>Xuống dưới cùng</DropdownMenuItem>
+          <DropdownMenuItem onClick={onSendBackward}>{t('formatting.sendBackward')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={onSendToBack}>{t('formatting.sendToBack')}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ToolbarButton label="Nhân bản (Ctrl+D)" onClick={onDuplicate}>
+      <ToolbarButton label={t('formatting.duplicate')} onClick={onDuplicate}>
         <Icon name="copy" size={13} />
       </ToolbarButton>
 
       <ToolbarButton
-        label="Xoá (Delete)"
+        label={t('formatting.delete')}
         onClick={onDelete}
         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
       >

@@ -29,17 +29,6 @@ const PALETTE_COLORS = [
   { label: 'Tím', value: '#9333ea' },
 ];
 
-const TRANSITIONS: { label: string; value: SlideTransitionType; icon: string }[] = [
-  { label: 'Không hiệu ứng', value: 'none', icon: 'square' },
-  { label: 'Mờ dần (Fade)', value: 'fade', icon: 'sparkles' },
-  { label: 'Trượt từ phải (Slide Left)', value: 'slide-left', icon: 'arrow-right' },
-  { label: 'Trượt từ trái (Slide Right)', value: 'slide-right', icon: 'arrow-left' },
-  { label: 'Trượt từ dưới (Slide Up)', value: 'slide-up', icon: 'arrow-up' },
-  { label: 'Thu phóng (Zoom)', value: 'zoom', icon: 'maximize' },
-  { label: 'Lật thẻ 3D (3D Flip)', value: 'flip-3d', icon: 'rotate-cw' },
-  { label: 'Khối 3D Cube (3D Cube)', value: 'cube-3d', icon: 'box' },
-];
-
 interface SlideToolbarProps {
   onAddSlide: () => void;
   onDeleteSlide: () => void;
@@ -106,6 +95,17 @@ export const SlideToolbar = ({
   const { t } = useTranslation('slides');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const transitionsList: { label: string; value: SlideTransitionType }[] = [
+    { label: t('transitions.none'), value: 'none' },
+    { label: t('transitions.fade'), value: 'fade' },
+    { label: t('transitions.slideLeft'), value: 'slide-left' },
+    { label: t('transitions.slideRight'), value: 'slide-right' },
+    { label: t('transitions.slideUp'), value: 'slide-up' },
+    { label: t('transitions.zoom'), value: 'zoom' },
+    { label: t('transitions.flip3d'), value: 'flip-3d' },
+    { label: t('transitions.cube3d'), value: 'cube-3d' },
+  ];
+
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -120,7 +120,7 @@ export const SlideToolbar = ({
   };
 
   const activeTransLabel =
-    TRANSITIONS.find((tItem) => tItem.value === currentTransition)?.label || 'Chuyển cảnh';
+    transitionsList.find((tItem) => tItem.value === currentTransition)?.label || t('toolbar.transition');
 
   return (
     <TooltipProvider>
@@ -128,13 +128,13 @@ export const SlideToolbar = ({
         <div className="flex items-center gap-1">
           {/* Undo / Redo */}
           {onUndo && (
-            <ToolbarButton label="Hoàn tác (Ctrl+Z)" disabled={!canUndo} onClick={onUndo}>
+            <ToolbarButton label={t('toolbar.undo')} disabled={!canUndo} onClick={onUndo}>
               <Icon name="undo" size={14} />
             </ToolbarButton>
           )}
 
           {onRedo && (
-            <ToolbarButton label="Làm lại (Ctrl+Y)" disabled={!canRedo} onClick={onRedo}>
+            <ToolbarButton label={t('toolbar.redo')} disabled={!canRedo} onClick={onRedo}>
               <Icon name="redo" size={14} />
             </ToolbarButton>
           )}
@@ -143,7 +143,7 @@ export const SlideToolbar = ({
 
           {/* Add Slide */}
           <ToolbarButton
-            label={`${t('toolbar.addSlide')} (Ctrl+M)`}
+            label={t('toolbar.addSlideShortcut')}
             onClick={onAddSlide}
             className="border border-border font-medium px-2 gap-1.5"
           >
@@ -151,12 +151,12 @@ export const SlideToolbar = ({
             <span>{t('toolbar.addSlide')}</span>
           </ToolbarButton>
 
-          <ToolbarButton label={`${t('toolbar.duplicateSlide')} (Ctrl+D)`} onClick={onDuplicateSlide}>
+          <ToolbarButton label={t('toolbar.duplicateSlide')} onClick={onDuplicateSlide}>
             <Icon name="copy" size={14} />
           </ToolbarButton>
 
           <ToolbarButton
-            label={`${t('toolbar.deleteSlide')} (Delete)`}
+            label={t('toolbar.deleteSlide')}
             disabled={!canDelete}
             onClick={onDeleteSlide}
             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
@@ -167,7 +167,7 @@ export const SlideToolbar = ({
           <Separator orientation="vertical" className="mx-1 h-4" />
 
           {/* Insert TextBox */}
-          <ToolbarButton label="Chèn hộp văn bản" onClick={onAddTextBox} className="gap-1.5 px-2">
+          <ToolbarButton label={t('toolbar.textBox')} onClick={onAddTextBox} className="gap-1.5 px-2">
             <Icon name="type" size={14} />
             <span>{t('toolbar.textBox')}</span>
           </ToolbarButton>
@@ -186,28 +186,28 @@ export const SlideToolbar = ({
             <DropdownMenuContent align="start">
               <DropdownMenuItem onClick={() => onAddShape('rect')}>
                 <div className="mr-2 h-3.5 w-3.5 border border-primary bg-primary/20" />
-                <span>Hình chữ nhật</span>
+                <span>{t('shapes.rect')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAddShape('rounded')}>
                 <div className="mr-2 h-3.5 w-3.5 rounded-xs border border-primary bg-primary/20" />
-                <span>Hình chữ nhật bo góc</span>
+                <span>{t('shapes.rounded')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAddShape('circle')}>
                 <div className="mr-2 h-3.5 w-3.5 rounded-full border border-primary bg-primary/20" />
-                <span>Hình tròn / Elip</span>
+                <span>{t('shapes.circle')}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onAddShape('triangle')}>
                 <span className="mr-2 text-xs">🔺</span>
-                <span>Hình tam giác</span>
+                <span>{t('shapes.triangle')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAddShape('arrow')}>
                 <span className="mr-2 text-xs">➡️</span>
-                <span>Mũi tên phải</span>
+                <span>{t('shapes.arrow')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAddShape('star')}>
                 <span className="mr-2 text-xs">⭐</span>
-                <span>Ngôi sao 5 cánh</span>
+                <span>{t('shapes.star')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -221,7 +221,7 @@ export const SlideToolbar = ({
             onChange={handleImageFileChange}
           />
           <ToolbarButton
-            label="Chèn hình ảnh từ máy tính"
+            label={t('toolbar.imageTooltip')}
             onClick={() => fileInputRef.current?.click()}
             className="gap-1.5 px-2"
           >
@@ -237,7 +237,7 @@ export const SlideToolbar = ({
               }
             >
               <span className="h-3 w-3 rounded-full border border-border bg-gradient-to-tr from-amber-400 to-blue-500 shadow-2xs" />
-              <span>Nền</span>
+              <span>{t('toolbar.background')}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="grid grid-cols-4 gap-1 p-2">
               {PALETTE_COLORS.map((c) => (
@@ -265,7 +265,7 @@ export const SlideToolbar = ({
                 <Icon name="chevron-down" size={11} className="opacity-60" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
-                {TRANSITIONS.map((item) => (
+                {transitionsList.map((item) => (
                   <DropdownMenuItem
                     key={item.value}
                     onClick={() => onChangeTransition(item.value)}
@@ -276,7 +276,7 @@ export const SlideToolbar = ({
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => onChangeTransition(currentTransition, true)}>
-                  <span className="text-xs text-muted-foreground">Áp dụng cho tất cả slide</span>
+                  <span className="text-xs text-muted-foreground">{t('toolbar.applyToAll')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -317,21 +317,21 @@ export const SlideToolbar = ({
                   }
                 >
                   <Icon name="file-text" size={13} />
-                  <span>File Mẫu</span>
+                  <span>{t('toolbar.sampleFiles')}</span>
                   <Icon name="chevron-down" size={11} className="opacity-70" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" sideOffset={6}>
                   <DropdownMenuItem onClick={() => onLoadSample('sample-basic.pptx')}>
-                    <span className="font-medium">1. Mẫu Cơ Bản</span>
-                    <span className="ml-2 text-xs text-muted-foreground">(3 slide)</span>
+                    <span className="font-medium">{t('toolbar.sampleBasic')}</span>
+                    <span className="ml-2 text-xs text-muted-foreground">{t('toolbar.sampleSlidesCount', { count: 3 })}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onLoadSample('sample-medium.pptx')}>
-                    <span className="font-medium">2. Mẫu Trung Bình</span>
-                    <span className="ml-2 text-xs text-muted-foreground">(5 slide)</span>
+                    <span className="font-medium">{t('toolbar.sampleMedium')}</span>
+                    <span className="ml-2 text-xs text-muted-foreground">{t('toolbar.sampleSlidesCount', { count: 5 })}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onLoadSample('sample-advanced.pptx')}>
-                    <span className="font-medium">3. Mẫu Nâng Cao</span>
-                    <span className="ml-2 text-xs text-muted-foreground">(10 slide)</span>
+                    <span className="font-medium">{t('toolbar.sampleAdvanced')}</span>
+                    <span className="ml-2 text-xs text-muted-foreground">{t('toolbar.sampleSlidesCount', { count: 10 })}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

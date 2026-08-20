@@ -465,7 +465,7 @@ export const SlideViewer = ({
                 }}
               />
             ) : (
-              el.content || 'Nhấp đúp để nhập văn bản'
+              el.content || t('editor.doubleClickToEdit')
             )}
           </div>
         )}
@@ -479,7 +479,7 @@ export const SlideViewer = ({
         {el.type === 'image' && (
           <img
             src={el.url}
-            alt={el.content || 'Hình ảnh slide'}
+            alt={el.content || t('toolbar.image')}
             style={{
               border: el.stroke ? `${el.strokeWidth || 2}px solid ${el.stroke}` : undefined,
               borderRadius: el.borderRadius ? `${el.borderRadius}px` : undefined,

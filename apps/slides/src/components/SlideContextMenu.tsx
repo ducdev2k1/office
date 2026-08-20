@@ -1,4 +1,5 @@
 import type { SlideElement } from '@/types/slides.types';
+import { useTranslation } from '@office/i18n';
 import { Icon, Separator } from '@office/ui-kit';
 import React, { useEffect, useRef } from 'react';
 
@@ -51,6 +52,7 @@ export const SlideContextMenu = ({
   onDeleteSlide,
   onPresent,
 }: SlideContextMenuProps) => {
+  const { t } = useTranslation('slides');
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -92,7 +94,7 @@ export const SlideContextMenu = ({
           >
             <div className="flex items-center gap-2">
               <Icon name="scissors" size={13} />
-              <span>Cắt</span>
+              <span>{t('contextMenu.cut')}</span>
             </div>
             <span className="text-[10px] text-muted-foreground">Ctrl+X</span>
           </button>
@@ -104,7 +106,7 @@ export const SlideContextMenu = ({
           >
             <div className="flex items-center gap-2">
               <Icon name="copy" size={13} />
-              <span>Sao chép</span>
+              <span>{t('contextMenu.copy')}</span>
             </div>
             <span className="text-[10px] text-muted-foreground">Ctrl+C</span>
           </button>
@@ -117,7 +119,7 @@ export const SlideContextMenu = ({
             >
               <div className="flex items-center gap-2">
                 <Icon name="clipboard" size={13} />
-                <span>Dán</span>
+                <span>{t('contextMenu.paste')}</span>
               </div>
               <span className="text-[10px] text-muted-foreground">Ctrl+V</span>
             </button>
@@ -130,7 +132,7 @@ export const SlideContextMenu = ({
           >
             <div className="flex items-center gap-2">
               <Icon name="copy" size={13} />
-              <span>Nhân bản đối tượng</span>
+              <span>{t('contextMenu.duplicate')}</span>
             </div>
             <span className="text-[10px] text-muted-foreground">Ctrl+D</span>
           </button>
@@ -142,7 +144,7 @@ export const SlideContextMenu = ({
           >
             <div className="flex items-center gap-2">
               <Icon name="trash-2" size={13} />
-              <span>Xoá</span>
+              <span>{t('contextMenu.delete')}</span>
             </div>
             <span className="text-[10px]">Delete</span>
           </button>
@@ -156,7 +158,7 @@ export const SlideContextMenu = ({
               className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
             >
               <Icon name="image" size={13} />
-              <span>Thay thế hình ảnh...</span>
+              <span>{t('contextMenu.replaceImage')}</span>
             </button>
           )}
 
@@ -166,7 +168,7 @@ export const SlideContextMenu = ({
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="rotate-cw" size={13} />
-            <span>Xoay 90°</span>
+            <span>{t('contextMenu.rotate90')}</span>
           </button>
 
           <button
@@ -175,7 +177,7 @@ export const SlideContextMenu = ({
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="align-center" size={13} />
-            <span>Căn giữa theo chiều ngang</span>
+            <span>{t('formatting.centerHorizontally')}</span>
           </button>
 
           <button
@@ -184,7 +186,7 @@ export const SlideContextMenu = ({
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="align-center" size={13} />
-            <span>Căn giữa theo chiều dọc</span>
+            <span>{t('formatting.centerVertically')}</span>
           </button>
 
           <Separator className="my-1" />
@@ -195,7 +197,7 @@ export const SlideContextMenu = ({
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="layers" size={13} />
-            <span>Lên trên cùng</span>
+            <span>{t('contextMenu.bringToFront')}</span>
           </button>
 
           <button
@@ -204,7 +206,7 @@ export const SlideContextMenu = ({
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="layers" size={13} />
-            <span>Xuống dưới cùng</span>
+            <span>{t('contextMenu.sendToBack')}</span>
           </button>
         </>
       ) : (
@@ -216,7 +218,7 @@ export const SlideContextMenu = ({
           >
             <div className="flex items-center gap-2">
               <Icon name="plus" size={13} />
-              <span>Trang chiếu mới</span>
+              <span>{t('contextMenu.newSlide')}</span>
             </div>
             <span className="text-[10px] text-muted-foreground">Ctrl+M</span>
           </button>
@@ -228,7 +230,7 @@ export const SlideContextMenu = ({
           >
             <div className="flex items-center gap-2">
               <Icon name="copy" size={13} />
-              <span>Nhân bản trang chiếu</span>
+              <span>{t('contextMenu.duplicateSlide')}</span>
             </div>
           </button>
 
@@ -240,7 +242,7 @@ export const SlideContextMenu = ({
             >
               <div className="flex items-center gap-2">
                 <Icon name="clipboard" size={13} />
-                <span>Dán đối tượng</span>
+                <span>{t('contextMenu.paste')}</span>
               </div>
               <span className="text-[10px] text-muted-foreground">Ctrl+V</span>
             </button>
@@ -254,7 +256,7 @@ export const SlideContextMenu = ({
             >
               <div className="flex items-center gap-2">
                 <Icon name="trash-2" size={13} />
-                <span>Xoá trang chiếu</span>
+                <span>{t('contextMenu.deleteSlide')}</span>
               </div>
             </button>
           )}
@@ -268,7 +270,7 @@ export const SlideContextMenu = ({
           >
             <div className="flex items-center gap-2">
               <Icon name="play" size={13} />
-              <span>Bắt đầu trình chiếu</span>
+              <span>{t('contextMenu.present')}</span>
             </div>
             <span className="text-[10px] text-muted-foreground">F5</span>
           </button>

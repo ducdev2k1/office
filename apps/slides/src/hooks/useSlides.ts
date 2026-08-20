@@ -277,7 +277,7 @@ export const useSlides = (): SlidesState => {
     if (!currentDeck?.data) return;
     const newSlide: SlideItem = {
       id: `slide-${crypto.randomUUID()}`,
-      title: `Trang ${currentDeck.data.slides.length + 1}`,
+      title: `${currentDeck.data.slides.length + 1}`,
       background: '#ffffff',
       transition: 'fade',
       elements: [
@@ -287,7 +287,7 @@ export const useSlides = (): SlidesState => {
           y: 60,
           width: 840,
           height: 60,
-          content: 'Tiêu Đề Trang Chiếu Mới',
+          content: t('editor.defaultNewTitle'),
           fontSize: 28,
         }),
       ],
@@ -299,7 +299,7 @@ export const useSlides = (): SlidesState => {
     updateData(updatedDeckData);
     setActiveSlideIndex(updatedDeckData.slides.length - 1);
     setSelectedElementId(null);
-  }, [updateData]);
+  }, [t, updateData]);
 
   const deleteActiveSlide = useCallback((): void => {
     const currentDeck = activeDeckRef.current;
@@ -316,7 +316,7 @@ export const useSlides = (): SlidesState => {
     const clonedSlide: SlideItem = {
       ...cloneDeep(activeSlide),
       id: `slide-${crypto.randomUUID()}`,
-      title: `${activeSlide.title || 'Slide'} (Bản sao)`,
+      title: t('copyOf', { title: activeSlide.title || 'Slide' }),
     };
     const nextSlides = [...currentDeck.data.slides];
     nextSlides.splice(activeSlideIndex + 1, 0, clonedSlide);

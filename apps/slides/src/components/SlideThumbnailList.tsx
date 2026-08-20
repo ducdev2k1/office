@@ -37,9 +37,9 @@ export const SlideThumbnailList = ({
     <TooltipProvider>
       <aside className="flex w-56 flex-col border-r border-border bg-card/60">
         <div className="flex items-center justify-between border-b border-border p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          <span>{t('slidesCount', { count: slides.length })}</span>
+          <span>{t('thumbnails.countHeader', { count: slides.length })}</span>
           <ToolbarButton
-            label={`${t('header.addSlide')} (Ctrl+M)`}
+            label={t('thumbnails.addSlide')}
             onClick={onAddSlide}
             className="h-6 w-6 p-0"
           >
@@ -78,12 +78,12 @@ export const SlideThumbnailList = ({
                         color: el.color || undefined,
                       }}
                     >
-                      {el.content || (el.type === 'shape' ? '■' : 'Văn bản')}
+                      {el.content || (el.type === 'shape' ? '■' : '')}
                     </div>
                   ))}
                   {slide.elements.length === 0 && (
                     <div className="flex h-full items-center justify-center text-[7px] text-muted-foreground/60">
-                      Trống
+                      {t('editor.noSlides')}
                     </div>
                   )}
 
@@ -107,18 +107,18 @@ export const SlideThumbnailList = ({
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onDuplicateSlide?.(index)}>
                           <Icon name="copy" size={13} className="mr-2" />
-                          <span>Nhân bản slide</span>
+                          <span>{t('toolbar.duplicateSlide')}</span>
                         </DropdownMenuItem>
                         {index > 0 && onMoveSlide && (
                           <DropdownMenuItem onClick={() => onMoveSlide(index, index - 1)}>
                             <Icon name="arrow-up" size={13} className="mr-2" />
-                            <span>Di chuyển lên</span>
+                            <span>{t('formatting.bringForward')}</span>
                           </DropdownMenuItem>
                         )}
                         {index < slides.length - 1 && onMoveSlide && (
                           <DropdownMenuItem onClick={() => onMoveSlide(index, index + 1)}>
                             <Icon name="arrow-down" size={13} className="mr-2" />
-                            <span>Di chuyển xuống</span>
+                            <span>{t('formatting.sendBackward')}</span>
                           </DropdownMenuItem>
                         )}
                         {slides.length > 1 && onDeleteSlide && (
@@ -129,7 +129,7 @@ export const SlideThumbnailList = ({
                               className="text-destructive focus:text-destructive"
                             >
                               <Icon name="trash-2" size={13} className="mr-2" />
-                              <span>Xoá slide</span>
+                              <span>{t('toolbar.deleteSlide')}</span>
                             </DropdownMenuItem>
                           </>
                         )}
@@ -148,7 +148,7 @@ export const SlideThumbnailList = ({
             className="w-full gap-1.5 border-dashed py-3 text-xs text-muted-foreground hover:text-foreground"
           >
             <Icon name="plus" size={13} />
-            <span>Thêm trang chiếu</span>
+            <span>{t('thumbnails.addSlideBottom')}</span>
           </Button>
         </div>
       </aside>
