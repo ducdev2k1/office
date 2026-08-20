@@ -17,13 +17,17 @@ export const useFollowCollaborator = ({
   const followedClientIdRef = useRef<number | null>(null);
   followedClientIdRef.current = followedClientId;
 
-  const followedUser = collaborators.find((c) => c.clientId === followedClientId) ?? null;
+  const followedUser =
+    collaborators.find((c) => c.clientId === followedClientId) ?? null;
+  const followedUserRef = useRef<CollabUser | null>(null);
+  followedUserRef.current = followedUser;
 
   const rafIdRef = useRef<number | null>(null);
 
   const stopFollow = useCallback(() => {
     setFollowedClientId(null);
     followedClientIdRef.current = null;
+    followedUserRef.current = null;
     if (typeof document !== 'undefined') {
       document
         .querySelectorAll('.collaboration-cursor--following')
@@ -31,11 +35,95 @@ export const useFollowCollaborator = ({
     }
   }, []);
 
-  const startFollow = useCallback((user: CollabUser) => {
-    if (!user.clientId) return;
-    setFollowedClientId(user.clientId);
-    followedClientIdRef.current = user.clientId;
+  const findCaretElement = useCallback((): HTMLElement | null => {
+    if (typeof document === 'undefined') return null;
+    const targetId = followedClientIdRef.current;
+    const targetUser = followedUserRef.current;
+    if (!targetId && !targetUser) return null;
+
+    // 1. By clientId attribute
+    if (targetId) {
+      const byClientId = document.querySelector(
+        `.collaboration-cursor__caret[data-client-id="${targetId}"]`,
+      ) as HTMLElement | null;
+      if (byClientId) return byClientId;
+    }
+
+    // 2. By userId attribute
+    if (targetUser?.id) {
+      const byUserId = document.querySelector(
+        `.collaboration-cursor__caret[data-user-id="${targetUser.id}"]`,
+      ) as HTMLElement | null;
+      if (byUserId) return byUserId;
+    }
+
+    // 3. By user name in label
+    if (targetUser?.name) {
+      const allCarets = Array.from(
+        document.querySelectorAll('.collaboration-cursor__caret'),
+      ) as HTMLElement[];
+      const matched = allCarets.find((caret) => {
+        const label = caret.querySelector('.collaboration-cursor__label');
+        return label?.textContent?.trim() === targetUser.name.trim();
+      });
+      if (matched) return matched;
+    }
+
+    return null;
   }, []);
+
+  // Scroll smoothly to followed user's cursor
+  const scrollToTarget = useCallback(() => {
+    if (typeof document === 'undefined') return;
+
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
+
+    rafIdRef.current = requestAnimationFrame(() => {
+      const caret = findCaretElement();
+
+      // Update following class
+      document
+        .querySelectorAll('.collaboration-cursor--following')
+        .forEach((el) => {
+          if (el !== caret) el.classList.remove('collaboration-cursor--following');
+        });
+
+      if (caret) {
+        caret.classList.add('collaboration-cursor--following');
+
+        const paperWrap = document.querySelector('.paper-wrap') as HTMLElement | null;
+        if (paperWrap) {
+          const wrapRect = paperWrap.getBoundingClientRect();
+          const caretRect = caret.getBoundingClientRect();
+          const targetScrollTop =
+            paperWrap.scrollTop + (caretRect.top - wrapRect.top) - wrapRect.height / 2;
+
+          paperWrap.scrollTo({
+            top: Math.max(0, targetScrollTop),
+            behavior: 'smooth',
+          });
+        }
+      }
+    });
+  }, [findCaretElement]);
+
+  const startFollow = useCallback(
+    (user: CollabUser) => {
+      if (!user.clientId) return;
+      setFollowedClientId(user.clientId);
+      followedClientIdRef.current = user.clientId;
+      followedUserRef.current = user;
+
+      // Immediate attempt + follow-up retries to catch newly rendered cursor DOM
+      scrollToTarget();
+      setTimeout(scrollToTarget, 60);
+      setTimeout(scrollToTarget, 180);
+      setTimeout(scrollToTarget, 350);
+    },
+    [scrollToTarget],
+  );
 
   const toggleFollow = useCallback(
     (user: CollabUser) => {
@@ -48,63 +136,6 @@ export const useFollowCollaborator = ({
     },
     [startFollow, stopFollow],
   );
-
-  // Scroll to followed user's cursor
-  const scrollToTarget = useCallback(() => {
-    const targetId = followedClientIdRef.current;
-    if (!targetId || typeof document === 'undefined') return;
-
-    if (rafIdRef.current !== null) {
-      cancelAnimationFrame(rafIdRef.current);
-    }
-
-    rafIdRef.current = requestAnimationFrame(() => {
-      // Find DOM caret element for this collaborator
-      const caret = document.querySelector(
-        `.collaboration-cursor__caret[data-client-id="${targetId}"]`,
-      ) as HTMLElement | null;
-
-      // Update following class
-      document.querySelectorAll('.collaboration-cursor--following').forEach((el) => {
-        if (el !== caret) el.classList.remove('collaboration-cursor--following');
-      });
-
-      if (caret) {
-        caret.classList.add('collaboration-cursor--following');
-        caret.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-          inline: 'nearest',
-        });
-        return;
-      }
-
-      // Fallback: check awareness cursor position directly
-      if (provider?.awareness && editor && !editor.isDestroyed) {
-        const state = provider.awareness.getStates().get(targetId) as
-          { cursor?: { anchor: number; head: number } } | undefined;
-
-        const pos = state?.cursor?.head ?? state?.cursor?.anchor;
-        if (typeof pos === 'number' && pos >= 0 && pos <= editor.state.doc.content.size) {
-          try {
-            const coords = editor.view.coordsAtPos(pos);
-            const paperWrap = document.querySelector('.paper-wrap') as HTMLElement | null;
-            if (paperWrap && coords) {
-              const wrapRect = paperWrap.getBoundingClientRect();
-              const targetScrollTop =
-                paperWrap.scrollTop + (coords.top - wrapRect.top) - wrapRect.height / 2;
-              paperWrap.scrollTo({
-                top: Math.max(0, targetScrollTop),
-                behavior: 'smooth',
-              });
-            }
-          } catch {
-            // Ignore temporary coords measurement during transaction
-          }
-        }
-      }
-    });
-  }, [editor, provider]);
 
   // Handle follow tracking when awareness updates
   useEffect(() => {
@@ -152,7 +183,10 @@ export const useFollowCollaborator = ({
     const handleEditorMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       // Do not break if clicking follow banner or avatar
-      if (target?.closest('.follow-banner') || target?.closest('.collaborator-avatar-btn')) {
+      if (
+        target?.closest('.follow-banner') ||
+        target?.closest('.collaborator-avatar-btn')
+      ) {
         return;
       }
       stopFollow();

@@ -37,6 +37,9 @@ const defaultRender = (user: Record<string, any>): HTMLElement => {
   if (user.id) {
     cursor.setAttribute('data-user-id', String(user.id));
   }
+  if (user.name) {
+    cursor.setAttribute('data-user-name', String(user.name));
+  }
   cursor.setAttribute('style', `border-color: ${user.color ?? '#2563eb'}`);
 
   const label = document.createElement('div');
