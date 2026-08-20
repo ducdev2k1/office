@@ -390,6 +390,10 @@ export const SlideViewer = ({
       <div
         key={el.id}
         data-slide-element={el.id}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelectElement(el.id);
+        }}
         onPointerDown={(e) => handleStartMove(e, el)}
         onContextMenu={(e) => {
           e.preventDefault();
