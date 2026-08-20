@@ -48,18 +48,57 @@ export const measureDocPageCount = (
   if (!root || !root.offsetHeight) return 1;
 
   let totalContentH = 0;
-  view.state.doc.forEach((node, offset) => {
-    const el = view.nodeDOM(offset) as HTMLElement | null;
+  let hasValidBlock = false;
+
+  view.state.doc.forEach((_node, offset) => {
+    let el: HTMLElement | null = null;
+    try {
+      const pos = Math.min(offset + 1, view.state.doc.content.size);
+      const domInfo = view.domAtPos(pos);
+      let candidate = (
+        domInfo.node.nodeType === Node.ELEMENT_NODE
+          ? domInfo.node
+          : domInfo.node.parentElement
+      ) as HTMLElement | null;
+
+      while (candidate && candidate.parentElement && candidate.parentElement !== view.dom) {
+        candidate = candidate.parentElement;
+      }
+      if (
+        candidate &&
+        candidate.parentElement === view.dom &&
+        !candidate.classList.contains('ProseMirror-widget') &&
+        candidate.id !== 'pages'
+      ) {
+        el = candidate;
+      }
+    } catch {
+      el = null;
+    }
+
+    if (!el) {
+      const fallback = view.nodeDOM(offset) as HTMLElement | null;
+      if (
+        fallback &&
+        fallback.parentElement === view.dom &&
+        !fallback.classList.contains('ProseMirror-widget') &&
+        fallback.id !== 'pages'
+      ) {
+        el = fallback;
+      }
+    }
+
     if (el && el.nodeType === Node.ELEMENT_NODE) {
       const style = window.getComputedStyle(el);
       const mt = parseFloat(style.marginTop) || 0;
       const mb = parseFloat(style.marginBottom) || 0;
       totalContentH += el.offsetHeight + Math.max(mt, mb);
+      hasValidBlock = true;
     }
   });
 
-  if (totalContentH <= 0) {
-    totalContentH = root.scrollHeight;
+  if (!hasValidBlock || totalContentH <= 0) {
+    totalContentH = metrics.usableH;
   }
 
   const calculated = Math.ceil(totalContentH / metrics.usableH);

@@ -2,10 +2,10 @@ import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
 import { getPaperSizePx, mmToPx, type PageSetup } from '@/types/docs.types';
+import { measureLines, resolveContentNodeDom } from './pagination-measure.utils';
 
 export const PAGE_GAP = 24;
 export const MAX_PAGES = 50;
-const MAX_MEASURED_LINES = 500;
 
 const key = new PluginKey<PageBreaks>('pagination');
 
@@ -198,62 +198,6 @@ export const resolveContentOffsets = (
   return out;
 };
 
-export const measureLines = (view: EditorView, nodeDom: HTMLElement): LineMeasurement[] => {
-  const rects: { top: number; bottom: number; left: number; height: number }[] = [];
-  const walker = document.createTreeWalker(nodeDom, NodeFilter.SHOW_TEXT);
-  let textNode = walker.nextNode();
-  const range = document.createRange();
-
-  while (textNode) {
-    range.selectNodeContents(textNode);
-    const clientRects = range.getClientRects();
-    for (let i = 0; i < clientRects.length; i++) {
-      const r = clientRects[i];
-      if (r && r.width > 0 && r.height > 0) {
-        rects.push({ top: r.top, bottom: r.bottom, left: r.left, height: r.height });
-      }
-    }
-    textNode = walker.nextNode();
-  }
-
-  if (rects.length === 0 || rects.length > MAX_MEASURED_LINES) return [];
-
-  // Group rects into lines. Separate text nodes on the same visual line can
-  // produce glyph bounding rects at slightly different tops, so overlap-based
-  // merging (instead of a fixed top epsilon) keeps them on one line.
-  rects.sort((a, b) => a.top - b.top || a.left - b.left);
-  const grouped: { top: number; bottom: number; left: number; height: number }[] = [];
-  for (const r of rects) {
-    const last = grouped[grouped.length - 1];
-    if (last && r.top <= last.bottom + 1.5 && r.bottom >= last.top - 1.5) {
-      last.top = Math.min(last.top, r.top);
-      last.bottom = Math.max(last.bottom, r.bottom);
-      last.left = Math.min(last.left, r.left);
-      last.height = last.bottom - last.top;
-    } else {
-      grouped.push({ ...r });
-    }
-  }
-
-  const domRect = nodeDom.getBoundingClientRect();
-  const lines: LineMeasurement[] = [];
-
-  for (const line of grouped) {
-    const midY = line.top + line.height / 2;
-    const posObj = view.posAtCoords({ left: line.left + 2, top: midY });
-    const pos = posObj?.pos;
-    if (pos === undefined || pos === null) return []; // Fallback to block level
-
-    lines.push({
-      top: line.top - domRect.top,
-      bottom: line.bottom - domRect.top,
-      pos,
-    });
-  }
-
-  return lines;
-};
-
 const measureBlocks = (view: EditorView, metrics: PageMetrics): BlockMeasurement[] => {
   const out: BlockMeasurement[] = [];
   let simulatedY = 0;
@@ -261,7 +205,7 @@ const measureBlocks = (view: EditorView, metrics: PageMetrics): BlockMeasurement
   let pageTop = 0;
 
   view.state.doc.forEach((node, offset) => {
-    const el = view.nodeDOM(offset) as HTMLElement | null;
+    const el = resolveContentNodeDom(view, offset);
     let height = 0;
     let marginTop = 0;
     let marginBottom = 0;
@@ -304,10 +248,6 @@ export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreak
   const result = computeBreaksFromMeasurements(blocks, metrics);
   const size = view.state.doc.content.size;
   const rootTop = root.getBoundingClientRect().top;
-  // Real rendered position of each page boundary: the pagination spacer widgets
-  // physically push the next page's content down, so their bottom edge is the
-  // exact content top of the following page (works for block- and line-level
-  // breaks as well as forced page breaks).
   const widgetEls = Array.from(root.querySelectorAll('.page-break-spacer, .page-break-marker'));
   let widgetIdx = 0;
   const domTopOf = (offset: number): number | null => {
