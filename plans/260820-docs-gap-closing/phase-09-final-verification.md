@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: pending | **Effort**: 10h
+- **Priority**: P1 | **Status**: done | **Effort**: 10h
 - Kiểm chứng toàn diện toàn bộ tính năng mới từ Phase 1–8: typecheck, unit tests, build, round-trip fidelity, collab multi-client, print, và không regression tính năng cũ.
 
 ## Context
@@ -56,13 +56,13 @@
 
 ## Todo List
 
-- [ ] Build + typecheck monorepo
-- [ ] Unit tests (mới + cũ) pass
-- [ ] Fidelity-harness Lớp A
-- [ ] Collab 2-tab kịch bản mới
-- [ ] Print kiểm tra
-- [ ] Regression cũ
-- [ ] Verification report
+- [x] Build + typecheck monorepo
+- [x] Unit tests (mới + cũ) pass
+- [x] Fidelity-harness Lớp A
+- [x] Collab 2-tab kịch bản mới
+- [x] Print kiểm tra
+- [x] Regression cũ
+- [x] Verification report
 
 ## Success Criteria
 
