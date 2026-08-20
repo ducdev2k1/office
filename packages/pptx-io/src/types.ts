@@ -1,5 +1,7 @@
 export type SlideElementType = 'text' | 'shape' | 'image' | 'table';
 
+export type SlideShapeKind = 'rect' | 'rounded' | 'circle' | 'triangle' | 'arrow' | 'star';
+
 export interface SlideElement {
   id: string;
   type: SlideElementType;
@@ -11,7 +13,13 @@ export interface SlideElement {
   content?: string;
   fill?: string;
   stroke?: string;
+  strokeWidth?: number;
+  borderRadius?: number;
+  shapeKind?: SlideShapeKind;
   fontSize?: number;
+  fontWeight?: 'normal' | 'bold';
+  fontStyle?: 'normal' | 'italic';
+  textDecoration?: 'none' | 'underline';
   color?: string;
   align?: 'left' | 'center' | 'right';
   url?: string;

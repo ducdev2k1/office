@@ -20,6 +20,23 @@ const toEmuY = (y: number): number => Math.round((y / CANVAS_HEIGHT) * EMU_HEIGH
 const toEmuCx = (w: number): number => Math.round((w / CANVAS_WIDTH) * EMU_WIDTH_16_9);
 const toEmuCy = (h: number): number => Math.round((h / CANVAS_HEIGHT) * EMU_HEIGHT_16_9);
 
+const mapGeomPrst = (kind?: string): string => {
+  switch (kind) {
+    case 'circle':
+      return 'ellipse';
+    case 'rounded':
+      return 'roundRect';
+    case 'triangle':
+      return 'triangle';
+    case 'arrow':
+      return 'rightArrow';
+    case 'star':
+      return 'star5';
+    default:
+      return 'rect';
+  }
+};
+
 const renderElementXml = (el: SlideElement, idNum: number): string => {
   const x = toEmuX(el.x);
   const y = toEmuY(el.y);
@@ -29,6 +46,10 @@ const renderElementXml = (el: SlideElement, idNum: number): string => {
   const hexFill = el.fill ? formatToOoxmlHex(el.fill, 'FFFFFF') : undefined;
   const fontSizeHundredths = el.fontSize ? Math.round(el.fontSize * 100) : 2000;
   const alignAttr = el.align === 'center' ? ' algn="ctr"' : el.align === 'right' ? ' algn="r"' : '';
+  const isBold = el.fontWeight === 'bold' ? '1' : '0';
+  const isItalic = el.fontStyle === 'italic' ? '1' : '0';
+  const underlineAttr = el.textDecoration === 'underline' ? 'sng' : 'none';
+  const geom = mapGeomPrst(el.shapeKind);
 
   const paragraphs = (el.content || '')
     .split('\n')
@@ -37,7 +58,7 @@ const renderElementXml = (el: SlideElement, idNum: number): string => {
         <a:p>
           <a:pPr${alignAttr}/>
           <a:r>
-            <a:rPr lang="vi-VN" sz="${fontSizeHundredths}" b="0" i="0" u="none">
+            <a:rPr lang="vi-VN" sz="${fontSizeHundredths}" b="${isBold}" i="${isItalic}" u="${underlineAttr}">
               <a:solidFill>
                 <a:srgbClr val="${hexColor}"/>
               </a:solidFill>
@@ -51,8 +72,8 @@ const renderElementXml = (el: SlideElement, idNum: number): string => {
   return `
     <p:sp>
       <p:nvSpPr>
-        <p:cNvPr id="${idNum}" name="TextBox ${idNum}"/>
-        <p:cNvSpPr txBox="1"/>
+        <p:cNvPr id="${idNum}" name="Element ${idNum}"/>
+        <p:cNvSpPr txBox="${el.type === 'text' ? '1' : '0'}"/>
         <p:nvPr/>
       </p:nvSpPr>
       <p:spPr>
@@ -60,7 +81,7 @@ const renderElementXml = (el: SlideElement, idNum: number): string => {
           <a:off x="${x}" y="${y}"/>
           <a:ext cx="${cx}" cy="${cy}"/>
         </a:xfrm>
-        <a:prstGeom prst="rect">
+        <a:prstGeom prst="${geom}">
           <a:avLst/>
         </a:prstGeom>
         ${hexFill ? `<a:solidFill><a:srgbClr val="${hexFill}"/></a:solidFill>` : '<a:noFill/>'}
@@ -191,4 +212,3 @@ export const generatePptxBlob = async (deck: SlideDeckData): Promise<Blob> => {
     type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   });
 };
-

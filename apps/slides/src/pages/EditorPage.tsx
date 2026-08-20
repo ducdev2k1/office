@@ -31,20 +31,6 @@ export const EditorPage = () => {
   const deck = slidesApi.activeDeck;
   const currentSlide = slidesApi.activeSlide;
 
-  const handleUpdateElement = useCallback(
-    (elementId: string, content: string) => {
-      if (!deck || !deck.data || !currentSlide) return;
-      const updatedElements = currentSlide.elements.map((el) =>
-        el.id === elementId ? { ...el, content } : el,
-      );
-      const updatedSlides = deck.data.slides.map((s) =>
-        s.id === currentSlide.id ? { ...s, elements: updatedElements } : s,
-      );
-      slidesApi.updateData({ ...deck.data, slides: updatedSlides });
-    },
-    [deck, currentSlide, slidesApi],
-  );
-
   const handleExport = useCallback(async () => {
     if (!deck || !deck.data) return;
     try {
@@ -161,6 +147,51 @@ export const EditorPage = () => {
           onRedo={slidesApi.redo}
           canUndo={slidesApi.canUndo}
           canRedo={slidesApi.canRedo}
+          selectedElement={slidesApi.selectedElement}
+          onAddTextBox={() =>
+            slidesApi.addElement({
+              type: 'text',
+              content: 'Văn bản mới',
+              fontSize: 24,
+              width: 400,
+              height: 100,
+              x: 280,
+              y: 220,
+            })
+          }
+          onAddShape={(shapeKind) =>
+            slidesApi.addElement({
+              type: 'shape',
+              shapeKind,
+              fill: '#3b82f6',
+              width: 200,
+              height: 150,
+              x: 380,
+              y: 195,
+            })
+          }
+          onAddImage={(dataUrl) =>
+            slidesApi.addElement({
+              type: 'image',
+              url: dataUrl,
+              width: 360,
+              height: 240,
+              x: 300,
+              y: 150,
+            })
+          }
+          onChangeSlideBackground={slidesApi.setSlideBackground}
+          onUpdateSelectedElement={(patch) => {
+            if (slidesApi.selectedElementId) {
+              slidesApi.updateElement(slidesApi.selectedElementId, patch);
+            }
+          }}
+          onDeleteSelectedElement={() => slidesApi.deleteElement()}
+          onDuplicateSelectedElement={() => slidesApi.duplicateElement()}
+          onBringForward={slidesApi.bringElementForward}
+          onSendBackward={slidesApi.sendElementBackward}
+          onBringToFront={slidesApi.bringElementToFront}
+          onSendToBack={slidesApi.sendElementToBack}
           onLoadSample={async (sample) => {
             try {
               const newId = await slidesApi.importSample(sample);
@@ -177,11 +208,24 @@ export const EditorPage = () => {
             activeIndex={slidesApi.activeSlideIndex}
             onSelect={slidesApi.setActiveSlideIndex}
             onAddSlide={slidesApi.addSlideToActiveDeck}
+            onDuplicateSlide={(idx) => {
+              slidesApi.setActiveSlideIndex(idx);
+              slidesApi.duplicateActiveSlide();
+            }}
+            onDeleteSlide={(idx) => {
+              slidesApi.setActiveSlideIndex(idx);
+              slidesApi.deleteActiveSlide();
+            }}
+            onMoveSlide={slidesApi.moveSlide}
           />
           <SlideViewer
             slide={currentSlide}
             zoom={zoom}
-            onUpdateElement={handleUpdateElement}
+            selectedElementId={slidesApi.selectedElementId}
+            onSelectElement={slidesApi.setSelectedElementId}
+            onUpdateElement={slidesApi.updateElement}
+            onDeleteElement={slidesApi.deleteElement}
+            onDuplicateElement={slidesApi.duplicateElement}
           />
         </div>
       </div>
