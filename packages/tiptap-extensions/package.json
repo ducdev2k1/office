@@ -1,0 +1,55 @@
+{
+  "name": "@office/tiptap-extensions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./clear-formatting": "./src/clear-formatting/index.ts",
+    "./line-spacing": "./src/line-spacing/index.ts",
+    "./checklist": "./src/checklist/index.ts",
+    "./shared": "./src/shared/index.ts",
+    "./suggestion": "./src/shared/suggestion.plugin.ts",
+    "./yjs-anchor": "./src/shared/yjs-anchor.utils.ts",
+    "./yjs-snapshot": "./src/shared/yjs-snapshot.utils.ts",
+    "./html": "./src/shared/html.utils.ts",
+    "./popup": "./src/shared/popup.utils.ts",
+    "./toc": "./src/toc/index.ts",
+    "./image": "./src/image/index.ts",
+    "./link": "./src/link/index.ts",
+    "./mention": "./src/mention/index.ts",
+    "./columns": "./src/columns/index.ts",
+    "./footnote": "./src/footnote/index.ts",
+    "./comments": "./src/comments/index.ts",
+    "./track-changes": "./src/track-changes/index.ts",
+    "./math": "./src/math/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@office/i18n": "workspace:*",
+    "@tiptap/core": "^3.30.1",
+    "@tiptap/extension-task-item": "^3.30.1",
+    "@tiptap/extension-task-list": "^3.30.1",
+    "@tiptap/extension-text-style": "^3.30.1",
+    "@tiptap/pm": "^3.30.1",
+    "@tiptap/react": "^3.30.1",
+    "@floating-ui/dom": "^1.6.13",
+    "yjs": "^13.6.23"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
+  }
+}

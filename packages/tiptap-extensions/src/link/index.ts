@@ -1,0 +1,1 @@
+export { LinkPopover, linkPopoverPluginKey } from './link-popover';

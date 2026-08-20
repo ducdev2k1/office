@@ -1,0 +1,1 @@
+export { Toc, tocPluginKey, type TocEntry } from './toc';

@@ -1,0 +1,1 @@
+export { ClearFormatting } from './clearFormatting.extension';
