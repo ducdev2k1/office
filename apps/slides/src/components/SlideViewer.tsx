@@ -14,6 +14,14 @@ interface SlideViewerProps {
 
 type ResizeHandle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w';
 
+interface PreviewPatch {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export const SlideViewer = ({
   slide,
   zoom,
@@ -25,8 +33,10 @@ export const SlideViewer = ({
 }: SlideViewerProps) => {
   const { t } = useTranslation('slides');
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [previewPatch, setPreviewPatch] = useState<PreviewPatch | null>(null);
 
   const canvasRef = useRef<HTMLDivElement>(null);
+  const previewPatchRef = useRef<PreviewPatch | null>(null);
   const dragRef = useRef<{
     type: 'move' | 'resize';
     handle?: ResizeHandle;
@@ -38,6 +48,10 @@ export const SlideViewer = ({
     initialH: number;
     elementId: string;
   } | null>(null);
+
+  useEffect(() => {
+    previewPatchRef.current = previewPatch;
+  }, [previewPatch]);
 
   // Keyboard navigation & deletion on selected element
   useEffect(() => {
@@ -93,7 +107,7 @@ export const SlideViewer = ({
       if (type === 'move') {
         const newX = Math.round(Math.max(0, Math.min(960 - initialW, initialX + deltaX)));
         const newY = Math.round(Math.max(0, Math.min(540 - initialH, initialY + deltaY)));
-        onUpdateElement(elementId, { x: newX, y: newY });
+        setPreviewPatch({ id: elementId, x: newX, y: newY, width: initialW, height: initialH });
       } else if (type === 'resize' && handle) {
         let newX = initialX;
         let newY = initialY;
@@ -115,7 +129,8 @@ export const SlideViewer = ({
           newH = initialH - appliedDelta;
         }
 
-        onUpdateElement(elementId, {
+        setPreviewPatch({
+          id: elementId,
           x: Math.round(newX),
           y: Math.round(newY),
           width: Math.round(newW),
@@ -125,7 +140,27 @@ export const SlideViewer = ({
     };
 
     const handleMouseUp = () => {
+      if (dragRef.current && previewPatchRef.current) {
+        const patch = previewPatchRef.current;
+        if (patch.id === dragRef.current.elementId) {
+          const { initialX, initialY, initialW, initialH } = dragRef.current;
+          if (
+            patch.x !== initialX ||
+            patch.y !== initialY ||
+            patch.width !== initialW ||
+            patch.height !== initialH
+          ) {
+            onUpdateElement(patch.id, {
+              x: patch.x,
+              y: patch.y,
+              width: patch.width,
+              height: patch.height,
+            });
+          }
+        }
+      }
       dragRef.current = null;
+      setPreviewPatch(null);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -246,15 +281,29 @@ export const SlideViewer = ({
     const isSelected = selectedElementId === el.id;
     const isEditing = editingId === el.id;
 
-    const leftPercent = (el.x / 960) * 100;
-    const topPercent = (el.y / 540) * 100;
-    const widthPercent = (el.width / 960) * 100;
-    const heightPercent = (el.height / 540) * 100;
+    const isPreviewed = previewPatch?.id === el.id;
+    const posX = isPreviewed && previewPatch ? previewPatch.x : el.x;
+    const posY = isPreviewed && previewPatch ? previewPatch.y : el.y;
+    const posW = isPreviewed && previewPatch ? previewPatch.width : el.width;
+    const posH = isPreviewed && previewPatch ? previewPatch.height : el.height;
+
+    const currentElState: SlideElement = {
+      ...el,
+      x: posX,
+      y: posY,
+      width: posW,
+      height: posH,
+    };
+
+    const leftPercent = (posX / 960) * 100;
+    const topPercent = (posY / 540) * 100;
+    const widthPercent = (posW / 960) * 100;
+    const heightPercent = (posH / 540) * 100;
 
     return (
       <div
         key={el.id}
-        onMouseDown={(e) => handleStartMove(e, el)}
+        onMouseDown={(e) => handleStartMove(e, currentElState)}
         onDoubleClick={(e) => {
           e.stopPropagation();
           if (el.type === 'text') setEditingId(el.id);
@@ -272,7 +321,7 @@ export const SlideViewer = ({
             : 'hover:ring-1 hover:ring-[var(--o-kind-slides)]/50'
         }`}
       >
-        {isSelected && renderHandles(el)}
+        {isSelected && renderHandles(currentElState)}
 
         {el.type === 'text' && (
           <div

@@ -103,10 +103,14 @@ export const useSlides = (): SlidesState => {
   }, [activeDeck]);
 
   useEffect(() => {
-    if (slides.length === 0) return;
-    const timeout = window.setTimeout(() => void saveSlides(slides), 400);
+    if (slides.length === 0 || loading) return;
+    setSaveState('saving');
+    const timeout = window.setTimeout(async () => {
+      await saveSlides(slides);
+      setSaveState('saved');
+    }, 600);
     return () => window.clearTimeout(timeout);
-  }, [slides]);
+  }, [slides, loading]);
 
   const updateDeck = useCallback((id: string, updater: (deck: SlideDocRecord) => SlideDocRecord): void => {
     setSlides((current) => current.map((s) => (s.id === id ? updater(s) : s)));
@@ -122,16 +126,15 @@ export const useSlides = (): SlidesState => {
         setRedoStack([]);
       }
 
-      setSaveState('saving');
       updateDeck(currentDeck.id, (s) => ({
         ...s,
         data,
         updatedAt: now(),
       }));
-      window.setTimeout(() => setSaveState('saved'), 300);
     },
     [updateDeck],
   );
+
 
   const undo = useCallback((): void => {
     const currentDeck = activeDeckRef.current;
