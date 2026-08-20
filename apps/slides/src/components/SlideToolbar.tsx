@@ -21,6 +21,10 @@ interface SlideToolbarProps {
   zoom: number;
   onZoomChange: (zoom: number) => void;
   onLoadSample?: (sample: 'sample-basic.pptx' | 'sample-medium.pptx' | 'sample-advanced.pptx') => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
 }
 
 export const SlideToolbar = ({
@@ -32,6 +36,10 @@ export const SlideToolbar = ({
   zoom,
   onZoomChange,
   onLoadSample,
+  onUndo,
+  onRedo,
+  canUndo = false,
+  canRedo = false,
 }: SlideToolbarProps) => {
   const { t } = useTranslation('slides');
 
@@ -39,6 +47,57 @@ export const SlideToolbar = ({
     <TooltipProvider>
       <div className="flex h-11 items-center justify-between border-b border-border bg-card px-4">
         <div className="flex items-center gap-1.5">
+          {/* Undo Button */}
+          {onUndo && (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onUndo}
+                    disabled={!canUndo}
+                    className="h-8 w-8 p-0"
+                  />
+                }
+              >
+                <Icon
+                  name="undo"
+                  size={14}
+                  className={canUndo ? 'text-foreground' : 'text-muted-foreground'}
+                />
+              </TooltipTrigger>
+              <TooltipContent>Hoàn tác (Ctrl+Z)</TooltipContent>
+            </Tooltip>
+          )}
+
+          {/* Redo Button */}
+          {onRedo && (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onRedo}
+                    disabled={!canRedo}
+                    className="h-8 w-8 p-0"
+                  />
+                }
+              >
+                <Icon
+                  name="redo"
+                  size={14}
+                  className={canRedo ? 'text-foreground' : 'text-muted-foreground'}
+                />
+              </TooltipTrigger>
+              <TooltipContent>Làm lại (Ctrl+Y)</TooltipContent>
+            </Tooltip>
+          )}
+
+          <div className="mx-1 h-4 w-px bg-border" />
+
+          {/* Add Slide Button */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -53,7 +112,7 @@ export const SlideToolbar = ({
               <Icon name="plus" size={14} />
               <span>{t('toolbar.addSlide')}</span>
             </TooltipTrigger>
-            <TooltipContent>{t('toolbar.addSlide')}</TooltipContent>
+            <TooltipContent>{t('toolbar.addSlide')} (Ctrl+M)</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -69,7 +128,7 @@ export const SlideToolbar = ({
             >
               <Icon name="copy" size={14} className="text-muted-foreground" />
             </TooltipTrigger>
-            <TooltipContent>{t('toolbar.duplicateSlide')}</TooltipContent>
+            <TooltipContent>{t('toolbar.duplicateSlide')} (Ctrl+D)</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -90,7 +149,7 @@ export const SlideToolbar = ({
                 className={canDelete ? 'text-destructive' : 'text-muted-foreground'}
               />
             </TooltipTrigger>
-            <TooltipContent>{t('toolbar.deleteSlide')}</TooltipContent>
+            <TooltipContent>{t('toolbar.deleteSlide')} (Delete)</TooltipContent>
           </Tooltip>
 
           <div className="mx-2 h-4 w-px bg-border" />
@@ -208,14 +267,14 @@ export const SlideToolbar = ({
                   variant="default"
                   size="sm"
                   onClick={onPresent}
-                  className="h-8 gap-1.5 bg-[var(--o-kind-slides)] px-3 text-xs text-white hover:opacity-90"
+                  className="h-8 gap-1.5 bg-[var(--o-kind-slides)] px-3 text-xs text-white hover:opacity-90 shadow-sm"
                 />
               }
             >
               <Icon name="play" size={13} />
               <span>{t('header.present')}</span>
             </TooltipTrigger>
-            <TooltipContent>{t('header.present')}</TooltipContent>
+            <TooltipContent>{t('header.present')} (F5 / Ctrl+Enter)</TooltipContent>
           </Tooltip>
         </div>
       </div>

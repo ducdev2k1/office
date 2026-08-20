@@ -1,7 +1,9 @@
 import { SlideThumbnailList } from '@/components/SlideThumbnailList';
+import { SlideshowModal } from '@/components/SlideshowModal';
 import { SlideToolbar } from '@/components/SlideToolbar';
 import { SlideViewer } from '@/components/SlideViewer';
 import { SlidesHeader } from '@/components/SlidesHeader';
+import { useSlideShortcuts } from '@/hooks/useSlideShortcuts';
 import { useSlides } from '@/hooks/useSlides';
 import { useTheme } from '@/hooks/useTheme';
 import { ShellLayout } from '@office/app-shell';
@@ -62,26 +64,20 @@ export const EditorPage = () => {
     }
   }, [deck, t]);
 
-
-  // Fullscreen slideshow navigation
-  useEffect(() => {
-    if (!isPresenting) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsPresenting(false);
-      } else if (e.key === 'ArrowRight' || e.key === 'Space') {
-        if (deck?.data && slidesApi.activeSlideIndex < deck.data.slides.length - 1) {
-          slidesApi.setActiveSlideIndex(slidesApi.activeSlideIndex + 1);
-        }
-      } else if (e.key === 'ArrowLeft') {
-        if (slidesApi.activeSlideIndex > 0) {
-          slidesApi.setActiveSlideIndex(slidesApi.activeSlideIndex - 1);
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPresenting, deck, slidesApi]);
+  // Attach Google Slides keyboard shortcuts in editor mode
+  useSlideShortcuts({
+    enabled: !isPresenting,
+    onPresent: () => setIsPresenting(true),
+    onAddSlide: slidesApi.addSlideToActiveDeck,
+    onDuplicateSlide: slidesApi.duplicateActiveSlide,
+    onDeleteSlide: slidesApi.deleteActiveSlide,
+    onNextSlide: slidesApi.nextSlide,
+    onPrevSlide: slidesApi.prevSlide,
+    onFirstSlide: slidesApi.firstSlide,
+    onLastSlide: slidesApi.lastSlide,
+    onUndo: slidesApi.undo,
+    onRedo: slidesApi.redo,
+  });
 
   if (slidesApi.loading) {
     return (
@@ -104,7 +100,7 @@ export const EditorPage = () => {
     );
   }
 
-  if (!deck) {
+  if (!deck || !deck.data) {
     return (
       <ShellLayout>
         <div className="flex h-screen flex-col items-center justify-center gap-4">
@@ -123,46 +119,13 @@ export const EditorPage = () => {
 
   return (
     <ShellLayout>
-      {/* Fullscreen slideshow overlay */}
-      {isPresenting && currentSlide && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black"
-          onClick={() => {
-            if (deck?.data && slidesApi.activeSlideIndex < deck.data.slides.length - 1) {
-              slidesApi.setActiveSlideIndex(slidesApi.activeSlideIndex + 1);
-            } else {
-              setIsPresenting(false);
-            }
-          }}
-        >
-          <div className="relative aspect-[16/9] w-full max-w-[1280px] p-8">
-            <div
-              className="relative aspect-[16/9] w-full overflow-hidden rounded-lg bg-white shadow-2xl"
-              style={{ backgroundColor: currentSlide.background || undefined }}
-            >
-              {currentSlide.elements.map((el) => (
-                <div
-                  key={el.id}
-                  style={{
-                    position: 'absolute',
-                    left: `${(el.x / 960) * 100}%`,
-                    top: `${(el.y / 540) * 100}%`,
-                    width: `${(el.width / 960) * 100}%`,
-                    fontSize: el.fontSize ? `${(el.fontSize / 16) * 1.3}rem` : '1.5rem',
-                    color: el.color || '#0f172a',
-                    textAlign: el.align || 'left',
-                  }}
-                  className="p-2 font-medium"
-                >
-                  {el.content}
-                </div>
-              ))}
-            </div>
-            <div className="absolute bottom-4 right-4 text-xs text-white/50">
-              Nhấn ESC để thoát ({slidesApi.activeSlideIndex + 1}/{deck.data?.slides.length})
-            </div>
-          </div>
-        </div>
+      {/* Fullscreen slideshow modal */}
+      {isPresenting && (
+        <SlideshowModal
+          deck={deck.data}
+          initialSlideIndex={slidesApi.activeSlideIndex}
+          onClose={() => setIsPresenting(false)}
+        />
       )}
 
       <div className="flex h-screen flex-col overflow-hidden bg-background">
@@ -194,6 +157,10 @@ export const EditorPage = () => {
           canDelete={(deck.data?.slides.length ?? 0) > 1}
           zoom={zoom}
           onZoomChange={setZoom}
+          onUndo={slidesApi.undo}
+          onRedo={slidesApi.redo}
+          canUndo={slidesApi.canUndo}
+          canRedo={slidesApi.canRedo}
           onLoadSample={async (sample) => {
             try {
               const newId = await slidesApi.importSample(sample);
@@ -203,7 +170,6 @@ export const EditorPage = () => {
             }
           }}
         />
-
 
         <div className="flex flex-1 overflow-hidden">
           <SlideThumbnailList
