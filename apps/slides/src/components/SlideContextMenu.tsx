@@ -1,5 +1,5 @@
 import type { SlideElement } from '@/types/slides.types';
-import { Icon } from '@office/ui-kit';
+import { Icon, Separator } from '@office/ui-kit';
 import React, { useEffect, useRef } from 'react';
 
 interface SlideContextMenuProps {
@@ -147,7 +147,7 @@ export const SlideContextMenu = ({
             <span className="text-[10px]">Delete</span>
           </button>
 
-          <div className="my-1 h-px bg-border" />
+          <Separator className="my-1" />
 
           {targetElement.type === 'image' && onReplaceImage && (
             <button
@@ -187,7 +187,7 @@ export const SlideContextMenu = ({
             <span>Căn giữa theo chiều dọc</span>
           </button>
 
-          <div className="my-1 h-px bg-border" />
+          <Separator className="my-1" />
 
           <button
             type="button"
@@ -259,7 +259,7 @@ export const SlideContextMenu = ({
             </button>
           )}
 
-          <div className="my-1 h-px bg-border" />
+          <Separator className="my-1" />
 
           <button
             type="button"

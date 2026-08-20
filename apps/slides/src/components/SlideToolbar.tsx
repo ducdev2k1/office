@@ -5,12 +5,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Icon,
-  Tooltip,
-  TooltipContent,
+  Separator,
+  ToolbarButton,
   TooltipProvider,
-  TooltipTrigger,
 } from '@office/ui-kit';
 import React, { useRef } from 'react';
 import { ElementFormattingBar } from './toolbar/ElementFormattingBar';
@@ -106,129 +106,59 @@ export const SlideToolbar = ({
 
   return (
     <TooltipProvider>
-      <div className="flex h-11 items-center justify-between border-b border-border bg-card px-4">
+      <div className="flex h-10 items-center justify-between border-b border-border bg-card px-3">
         <div className="flex items-center gap-1">
           {/* Undo / Redo */}
           {onUndo && (
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onUndo}
-                    disabled={!canUndo}
-                    className="h-8 w-8 p-0"
-                  />
-                }
-              >
-                <Icon name="undo" size={14} className={canUndo ? 'text-foreground' : 'text-muted-foreground'} />
-              </TooltipTrigger>
-              <TooltipContent>Hoàn tác (Ctrl+Z)</TooltipContent>
-            </Tooltip>
+            <ToolbarButton label="Hoàn tác (Ctrl+Z)" disabled={!canUndo} onClick={onUndo}>
+              <Icon name="undo" size={14} />
+            </ToolbarButton>
           )}
 
           {onRedo && (
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onRedo}
-                    disabled={!canRedo}
-                    className="h-8 w-8 p-0"
-                  />
-                }
-              >
-                <Icon name="redo" size={14} className={canRedo ? 'text-foreground' : 'text-muted-foreground'} />
-              </TooltipTrigger>
-              <TooltipContent>Làm lại (Ctrl+Y)</TooltipContent>
-            </Tooltip>
+            <ToolbarButton label="Làm lại (Ctrl+Y)" disabled={!canRedo} onClick={onRedo}>
+              <Icon name="redo" size={14} />
+            </ToolbarButton>
           )}
 
-          <div className="mx-1 h-4 w-px bg-border" />
+          <Separator orientation="vertical" className="mx-1 h-4" />
 
           {/* Add Slide */}
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onAddSlide}
-                  className="h-8 gap-1.5 px-2.5 text-xs font-medium"
-                />
-              }
-            >
-              <Icon name="plus" size={14} />
-              <span>{t('toolbar.addSlide')}</span>
-            </TooltipTrigger>
-            <TooltipContent>{t('toolbar.addSlide')} (Ctrl+M)</TooltipContent>
-          </Tooltip>
+          <ToolbarButton
+            label={`${t('toolbar.addSlide')} (Ctrl+M)`}
+            onClick={onAddSlide}
+            className="border border-border font-medium px-2 gap-1.5"
+          >
+            <Icon name="plus" size={14} />
+            <span>{t('toolbar.addSlide')}</span>
+          </ToolbarButton>
 
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onDuplicateSlide}
-                  className="h-8 w-8 p-0"
-                />
-              }
-            >
-              <Icon name="copy" size={14} className="text-muted-foreground" />
-            </TooltipTrigger>
-            <TooltipContent>{t('toolbar.duplicateSlide')} (Ctrl+D)</TooltipContent>
-          </Tooltip>
+          <ToolbarButton label={`${t('toolbar.duplicateSlide')} (Ctrl+D)`} onClick={onDuplicateSlide}>
+            <Icon name="copy" size={14} />
+          </ToolbarButton>
 
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onDeleteSlide}
-                  disabled={!canDelete}
-                  className="h-8 w-8 p-0"
-                />
-              }
-            >
-              <Icon name="trash-2" size={14} className={canDelete ? 'text-destructive' : 'text-muted-foreground'} />
-            </TooltipTrigger>
-            <TooltipContent>{t('toolbar.deleteSlide')} (Delete)</TooltipContent>
-          </Tooltip>
+          <ToolbarButton
+            label={`${t('toolbar.deleteSlide')} (Delete)`}
+            disabled={!canDelete}
+            onClick={onDeleteSlide}
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+          >
+            <Icon name="trash-2" size={14} />
+          </ToolbarButton>
 
-          <div className="mx-1.5 h-4 w-px bg-border" />
+          <Separator orientation="vertical" className="mx-1 h-4" />
 
           {/* Insert TextBox */}
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onAddTextBox}
-                  className="h-8 gap-1.5 px-2 text-xs text-foreground hover:bg-accent"
-                />
-              }
-            >
-              <Icon name="type" size={14} />
-              <span>{t('toolbar.textBox')}</span>
-            </TooltipTrigger>
-            <TooltipContent>Chèn hộp văn bản</TooltipContent>
-          </Tooltip>
+          <ToolbarButton label="Chèn hộp văn bản" onClick={onAddTextBox} className="gap-1.5 px-2">
+            <Icon name="type" size={14} />
+            <span>{t('toolbar.textBox')}</span>
+          </ToolbarButton>
 
           {/* Insert Shapes Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 gap-1 px-2 text-xs text-foreground hover:bg-accent"
-                />
+                <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover" />
               }
             >
               <Icon name="square" size={14} />
@@ -248,6 +178,7 @@ export const SlideToolbar = ({
                 <div className="mr-2 h-3.5 w-3.5 rounded-full border border-primary bg-primary/20" />
                 <span>Hình tròn / Elip</span>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onAddShape('triangle')}>
                 <span className="mr-2 text-xs">🔺</span>
                 <span>Hình tam giác</span>
@@ -271,35 +202,23 @@ export const SlideToolbar = ({
             className="hidden"
             onChange={handleImageFileChange}
           />
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="h-8 gap-1.5 px-2 text-xs text-foreground hover:bg-accent"
-                />
-              }
-            >
-              <Icon name="image" size={14} />
-              <span>{t('toolbar.image')}</span>
-            </TooltipTrigger>
-            <TooltipContent>Chèn hình ảnh từ máy tính</TooltipContent>
-          </Tooltip>
+          <ToolbarButton
+            label="Chèn hình ảnh từ máy tính"
+            onClick={() => fileInputRef.current?.click()}
+            className="gap-1.5 px-2"
+          >
+            <Icon name="image" size={14} />
+            <span>{t('toolbar.image')}</span>
+          </ToolbarButton>
 
           {/* Slide Background Color Picker */}
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground"
-                />
+                <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground" />
               }
             >
-              <span className="h-3 w-3 rounded-full border border-border bg-gradient-to-tr from-amber-400 to-blue-500" />
+              <span className="h-3 w-3 rounded-full border border-border bg-gradient-to-tr from-amber-400 to-blue-500 shadow-2xs" />
               <span>Nền Slide</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="grid grid-cols-4 gap-1 p-2">
@@ -308,7 +227,7 @@ export const SlideToolbar = ({
                   key={c.value}
                   type="button"
                   onClick={() => onChangeSlideBackground(c.value)}
-                  className="flex h-6 w-6 items-center justify-center rounded border border-border shadow-xs hover:scale-110"
+                  className="h-6 w-6 rounded border border-border shadow-2xs hover:scale-110 transition-transform"
                   style={{ backgroundColor: c.value }}
                 />
               ))}
@@ -318,7 +237,7 @@ export const SlideToolbar = ({
           {/* Selected Element Formatting Bar */}
           {selectedElement && (
             <>
-              <div className="mx-1.5 h-4 w-px bg-border" />
+              <Separator orientation="vertical" className="mx-1 h-4" />
               <ElementFormattingBar
                 element={selectedElement}
                 onUpdate={onUpdateSelectedElement}
@@ -338,14 +257,14 @@ export const SlideToolbar = ({
           {/* Sample PPTX Loader */}
           {onLoadSample && (
             <>
-              <div className="mx-1 h-4 w-px bg-border" />
+              <Separator orientation="vertical" className="mx-1 h-4" />
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8 gap-1.5 px-2 text-xs font-medium text-muted-foreground hover:text-foreground"
+                      className="h-7 gap-1 px-2 text-xs font-medium text-muted-foreground hover:text-foreground"
                     />
                   }
                 >
@@ -356,11 +275,11 @@ export const SlideToolbar = ({
                 <DropdownMenuContent align="start" sideOffset={6}>
                   <DropdownMenuItem onClick={() => onLoadSample('sample-basic.pptx')}>
                     <span className="font-medium">1. Mẫu Cơ Bản</span>
-                    <span className="ml-2 text-xs text-muted-foreground">(3 slide, Text)</span>
+                    <span className="ml-2 text-xs text-muted-foreground">(3 slide)</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onLoadSample('sample-medium.pptx')}>
                     <span className="font-medium">2. Mẫu Trung Bình</span>
-                    <span className="ml-2 text-xs text-muted-foreground">(5 slide, Shape)</span>
+                    <span className="ml-2 text-xs text-muted-foreground">(5 slide)</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onLoadSample('sample-advanced.pptx')}>
                     <span className="font-medium">3. Mẫu Nâng Cao</span>
@@ -378,7 +297,7 @@ export const SlideToolbar = ({
             <button
               type="button"
               onClick={() => onZoomChange(Math.max(50, zoom - 10))}
-              className="px-1 hover:text-foreground"
+              className="px-1 font-semibold hover:text-foreground transition-colors"
             >
               -
             </button>
@@ -386,28 +305,21 @@ export const SlideToolbar = ({
             <button
               type="button"
               onClick={() => onZoomChange(Math.min(200, zoom + 10))}
-              className="px-1 hover:text-foreground"
+              className="px-1 font-semibold hover:text-foreground transition-colors"
             >
               +
             </button>
           </div>
 
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={onPresent}
-                  className="h-8 gap-1.5 bg-[var(--o-kind-slides)] px-3 text-xs text-white hover:opacity-90 shadow-sm"
-                />
-              }
-            >
-              <Icon name="play" size={13} />
-              <span>{t('header.present')}</span>
-            </TooltipTrigger>
-            <TooltipContent>{t('header.present')} (F5 / Ctrl+Enter)</TooltipContent>
-          </Tooltip>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={onPresent}
+            className="h-7 gap-1.5 bg-[var(--o-kind-slides)] px-3 text-xs text-white hover:opacity-90 shadow-xs"
+          >
+            <Icon name="play" size={13} />
+            <span>{t('header.present')}</span>
+          </Button>
         </div>
       </div>
     </TooltipProvider>

@@ -5,12 +5,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Icon,
-  Tooltip,
-  TooltipContent,
+  ToolbarButton,
   TooltipProvider,
-  TooltipTrigger,
 } from '@office/ui-kit';
 
 interface SlideThumbnailListProps {
@@ -39,21 +38,13 @@ export const SlideThumbnailList = ({
       <aside className="flex w-56 flex-col border-r border-border bg-card/60">
         <div className="flex items-center justify-between border-b border-border p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           <span>{t('slidesCount', { count: slides.length })}</span>
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onAddSlide}
-                  className="h-6 w-6 p-0"
-                />
-              }
-            >
-              <Icon name="plus" size={14} />
-            </TooltipTrigger>
-            <TooltipContent>{t('header.addSlide')} (Ctrl+M)</TooltipContent>
-          </Tooltip>
+          <ToolbarButton
+            label={`${t('header.addSlide')} (Ctrl+M)`}
+            onClick={onAddSlide}
+            className="h-6 w-6 p-0"
+          >
+            <Icon name="plus" size={14} />
+          </ToolbarButton>
         </div>
 
         <div className="flex-1 space-y-3 overflow-y-auto p-3">
@@ -131,13 +122,16 @@ export const SlideThumbnailList = ({
                           </DropdownMenuItem>
                         )}
                         {slides.length > 1 && onDeleteSlide && (
-                          <DropdownMenuItem
-                            onClick={() => onDeleteSlide(index)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Icon name="trash-2" size={13} className="mr-2" />
-                            <span>Xoá slide</span>
-                          </DropdownMenuItem>
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => onDeleteSlide(index)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Icon name="trash-2" size={13} className="mr-2" />
+                              <span>Xoá slide</span>
+                            </DropdownMenuItem>
+                          </>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
