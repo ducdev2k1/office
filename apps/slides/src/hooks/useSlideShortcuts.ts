@@ -12,6 +12,9 @@ interface SlideShortcutsOptions {
   onLastSlide: () => void;
   onUndo: () => void;
   onRedo: () => void;
+  onCopy?: () => void;
+  onCut?: () => void;
+  onPaste?: () => void;
 }
 
 const isEditableTarget = (target: EventTarget | null): boolean => {
@@ -38,6 +41,9 @@ export const useSlideShortcuts = ({
   onLastSlide,
   onUndo,
   onRedo,
+  onCopy,
+  onCut,
+  onPaste,
 }: SlideShortcutsOptions) => {
   useEffect(() => {
     if (!enabled) return;
@@ -79,10 +85,29 @@ export const useSlideShortcuts = ({
         return;
       }
 
+      // 4. Clipboard shortcuts when not editing text
+      if (!isEditing) {
+        if (isCmdOrCtrl && e.key.toLowerCase() === 'c' && onCopy) {
+          e.preventDefault();
+          onCopy();
+          return;
+        }
+        if (isCmdOrCtrl && e.key.toLowerCase() === 'x' && onCut) {
+          e.preventDefault();
+          onCut();
+          return;
+        }
+        if (isCmdOrCtrl && e.key.toLowerCase() === 'v' && onPaste) {
+          e.preventDefault();
+          onPaste();
+          return;
+        }
+      }
+
       // If user is typing inside text input, don't hijack editing keys
       if (isEditing) return;
 
-      // 4. Slide Manipulation
+      // 5. Slide / Element Manipulation
       if (isCmdOrCtrl && e.key.toLowerCase() === 'm') {
         e.preventDefault();
         onAddSlide();
@@ -101,7 +126,7 @@ export const useSlideShortcuts = ({
         return;
       }
 
-      // 5. Slide Navigation (Google Slides style)
+      // 6. Slide Navigation (Google Slides style)
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'j' || e.key === 'n') {
         e.preventDefault();
         onNextSlide();
@@ -141,5 +166,8 @@ export const useSlideShortcuts = ({
     onLastSlide,
     onUndo,
     onRedo,
+    onCopy,
+    onCut,
+    onPaste,
   ]);
 };

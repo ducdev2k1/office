@@ -5,11 +5,15 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 interface SlideViewerProps {
   slide?: SlideItem;
   zoom: number;
+  onZoomChange?: (zoom: number) => void;
   selectedElementId: string | null;
   onSelectElement: (id: string | null) => void;
   onUpdateElement: (elementId: string, patch: Partial<SlideElement>) => void;
   onDeleteElement: (elementId: string) => void;
   onDuplicateElement: (elementId: string) => void;
+  onNextSlide?: () => void;
+  onPrevSlide?: () => void;
+  onOpenContextMenu?: (x: number, y: number, element?: SlideElement | null) => void;
 }
 
 type ResizeHandle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w';
@@ -34,11 +38,15 @@ interface DragSession {
 export const SlideViewer = ({
   slide,
   zoom,
+  onZoomChange,
   selectedElementId,
   onSelectElement,
   onUpdateElement,
   onDeleteElement,
   onDuplicateElement,
+  onNextSlide,
+  onPrevSlide,
+  onOpenContextMenu,
 }: SlideViewerProps) => {
   const { t } = useTranslation('slides');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -46,6 +54,34 @@ export const SlideViewer = ({
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragSession | null>(null);
   const rafIdRef = useRef<number | null>(null);
+  const lastWheelTimeRef = useRef<number>(0);
+
+  // Mouse wheel navigation & zoom
+  const handleWheel = useCallback(
+    (e: React.WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (onZoomChange) {
+          const delta = e.deltaY < 0 ? 5 : -5;
+          onZoomChange(Math.max(50, Math.min(200, zoom + delta)));
+        }
+        return;
+      }
+
+      // Wheel down / up to switch slides (debounced 350ms to prevent rapid jumps)
+      const now = Date.now();
+      if (now - lastWheelTimeRef.current < 350) return;
+
+      if (e.deltaY > 30 && onNextSlide) {
+        lastWheelTimeRef.current = now;
+        onNextSlide();
+      } else if (e.deltaY < -30 && onPrevSlide) {
+        lastWheelTimeRef.current = now;
+        onPrevSlide();
+      }
+    },
+    [zoom, onZoomChange, onNextSlide, onPrevSlide],
+  );
 
   // Keyboard navigation & deletion on selected element
   useEffect(() => {
@@ -111,7 +147,6 @@ export const SlideViewer = ({
       const rect = canvasRef.current.getBoundingClientRect();
       const scaleFactor = rect.width / 960;
 
-      // Extract high-frequency sub-frame event if available (ProMotion 120Hz+ / 1000Hz mice)
       const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
       const lastEvent = events[events.length - 1] || e;
 
@@ -149,7 +184,6 @@ export const SlideViewer = ({
         session.currentH = Math.round(newH);
       }
 
-      // Schedule hardware-accelerated GPU render tick
       if (rafIdRef.current === null) {
         rafIdRef.current = window.requestAnimationFrame(() => {
           applyDirectTransform();
@@ -198,6 +232,7 @@ export const SlideViewer = ({
   }, [onUpdateElement]);
 
   const handleStartMove = useCallback((e: React.PointerEvent, el: SlideElement) => {
+    if (e.button === 2) return; // Ignore right click for drag start
     e.stopPropagation();
     onSelectElement(el.id);
     const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
@@ -219,6 +254,7 @@ export const SlideViewer = ({
   }, [onSelectElement]);
 
   const handleStartResize = useCallback((e: React.PointerEvent, el: SlideElement, handle: ResizeHandle) => {
+    if (e.button === 2) return;
     e.stopPropagation();
     const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
     dragRef.current = {
@@ -323,12 +359,19 @@ export const SlideViewer = ({
     const topPercent = (el.y / 540) * 100;
     const widthPercent = (el.width / 960) * 100;
     const heightPercent = (el.height / 540) * 100;
+    const rotationDeg = el.rotation || 0;
 
     return (
       <div
         key={el.id}
         data-slide-element={el.id}
         onPointerDown={(e) => handleStartMove(e, el)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onSelectElement(el.id);
+          onOpenContextMenu?.(e.clientX, e.clientY, el);
+        }}
         onDoubleClick={(e) => {
           e.stopPropagation();
           if (el.type === 'text') setEditingId(el.id);
@@ -339,7 +382,7 @@ export const SlideViewer = ({
           top: `${topPercent}%`,
           width: `${widthPercent}%`,
           height: `${heightPercent}%`,
-          transform: 'translateZ(0)',
+          transform: `rotate(${rotationDeg}deg) translateZ(0)`,
           backfaceVisibility: 'hidden',
         }}
         className={`group select-none touch-none ${
@@ -398,6 +441,9 @@ export const SlideViewer = ({
           <img
             src={el.url}
             alt={el.content || 'Hình ảnh slide'}
+            style={{
+              border: el.stroke ? `${el.strokeWidth || 2}px solid ${el.stroke}` : undefined,
+            }}
             className="h-full w-full rounded object-contain pointer-events-none"
             draggable={false}
           />
@@ -410,9 +456,14 @@ export const SlideViewer = ({
 
   return (
     <main
+      onWheel={handleWheel}
       onClick={() => {
         onSelectElement(null);
         setEditingId(null);
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onOpenContextMenu?.(e.clientX, e.clientY, null);
       }}
       className="relative flex flex-1 items-center justify-center overflow-auto bg-workspace p-8"
     >

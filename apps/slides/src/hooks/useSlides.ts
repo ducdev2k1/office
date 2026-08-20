@@ -9,6 +9,14 @@ import {
   saveSlides,
 } from '@/services/slides.service';
 import type { SlideDeckData, SlideDocRecord, SlideElement, SlideItem } from '@/types/slides.types';
+import {
+  centerElementInDeck,
+  cloneDeep,
+  createNewElement,
+  deleteElementInDeck,
+  reorderElementInDeck,
+  updateElementInDeck,
+} from '@/utils/slideOps.utils';
 import type { FileRecord } from '@office/file-home';
 import { useTranslation } from '@office/i18n';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -27,6 +35,7 @@ export interface SlidesState {
   storageBytes: number;
   canUndo: boolean;
   canRedo: boolean;
+  canPaste: boolean;
   setActiveId: (id: string) => void;
   setActiveSlideIndex: (index: number) => void;
   setSelectedElementId: (id: string | null) => void;
@@ -51,6 +60,12 @@ export interface SlidesState {
   updateElement: (elementId: string, patch: Partial<SlideElement>) => void;
   deleteElement: (elementId?: string) => void;
   duplicateElement: (elementId?: string) => void;
+  copyElement: (elementId?: string) => void;
+  cutElement: (elementId?: string) => void;
+  pasteElement: () => void;
+  centerElement: (axis: 'horizontal' | 'vertical' | 'both', elementId?: string) => void;
+  rotateElement: (deltaDeg?: number, elementId?: string) => void;
+  replaceImage: (url: string, elementId?: string) => void;
   bringElementForward: (elementId?: string) => void;
   sendElementBackward: (elementId?: string) => void;
   bringElementToFront: (elementId?: string) => void;
@@ -77,6 +92,7 @@ export const useSlides = (): SlidesState => {
 
   const [undoStack, setUndoStack] = useState<SlideDeckData[]>([]);
   const [redoStack, setRedoStack] = useState<SlideDeckData[]>([]);
+  const [clipboard, setClipboard] = useState<SlideElement | null>(null);
 
   const activeDeck =
     slides.find((s) => s.id === activeId && !s.deletedAt) ??
@@ -119,40 +135,36 @@ export const useSlides = (): SlidesState => {
   const updateData = useCallback(
     (data: SlideDeckData, addToHistory = true): void => {
       const currentDeck = activeDeckRef.current;
-      if (!currentDeck) return;
-
-      if (addToHistory && currentDeck.data) {
-        setUndoStack((prev) => [...prev.slice(-MAX_HISTORY), JSON.parse(JSON.stringify(currentDeck.data))]);
+      if (!currentDeck?.data) return;
+      const currentData = currentDeck.data;
+      if (addToHistory) {
+        setUndoStack((prev) => [...prev.slice(-MAX_HISTORY), cloneDeep(currentData)]);
         setRedoStack([]);
       }
-
-      updateDeck(currentDeck.id, (s) => ({
-        ...s,
-        data,
-        updatedAt: now(),
-      }));
+      updateDeck(currentDeck.id, (s) => ({ ...s, data, updatedAt: now() }));
     },
     [updateDeck],
   );
 
-
   const undo = useCallback((): void => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data || undoStack.length === 0) return;
+    if (!currentDeck?.data || undoStack.length === 0) return;
+    const currentData = currentDeck.data;
     const previousState = undoStack[undoStack.length - 1];
     if (!previousState) return;
     setUndoStack((prev) => prev.slice(0, -1));
-    setRedoStack((prev) => [...prev, JSON.parse(JSON.stringify(currentDeck.data))]);
+    setRedoStack((prev) => [...prev, cloneDeep(currentData)]);
     updateData(previousState, false);
   }, [undoStack, updateData]);
 
   const redo = useCallback((): void => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data || redoStack.length === 0) return;
+    if (!currentDeck?.data || redoStack.length === 0) return;
+    const currentData = currentDeck.data;
     const nextState = redoStack[redoStack.length - 1];
     if (!nextState) return;
     setRedoStack((prev) => prev.slice(0, -1));
-    setUndoStack((prev) => [...prev, JSON.parse(JSON.stringify(currentDeck.data))]);
+    setUndoStack((prev) => [...prev, cloneDeep(currentData)]);
     updateData(nextState, false);
   }, [redoStack, updateData]);
 
@@ -231,7 +243,7 @@ export const useSlides = (): SlidesState => {
         lastOpenedAt: now(),
         starred: false,
         deletedAt: null,
-        data: copyData ? JSON.parse(JSON.stringify(copyData)) : undefined,
+        data: copyData ? cloneDeep(copyData) : undefined,
       };
       return [copy, ...current];
     });
@@ -256,14 +268,13 @@ export const useSlides = (): SlidesState => {
 
   const addSlideToActiveDeck = useCallback((): void => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data) return;
+    if (!currentDeck?.data) return;
     const newSlide: SlideItem = {
       id: `slide-${crypto.randomUUID()}`,
       title: `Trang ${currentDeck.data.slides.length + 1}`,
       background: '#ffffff',
       elements: [
-        {
-          id: `el-${crypto.randomUUID()}`,
+        createNewElement({
           type: 'text',
           x: 60,
           y: 60,
@@ -271,9 +282,7 @@ export const useSlides = (): SlidesState => {
           height: 60,
           content: 'Tiêu Đề Trang Chiếu Mới',
           fontSize: 28,
-          color: '#0f172a',
-          align: 'left',
-        },
+        }),
       ],
     };
     const updatedDeckData: SlideDeckData = {
@@ -287,39 +296,31 @@ export const useSlides = (): SlidesState => {
 
   const deleteActiveSlide = useCallback((): void => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data || currentDeck.data.slides.length <= 1) return;
+    if (!currentDeck?.data || currentDeck.data.slides.length <= 1) return;
     const nextSlides = currentDeck.data.slides.filter((_, idx) => idx !== activeSlideIndex);
-    const updatedDeckData: SlideDeckData = {
-      ...currentDeck.data,
-      slides: nextSlides,
-    };
-    updateData(updatedDeckData);
+    updateData({ ...currentDeck.data, slides: nextSlides });
     setActiveSlideIndex(Math.max(0, activeSlideIndex - 1));
     setSelectedElementId(null);
   }, [activeSlideIndex, updateData]);
 
   const duplicateActiveSlide = useCallback((): void => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data || !activeSlide) return;
+    if (!currentDeck?.data || !activeSlide) return;
     const clonedSlide: SlideItem = {
-      ...JSON.parse(JSON.stringify(activeSlide)),
+      ...cloneDeep(activeSlide),
       id: `slide-${crypto.randomUUID()}`,
       title: `${activeSlide.title || 'Slide'} (Bản sao)`,
     };
     const nextSlides = [...currentDeck.data.slides];
     nextSlides.splice(activeSlideIndex + 1, 0, clonedSlide);
-    const updatedDeckData: SlideDeckData = {
-      ...currentDeck.data,
-      slides: nextSlides,
-    };
-    updateData(updatedDeckData);
+    updateData({ ...currentDeck.data, slides: nextSlides });
     setActiveSlideIndex(activeSlideIndex + 1);
     setSelectedElementId(null);
   }, [activeSlide, activeSlideIndex, updateData]);
 
   const moveSlide = useCallback((fromIndex: number, toIndex: number): void => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data) return;
+    if (!currentDeck?.data) return;
     const slidesList = [...currentDeck.data.slides];
     if (fromIndex < 0 || fromIndex >= slidesList.length || toIndex < 0 || toIndex >= slidesList.length) return;
     const [moved] = slidesList.splice(fromIndex, 1);
@@ -331,7 +332,7 @@ export const useSlides = (): SlidesState => {
 
   const setSlideBackground = useCallback((bg: string, index?: number): void => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data) return;
+    if (!currentDeck?.data) return;
     const targetIndex = index ?? activeSlideIndex;
     const slidesList = currentDeck.data.slides.map((s, idx) =>
       idx === targetIndex ? { ...s, background: bg } : s,
@@ -341,62 +342,30 @@ export const useSlides = (): SlidesState => {
 
   const addElement = useCallback((partial: Partial<SlideElement>): string => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data || !activeSlide) return '';
-    const newId = `el-${crypto.randomUUID()}`;
-    const newElement: SlideElement = {
-      id: newId,
-      type: partial.type || 'text',
-      x: partial.x ?? 280,
-      y: partial.y ?? 180,
-      width: partial.width ?? 400,
-      height: partial.height ?? 120,
-      content: partial.content ?? (partial.type === 'text' ? 'Văn bản mới' : undefined),
-      fontSize: partial.fontSize ?? 20,
-      color: partial.color ?? '#0f172a',
-      fill: partial.fill,
-      stroke: partial.stroke,
-      strokeWidth: partial.strokeWidth,
-      shapeKind: partial.shapeKind,
-      align: partial.align ?? 'left',
-      url: partial.url,
-      fontWeight: partial.fontWeight,
-      fontStyle: partial.fontStyle,
-      textDecoration: partial.textDecoration,
-    };
+    if (!currentDeck?.data || !activeSlide) return '';
+    const newElement = createNewElement(partial);
     const updatedSlides = currentDeck.data.slides.map((s, idx) =>
       idx === activeSlideIndex ? { ...s, elements: [...s.elements, newElement] } : s,
     );
     updateData({ ...currentDeck.data, slides: updatedSlides });
-    setSelectedElementId(newId);
-    return newId;
+    setSelectedElementId(newElement.id);
+    return newElement.id;
   }, [activeSlide, activeSlideIndex, updateData]);
 
   const updateElement = useCallback((elementId: string, patch: Partial<SlideElement>): void => {
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data || !activeSlide) return;
-    const updatedSlides = currentDeck.data.slides.map((s, idx) => {
-      if (idx !== activeSlideIndex) return s;
-      return {
-        ...s,
-        elements: s.elements.map((el) => (el.id === elementId ? { ...el, ...patch } : el)),
-      };
-    });
-    updateData({ ...currentDeck.data, slides: updatedSlides });
+    if (!currentDeck?.data || !activeSlide) return;
+    const updatedDeck = updateElementInDeck(currentDeck.data, activeSlideIndex, elementId, patch);
+    updateData(updatedDeck);
   }, [activeSlide, activeSlideIndex, updateData]);
 
   const deleteElement = useCallback((elementId?: string): void => {
     const targetId = elementId || selectedElementId;
     if (!targetId) return;
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data || !activeSlide) return;
-    const updatedSlides = currentDeck.data.slides.map((s, idx) => {
-      if (idx !== activeSlideIndex) return s;
-      return {
-        ...s,
-        elements: s.elements.filter((el) => el.id !== targetId),
-      };
-    });
-    updateData({ ...currentDeck.data, slides: updatedSlides });
+    if (!currentDeck?.data || !activeSlide) return;
+    const updatedDeck = deleteElementInDeck(currentDeck.data, activeSlideIndex, targetId);
+    updateData(updatedDeck);
     setSelectedElementId(null);
   }, [activeSlide, activeSlideIndex, selectedElementId, updateData]);
 
@@ -404,12 +373,12 @@ export const useSlides = (): SlidesState => {
     const targetId = elementId || selectedElementId;
     if (!targetId) return;
     const currentDeck = activeDeckRef.current;
-    if (!currentDeck || !currentDeck.data || !activeSlide) return;
+    if (!currentDeck?.data || !activeSlide) return;
     const sourceEl = activeSlide.elements.find((el) => el.id === targetId);
     if (!sourceEl) return;
     const newId = `el-${crypto.randomUUID()}`;
     const cloned: SlideElement = {
-      ...JSON.parse(JSON.stringify(sourceEl)),
+      ...cloneDeep(sourceEl),
       id: newId,
       x: Math.min(900, sourceEl.x + 20),
       y: Math.min(480, sourceEl.y + 20),
@@ -422,35 +391,81 @@ export const useSlides = (): SlidesState => {
     setSelectedElementId(newId);
   }, [activeSlide, activeSlideIndex, selectedElementId, updateData]);
 
-  const reorderElement = useCallback(
-    (mode: 'front' | 'back' | 'forward' | 'backward', elementId?: string): void => {
-      const targetId = elementId || selectedElementId;
-      if (!targetId) return;
-      const currentDeck = activeDeckRef.current;
-      if (!currentDeck || !currentDeck.data || !activeSlide) return;
-      const elements = [...activeSlide.elements];
-      const idx = elements.findIndex((el) => el.id === targetId);
-      if (idx === -1) return;
-      const [el] = elements.splice(idx, 1);
-      if (!el) return;
+  const copyElement = useCallback((elementId?: string): void => {
+    const targetId = elementId || selectedElementId;
+    if (!targetId || !activeSlide) return;
+    const el = activeSlide.elements.find((item) => item.id === targetId);
+    if (el) setClipboard(cloneDeep(el));
+  }, [activeSlide, selectedElementId]);
 
-      if (mode === 'front') elements.push(el);
-      else if (mode === 'back') elements.unshift(el);
-      else if (mode === 'forward') elements.splice(Math.min(elements.length, idx + 1), 0, el);
-      else if (mode === 'backward') elements.splice(Math.max(0, idx - 1), 0, el);
+  const cutElement = useCallback((elementId?: string): void => {
+    const targetId = elementId || selectedElementId;
+    if (!targetId || !activeSlide) return;
+    const el = activeSlide.elements.find((item) => item.id === targetId);
+    if (el) {
+      setClipboard(cloneDeep(el));
+      deleteElement(targetId);
+    }
+  }, [activeSlide, deleteElement, selectedElementId]);
 
-      const updatedSlides = currentDeck.data.slides.map((s, sIdx) =>
-        sIdx === activeSlideIndex ? { ...s, elements } : s,
-      );
-      updateData({ ...currentDeck.data, slides: updatedSlides });
-    },
-    [activeSlide, activeSlideIndex, selectedElementId, updateData],
-  );
+  const pasteElement = useCallback((): void => {
+    if (!clipboard) return;
+    const cloned = cloneDeep(clipboard);
+    cloned.id = `el-${crypto.randomUUID()}`;
+    cloned.x = Math.min(900, cloned.x + 20);
+    cloned.y = Math.min(480, cloned.y + 20);
+    addElement(cloned);
+  }, [addElement, clipboard]);
 
-  const bringElementForward = useCallback((id?: string) => reorderElement('forward', id), [reorderElement]);
-  const sendElementBackward = useCallback((id?: string) => reorderElement('backward', id), [reorderElement]);
-  const bringElementToFront = useCallback((id?: string) => reorderElement('front', id), [reorderElement]);
-  const sendElementToBack = useCallback((id?: string) => reorderElement('back', id), [reorderElement]);
+  const centerElement = useCallback((axis: 'horizontal' | 'vertical' | 'both', elementId?: string): void => {
+    const targetId = elementId || selectedElementId;
+    if (!targetId || !activeDeckRef.current?.data) return;
+    const updated = centerElementInDeck(activeDeckRef.current.data, activeSlideIndex, targetId, axis);
+    updateData(updated);
+  }, [activeSlideIndex, selectedElementId, updateData]);
+
+  const rotateElement = useCallback((deltaDeg = 90, elementId?: string): void => {
+    const targetId = elementId || selectedElementId;
+    if (!targetId || !activeSlide) return;
+    const el = activeSlide.elements.find((item) => item.id === targetId);
+    if (!el) return;
+    const currentRot = el.rotation || 0;
+    updateElement(targetId, { rotation: (currentRot + deltaDeg) % 360 });
+  }, [activeSlide, selectedElementId, updateElement]);
+
+  const replaceImage = useCallback((url: string, elementId?: string): void => {
+    const targetId = elementId || selectedElementId;
+    if (!targetId) return;
+    updateElement(targetId, { url });
+  }, [selectedElementId, updateElement]);
+
+  const bringElementForward = useCallback((id?: string) => {
+    const targetId = id || selectedElementId;
+    if (targetId && activeDeckRef.current?.data) {
+      updateData(reorderElementInDeck(activeDeckRef.current.data, activeSlideIndex, targetId, 'forward'));
+    }
+  }, [activeSlideIndex, selectedElementId, updateData]);
+
+  const sendElementBackward = useCallback((id?: string) => {
+    const targetId = id || selectedElementId;
+    if (targetId && activeDeckRef.current?.data) {
+      updateData(reorderElementInDeck(activeDeckRef.current.data, activeSlideIndex, targetId, 'backward'));
+    }
+  }, [activeSlideIndex, selectedElementId, updateData]);
+
+  const bringElementToFront = useCallback((id?: string) => {
+    const targetId = id || selectedElementId;
+    if (targetId && activeDeckRef.current?.data) {
+      updateData(reorderElementInDeck(activeDeckRef.current.data, activeSlideIndex, targetId, 'front'));
+    }
+  }, [activeSlideIndex, selectedElementId, updateData]);
+
+  const sendElementToBack = useCallback((id?: string) => {
+    const targetId = id || selectedElementId;
+    if (targetId && activeDeckRef.current?.data) {
+      updateData(reorderElementInDeck(activeDeckRef.current.data, activeSlideIndex, targetId, 'back'));
+    }
+  }, [activeSlideIndex, selectedElementId, updateData]);
 
   const nextSlide = useCallback((): void => {
     const count = activeDeckRef.current?.data?.slides.length ?? 0;
@@ -495,6 +510,7 @@ export const useSlides = (): SlidesState => {
     storageBytes,
     canUndo: undoStack.length > 0,
     canRedo: redoStack.length > 0,
+    canPaste: clipboard !== null,
     setActiveId,
     setActiveSlideIndex,
     setSelectedElementId,
@@ -519,6 +535,12 @@ export const useSlides = (): SlidesState => {
     updateElement,
     deleteElement,
     duplicateElement,
+    copyElement,
+    cutElement,
+    pasteElement,
+    centerElement,
+    rotateElement,
+    replaceImage,
     bringElementForward,
     sendElementBackward,
     bringElementToFront,

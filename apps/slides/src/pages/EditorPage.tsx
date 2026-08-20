@@ -1,3 +1,4 @@
+import { SlideContextMenu } from '@/components/SlideContextMenu';
 import { SlideThumbnailList } from '@/components/SlideThumbnailList';
 import { SlideshowModal } from '@/components/SlideshowModal';
 import { SlideToolbar } from '@/components/SlideToolbar';
@@ -6,6 +7,7 @@ import { SlidesHeader } from '@/components/SlidesHeader';
 import { useSlideShortcuts } from '@/hooks/useSlideShortcuts';
 import { useSlides } from '@/hooks/useSlides';
 import { useTheme } from '@/hooks/useTheme';
+import type { SlideElement } from '@/types/slides.types';
 import { ShellLayout } from '@office/app-shell';
 import { useTranslation } from '@office/i18n';
 import { Skeleton } from '@office/ui-kit';
@@ -21,6 +23,11 @@ export const EditorPage = () => {
   const [zoom, setZoom] = useState(100);
   const [isPresenting, setIsPresenting] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    element?: SlideElement | null;
+  } | null>(null);
 
   useEffect(() => {
     if (id && id !== slidesApi.activeId) {
@@ -63,6 +70,9 @@ export const EditorPage = () => {
     onLastSlide: slidesApi.lastSlide,
     onUndo: slidesApi.undo,
     onRedo: slidesApi.redo,
+    onCopy: slidesApi.copyElement,
+    onCut: slidesApi.cutElement,
+    onPaste: slidesApi.pasteElement,
   });
 
   if (slidesApi.loading) {
@@ -111,6 +121,33 @@ export const EditorPage = () => {
           deck={deck.data}
           initialSlideIndex={slidesApi.activeSlideIndex}
           onClose={() => setIsPresenting(false)}
+        />
+      )}
+
+      {/* Floating Context Menu */}
+      {contextMenu && (
+        <SlideContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          targetElement={contextMenu.element}
+          canPaste={slidesApi.canPaste}
+          canDeleteSlide={(deck.data.slides.length ?? 0) > 1}
+          onClose={() => setContextMenu(null)}
+          onCut={() => slidesApi.cutElement(contextMenu.element?.id)}
+          onCopy={() => slidesApi.copyElement(contextMenu.element?.id)}
+          onPaste={slidesApi.pasteElement}
+          onDuplicate={() => slidesApi.duplicateElement(contextMenu.element?.id)}
+          onDelete={() => slidesApi.deleteElement(contextMenu.element?.id)}
+          onCenter={(axis) => slidesApi.centerElement(axis, contextMenu.element?.id)}
+          onRotate={(deg) => slidesApi.rotateElement(deg, contextMenu.element?.id)}
+          onBringForward={() => slidesApi.bringElementForward(contextMenu.element?.id)}
+          onSendBackward={() => slidesApi.sendElementBackward(contextMenu.element?.id)}
+          onBringToFront={() => slidesApi.bringElementToFront(contextMenu.element?.id)}
+          onSendToBack={() => slidesApi.sendElementToBack(contextMenu.element?.id)}
+          onAddSlide={slidesApi.addSlideToActiveDeck}
+          onDuplicateSlide={slidesApi.duplicateActiveSlide}
+          onDeleteSlide={slidesApi.deleteActiveSlide}
+          onPresent={() => setIsPresenting(true)}
         />
       )}
 
@@ -188,6 +225,9 @@ export const EditorPage = () => {
           }}
           onDeleteSelectedElement={() => slidesApi.deleteElement()}
           onDuplicateSelectedElement={() => slidesApi.duplicateElement()}
+          onCenterSelectedElement={(axis) => slidesApi.centerElement(axis)}
+          onRotateSelectedElement={(deg) => slidesApi.rotateElement(deg)}
+          onReplaceImageSelectedElement={(url) => slidesApi.replaceImage(url)}
           onBringForward={slidesApi.bringElementForward}
           onSendBackward={slidesApi.sendElementBackward}
           onBringToFront={slidesApi.bringElementToFront}
@@ -221,11 +261,15 @@ export const EditorPage = () => {
           <SlideViewer
             slide={currentSlide}
             zoom={zoom}
+            onZoomChange={setZoom}
             selectedElementId={slidesApi.selectedElementId}
             onSelectElement={slidesApi.setSelectedElementId}
             onUpdateElement={slidesApi.updateElement}
             onDeleteElement={slidesApi.deleteElement}
             onDuplicateElement={slidesApi.duplicateElement}
+            onNextSlide={slidesApi.nextSlide}
+            onPrevSlide={slidesApi.prevSlide}
+            onOpenContextMenu={(x, y, el) => setContextMenu({ x, y, element: el })}
           />
         </div>
       </div>

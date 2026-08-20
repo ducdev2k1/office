@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from '@office/ui-kit';
 import React, { useRef } from 'react';
+import { ElementFormattingBar } from './toolbar/ElementFormattingBar';
 
 const PALETTE_COLORS = [
   { label: 'Trắng', value: '#ffffff' },
@@ -41,7 +42,6 @@ interface SlideToolbarProps {
   onRedo?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
-  // Element and Slide Actions
   selectedElement?: SlideElement;
   onAddTextBox: () => void;
   onAddShape: (kind: SlideShapeKind) => void;
@@ -50,6 +50,9 @@ interface SlideToolbarProps {
   onUpdateSelectedElement: (patch: Partial<SlideElement>) => void;
   onDeleteSelectedElement: () => void;
   onDuplicateSelectedElement: () => void;
+  onCenterSelectedElement?: (axis: 'horizontal' | 'vertical' | 'both') => void;
+  onRotateSelectedElement?: (deltaDeg: number) => void;
+  onReplaceImageSelectedElement?: (dataUrl: string) => void;
   onBringForward: () => void;
   onSendBackward: () => void;
   onBringToFront: () => void;
@@ -77,6 +80,9 @@ export const SlideToolbar = ({
   onUpdateSelectedElement,
   onDeleteSelectedElement,
   onDuplicateSelectedElement,
+  onCenterSelectedElement,
+  onRotateSelectedElement,
+  onReplaceImageSelectedElement,
   onBringForward,
   onSendBackward,
   onBringToFront,
@@ -313,206 +319,19 @@ export const SlideToolbar = ({
           {selectedElement && (
             <>
               <div className="mx-1.5 h-4 w-px bg-border" />
-
-              {/* Font size */}
-              <div className="flex items-center rounded border border-border px-1">
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateSelectedElement({
-                      fontSize: Math.max(10, (selectedElement.fontSize || 20) - 2),
-                    })
-                  }
-                  className="px-1 text-xs hover:text-primary"
-                >
-                  -
-                </button>
-                <span className="w-6 text-center text-xs font-semibold">
-                  {selectedElement.fontSize || 20}
-                </span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    onUpdateSelectedElement({
-                      fontSize: Math.min(96, (selectedElement.fontSize || 20) + 2),
-                    })
-                  }
-                  className="px-1 text-xs hover:text-primary"
-                >
-                  +
-                </button>
-              </div>
-
-              {/* Bold */}
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant={selectedElement.fontWeight === 'bold' ? 'secondary' : 'ghost'}
-                      size="sm"
-                      onClick={() =>
-                        onUpdateSelectedElement({
-                          fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold',
-                        })
-                      }
-                      className="h-8 w-8 p-0 font-bold"
-                    />
-                  }
-                >
-                  B
-                </TooltipTrigger>
-                <TooltipContent>Đậm</TooltipContent>
-              </Tooltip>
-
-              {/* Italic */}
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant={selectedElement.fontStyle === 'italic' ? 'secondary' : 'ghost'}
-                      size="sm"
-                      onClick={() =>
-                        onUpdateSelectedElement({
-                          fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic',
-                        })
-                      }
-                      className="h-8 w-8 p-0 italic font-serif"
-                    />
-                  }
-                >
-                  I
-                </TooltipTrigger>
-                <TooltipContent>Nghiêng</TooltipContent>
-              </Tooltip>
-
-              {/* Text Color Picker */}
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" />
-                  }
-                >
-                  <span
-                    className="h-4 w-4 rounded-xs border border-border"
-                    style={{ backgroundColor: selectedElement.color || '#0f172a' }}
-                  />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="grid grid-cols-4 gap-1 p-2">
-                  {PALETTE_COLORS.map((c) => (
-                    <button
-                      key={c.value}
-                      type="button"
-                      onClick={() => onUpdateSelectedElement({ color: c.value })}
-                      className="h-6 w-6 rounded border border-border shadow-xs hover:scale-110"
-                      style={{ backgroundColor: c.value }}
-                    />
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Fill Color Picker */}
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" />
-                  }
-                >
-                  <Icon name="edit" size={14} className="text-muted-foreground" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="grid grid-cols-4 gap-1 p-2">
-                  <button
-                    type="button"
-                    onClick={() => onUpdateSelectedElement({ fill: undefined })}
-                    className="col-span-4 rounded border border-dashed py-1 text-[11px] text-muted-foreground"
-                  >
-                    Không màu nền
-                  </button>
-                  {PALETTE_COLORS.map((c) => (
-                    <button
-                      key={c.value}
-                      type="button"
-                      onClick={() => onUpdateSelectedElement({ fill: c.value })}
-                      className="h-6 w-6 rounded border border-border shadow-xs hover:scale-110"
-                      style={{ backgroundColor: c.value }}
-                    />
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Alignment */}
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const nextAlign =
-                          selectedElement.align === 'left'
-                            ? 'center'
-                            : selectedElement.align === 'center'
-                            ? 'right'
-                            : 'left';
-                        onUpdateSelectedElement({ align: nextAlign });
-                      }}
-                      className="h-8 w-8 p-0 text-xs font-semibold"
-                    />
-                  }
-                >
-                  <Icon name="align-center" size={14} />
-                </TooltipTrigger>
-                <TooltipContent>Căn lề</TooltipContent>
-              </Tooltip>
-
-              {/* Reorder Z-index */}
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" />
-                  }
-                >
-                  <Icon name="layers" size={14} className="text-muted-foreground" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={onBringForward}>Lên trước 1 lớp</DropdownMenuItem>
-                  <DropdownMenuItem onClick={onBringToFront}>Lên trên cùng</DropdownMenuItem>
-                  <DropdownMenuItem onClick={onSendBackward}>Xuống sau 1 lớp</DropdownMenuItem>
-                  <DropdownMenuItem onClick={onSendToBack}>Xuống dưới cùng</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Duplicate & Delete element */}
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={onDuplicateSelectedElement}
-                      className="h-8 w-8 p-0"
-                    />
-                  }
-                >
-                  <Icon name="copy" size={13} className="text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent>Nhân bản đối tượng (Ctrl+D)</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={onDeleteSelectedElement}
-                      className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10"
-                    />
-                  }
-                >
-                  <Icon name="trash-2" size={13} />
-                </TooltipTrigger>
-                <TooltipContent>Xoá đối tượng (Delete)</TooltipContent>
-              </Tooltip>
+              <ElementFormattingBar
+                element={selectedElement}
+                onUpdate={onUpdateSelectedElement}
+                onDelete={onDeleteSelectedElement}
+                onDuplicate={onDuplicateSelectedElement}
+                onCenter={onCenterSelectedElement}
+                onRotate={onRotateSelectedElement}
+                onReplaceImage={onReplaceImageSelectedElement}
+                onBringForward={onBringForward}
+                onSendBackward={onSendBackward}
+                onBringToFront={onBringToFront}
+                onSendToBack={onSendToBack}
+              />
             </>
           )}
 
