@@ -156,6 +156,14 @@ export const loadSlides = async (): Promise<SlideDocRecord[]> => {
   }
 };
 
+export const saveSlideDeck = async (deck: SlideDocRecord): Promise<void> => {
+  try {
+    await store.put(deck);
+  } catch (error) {
+    console.error('Failed to persist slide deck into IndexedDB:', error);
+  }
+};
+
 export const saveSlides = async (slides: SlideDocRecord[]): Promise<void> => {
   try {
     await store.putMany(slides);

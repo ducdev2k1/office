@@ -5,6 +5,7 @@ import {
   importSlideFile,
   loadSamplePptx,
   loadSlides,
+  saveSlideDeck,
   saveSlides,
 } from '@/services/slides.service';
 import type {
@@ -132,15 +133,16 @@ export const useSlides = (): SlidesState => {
     activeDeckRef.current = activeDeck;
   }, [activeDeck]);
 
+  // Autosave: Chi ghi ban ghi activeDeck qua put() don diem de giam thieu Disk I/O va giam lag
   useEffect(() => {
-    if (slides.length === 0 || loading) return;
+    if (!activeDeck || loading) return;
     setSaveState('saving');
     const timeout = window.setTimeout(async () => {
-      await saveSlides(slides);
+      await saveSlideDeck(activeDeck);
       setSaveState('saved');
-    }, 600);
+    }, 400);
     return () => window.clearTimeout(timeout);
-  }, [slides, loading]);
+  }, [activeDeck, loading]);
 
   const updateDeck = useCallback((id: string, updater: (deck: SlideDocRecord) => SlideDocRecord): void => {
     setSlides((current) => current.map((s) => (s.id === id ? updater(s) : s)));

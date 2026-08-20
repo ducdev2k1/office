@@ -5,7 +5,7 @@ import {
   getStorageUsageBytes,
   importSheetFile,
   loadSheets,
-  saveSheets,
+  saveSheet,
 } from '@/services/sheets.service';
 import type { SheetDocRecord } from '@/types/sheets.types';
 import type { FileRecord } from '@office/file-home';
@@ -66,11 +66,14 @@ export const useSheets = (): SheetsState => {
     activeSheetRef.current = activeSheet;
   }, [activeSheet]);
 
+  // Autosave: Chi ghi ban ghi activeSheet qua put() don diem de giam thieu Disk I/O va giam lag
   useEffect(() => {
-    if (sheets.length === 0) return;
-    const timeout = window.setTimeout(() => void saveSheets(sheets), 400);
+    if (!activeSheet || loading) return;
+    const timeout = window.setTimeout(() => {
+      void saveSheet(activeSheet);
+    }, 400);
     return () => window.clearTimeout(timeout);
-  }, [sheets]);
+  }, [activeSheet, loading]);
 
   const updateSheet = useCallback((id: string, updater: (sheet: SheetDocRecord) => SheetDocRecord): void => {
     setSheets((current) => current.map((s) => (s.id === id ? updater(s) : s)));
@@ -103,18 +106,23 @@ export const useSheets = (): SheetsState => {
   const updateTitle = useCallback((title: string): void => {
     const currentSheet = activeSheetRef.current;
     if (!currentSheet) return;
-    updateSheet(currentSheet.id, (s) => ({
-      ...s,
-      title: title.trim() || t('untitled'),
-      data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
-      updatedAt: now(),
-    }));
+    updateSheet(currentSheet.id, (s) => {
+      const updated = {
+        ...s,
+        title: title.trim() || t('untitled'),
+        data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
+        updatedAt: now(),
+      };
+      void saveSheet(updated);
+      return updated;
+    });
   }, [updateSheet, t]);
 
   const addSheet = useCallback((title?: string): string => {
     const nextSheet = createBlankSheet(title);
     setSheets((current) => [nextSheet, ...current]);
     setActiveId(nextSheet.id);
+    void saveSheet(nextSheet);
     return nextSheet.id;
   }, []);
 
@@ -122,20 +130,29 @@ export const useSheets = (): SheetsState => {
     const nextSheet = await importSheetFile(file);
     setSheets((current) => [nextSheet, ...current]);
     setActiveId(nextSheet.id);
+    void saveSheet(nextSheet);
     return nextSheet.id;
   }, []);
 
   const star = useCallback((id: string): void => {
-    updateSheet(id, (s) => ({ ...s, starred: !s.starred }));
+    updateSheet(id, (s) => {
+      const updated = { ...s, starred: !s.starred };
+      void saveSheet(updated);
+      return updated;
+    });
   }, [updateSheet]);
 
   const rename = useCallback((id: string, title: string): void => {
-    updateSheet(id, (s) => ({
-      ...s,
-      title: title.trim() || t('untitled'),
-      data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
-      updatedAt: now(),
-    }));
+    updateSheet(id, (s) => {
+      const updated = {
+        ...s,
+        title: title.trim() || t('untitled'),
+        data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
+        updatedAt: now(),
+      };
+      void saveSheet(updated);
+      return updated;
+    });
   }, [updateSheet, t]);
 
   const duplicate = useCallback((id: string): void => {
@@ -157,16 +174,25 @@ export const useSheets = (): SheetsState => {
         data: copyData,
         charts: source.charts ? JSON.parse(JSON.stringify(source.charts)) : undefined,
       };
+      void saveSheet(copy);
       return [copy, ...current];
     });
   }, [t]);
 
   const trash = useCallback((id: string): void => {
-    updateSheet(id, (s) => ({ ...s, deletedAt: now() }));
+    updateSheet(id, (s) => {
+      const updated = { ...s, deletedAt: now() };
+      void saveSheet(updated);
+      return updated;
+    });
   }, [updateSheet]);
 
   const restore = useCallback((id: string): void => {
-    updateSheet(id, (s) => ({ ...s, deletedAt: null, updatedAt: now() }));
+    updateSheet(id, (s) => {
+      const updated = { ...s, deletedAt: null, updatedAt: now() };
+      void saveSheet(updated);
+      return updated;
+    });
   }, [updateSheet]);
 
   const deleteForever = useCallback((id: string): void => {
@@ -175,7 +201,11 @@ export const useSheets = (): SheetsState => {
   }, []);
 
   const markOpened = useCallback((id: string): void => {
-    updateSheet(id, (s) => ({ ...s, lastOpenedAt: now() }));
+    updateSheet(id, (s) => {
+      const updated = { ...s, lastOpenedAt: now() };
+      void saveSheet(updated);
+      return updated;
+    });
   }, [updateSheet]);
 
   const files = useMemo<FileRecord[]>(() => sheets, [sheets]);

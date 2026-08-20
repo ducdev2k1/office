@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FileRecord } from '@office/file-home';
-import { createBlankDoc, deleteDocxSource, getStorageUsageBytes, loadDocs, saveDocs } from '@/services/docs.service';
+import {
+  createBlankDoc,
+  deleteDocRecord,
+  deleteDocxSource,
+  getStorageUsageBytes,
+  loadDocs,
+  saveDoc,
+  saveDocs,
+} from '@/services/docs.service';
 import { importDocxFile } from '@/services/import.service';
 import type { DocRecord, PageSetup } from '@/types/docs.types';
 
@@ -55,11 +63,14 @@ export const useDocs = (): DocsState => {
     activeDocRef.current = activeDoc;
   }, [activeDoc]);
 
+  // Autosave: Chi ghi ban ghi activeDoc qua put() don diem de giam thieu Disk I/O va giam lag
   useEffect(() => {
-    if (docs.length === 0) return;
-    const timeout = window.setTimeout(() => void saveDocs(docs), 400);
+    if (!activeDoc || loading) return;
+    const timeout = window.setTimeout(() => {
+      void saveDoc(activeDoc);
+    }, 400);
     return () => window.clearTimeout(timeout);
-  }, [docs]);
+  }, [activeDoc, loading]);
 
   const updateDoc = useCallback((id: string, updater: (doc: DocRecord) => DocRecord): void => {
     setDocs((current) => current.map((doc) => (doc.id === id ? updater(doc) : doc)));
@@ -87,6 +98,7 @@ export const useDocs = (): DocsState => {
     const nextDoc = createBlankDoc();
     setDocs((current) => [nextDoc, ...current]);
     setActiveId(nextDoc.id);
+    void saveDoc(nextDoc);
     return nextDoc.id;
   }, []);
 
@@ -94,19 +106,28 @@ export const useDocs = (): DocsState => {
     const nextDoc = await importDocxFile(file);
     setDocs((current) => [nextDoc, ...current]);
     setActiveId(nextDoc.id);
+    void saveDoc(nextDoc);
     return nextDoc.id;
   }, []);
 
   const star = useCallback((id: string): void => {
-    updateDoc(id, (doc) => ({ ...doc, starred: !doc.starred }));
+    updateDoc(id, (doc) => {
+      const updated = { ...doc, starred: !doc.starred };
+      void saveDoc(updated);
+      return updated;
+    });
   }, [updateDoc]);
 
   const rename = useCallback((id: string, title: string): void => {
-    updateDoc(id, (doc) => ({
-      ...doc,
-      title: title.trim() || 'Chưa có tiêu đề',
-      updatedAt: now(),
-    }));
+    updateDoc(id, (doc) => {
+      const updated = {
+        ...doc,
+        title: title.trim() || 'Chưa có tiêu đề',
+        updatedAt: now(),
+      };
+      void saveDoc(updated);
+      return updated;
+    });
   }, [updateDoc]);
 
   const duplicate = useCallback((id: string): void => {
@@ -124,25 +145,39 @@ export const useDocs = (): DocsState => {
         deletedAt: null,
         sourceType: undefined,
       };
+      void saveDoc(copy);
       return [copy, ...current];
     });
   }, []);
 
   const trash = useCallback((id: string): void => {
-    updateDoc(id, (doc) => ({ ...doc, deletedAt: now() }));
+    updateDoc(id, (doc) => {
+      const updated = { ...doc, deletedAt: now() };
+      void saveDoc(updated);
+      return updated;
+    });
   }, [updateDoc]);
 
   const restore = useCallback((id: string): void => {
-    updateDoc(id, (doc) => ({ ...doc, deletedAt: null, updatedAt: now() }));
+    updateDoc(id, (doc) => {
+      const updated = { ...doc, deletedAt: null, updatedAt: now() };
+      void saveDoc(updated);
+      return updated;
+    });
   }, [updateDoc]);
 
   const deleteForever = useCallback((id: string): void => {
     setDocs((current) => current.filter((doc) => doc.id !== id));
+    void deleteDocRecord(id);
     void deleteDocxSource(id);
   }, []);
 
   const markOpened = useCallback((id: string): void => {
-    updateDoc(id, (doc) => ({ ...doc, lastOpenedAt: now() }));
+    updateDoc(id, (doc) => {
+      const updated = { ...doc, lastOpenedAt: now() };
+      void saveDoc(updated);
+      return updated;
+    });
   }, [updateDoc]);
 
   const deleteDoc = useCallback((): void => {
@@ -152,14 +187,23 @@ export const useDocs = (): DocsState => {
       const remaining = current.filter((doc) => !doc.deletedAt && doc.id !== currentDoc.id);
       if (remaining.length === 0) return current;
       setActiveId(remaining[0]!.id);
-      return current.map((doc) => (doc.id === currentDoc.id ? { ...doc, deletedAt: now() } : doc));
+      const updated = current.map((doc) =>
+        doc.id === currentDoc.id ? { ...doc, deletedAt: now() } : doc
+      );
+      const trashed = updated.find((doc) => doc.id === currentDoc.id);
+      if (trashed) void saveDoc(trashed);
+      return updated;
     });
   }, []);
 
   const setActiveDocPageSetup = useCallback((setup: PageSetup): void => {
     const currentDoc = activeDocRef.current;
     if (!currentDoc) return;
-    updateDoc(currentDoc.id, (doc) => ({ ...doc, pageSetup: setup }));
+    updateDoc(currentDoc.id, (doc) => {
+      const updated = { ...doc, pageSetup: setup };
+      void saveDoc(updated);
+      return updated;
+    });
   }, [updateDoc]);
 
   const files = useMemo<FileRecord[]>(() => docs, [docs]);
