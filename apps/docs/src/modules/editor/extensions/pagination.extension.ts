@@ -1,13 +1,12 @@
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
-import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
 import { DEFAULT_PAGE_SETUP, getPaperSizePx, mmToPx, type PageSetup } from '@/types/docs.types';
 import type {
   PaginationMetrics,
   PaginationOptions,
   PaginationPluginState,
 } from '@/modules/editor/types/pagination.types';
-import { buildPagesWidget } from '@/modules/editor/utils/pagination.dom';
+import { resolveContentNodeDom } from '@/modules/editor/utils/pagination-measure.utils';
 
 export const PAGINATION_PLUGIN_KEY = new PluginKey<PaginationPluginState>('tiptap-pagination');
 
@@ -40,7 +39,7 @@ export const computePaginationMetrics = (setup: PageSetup, gapHeight = 16): Pagi
 };
 
 export const measureDocPageCount = (
-  view: EditorView,
+  view: { dom: HTMLElement; state: { doc: { content: { size: number }; forEach: (cb: (node: unknown, offset: number) => void) => void } } },
   metrics: PaginationMetrics,
   maxPages = 50,
 ): number => {
@@ -51,42 +50,7 @@ export const measureDocPageCount = (
   let hasValidBlock = false;
 
   view.state.doc.forEach((_node, offset) => {
-    let el: HTMLElement | null = null;
-    try {
-      const pos = Math.min(offset + 1, view.state.doc.content.size);
-      const domInfo = view.domAtPos(pos);
-      let candidate = (
-        domInfo.node.nodeType === Node.ELEMENT_NODE
-          ? domInfo.node
-          : domInfo.node.parentElement
-      ) as HTMLElement | null;
-
-      while (candidate && candidate.parentElement && candidate.parentElement !== view.dom) {
-        candidate = candidate.parentElement;
-      }
-      if (
-        candidate &&
-        candidate.parentElement === view.dom &&
-        !candidate.classList.contains('ProseMirror-widget') &&
-        candidate.id !== 'pages'
-      ) {
-        el = candidate;
-      }
-    } catch {
-      el = null;
-    }
-
-    if (!el) {
-      const fallback = view.nodeDOM(offset) as HTMLElement | null;
-      if (
-        fallback &&
-        fallback.parentElement === view.dom &&
-        !fallback.classList.contains('ProseMirror-widget') &&
-        fallback.id !== 'pages'
-      ) {
-        el = fallback;
-      }
-    }
+    const el = resolveContentNodeDom(view as any, offset);
 
     if (el && el.nodeType === Node.ELEMENT_NODE) {
       const style = window.getComputedStyle(el);
@@ -213,33 +177,6 @@ export const Pagination = Extension.create<PaginationOptions>({
               return { ...prevState, ...meta };
             }
             return prevState;
-          },
-        },
-        props: {
-          decorations(state) {
-            const pluginState = PAGINATION_PLUGIN_KEY.getState(state);
-            if (!pluginState || !pluginState.isPaged) return null;
-
-            const { pageCount, metrics, setup, docTitle } = pluginState;
-            const setupKey = `${pageCount}_${docTitle}_${setup.paperSize}_${setup.orientation}_${setup.headerMargin}_${setup.footerMargin}_${JSON.stringify(setup.margins)}_${JSON.stringify(setup.header)}_${JSON.stringify(setup.footer)}_${JSON.stringify(setup.pageNumber)}`;
-
-            const widget = Decoration.widget(
-              0,
-              () =>
-                buildPagesWidget({
-                  pageCount,
-                  metrics,
-                  setup,
-                  docTitle,
-                  onEditBand: extension.options.onEditBand,
-                }),
-              {
-                side: -1,
-                key: `tiptap-pages-${setupKey}`,
-              },
-            );
-
-            return DecorationSet.create(state.doc, [widget]);
           },
         },
       }),

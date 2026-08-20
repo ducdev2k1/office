@@ -4,10 +4,11 @@ import { EditorContent } from '@tiptap/react';
 import { useTranslation } from '@office/i18n';
 import { Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
 import { PageScrollIndicator } from '@/modules/editor/components/PageScrollIndicator';
+import { PageStack } from '@/modules/editor/components/PageStack';
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
-import type { DocRecord, HeaderFooterSlot, PageSetup } from '@/types/docs.types';
+import { DEFAULT_PAGE_SETUP, type DocRecord, type HeaderFooterSlot, type PageSetup } from '@/types/docs.types';
 
 interface EditorCanvasProps {
   editor: Editor | null;
@@ -88,23 +89,19 @@ export const EditorCanvas = ({
     const target = e.target as HTMLElement | null;
     const td = target?.closest('td');
     const headerOrFooter = target?.closest(
-      '.tiptap-page-header, .tiptap-page-footer',
+      '.tiptap-page-header, .tiptap-page-footer, .page-header, .page-footer',
     ) as HTMLElement | null;
 
     if (td && headerOrFooter) {
-      const isHeader = headerOrFooter.classList.contains('tiptap-page-header');
+      const isHeader = headerOrFooter.classList.contains('page-header') || headerOrFooter.classList.contains('tiptap-page-header');
       const band: 'header' | 'footer' = isHeader ? 'header' : 'footer';
-      const pageNumAttr = isHeader
-        ? headerOrFooter.getAttribute('data-header-page-number')
-        : headerOrFooter.getAttribute('data-footer-page-number');
-      const pageNum = parseInt(pageNumAttr || '1', 10);
       const cellIndex = (td as HTMLTableCellElement).cellIndex;
       const slots: Array<keyof HeaderFooterSlot> = ['left', 'center', 'right'];
       const slot = slots[cellIndex] ?? 'center';
 
       window.dispatchEvent(
         new CustomEvent('doc-open-hf-panel', {
-          detail: { band, pageIndex: pageNum - 1, slot },
+          detail: { band, pageIndex: 0, slot },
         }),
       );
     }
@@ -130,7 +127,7 @@ export const EditorCanvas = ({
         </Tooltip>
       )}
 
-      {/* Left-aligned Vertical Ruler (Sát mép màn hình bên trái) */}
+      {/* Left-aligned Vertical Ruler */}
       {viewMode === 'paged' && onPageSetupChange && (
         <DocVerticalRuler
           activeDoc={activeDoc}
@@ -164,6 +161,13 @@ export const EditorCanvas = ({
           onDoubleClick={handleDoubleClick}
           ref={viewportRef}
         >
+          {viewMode === 'paged' && (
+            <PageStack
+              pageCount={pageCount}
+              setup={activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP()}
+              docTitle={activeDoc?.title ?? ''}
+            />
+          )}
           <EditorContent editor={editor} />
         </div>
       </div>

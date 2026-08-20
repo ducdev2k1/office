@@ -244,12 +244,10 @@ textarea:focus-visible {
   z-index: 1;
   width: var(--paper-w, 793.701px);
   min-height: var(--stack-h);
-  padding: 0 var(--margin-r) 0 var(--margin-l) !important;
-  border: 1px solid #e0e0e0;
-  background: #ffffff;
-  box-shadow:
-    0 1px 3px rgb(60 64 67 / 15%),
-    0 4px 12px rgb(60 64 67 / 10%);
+  padding: var(--margin-t) var(--margin-r) var(--margin-b) var(--margin-l) !important;
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 /* TipTap Pro Pagination Classes */
