@@ -13,6 +13,9 @@
     "share": "Chia sẻ",
     "account": "Tài khoản {name}",
     "toggleSidebar": "Mở danh sách tài liệu",
+    "viewOnlyBadge": "Chỉ xem",
+    "viewOnlyBadgeTooltip": "Bạn đang xem tài liệu ở chế độ chỉ đọc (không thể chỉnh sửa)",
+    "readOnlyTitleTooltip": "Không thể đổi tên tài liệu ở chế độ chỉ xem",
     "comingSoon": "Sắp ra mắt"
   },
   "menu": {
@@ -84,6 +87,8 @@
   },
   "toolbar": {
     "ariaLabel": "Thanh công cụ",
+    "viewOnlyNotice": "Chế độ chỉ xem",
+    "viewOnlyDescription": "Tài liệu đang mở ở chế độ chỉ đọc. Các công cụ chỉnh sửa đã bị ẩn.",
     "undo": "Hoàn tác (Ctrl+Z)",
     "redo": "Làm lại (Ctrl+Y)",
     "normalText": "Văn bản thường",
@@ -136,7 +141,39 @@
     "print": "In tài liệu (Ctrl+P)",
     "exportHtml": "Xuất HTML",
     "exportTxt": "Xuất TXT",
-    "deleteDocument": "Xóa tài liệu"
+    "deleteDocument": "Xóa tài liệu",
+    "alignJustify": "Căn đều hai bên",
+    "clearFormatting": "Xóa định dạng (Ctrl+\\)",
+    "taskList": "Danh sách việc cần làm (Ctrl+Shift+9)",
+    "lineSpacing": "Giãn dòng",
+    "paragraphSpacing": "Khoảng cách đoạn",
+    "spacingNone": "Không khoảng cách",
+    "spacingSmall": "Nhỏ",
+    "spacingMedium": "Trung bình",
+    "spacingLarge": "Lớn",
+    "insertEmoji": "Chèn biểu tượng cảm xúc (Emoji)",
+    "insertToc": "Chèn mục lục",
+    "tableProperties": "Thuộc tính bảng",
+    "mergeCells": "Gộp ô",
+    "splitCell": "Tách ô",
+    "cellBackgroundColor": "Màu nền ô",
+    "toggleHeaderRow": "Bật/tắt hàng tiêu đề",
+    "borderWidth": "Độ dày viền",
+    "borderColor": "Màu viền",
+    "bubbleToolbar": "Thanh công cụ nhanh",
+    "zoom": "Thu phóng",
+    "imageAlign": "Căn lề ảnh",
+    "imageAlt": "Văn bản thay thế (Alt)",
+    "imageCaption": "Chú thích ảnh",
+    "imageFloatLeft": "Ảnh nổi trái",
+    "imageFloatRight": "Ảnh nổi phải",
+    "linkOpen": "Mở đường dẫn",
+    "linkCopy": "Sao chép đường dẫn",
+    "linkEdit": "Sửa đường dẫn",
+    "linkUnlink": "Gỡ đường dẫn",
+    "linkUrlPlaceholder": "Nhập hoặc dán URL",
+    "codeLanguage": "Ngôn ngữ mã nguồn",
+    "codePlainText": "Văn bản thường"
   },
   "sidebar": {
     "title": "Danh sách tài liệu",
@@ -281,6 +318,7 @@
     "cut": "Cắt",
     "copy": "Sao chép",
     "paste": "Dán",
+    "selectAll": "Chọn tất cả",
     "paragraph": "Đoạn văn",
     "heading1": "Tiêu đề 1",
     "heading2": "Tiêu đề 2",
@@ -362,5 +400,43 @@
     "clickToFollow": "Bấm để theo dõi con trỏ {name}",
     "clickToUnfollow": "Đang theo dõi {name} · Bấm để dừng",
     "escToStop": "Esc"
+  },
+  "versionHistory": {
+    "title": "Lịch sử phiên bản",
+    "description": "Các mốc tự động lưu khi chỉnh sửa. Chọn một phiên bản để xem và khôi phục.",
+    "empty": "Chưa có phiên bản nào",
+    "selectPrompt": "Chọn một phiên bản ở bên trái để xem chi tiết",
+    "previewNote": "Khôi phục sẽ thay toàn bộ nội dung hiện tại của tài liệu.",
+    "restore": "Khôi phục",
+    "delete": "Xóa bản này",
+    "clearAll": "Xóa tất cả phiên bản",
+    "confirmRestore": "Bạn có chắc muốn khôi phục phiên bản này? Nội dung hiện tại sẽ bị thay thế.",
+    "unknownAuthor": "Không xác định"
+  },
+  "share": {
+    "title": "Chia sẻ tài liệu",
+    "description": "Mời mọi người truy cập tài liệu này hoặc chia sẻ liên kết.",
+    "accessLabel": "Quyền truy cập",
+    "roles": {
+      "view": "Xem",
+      "comment": "Bình luận",
+      "edit": "Chỉnh sửa"
+    },
+    "linkLabel": "Liên kết chia sẻ",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép",
+    "addPeople": "Thêm người",
+    "emailPlaceholder": "Nhập tên hoặc email...",
+    "add": "Thêm",
+    "backendNote": "Demo: người dùng và quyền được lưu tạm ở phía trình duyệt. Khi có backend sẽ đồng bộ với danh sách cộng tác."
+  },
+  "mention": {
+    "selectUser": "Chọn người để nhắc đến",
+    "noUsers": "Không tìm thấy người dùng",
+    "unknownUser": "Không xác định"
+  },
+  "access": {
+    "viewWarning": "Bạn đang xem tài liệu ở chế độ chỉ xem (không thể chỉnh sửa)",
+    "commentWarning": "Bạn đang xem tài liệu ở chế độ bình luận (không thể chỉnh sửa)"
   }
 }

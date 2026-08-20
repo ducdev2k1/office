@@ -38,4 +38,7 @@ export interface HeaderMenuActions {
   onInsertPageBreak: () => void;
   onHeaderFooter?: () => void;
   onHelp: () => void;
+  onVersionHistory?: () => void;
+  onShare?: () => void;
+  isReadOnly?: boolean;
 }

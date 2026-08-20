@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: pending | **Effort**: 50h
+- **Priority**: P1 | **Status**: done | **Effort**: 50h
 - Nâng cấp cộng tác: version history + restore (dùng Yjs snapshot sẵn có), @mention người dùng, share dialog phân quyền.
 
 ## Context
@@ -62,15 +62,15 @@
 
 ## Todo List
 
-- [ ] Yjs snapshot utils + docHistoryStore
-- [ ] useVersionHistory hook + auto-save
-- [ ] VersionHistoryDialog (list/preview/restore)
-- [ ] Mention node + suggestion
-- [ ] MentionPopover
-- [ ] ShareDialog + role + URL param
-- [ ] Parse access khi mở doc
-- [ ] Bật header buttons
-- [ ] i18n + verify 2 tab
+- [x] Yjs snapshot utils + docHistoryStore
+- [x] useVersionHistory hook + auto-save
+- [x] VersionHistoryDialog (list/preview/restore)
+- [x] Mention node + suggestion
+- [x] MentionPopover
+- [x] ShareDialog + role + URL param
+- [x] Parse access khi mở doc
+- [x] Bật header buttons
+- [x] i18n + verify 2 tab
 
 ## Success Criteria
 

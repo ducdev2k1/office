@@ -13,15 +13,26 @@ import {
   Statusbar,
   useCollabEditor,
   useEditorActions,
+  useEditorModals,
   usePagination,
   usePrintDocument,
   type ContextMenuPosition,
 } from '@/modules/editor';
 import { FollowBanner, useFollowCollaborator } from '@/modules/collab';
+import { AccessModeBanner } from '@/modules/collab/components/AccessModeBanner';
+import { MentionPopover } from '@/modules/collab/components/MentionPopover';
+import { MentionSuggest } from '@/modules/collab/components/MentionSuggest';
+import { ShareDialog } from '@/modules/collab/components/ShareDialog';
+import { VersionHistoryDialog } from '@/modules/collab/components/VersionHistoryDialog';
+import { useAccessMode } from '@/modules/collab/hooks/useAccessMode';
+import { useVersionHistory } from '@/modules/collab/hooks/useVersionHistory';
 import { Header } from '@/modules/header';
 import { SearchAndReplace } from '@/modules/search-replace';
 import { DocsSidebar } from '@/modules/sidebar';
+import { BubbleToolbar } from '@/modules/toolbar/components/BubbleToolbar';
+import { LinkPopoverHost } from '@/modules/toolbar/components/LinkPopoverHost';
 import { Toolbar } from '@/modules/toolbar';
+import { ZoomControl } from '@/modules/toolbar/components/ZoomControl';
 import type { PageSetup } from '@/types/docs.types';
 import { getOutline } from '@/utils/outline.utils';
 
@@ -50,48 +61,37 @@ export const EditorPage = () => {
   const { theme, toggleTheme } = useTheme();
 
   const [query, setQuery] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    const saved = localStorage.getItem('docs-sidebar-open');
-    return saved !== null ? saved === 'true' : true;
-  });
-  const [findOpen, setFindOpen] = useState(false);
-  const [docSettingsOpen, setDocSettingsOpen] = useState(false);
-  const [docSettingsTab, setDocSettingsTab] = useState<'document' | 'headerFooter'>('headerFooter');
-  const [activeBand, setActiveBand] = useState<'header' | 'footer'>('header');
-  const [helpOpen, setHelpOpen] = useState(false);
-  const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
+  const accessMode = useAccessMode();
+  const isReadOnly = accessMode === 'view';
+
+  const modals = useEditorModals();
+  const {
+    sidebarOpen,
+    findOpen,
+    docSettingsOpen,
+    docSettingsTab,
+    activeBand,
+    helpOpen,
+    contextMenu,
+    versionHistoryOpen,
+    shareOpen,
+    setFindOpen,
+    setDocSettingsOpen,
+    setActiveBand,
+    setHelpOpen,
+    setContextMenu,
+    setVersionHistoryOpen,
+    setShareOpen,
+    handleToggleSidebar,
+    handleCloseSidebar,
+    openPageSetup,
+    openHeaderFooter,
+    toggleFind,
+    closeAllModals,
+  } = modals;
 
   const fontPickerRef = useRef<HTMLButtonElement>(null);
   const colorPickerRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const handleOpenHf = (event: Event) => {
-      const customEvent = event as CustomEvent<{ band?: 'header' | 'footer' }>;
-      if (customEvent.detail?.band) {
-        setActiveBand(customEvent.detail.band);
-      }
-      setDocSettingsTab('headerFooter');
-      setDocSettingsOpen(true);
-    };
-
-    window.addEventListener('doc-open-hf-panel', handleOpenHf);
-    return () => {
-      window.removeEventListener('doc-open-hf-panel', handleOpenHf);
-    };
-  }, []);
-
-  const handleToggleSidebar = () => {
-    setSidebarOpen((prev) => {
-      const next = !prev;
-      localStorage.setItem('docs-sidebar-open', String(next));
-      return next;
-    });
-  };
-
-  const handleCloseSidebar = () => {
-    setSidebarOpen(false);
-    localStorage.setItem('docs-sidebar-open', 'false');
-  };
 
   const handleSelectDoc = (docId: string) => {
     setActiveId(docId);
@@ -111,7 +111,7 @@ export const EditorPage = () => {
   };
 
   const { editor, collabStatus, collaborators, currentUser, updateProfile, collabRoom } =
-    useCollabEditor(activeDoc, updateContent);
+    useCollabEditor(activeDoc, updateContent, isReadOnly);
 
   const { followedUser, followedClientId, stopFollow, toggleFollow } = useFollowCollaborator({
     editor,
@@ -120,7 +120,9 @@ export const EditorPage = () => {
   });
 
   const paginationState = usePagination(editor, activeDoc);
-  const { viewMode, setViewMode, schedulePagination } = paginationState;
+  const { viewMode, setViewMode, schedulePagination, zoom, setZoom } = paginationState;
+
+  const versionHistory = useVersionHistory(activeDoc, collabRoom.doc);
 
   const {
     setLink,
@@ -143,16 +145,21 @@ export const EditorPage = () => {
     editor.storage.keyboardShortcuts.onFocusFontPicker = () => fontPickerRef.current?.click();
     editor.storage.keyboardShortcuts.onFocusColorPicker = () => colorPickerRef.current?.click();
     editor.storage.keyboardShortcuts.onSetLink = setLink;
+    if (editor.storage.toc) {
+      editor.storage.toc.onJump = (pos: number) => {
+        editor.commands.setTextSelection(pos);
+        editor.commands.scrollIntoView();
+        editor.commands.focus();
+      };
+    }
   }, [editor, setLink]);
 
-  useGlobalShortcuts(
-    () => setFindOpen((value) => !value),
-    () => {
-      setFindOpen(false);
-      setDocSettingsOpen(false);
-      setHelpOpen(false);
-    },
-  );
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return;
+    editor.setEditable(!isReadOnly);
+  }, [editor, isReadOnly]);
+
+  useGlobalShortcuts(toggleFind, closeAllModals);
 
   const { printDocument } = usePrintDocument(editor, activeDoc, paginationState);
 
@@ -196,20 +203,19 @@ export const EditorPage = () => {
           onUpdateCurrentUserProfile={updateProfile}
           followedClientId={followedClientId}
           onToggleFollow={toggleFollow}
+          isReadOnly={isReadOnly}
           menuActions={{
             editor,
             viewMode,
             canDelete,
             wordCount,
             charCount,
+            isReadOnly,
             onNewDoc: addDoc,
             onOpenFromDevice: handleOpenFromDevice,
             onToggleSidebar: handleToggleSidebar,
-            onToggleFind: () => setFindOpen((value) => !value),
-            onPageSetup: () => {
-              setDocSettingsTab('document');
-              setDocSettingsOpen(true);
-            },
+            onToggleFind: toggleFind,
+            onPageSetup: openPageSetup,
             onViewModeChange: setViewMode,
             onPrint: () => void printDocument(),
             onExportHtml: exportHtml,
@@ -218,11 +224,10 @@ export const EditorPage = () => {
             onInsertImage: handleImageUpload,
             onInsertTable: handleInsertTable,
             onInsertPageBreak: handleInsertPageBreak,
-            onHeaderFooter: () => {
-              setDocSettingsTab('headerFooter');
-              setDocSettingsOpen(true);
-            },
+            onHeaderFooter: openHeaderFooter,
             onHelp: () => setHelpOpen(true),
+            onVersionHistory: () => setVersionHistoryOpen(true),
+            onShare: () => setShareOpen(true),
           }}
         />
 
@@ -233,19 +238,17 @@ export const EditorPage = () => {
           fontPickerRef={fontPickerRef}
           colorPickerRef={colorPickerRef}
           canDelete={canDelete}
+          isReadOnly={isReadOnly}
           onSetLink={setLink}
           onExportHtml={exportHtml}
           onExportText={exportText}
           onPrint={() => void printDocument()}
           onDelete={handleDeleteDoc}
-          onToggleFind={() => setFindOpen((value) => !value)}
+          onToggleFind={toggleFind}
           onInsertImage={handleImageUpload}
           onInsertTable={handleInsertTable}
           onInsertPageBreak={handleInsertPageBreak}
-          onPageSetup={() => {
-            setDocSettingsTab('document');
-            setDocSettingsOpen((value) => !value);
-          }}
+          onPageSetup={openPageSetup}
           onViewModeChange={setViewMode}
         />
 
@@ -257,6 +260,7 @@ export const EditorPage = () => {
         />
 
         <div className="editor-stage flex flex-1 min-h-0 relative overflow-y-hidden overflow-x-clip">
+          <AccessModeBanner mode={accessMode} />
           <FollowBanner followedUser={followedUser} onStopFollow={stopFollow} />
 
           <DocsSidebar
@@ -284,6 +288,34 @@ export const EditorPage = () => {
             activeDoc={activeDoc}
             onPageSetupChange={setActiveDocPageSetup}
           />
+
+          {editor && <BubbleToolbar editor={editor} onSetLink={setLink} />}
+          {editor && <LinkPopoverHost editor={editor} />}
+          {editor && <MentionPopover editor={editor} />}
+          {editor && (
+            <MentionSuggest
+              editor={editor}
+              users={() =>
+                collaborators
+                  .filter((c) => c.name)
+                  .map((c) => ({ id: c.id, name: c.name }))
+              }
+              getMentionedIds={() => {
+                if (!editor) return [];
+                const ids: string[] = [];
+                editor.state.doc.descendants((node) => {
+                  if (node.type.name === 'mention') {
+                    const mentionId = node.attrs.id as string | undefined;
+                    if (mentionId) ids.push(mentionId);
+                  }
+                });
+                return ids;
+              }}
+            />
+          )}
+          <div className="absolute bottom-4 right-4 z-20 flex items-center gap-0.5 rounded-lg border border-border bg-card/90 px-1.5 py-1 shadow-lg backdrop-blur">
+            <ZoomControl zoom={zoom} onZoomChange={setZoom} />
+          </div>
         </div>
 
         <Statusbar
@@ -323,6 +355,21 @@ export const EditorPage = () => {
 
         <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
 
+        {activeDoc && (
+          <VersionHistoryDialog
+            open={versionHistoryOpen}
+            onClose={() => setVersionHistoryOpen(false)}
+            versionHistory={versionHistory}
+          />
+        )}
+        {activeDoc && (
+          <ShareDialog
+            open={shareOpen}
+            onClose={() => setShareOpen(false)}
+            docId={activeDoc.id}
+          />
+        )}
+
         <EditorContextMenu
           editor={editor}
           position={contextMenu}
@@ -330,7 +377,8 @@ export const EditorPage = () => {
           onInsertImage={handleImageUpload}
           onInsertTable={handleInsertTable}
           onInsertPageBreak={handleInsertPageBreak}
-          onToggleFind={() => setFindOpen((value) => !value)}
+          onToggleFind={toggleFind}
+          isReadOnly={isReadOnly}
         />
       </main>
     </div>

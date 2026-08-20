@@ -1,13 +1,26 @@
+import { useRef } from 'react';
 import type { CollabUser, HocuspocusProvider } from '@office/collab-core';
+import {
+  Checklist,
+  ClearFormatting,
+  ImageResize,
+  LineSpacing,
+  LinkPopover,
+  Mention,
+  MentionSuggestion,
+  ParagraphSpacing,
+  Toc,
+} from '@office/tiptap-extensions';
 import Collaboration from '@tiptap/extension-collaboration';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Color from '@tiptap/extension-color';
 import FindAndReplace from '@tiptap/extension-find-and-replace';
 import FontFamily from '@tiptap/extension-font-family';
 import Highlight from '@tiptap/extension-highlight';
-import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
+import TaskItem from '@tiptap/extension-task-item';
 import { Table } from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
@@ -16,6 +29,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { createLowlight, common } from 'lowlight';
 import type * as Y from 'yjs';
 import { CollaborationCursor } from '@/modules/editor/extensions/collaborationCursor.extension';
 import { FontSize } from '@/modules/editor/extensions/fontSize.extension';
@@ -29,6 +43,7 @@ export interface DocsCollabConfig {
   ydoc: Y.Doc;
   provider: HocuspocusProvider;
   user: CollabUser;
+  users: () => { id: string; name: string }[];
 }
 
 export const useDocsEditor = (
@@ -39,6 +54,22 @@ export const useDocsEditor = (
 ) => {
   const isCollab = Boolean(collabConfig?.ydoc && collabConfig?.provider);
 
+  const mentionUsers = () => collabConfig?.users?.() ?? [];
+  const mentionedIds = () => {
+    const editor = editorRef.current;
+    if (!editor) return [];
+    const ids: string[] = [];
+    editor.state.doc.descendants((node) => {
+      if (node.type.name === 'mention') {
+        const id = node.attrs.id as string | undefined;
+        if (id) ids.push(id);
+      }
+    });
+    return ids;
+  };
+
+  const editorRef = useRef<ReturnType<typeof useEditor> | null>(null);
+
   const extensions = [
     StarterKit.configure({
       undoRedo: isCollab ? false : undefined,
@@ -47,6 +78,7 @@ export const useDocsEditor = (
         autolink: true,
         defaultProtocol: 'https',
       },
+      codeBlock: false,
     }),
     ...(isCollab && collabConfig
       ? [
@@ -69,7 +101,8 @@ export const useDocsEditor = (
     FontFamily.configure({ types: ['textStyle'] }),
     FontSize.configure({ types: ['textStyle'] }),
     FontWeight.configure({ types: ['textStyle'] }),
-    Image.configure({ inline: false, allowBase64: true }),
+    CodeBlockLowlight.configure({ lowlight: createLowlight(common) }),
+    ImageResize.configure({}),
     Table.configure({ resizable: true }),
     TableRow,
     TableHeader,
@@ -80,10 +113,22 @@ export const useDocsEditor = (
     }),
     Indent,
     Pagination,
+    ClearFormatting,
+    LineSpacing.configure({ types: ['textStyle'] }),
+    ParagraphSpacing,
+    TaskItem.configure({ nested: true }),
+    Checklist,
+    LinkPopover,
+    Toc,
+    Mention.configure({}),
+    MentionSuggestion.configure({
+      users: mentionUsers,
+      getMentionedIds: mentionedIds,
+    }),
     keyboardShortcuts,
   ];
 
-  return useEditor(
+  const editor = useEditor(
     {
       extensions,
       content: isCollab ? undefined : content,
@@ -92,4 +137,7 @@ export const useDocsEditor = (
     },
     [docId, isCollab, collabConfig?.provider],
   );
+  editorRef.current = editor;
+
+  return editor;
 };

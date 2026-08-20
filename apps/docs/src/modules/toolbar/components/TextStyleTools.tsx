@@ -58,6 +58,9 @@ export const TextStyleTools = ({ editor, onSetLink }: TextStyleToolsProps) => {
       <ToolbarButton active={editor.isActive('link')} label={t('toolbar.link')} onClick={onSetLink}>
         <Icon name="link" />
       </ToolbarButton>
+      <ToolbarButton label={t('toolbar.clearFormatting')} onClick={() => editor.chain().focus().clearFormatting().run()}>
+        <Icon name="eraser" />
+      </ToolbarButton>
     </>
   );
 };

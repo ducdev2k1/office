@@ -13,6 +13,9 @@
     "share": "Share",
     "account": "{name} account",
     "toggleSidebar": "Open document tabs",
+    "viewOnlyBadge": "View only",
+    "viewOnlyBadgeTooltip": "You are viewing this document in read-only mode (cannot edit)",
+    "readOnlyTitleTooltip": "Cannot rename document in view-only mode",
     "comingSoon": "Coming soon"
   },
   "menu": {
@@ -84,6 +87,8 @@
   },
   "toolbar": {
     "ariaLabel": "Toolbar",
+    "viewOnlyNotice": "View-only mode",
+    "viewOnlyDescription": "This document is in read-only mode. Editing tools are hidden.",
     "undo": "Undo (Ctrl+Z)",
     "redo": "Redo (Ctrl+Y)",
     "normalText": "Normal text",
@@ -136,7 +141,39 @@
     "print": "Print (Ctrl+P)",
     "exportHtml": "Export HTML",
     "exportTxt": "Export TXT",
-    "deleteDocument": "Delete document"
+    "deleteDocument": "Delete document",
+    "alignJustify": "Justify",
+    "clearFormatting": "Clear formatting (Ctrl+\\)",
+    "taskList": "Checklist (Ctrl+Shift+9)",
+    "lineSpacing": "Line spacing",
+    "paragraphSpacing": "Paragraph spacing",
+    "spacingNone": "No spacing",
+    "spacingSmall": "Small",
+    "spacingMedium": "Medium",
+    "spacingLarge": "Large",
+    "insertEmoji": "Insert emoji",
+    "insertToc": "Insert table of contents",
+    "tableProperties": "Table properties",
+    "mergeCells": "Merge cells",
+    "splitCell": "Split cell",
+    "cellBackgroundColor": "Cell background color",
+    "toggleHeaderRow": "Toggle header row",
+    "borderWidth": "Border width",
+    "borderColor": "Border color",
+    "bubbleToolbar": "Quick toolbar",
+    "zoom": "Zoom",
+    "imageAlign": "Image alignment",
+    "imageAlt": "Alt text",
+    "imageCaption": "Image caption",
+    "imageFloatLeft": "Float left",
+    "imageFloatRight": "Float right",
+    "linkOpen": "Open link",
+    "linkCopy": "Copy link",
+    "linkEdit": "Edit link",
+    "linkUnlink": "Unlink",
+    "linkUrlPlaceholder": "Enter or paste URL",
+    "codeLanguage": "Code language",
+    "codePlainText": "Plain text"
   },
   "sidebar": {
     "title": "Document Tabs",
@@ -281,6 +318,7 @@
     "cut": "Cut",
     "copy": "Copy",
     "paste": "Paste",
+    "selectAll": "Select all",
     "paragraph": "Paragraph",
     "heading1": "Heading 1",
     "heading2": "Heading 2",
@@ -362,5 +400,43 @@
     "clickToFollow": "Click to follow {name}'s cursor",
     "clickToUnfollow": "Following {name} · Click to stop",
     "escToStop": "Esc"
+  },
+  "versionHistory": {
+    "title": "Version history",
+    "description": "Auto-saved checkpoints. Select a version to preview and restore.",
+    "empty": "No versions yet",
+    "selectPrompt": "Select a version on the left to see details",
+    "previewNote": "Restoring will replace the current document content.",
+    "restore": "Restore",
+    "delete": "Delete this version",
+    "clearAll": "Clear all versions",
+    "confirmRestore": "Are you sure you want to restore this version? Current content will be replaced.",
+    "unknownAuthor": "Unknown"
+  },
+  "share": {
+    "title": "Share document",
+    "description": "Invite people to access this document or share a link.",
+    "accessLabel": "Access",
+    "roles": {
+      "view": "View",
+      "comment": "Comment",
+      "edit": "Edit"
+    },
+    "linkLabel": "Share link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "addPeople": "Add people",
+    "emailPlaceholder": "Enter name or email...",
+    "add": "Add",
+    "backendNote": "Demo: users and permissions are stored temporarily in the browser. Will sync with collaborators when a backend exists."
+  },
+  "mention": {
+    "selectUser": "Select a user to mention",
+    "noUsers": "No users found",
+    "unknownUser": "Unknown"
+  },
+  "access": {
+    "viewWarning": "You are viewing this document in read-only mode",
+    "commentWarning": "You are viewing this document in comment mode"
   }
 }

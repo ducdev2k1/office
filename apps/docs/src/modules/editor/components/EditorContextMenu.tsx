@@ -12,6 +12,7 @@ interface EditorContextMenuProps {
   onInsertTable: () => void;
   onInsertPageBreak: () => void;
   onToggleFind: () => void;
+  isReadOnly?: boolean;
 }
 
 interface ContextActionItem {
@@ -31,6 +32,7 @@ export const EditorContextMenu = ({
   onInsertTable,
   onInsertPageBreak,
   onToggleFind,
+  isReadOnly = false,
 }: EditorContextMenuProps) => {
   const { t } = useTranslation('docs');
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -113,110 +115,139 @@ export const EditorContextMenu = ({
     onClose();
   };
 
-  const clipboardGroup: ContextActionItem[] = [
-    {
-      label: t('contextMenu.cut'),
-      icon: 'scissors',
-      shortcut: 'Ctrl+X',
-      active: hasSelection,
-      onClick: () => handleCut(),
-    },
-    {
-      label: t('contextMenu.copy'),
-      icon: 'copy',
-      shortcut: 'Ctrl+C',
-      active: hasSelection,
-      onClick: () => handleCopy(),
-    },
-    {
-      label: t('contextMenu.paste'),
-      icon: 'clipboard',
-      shortcut: 'Ctrl+V',
-      onClick: () => handlePaste(),
-    },
-  ];
+  const isViewOnly = isReadOnly || !editor.isEditable;
 
-  const formatGroup: ContextActionItem[] = [
-    {
-      label: t('contextMenu.bold'),
-      icon: 'bold',
-      shortcut: 'Ctrl+B',
-      active: editor.isActive('bold'),
-      onClick: () => runAndClose(() => editor.chain().focus().toggleBold().run()),
-    },
-    {
-      label: t('contextMenu.italic'),
-      icon: 'italic',
-      shortcut: 'Ctrl+I',
-      active: editor.isActive('italic'),
-      onClick: () => runAndClose(() => editor.chain().focus().toggleItalic().run()),
-    },
-    {
-      label: t('contextMenu.underline'),
-      icon: 'underline',
-      shortcut: 'Ctrl+U',
-      active: editor.isActive('underline'),
-      onClick: () => runAndClose(() => editor.chain().focus().toggleUnderline().run()),
-    },
-  ];
-
-  const insertGroup: ContextActionItem[] = [
-    {
-      label: t('menu.insert.image'),
-      icon: 'image',
-      onClick: () => imageInputRef.current?.click(),
-    },
-    {
-      label: t('menu.insert.table'),
-      icon: 'table',
-      onClick: () => runAndClose(onInsertTable),
-    },
-    {
-      label: t('menu.insert.pageBreak'),
-      icon: 'separator-horizontal',
-      shortcut: 'Ctrl+Enter',
-      onClick: () => runAndClose(onInsertPageBreak),
-    },
-    {
-      label: t('menu.edit.findAndReplace'),
-      icon: 'search',
-      shortcut: 'Ctrl+H',
-      onClick: () => runAndClose(onToggleFind),
-    },
-  ];
-
-  const tableGroup: ContextActionItem[] = inTable
+  const clipboardGroup: ContextActionItem[] = isViewOnly
     ? [
         {
-          label: t('toolbar.addRowBelow'),
-          icon: 'rows-3',
-          onClick: () => runAndClose(() => editor.chain().focus().addRowAfter().run()),
+          label: t('contextMenu.copy'),
+          icon: 'copy',
+          shortcut: 'Ctrl+C',
+          active: hasSelection,
+          onClick: () => handleCopy(),
         },
         {
-          label: t('toolbar.addColumnRight'),
-          icon: 'columns-3',
-          onClick: () => runAndClose(() => editor.chain().focus().addColumnAfter().run()),
+          label: t('contextMenu.selectAll'),
+          icon: 'check-square',
+          shortcut: 'Ctrl+A',
+          onClick: () => runAndClose(() => editor.chain().focus().selectAll().run()),
         },
         {
-          label: t('toolbar.deleteRow'),
-          icon: 'trash-2',
-          danger: true,
-          onClick: () => runAndClose(() => editor.chain().focus().deleteRow().run()),
-        },
-        {
-          label: t('toolbar.deleteColumn'),
-          icon: 'trash-2',
-          danger: true,
-          onClick: () => runAndClose(() => editor.chain().focus().deleteColumn().run()),
-        },
-        {
-          label: t('toolbar.deleteTable'),
-          icon: 'table',
-          danger: true,
-          onClick: () => runAndClose(() => editor.chain().focus().deleteTable().run()),
+          label: t('menu.edit.findAndReplace'),
+          icon: 'search',
+          shortcut: 'Ctrl+H',
+          onClick: () => runAndClose(onToggleFind),
         },
       ]
-    : [];
+    : [
+        {
+          label: t('contextMenu.cut'),
+          icon: 'scissors',
+          shortcut: 'Ctrl+X',
+          active: hasSelection,
+          onClick: () => handleCut(),
+        },
+        {
+          label: t('contextMenu.copy'),
+          icon: 'copy',
+          shortcut: 'Ctrl+C',
+          active: hasSelection,
+          onClick: () => handleCopy(),
+        },
+        {
+          label: t('contextMenu.paste'),
+          icon: 'clipboard',
+          shortcut: 'Ctrl+V',
+          onClick: () => handlePaste(),
+        },
+      ];
+
+  const formatGroup: ContextActionItem[] = isViewOnly
+    ? []
+    : [
+        {
+          label: t('contextMenu.bold'),
+          icon: 'bold',
+          shortcut: 'Ctrl+B',
+          active: editor.isActive('bold'),
+          onClick: () => runAndClose(() => editor.chain().focus().toggleBold().run()),
+        },
+        {
+          label: t('contextMenu.italic'),
+          icon: 'italic',
+          shortcut: 'Ctrl+I',
+          active: editor.isActive('italic'),
+          onClick: () => runAndClose(() => editor.chain().focus().toggleItalic().run()),
+        },
+        {
+          label: t('contextMenu.underline'),
+          icon: 'underline',
+          shortcut: 'Ctrl+U',
+          active: editor.isActive('underline'),
+          onClick: () => runAndClose(() => editor.chain().focus().toggleUnderline().run()),
+        },
+      ];
+
+  const insertGroup: ContextActionItem[] = isViewOnly
+    ? []
+    : [
+        {
+          label: t('menu.insert.image'),
+          icon: 'image',
+          onClick: () => imageInputRef.current?.click(),
+        },
+        {
+          label: t('menu.insert.table'),
+          icon: 'table',
+          onClick: () => runAndClose(onInsertTable),
+        },
+        {
+          label: t('menu.insert.pageBreak'),
+          icon: 'separator-horizontal',
+          shortcut: 'Ctrl+Enter',
+          onClick: () => runAndClose(onInsertPageBreak),
+        },
+        {
+          label: t('menu.edit.findAndReplace'),
+          icon: 'search',
+          shortcut: 'Ctrl+H',
+          onClick: () => runAndClose(onToggleFind),
+        },
+      ];
+
+  const tableGroup: ContextActionItem[] =
+    !isViewOnly && inTable
+      ? [
+          {
+            label: t('toolbar.addRowBelow'),
+            icon: 'rows-3',
+            onClick: () => runAndClose(() => editor.chain().focus().addRowAfter().run()),
+          },
+          {
+            label: t('toolbar.addColumnRight'),
+            icon: 'columns-3',
+            onClick: () => runAndClose(() => editor.chain().focus().addColumnAfter().run()),
+          },
+          {
+            label: t('toolbar.deleteRow'),
+            icon: 'trash-2',
+            danger: true,
+            onClick: () => runAndClose(() => editor.chain().focus().deleteRow().run()),
+          },
+          {
+            label: t('toolbar.deleteColumn'),
+            icon: 'trash-2',
+            danger: true,
+            onClick: () => runAndClose(() => editor.chain().focus().deleteColumn().run()),
+          },
+          {
+            label: t('toolbar.deleteTable'),
+            icon: 'table',
+            danger: true,
+            onClick: () => runAndClose(() => editor.chain().focus().deleteTable().run()),
+          },
+        ]
+      : [];
 
   return (
     <>
@@ -243,7 +274,7 @@ export const EditorContextMenu = ({
             )}
           </button>
         ))}
-        <div className="h-px my-1 bg-border" />
+        {formatGroup.length > 0 && <div className="h-px my-1 bg-border" />}
         {formatGroup.map((item) => (
           <button
             key={item.label}
@@ -263,7 +294,7 @@ export const EditorContextMenu = ({
             )}
           </button>
         ))}
-        <div className="h-px my-1 bg-border" />
+        {insertGroup.length > 0 && <div className="h-px my-1 bg-border" />}
         {insertGroup.map((item) => (
           <button
             key={item.label}

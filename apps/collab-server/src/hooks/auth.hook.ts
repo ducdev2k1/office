@@ -14,7 +14,7 @@ export const validateRoomName = (roomName: string): boolean => {
 export const onAuthenticate = async (
   data: onAuthenticatePayload,
 ): Promise<{ user: CollabAuthUser }> => {
-  const { documentName, token } = data;
+  const { documentName, token, requestParameters, connection } = data;
 
   if (!validateRoomName(documentName)) {
     console.warn(`[CollabAuth] Rejected connection: invalid room name "${documentName}"`);
@@ -31,11 +31,19 @@ export const onAuthenticate = async (
     }
   }
 
+  const accessParam = requestParameters?.get('access') ?? requestParameters?.get('role');
+  const isReadOnly = accessParam === 'view' || accessParam === 'viewer';
+
+  if (isReadOnly && connection) {
+    connection.readOnly = true;
+    console.log(`[CollabAuth] Room "${documentName}": connection configured as readOnly.`);
+  }
+
   const userId = `user-${Math.random().toString(36).slice(2, 9)}`;
   const user: CollabAuthUser = {
     id: userId,
     name: 'Collaborator',
-    role: 'editor',
+    role: isReadOnly ? 'viewer' : 'editor',
   };
 
   return { user };

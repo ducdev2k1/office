@@ -7,6 +7,7 @@ import type { DocRecord } from '@/types/docs.types';
 export const useCollabEditor = (
   activeDoc: DocRecord | undefined,
   updateContent: (html: string) => void,
+  isReadOnly = false,
 ) => {
   const { profile: currentUser, updateProfile } = useCurrentUserProfile();
 
@@ -15,8 +16,9 @@ export const useCollabEditor = (
     return {
       docId: activeDoc.id,
       user: currentUser,
+      readOnly: isReadOnly,
     };
-  }, [activeDoc?.id, currentUser]);
+  }, [activeDoc?.id, currentUser, isReadOnly]);
 
   const collabRoom = useCollabRoom(collabRoomConfig);
   const { status: collabStatus, isSynced } = useCollabStatus(collabRoom.provider);
@@ -24,12 +26,17 @@ export const useCollabEditor = (
 
   const collabConfig = useMemo(() => {
     if (!collabRoom.doc || !collabRoom.provider) return null;
+    const users = () =>
+      collaborators
+        .filter((c) => c.name)
+        .map((c) => ({ id: c.id, name: c.name }));
     return {
       ydoc: collabRoom.doc,
       provider: collabRoom.provider,
       user: currentUser,
+      users,
     };
-  }, [collabRoom.doc, collabRoom.provider, currentUser]);
+  }, [collabRoom.doc, collabRoom.provider, currentUser, collaborators]);
 
   const editor = useDocsEditor(
     activeDoc?.id ?? '',
@@ -38,9 +45,9 @@ export const useCollabEditor = (
     collabConfig,
   );
 
-  // Periodic offline local cache update
+  // Periodic offline local cache update (only when editing)
   useEffect(() => {
-    if (!editor || !collabConfig) return;
+    if (!editor || !collabConfig || isReadOnly) return;
 
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     const handleUpdate = () => {
@@ -57,7 +64,7 @@ export const useCollabEditor = (
       if (timeoutId) clearTimeout(timeoutId);
       editor.off('update', handleUpdate);
     };
-  }, [editor, collabConfig, updateContent]);
+  }, [editor, collabConfig, updateContent, isReadOnly]);
 
   return {
     editor,

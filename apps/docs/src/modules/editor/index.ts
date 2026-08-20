@@ -25,3 +25,4 @@ export * from '@/modules/editor/utils/tiptap.utils';
 export * from '@/modules/editor/utils/shortcuts.utils';
 export * from '@/modules/editor/utils/image.utils';
 export * from '@/modules/editor/print/page-tokens.utils';
+export * from '@/modules/editor/hooks/useEditorModals';

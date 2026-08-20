@@ -27,6 +27,7 @@ interface HeaderProps {
   onUpdateCurrentUserProfile?: (partial: Partial<CollabUser>) => void;
   followedClientId?: number | null;
   onToggleFollow?: (user: CollabUser) => void;
+  isReadOnly?: boolean;
 }
 
 export const Header = ({
@@ -43,6 +44,7 @@ export const Header = ({
   onUpdateCurrentUserProfile,
   followedClientId,
   onToggleFollow,
+  isReadOnly = false,
 }: HeaderProps) => {
   const { t, locale, setLocale } = useTranslation('docs');
   const { t: tCommon } = useTranslation('common');
@@ -53,6 +55,10 @@ export const Header = ({
   };
 
   const handleShare = () => {
+    if (menuActions.onShare) {
+      menuActions.onShare();
+      return;
+    }
     if (typeof window !== 'undefined') {
       void navigator.clipboard.writeText(window.location.href);
       setCopied(true);
@@ -80,7 +86,22 @@ export const Header = ({
 
         <div className="min-w-0 flex-1 overflow-hidden">
           <div className="flex items-center gap-1 min-w-0 max-w-full h-8">
-            <TitleInput title={title} onTitleChange={onTitleChange} />
+            <TitleInput title={title} onTitleChange={onTitleChange} readOnly={isReadOnly} />
+
+            {isReadOnly && (
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <span className="inline-flex items-center gap-1 h-5.5 px-2 rounded-full text-[11px] font-medium bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 select-none shrink-0">
+                      <Icon name="eye" size={12} className="shrink-0" />
+                      {t('header.viewOnlyBadge')}
+                    </span>
+                  }
+                />
+                <TooltipContent side="bottom">{t('header.viewOnlyBadgeTooltip')}</TooltipContent>
+              </Tooltip>
+            )}
+
             <Tooltip>
               <TooltipTrigger
                 render={
@@ -139,7 +160,7 @@ export const Header = ({
               </Tooltip>
             )}
           </div>
-          <MenuBar {...menuActions} />
+          <MenuBar {...menuActions} isReadOnly={isReadOnly} />
         </div>
       </div>
       <div className="flex items-center shrink-0 gap-1.5">
@@ -206,15 +227,13 @@ export const Header = ({
                 aria-label={t('header.versionHistory')}
                 variant="ghost"
                 size="icon"
-                disabled
+                onClick={() => menuActions.onVersionHistory?.()}
               >
                 <Icon name="history" className="size-4.5" />
               </Button>
             }
           />
-          <TooltipContent side="bottom">
-            {`${t('header.versionHistory')} · ${t('header.comingSoon')}`}
-          </TooltipContent>
+          <TooltipContent side="bottom">{t('header.versionHistory')}</TooltipContent>
         </Tooltip>
 
         <Tooltip>

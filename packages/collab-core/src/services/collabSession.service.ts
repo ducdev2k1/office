@@ -41,11 +41,17 @@ export const createCollabSession = (config: CollabRoomConfig): CollabSessionInst
 
   const wsUrl = serverUrl ?? defaultUrl;
 
+  const parameters = {
+    ...(config.readOnly ? { access: 'view' } : {}),
+    ...(config.parameters ?? {}),
+  };
+
   const provider = new HocuspocusProvider({
     url: wsUrl,
     name: docId,
     document: doc,
     token: token ?? 'onemail-collab-local-secret',
+    parameters,
     onStatus: ({ status: nextStatus }) => {
       if (nextStatus === 'connected') {
         status = 'connected';

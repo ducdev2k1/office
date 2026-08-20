@@ -4,6 +4,7 @@ import {
   FONT_VARIANT_WEIGHTS,
 } from '@/modules/toolbar/components/FontPickerPopover';
 import { FontSizePicker } from '@/modules/toolbar/components/FontSizePicker';
+import { LineSpacingPicker } from '@/modules/toolbar/components/LineSpacingPicker';
 import { useTranslation } from '@office/i18n';
 import { Separator } from '@office/ui-kit';
 import type { Editor } from '@tiptap/core';
@@ -77,6 +78,8 @@ export const ColorFontTools = ({ editor, fontPickerRef, colorPickerRef }: ColorF
       />
 
       <FontSizePicker currentSize={currentSize} onChangeSize={handleChangeSize} />
+
+      <LineSpacingPicker editor={editor} />
     </>
   );
 };

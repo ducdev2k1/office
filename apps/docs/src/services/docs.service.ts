@@ -146,6 +146,36 @@ export const documentStore = createDocumentStore<DocRecord>('documents');
 
 export const docxSourceStore = createDocumentStore<DocxSourceRecord>('docx-sources');
 
+export interface DocHistoryRecord extends StoredDocument {
+  id: string;
+  docId: string;
+  time: string;
+  update: Uint8Array;
+  author?: string;
+}
+
+export const docHistoryStore = createDocumentStore<DocHistoryRecord>('doc-history');
+
+export const listDocHistory = async (docId: string): Promise<DocHistoryRecord[]> => {
+  const all = await docHistoryStore.list();
+  return all
+    .filter((record) => record.docId === docId)
+    .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+};
+
+export const saveDocHistory = async (record: DocHistoryRecord): Promise<void> => {
+  await docHistoryStore.put(record);
+};
+
+export const deleteDocHistory = async (id: string): Promise<void> => {
+  await docHistoryStore.delete(id);
+};
+
+export const clearDocHistory = async (docId: string): Promise<void> => {
+  const records = await listDocHistory(docId);
+  await Promise.all(records.map((record) => docHistoryStore.delete(record.id)));
+};
+
 export const saveDocxSource = async (
   docId: string,
   blob: Blob,

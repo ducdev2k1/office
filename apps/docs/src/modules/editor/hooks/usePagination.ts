@@ -24,8 +24,10 @@ export interface PaginationState {
   viewMode: ViewMode;
   pageCount: number;
   isOverLimit: boolean;
+  zoom: number;
   viewportStyle: CSSProperties;
   setViewMode: (mode: ViewMode) => void;
+  setZoom: (zoom: number) => void;
   schedulePagination: (immediate?: boolean, overrideSetup?: PageSetup) => PageBreaks | null;
 }
 
@@ -35,6 +37,7 @@ export const usePagination = (
 ): PaginationState => {
   const [viewMode, setViewMode] = useState<ViewMode>('paged');
   const [pageCount, setPageCount] = useState(1);
+  const [zoom, setZoom] = useState(1);
   const rafRef = useRef<number | null>(null);
   const latestBreaksRef = useRef<PageBreaks | null>(null);
   const activeDocRef = useRef(activeDoc);
@@ -135,21 +138,31 @@ export const usePagination = (
   const viewportStyle = useMemo<CSSProperties>(() => {
     const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
     if (viewMode !== 'paged') return { ...pageStyle };
-    const { height } = getPaperSizePx(setup);
+    const { width, height } = getPaperSizePx(setup);
     const stackHeight = pageCount * height + (pageCount - 1) * PAGE_GAP + 48;
     return {
       ...pageStyle,
       '--stack-h': `${stackHeight}px`,
-      minHeight: `${stackHeight}px`,
+      minHeight: `${stackHeight * zoom}px`,
+      height: `${stackHeight * zoom}px`,
+      '--zoom-scale': String(zoom),
+      transform: `scale(${zoom})`,
+      transformOrigin: 'top center',
+      width: `${width * zoom}px`,
+      maxWidth: `${width * zoom}px`,
+      marginLeft: 'auto',
+      marginRight: 'auto',
     } as CSSProperties;
-  }, [viewMode, pageCount, activeDoc?.pageSetup, pageStyle]);
+  }, [viewMode, pageCount, activeDoc?.pageSetup, pageStyle, zoom]);
 
   return {
     viewMode,
     pageCount,
     isOverLimit: pageCount >= MAX_PAGES,
+    zoom,
     viewportStyle,
     setViewMode,
+    setZoom,
     schedulePagination,
   };
 };

@@ -47,6 +47,20 @@ export const ListAlignTools = ({ editor }: ListAlignToolsProps) => {
       >
         <Icon name="align-right" />
       </ToolbarButton>
+      <ToolbarButton
+        active={editor.isActive({ textAlign: 'justify' })}
+        label={t('toolbar.alignJustify')}
+        onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+      >
+        <Icon name="align-justify" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={editor.isActive('taskList')}
+        label={t('toolbar.taskList')}
+        onClick={() => editor.chain().focus().toggleTaskList().run()}
+      >
+        <Icon name="check-square" />
+      </ToolbarButton>
     </>
   );
 };

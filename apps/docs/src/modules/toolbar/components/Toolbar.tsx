@@ -28,6 +28,7 @@ export interface ToolbarProps {
   onInsertPageBreak: () => void;
   onPageSetup: () => void;
   onViewModeChange: (mode: ViewMode) => void;
+  isReadOnly?: boolean;
 }
 
 const Sep = () => (
@@ -52,6 +53,7 @@ export const Toolbar = ({
   onInsertPageBreak,
   onPageSetup,
   onViewModeChange,
+  isReadOnly = false,
 }: ToolbarProps) => {
   const { t } = useTranslation('docs');
 
@@ -61,6 +63,40 @@ export const Toolbar = ({
         className="toolbar flex h-9 items-center gap-0.5 overflow-x-auto border-b border-border bg-background px-3"
         aria-label={t('toolbar.ariaLabel')}
       />
+    );
+  }
+
+  if (isReadOnly) {
+    return (
+      <div
+        className="toolbar flex h-9 min-w-0 items-center justify-between gap-2 overflow-x-auto border-b border-border bg-background px-3"
+        aria-label={t('toolbar.ariaLabel')}
+      >
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25 select-none">
+            <Icon name="eye" size={14} className="shrink-0 text-amber-600 dark:text-amber-400" />
+            <span className="font-semibold">{t('toolbar.viewOnlyNotice')}</span>
+            <span className="hidden md:inline text-muted-foreground font-normal">
+              — {t('toolbar.viewOnlyDescription')}
+            </span>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-0.5">
+          <DocTools
+            findOpen={findOpen}
+            viewMode={viewMode}
+            canDelete={false}
+            onToggleFind={onToggleFind}
+            onViewModeChange={onViewModeChange}
+            onPageSetup={onPageSetup}
+            onPrint={onPrint}
+            onExportHtml={onExportHtml}
+            onExportText={onExportText}
+            onDelete={onDelete}
+          />
+        </div>
+      </div>
     );
   }
 

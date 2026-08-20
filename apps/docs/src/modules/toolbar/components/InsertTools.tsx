@@ -3,6 +3,9 @@ import { useTranslation } from '@office/i18n';
 import { Icon, Separator } from '@office/ui-kit';
 import type { Editor } from '@tiptap/core';
 import { useRef } from 'react';
+import { EmojiPicker } from '@/modules/toolbar/components/EmojiPicker';
+import { TableProperties } from '@/modules/toolbar/components/TableProperties';
+import { CodeLanguagePicker } from '@/modules/toolbar/components/CodeLanguagePicker';
 
 interface InsertToolsProps {
   editor: Editor;
@@ -22,6 +25,9 @@ export const InsertTools = ({
   const inTable = editor.isActive('table');
   const insertImage = (file: File | undefined) => {
     if (file) onInsertImage(file);
+  };
+  const insertEmoji = (emoji: string) => {
+    editor.chain().focus().insertContent(emoji).run();
   };
 
   return (
@@ -54,9 +60,24 @@ export const InsertTools = ({
       <ToolbarButton label={t('toolbar.insertPageBreak')} onClick={onInsertPageBreak}>
         <Icon name="separator-horizontal" />
       </ToolbarButton>
+      <ToolbarButton label={t('toolbar.insertToc')} onClick={() => editor.chain().focus().insertToc().run()}>
+        <Icon name="list" />
+      </ToolbarButton>
+      <EmojiPicker
+        trigger={
+          <ToolbarButton label={t('toolbar.insertEmoji')} onClick={() => undefined}>
+            <span className="text-[15px] leading-none" aria-hidden="true">
+              😀
+            </span>
+          </ToolbarButton>
+        }
+        onSelect={insertEmoji}
+      />
+      <CodeLanguagePicker editor={editor} />
       {inTable && (
         <>
           <Separator orientation="vertical" className="h-5 w-px bg-border/60 mx-1 shrink-0" />
+          <TableProperties editor={editor} />
           <ToolbarButton
             label={t('toolbar.addRowBelow')}
             onClick={() => editor.chain().focus().addRowAfter().run()}

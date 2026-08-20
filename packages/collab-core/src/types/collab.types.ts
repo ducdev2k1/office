@@ -19,6 +19,8 @@ export interface CollabRoomConfig {
   serverUrl?: string;
   token?: string;
   enableIndexedDB?: boolean;
+  readOnly?: boolean;
+  parameters?: Record<string, any>;
 }
 
 export interface CollabSessionInstance {

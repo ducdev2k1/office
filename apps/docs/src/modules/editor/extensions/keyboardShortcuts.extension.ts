@@ -45,6 +45,8 @@ export const keyboardShortcuts = Extension.create({
         this.editor.storage.keyboardShortcuts?.onSetLink?.();
         return true;
       },
+      'Mod-\\': () => this.editor.commands.clearFormatting(),
+      'Mod-Shift-9': () => this.editor.commands.toggleTaskList(),
     };
   },
 });

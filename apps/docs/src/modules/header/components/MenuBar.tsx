@@ -46,6 +46,7 @@ export const MenuBar = ({
   onInsertPageBreak,
   onHeaderFooter,
   onHelp,
+  isReadOnly = false,
 }: HeaderMenuActions) => {
   const { t } = useTranslation('docs');
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +57,7 @@ export const MenuBar = ({
       label,
       shortcut,
       checked: editor?.isActive(name) ?? false,
+      disabled: isReadOnly,
       onClick: () => editor?.chain().focus().toggleMark(name).run(),
     });
 
@@ -76,7 +78,7 @@ export const MenuBar = ({
           {
             label: t('menu.file.deleteDoc'),
             danger: true,
-            disabled: !canDelete,
+            disabled: !canDelete || isReadOnly,
             onClick: onDelete,
           },
         ],
@@ -87,11 +89,13 @@ export const MenuBar = ({
           {
             label: t('menu.edit.undo'),
             shortcut: 'Ctrl+Z',
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().undo().run(),
           },
           {
             label: t('menu.edit.redo'),
             shortcut: 'Ctrl+Y',
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().redo().run(),
           },
           'separator',
@@ -112,20 +116,27 @@ export const MenuBar = ({
       {
         label: t('menu.insert.label'),
         items: [
-          { label: t('menu.insert.image'), onClick: () => imageInputRef.current?.click() },
-          { label: t('menu.insert.table'), onClick: onInsertTable },
+          {
+            label: t('menu.insert.image'),
+            disabled: isReadOnly,
+            onClick: () => imageInputRef.current?.click(),
+          },
+          { label: t('menu.insert.table'), disabled: isReadOnly, onClick: onInsertTable },
           {
             label: t('menu.insert.horizontalRule'),
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().setHorizontalRule().run(),
           },
           {
             label: t('menu.insert.pageBreak'),
             shortcut: 'Ctrl+Enter',
+            disabled: isReadOnly,
             onClick: onInsertPageBreak,
           },
           'separator',
           {
             label: t('menu.insert.headerFooter'),
+            disabled: isReadOnly,
             onClick: () => onHeaderFooter?.(),
           },
         ],
@@ -136,18 +147,21 @@ export const MenuBar = ({
           {
             label: t('toolbar.normalText'),
             checked: editor?.isActive('paragraph') ?? false,
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().setParagraph().run(),
           },
           {
             label: t('toolbar.heading1'),
             shortcut: 'Ctrl+Alt+1',
             checked: editor?.isActive('heading', { level: 1 }) ?? false,
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().toggleHeading({ level: 1 }).run(),
           },
           {
             label: t('toolbar.heading2'),
             shortcut: 'Ctrl+Alt+2',
             checked: editor?.isActive('heading', { level: 2 }) ?? false,
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
           },
           'separator',
@@ -158,37 +172,44 @@ export const MenuBar = ({
           'separator',
           {
             label: t('menu.format.subscript'),
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().toggleSubscript().run(),
           },
           {
             label: t('menu.format.superscript'),
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().toggleSuperscript().run(),
           },
           'separator',
           {
             label: t('menu.format.bulletList'),
             checked: editor?.isActive('bulletList') ?? false,
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().toggleBulletList().run(),
           },
           {
             label: t('menu.format.orderedList'),
             checked: editor?.isActive('orderedList') ?? false,
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().toggleOrderedList().run(),
           },
           'separator',
           {
             label: t('menu.format.alignLeft'),
             checked: editor?.isActive({ textAlign: 'left' }) ?? false,
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().setTextAlign('left').run(),
           },
           {
             label: t('menu.format.alignCenter'),
             checked: editor?.isActive({ textAlign: 'center' }) ?? false,
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().setTextAlign('center').run(),
           },
           {
             label: t('menu.format.alignRight'),
             checked: editor?.isActive({ textAlign: 'right' }) ?? false,
+            disabled: isReadOnly,
             onClick: () => editor?.chain().focus().setTextAlign('right').run(),
           },
         ],
@@ -218,6 +239,7 @@ export const MenuBar = ({
     canDelete,
     wordCount,
     charCount,
+    isReadOnly,
     onNewDoc,
     onOpenFromDevice,
     onToggleSidebar,
@@ -230,6 +252,7 @@ export const MenuBar = ({
     onViewModeChange,
     onInsertTable,
     onInsertPageBreak,
+    onHeaderFooter,
     onHelp,
     t,
   ]);
