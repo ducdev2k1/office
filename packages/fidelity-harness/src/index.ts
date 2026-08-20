@@ -1,1 +1,1 @@
-export const placeholder = 'fidelity-harness: chua implement';
+export * from './docx-fidelity';

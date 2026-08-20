@@ -30,6 +30,9 @@ export interface HeaderMenuActions {
   onPageSetup: () => void;
   onViewModeChange: (mode: ViewMode) => void;
   onPrint: () => void;
+  onExportDocx?: () => void;
+  onExportMarkdown?: () => void;
+  onExportPdf?: () => void;
   onExportHtml: () => void;
   onExportText: () => void;
   onDelete: () => void;

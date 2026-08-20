@@ -424,11 +424,35 @@ importers:
 
   packages/docx-io:
     dependencies:
+      '@office/ooxml-core':
+        specifier: workspace:*
+        version: link:../ooxml-core
       mammoth:
         specifier: ^1.12.1
         version: 1.12.1
+    devDependencies:
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@types/node@24.13.3)(vite@6.4.3(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.32.0)(sass-embedded@1.102.0)(sass@1.102.0)(tsx@4.23.12))
 
-  packages/fidelity-harness: {}
+  packages/fidelity-harness:
+    dependencies:
+      '@office/docx-io':
+        specifier: workspace:*
+        version: link:../docx-io
+      '@office/ooxml-core':
+        specifier: workspace:*
+        version: link:../ooxml-core
+    devDependencies:
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@types/node@24.13.3)(vite@6.4.3(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.32.0)(sass-embedded@1.102.0)(sass@1.102.0)(tsx@4.23.12))
 
   packages/file-home:
     dependencies:
@@ -479,7 +503,18 @@ importers:
         specifier: ^5.8.3
         version: 5.9.3
 
-  packages/ooxml-core: {}
+  packages/ooxml-core:
+    dependencies:
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
+    devDependencies:
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@types/node@24.13.3)(vite@6.4.3(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.32.0)(sass-embedded@1.102.0)(sass@1.102.0)(tsx@4.23.12))
 
   packages/pptx-io:
     dependencies:

@@ -126,6 +126,8 @@ export const EditorPage = () => {
 
   const {
     setLink,
+    exportDocx,
+    exportMarkdown,
     exportHtml,
     exportText,
     handleImageUpload,
@@ -218,6 +220,9 @@ export const EditorPage = () => {
             onPageSetup: openPageSetup,
             onViewModeChange: setViewMode,
             onPrint: () => void printDocument(),
+            onExportDocx: () => void exportDocx(),
+            onExportMarkdown: exportMarkdown,
+            onExportPdf: () => void printDocument(),
             onExportHtml: exportHtml,
             onExportText: exportText,
             onDelete: handleDeleteDoc,

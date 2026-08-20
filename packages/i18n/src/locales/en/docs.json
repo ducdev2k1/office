@@ -23,11 +23,14 @@
     "file": {
       "label": "File",
       "newDoc": "New document",
-      "openFromDevice": "Open from device (.docx)",
-      "openFromDeviceError": "Could not open file. Please choose a valid .docx file.",
+      "openFromDevice": "Open from device (.docx, .txt, .html)",
+      "openFromDeviceError": "Could not open file. Please choose a valid file.",
       "openList": "Open document list",
       "pageSetup": "Page setup",
       "print": "Print",
+      "exportDocx": "Export Microsoft Word (.docx)",
+      "exportMarkdown": "Export Markdown (.md)",
+      "exportPdf": "Download as PDF (.pdf)",
       "exportHtml": "Export HTML (.html)",
       "exportTxt": "Export Text (.txt)",
       "deleteDoc": "Delete document"

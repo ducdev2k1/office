@@ -38,6 +38,9 @@ export const MenuBar = ({
   onPageSetup,
   onViewModeChange,
   onPrint,
+  onExportDocx,
+  onExportMarkdown,
+  onExportPdf,
   onExportHtml,
   onExportText,
   onDelete,
@@ -72,6 +75,9 @@ export const MenuBar = ({
           { label: t('menu.file.pageSetup'), onClick: onPageSetup },
           { label: t('menu.file.print'), shortcut: 'Ctrl+P', onClick: onPrint },
           'separator',
+          { label: t('menu.file.exportDocx'), onClick: onExportDocx ?? onExportHtml },
+          { label: t('menu.file.exportMarkdown'), onClick: onExportMarkdown ?? onExportText },
+          { label: t('menu.file.exportPdf'), onClick: onExportPdf ?? onPrint },
           { label: t('menu.file.exportHtml'), onClick: onExportHtml },
           { label: t('menu.file.exportTxt'), onClick: onExportText },
           'separator',
@@ -245,6 +251,9 @@ export const MenuBar = ({
     onToggleSidebar,
     onPageSetup,
     onPrint,
+    onExportDocx,
+    onExportMarkdown,
+    onExportPdf,
     onExportHtml,
     onExportText,
     onDelete,
@@ -290,7 +299,7 @@ export const MenuBar = ({
         ref={docxInputRef}
         className="hidden"
         type="file"
-        accept=".docx"
+        accept=".docx,.txt,.html,.htm,.md"
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) onOpenFromDevice(file);

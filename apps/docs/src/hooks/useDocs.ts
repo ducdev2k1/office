@@ -9,7 +9,7 @@ import {
   saveDoc,
   saveDocs,
 } from '@/services/docs.service';
-import { importDocxFile } from '@/services/import.service';
+import { importAnySupportedFile } from '@/services/import.service';
 import { DEFAULT_PAGE_SETUP, type DocRecord, type PageSetup } from '@/types/docs.types';
 
 export interface DocsState {
@@ -143,7 +143,7 @@ export const useDocs = (): DocsState => {
   }, []);
 
   const importFile = useCallback(async (file: File): Promise<string> => {
-    const nextDoc = await importDocxFile(file);
+    const nextDoc = await importAnySupportedFile(file);
     setDocs((current) => [nextDoc, ...current]);
     setActiveId(nextDoc.id);
     void saveDoc(nextDoc);

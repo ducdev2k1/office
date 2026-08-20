@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: pending | **Effort**: 60h
+- **Priority**: P1 | **Status**: done | **Effort**: 60h
 - Lấp lỗ hổng chiến lược nhất: **export .docx** (mốc M4 roadmap) theo kiến trúc T1 preserve-and-patch. Kèm import .txt/.html, export Markdown, nút tải PDF.
 
 ## Context
@@ -65,14 +65,14 @@
 
 ## Todo List
 
-- [ ] OOXML mapper Lớp A (html→document.xml)
-- [ ] Nhánh doc mới (docx npm template)
-- [ ] Nhánh patch byte gốc (ooxml-core)
-- [ ] Import txt/html
-- [ ] Export Markdown
-- [ ] Nút PDF
-- [ ] Wire UI + i18n
-- [ ] fidelity-harness verify
+- [x] OOXML mapper Lớp A (html→document.xml)
+- [x] Nhánh doc mới (docx npm template)
+- [x] Nhánh patch byte gốc (ooxml-core)
+- [x] Import txt/html
+- [x] Export Markdown
+- [x] Nút PDF
+- [x] Wire UI + i18n
+- [x] fidelity-harness verify
 
 ## Success Criteria
 

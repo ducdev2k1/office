@@ -1,10 +1,17 @@
 import type { Editor } from '@tiptap/core';
 import { compressImage, MAX_IMAGE_DATA_URL_LENGTH } from '@/modules/editor/utils/image.utils';
-import { downloadFile } from '@/utils/dom.utils';
+import {
+  exportDocxDocument,
+  exportHtmlDocument,
+  exportMarkdownDocument,
+  exportTextDocument,
+} from '@/services/export.service';
 import type { DocRecord } from '@/types/docs.types';
 
 export interface EditorActions {
   setLink: () => void;
+  exportDocx: () => Promise<void>;
+  exportMarkdown: () => void;
   exportHtml: () => void;
   exportText: () => void;
   handleImageUpload: (file: File) => void;
@@ -25,22 +32,20 @@ export const useEditorActions = (
     else editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   };
 
+  const exportDocx = async (): Promise<void> => {
+    await exportDocxDocument(activeDoc, editor);
+  };
+
+  const exportMarkdown = (): void => {
+    exportMarkdownDocument(activeDoc, editor);
+  };
+
   const exportHtml = (): void => {
-    if (!activeDoc || !editor) return;
-    downloadFile(
-      `${activeDoc.title}.html`,
-      `<!doctype html><html><head><meta charset="utf-8"><title>${activeDoc.title}</title></head><body>${editor.getHTML()}</body></html>`,
-      'text/html;charset=utf-8',
-    );
+    exportHtmlDocument(activeDoc, editor);
   };
 
   const exportText = (): void => {
-    if (activeDoc && editor)
-      downloadFile(
-        `${activeDoc.title}.txt`,
-        editor.state?.doc?.textContent ?? '',
-        'text/plain;charset=utf-8',
-      );
+    exportTextDocument(activeDoc, editor);
   };
 
   const handleImageUpload = (file: File): void => {
@@ -74,6 +79,8 @@ export const useEditorActions = (
 
   return {
     setLink,
+    exportDocx,
+    exportMarkdown,
     exportHtml,
     exportText,
     handleImageUpload,

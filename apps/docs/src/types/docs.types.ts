@@ -35,7 +35,7 @@ export interface PageSetup {
   pageNumber?: PageNumberSetup;
 }
 
-export type DocSourceType = 'docx';
+export type DocSourceType = 'docx' | 'text' | 'html' | 'markdown';
 
 export interface DocRecord {
   id: string;
