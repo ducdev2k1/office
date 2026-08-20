@@ -22,7 +22,7 @@ const CheckIcon = () => (
   </svg>
 );
 
-function DropdownMenuContent({
+const DropdownMenuContent = ({
   className,
   side = 'bottom',
   align = 'start',
@@ -32,7 +32,7 @@ function DropdownMenuContent({
   side?: 'top' | 'right' | 'bottom' | 'left';
   align?: 'start' | 'center' | 'end';
   sideOffset?: number;
-}) {
+}) => {
   return (
     <BaseMenu.Portal>
       <BaseMenu.Positioner side={side} align={align} sideOffset={sideOffset} className="z-50">
@@ -46,7 +46,8 @@ function DropdownMenuContent({
       </BaseMenu.Positioner>
     </BaseMenu.Portal>
   );
-}
+};
+DropdownMenuContent.displayName = 'DropdownMenuContent';
 
 const DropdownMenuItem = React.forwardRef<
   HTMLDivElement,

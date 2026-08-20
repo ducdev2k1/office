@@ -7,10 +7,10 @@ const ContextMenuTrigger = BaseContextMenu.Trigger;
 const ContextMenuGroup = BaseContextMenu.Group;
 const ContextMenuPortal = BaseContextMenu.Portal;
 
-function ContextMenuContent({
+const ContextMenuContent = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof BaseContextMenu.Popup>) {
+}: React.ComponentPropsWithoutRef<typeof BaseContextMenu.Popup>) => {
   return (
     <BaseContextMenu.Portal>
       <BaseContextMenu.Positioner className="z-50">
@@ -24,7 +24,8 @@ function ContextMenuContent({
       </BaseContextMenu.Positioner>
     </BaseContextMenu.Portal>
   );
-}
+};
+ContextMenuContent.displayName = 'ContextMenuContent';
 
 const ContextMenuItem = React.forwardRef<
   HTMLDivElement,
