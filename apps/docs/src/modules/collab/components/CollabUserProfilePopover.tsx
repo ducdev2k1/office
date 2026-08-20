@@ -50,33 +50,31 @@ export const CollabUserProfilePopover = ({
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <Tooltip>
-        <TooltipTrigger
-          render={
-            <PopoverTrigger
-              render={
-                <button
-                  type="button"
-                  className={cn(
-                    'relative inline-flex items-center justify-center size-8 rounded-full select-none text-white text-xs font-semibold shrink-0 ring-2 ring-background hover:scale-105 transition-transform cursor-pointer shadow-sm',
-                    className,
-                  )}
-                  style={{ backgroundColor: user.color }}
-                  aria-label={t('collab.editProfile')}
-                >
-                  {user.avatarUrl ? (
-                    <img
-                      src={user.avatarUrl}
-                      alt={user.name}
-                      className="size-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <span>{user.initials ?? user.name.slice(0, 2).toUpperCase()}</span>
-                  )}
-                </button>
-              }
-            />
-          }
-        />
+        <TooltipTrigger render={<span className="inline-flex" />}>
+          <PopoverTrigger
+            render={
+              <button
+                type="button"
+                className={cn(
+                  'relative inline-flex items-center justify-center size-8 rounded-full select-none text-white text-xs font-semibold shrink-0 ring-2 ring-background hover:scale-105 transition-transform cursor-pointer shadow-sm',
+                  className,
+                )}
+                style={{ backgroundColor: user.color }}
+                aria-label={t('collab.editProfile')}
+              >
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    className="size-full rounded-full object-cover"
+                  />
+                ) : (
+                  <span>{user.initials ?? user.name.slice(0, 2).toUpperCase()}</span>
+                )}
+              </button>
+            }
+          />
+        </TooltipTrigger>
         <TooltipContent side="bottom">
           <span>{`${user.name} (${t('collab.you')})`}</span>
         </TooltipContent>

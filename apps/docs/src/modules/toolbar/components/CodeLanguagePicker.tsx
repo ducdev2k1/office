@@ -1,37 +1,29 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Icon } from '@office/ui-kit';
-import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
+import type { Editor } from '@tiptap/core';
 import { ToolbarButton } from '@/modules/toolbar/components/ToolbarButton';
 
 const CODE_LANGUAGES = [
-  'plaintext',
   'javascript',
   'typescript',
+  'html',
+  'css',
+  'json',
   'python',
   'java',
-  'c',
   'cpp',
   'csharp',
   'go',
   'rust',
-  'ruby',
-  'php',
-  'css',
-  'scss',
-  'html',
-  'xml',
-  'json',
-  'markdown',
-  'bash',
-  'shell',
   'sql',
+  'bash',
+  'markdown',
   'yaml',
-  'kotlin',
+  'php',
+  'ruby',
   'swift',
-  'dart',
-  'lua',
-  'r',
-  'diff',
+  'kotlin',
+  'plain text',
 ];
 
 interface CodeLanguagePickerProps {
@@ -41,7 +33,8 @@ interface CodeLanguagePickerProps {
 export const CodeLanguagePicker = ({ editor }: CodeLanguagePickerProps) => {
   const { t } = useTranslation('docs');
   const inCodeBlock = editor.isActive('codeBlock');
-  const currentLanguage = (editor.getAttributes('codeBlock').language as string) ?? 'plaintext';
+  const currentLanguage =
+    (editor.getAttributes('codeBlock').language as string | undefined) || 'plain text';
 
   if (!inCodeBlock) return null;
 
@@ -51,7 +44,7 @@ export const CodeLanguagePicker = ({ editor }: CodeLanguagePickerProps) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<button type="button" />}>
+      <DropdownMenuTrigger render={<span className="inline-flex" />}>
         <ToolbarButton label={t('toolbar.codeLanguage')} onClick={() => undefined}>
           <span className="max-w-28 truncate text-[12px] font-medium">{currentLanguage}</span>
           <Icon name="chevron-down" size={12} />

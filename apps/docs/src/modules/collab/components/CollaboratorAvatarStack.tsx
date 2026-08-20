@@ -89,21 +89,19 @@ export const CollaboratorAvatarStack = ({
       {overflowCount > 0 && (
         <DropdownMenu>
           <Tooltip>
-            <TooltipTrigger
-              render={
-                <DropdownMenuTrigger
-                  render={
-                    <button
-                      type="button"
-                      className="relative inline-flex items-center justify-center size-7.5 rounded-full bg-muted text-muted-foreground ring-2 ring-background select-none text-xs font-semibold shrink-0 hover:bg-hover hover:text-foreground transition-all cursor-pointer shadow-sm"
-                      aria-label={t('collab.moreUsers', { count: overflowCount })}
-                    >
-                      <span>+{overflowCount}</span>
-                    </button>
-                  }
-                />
-              }
-            />
+            <TooltipTrigger render={<span className="inline-flex" />}>
+              <DropdownMenuTrigger
+                render={
+                  <button
+                    type="button"
+                    className="relative inline-flex items-center justify-center size-7.5 rounded-full bg-muted text-muted-foreground ring-2 ring-background select-none text-xs font-semibold shrink-0 hover:bg-hover hover:text-foreground transition-all cursor-pointer shadow-sm"
+                    aria-label={t('collab.moreUsers', { count: overflowCount })}
+                  >
+                    <span>+{overflowCount}</span>
+                  </button>
+                }
+              />
+            </TooltipTrigger>
             <TooltipContent side="bottom">
               {t('collab.moreUsers', { count: overflowCount })}
             </TooltipContent>

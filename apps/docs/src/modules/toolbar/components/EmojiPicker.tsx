@@ -44,7 +44,7 @@ export const EmojiPicker = ({ trigger, onSelect }: EmojiPickerProps) => {
 
   return (
     <Popover>
-      <PopoverTrigger render={<button type="button" />}>{trigger}</PopoverTrigger>
+      <PopoverTrigger render={<span className="inline-flex" />}>{trigger}</PopoverTrigger>
       <PopoverContent align="start" side="bottom" className="w-[320px] p-1.5" sideOffset={6}>
         <emoji-picker class="w-full h-[280px]" ref={pickerRef} />
       </PopoverContent>

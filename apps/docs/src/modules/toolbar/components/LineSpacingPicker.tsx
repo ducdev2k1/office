@@ -95,26 +95,22 @@ export const LineSpacingPicker = ({ editor }: LineSpacingPickerProps) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <Tooltip>
-        <TooltipTrigger
-          render={
-            <PopoverTrigger
-              render={
-                <Button
-                  aria-label={label}
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    'inline-flex items-center justify-center h-7 min-w-7 px-1.5 rounded text-foreground/80 hover:text-foreground hover:bg-hover transition-colors',
-                    open && 'bg-primary/15 text-primary',
-                  )}
-                />
-              }
-            >
-              <IconLineHeight />
-            </PopoverTrigger>
-          }
-        >
-          {null}
+        <TooltipTrigger render={<span className="inline-flex" />}>
+          <PopoverTrigger
+            render={
+              <Button
+                aria-label={label}
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  'inline-flex items-center justify-center h-7 min-w-7 px-1.5 rounded text-foreground/80 hover:text-foreground hover:bg-hover transition-colors',
+                  open && 'bg-primary/15 text-primary',
+                )}
+              >
+                <IconLineHeight />
+              </Button>
+            }
+          />
         </TooltipTrigger>
         <TooltipContent>{label}</TooltipContent>
       </Tooltip>

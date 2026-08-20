@@ -170,34 +170,30 @@ export const ColorPalettePopover = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <Tooltip>
-        <TooltipTrigger
-          render={
-            <PopoverTrigger
-              render={
-                <Button
-                  ref={triggerRef}
-                  aria-label={label}
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    'relative inline-flex flex-col items-center justify-center h-7 min-w-7 px-1.5 rounded text-foreground/80 hover:text-foreground hover:bg-hover transition-colors',
-                    (active || open) && 'bg-primary/15 text-primary',
-                  )}
+        <TooltipTrigger render={<span className="inline-flex" />}>
+          <PopoverTrigger
+            render={
+              <Button
+                ref={triggerRef}
+                aria-label={label}
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  'relative inline-flex flex-col items-center justify-center h-7 min-w-7 px-1.5 rounded text-foreground/80 hover:text-foreground hover:bg-hover transition-colors',
+                  (active || open) && 'bg-primary/15 text-primary',
+                )}
+              >
+                <Icon name={iconName} size={15} />
+                <span
+                  className="absolute bottom-1 left-1.5 right-1.5 h-0.75 rounded-full"
+                  style={{
+                    backgroundColor:
+                      currentColor || (iconName === 'baseline' ? '#000000' : '#fef000'),
+                  }}
                 />
-              }
-            >
-              <Icon name={iconName} size={15} />
-              <span
-                className="absolute bottom-1 left-1.5 right-1.5 h-0.75 rounded-full"
-                style={{
-                  backgroundColor:
-                    currentColor || (iconName === 'baseline' ? '#000000' : '#fef000'),
-                }}
-              />
-            </PopoverTrigger>
-          }
-        >
-          {null}
+              </Button>
+            }
+          />
         </TooltipTrigger>
         <TooltipContent>{label}</TooltipContent>
       </Tooltip>
