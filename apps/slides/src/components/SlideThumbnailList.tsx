@@ -11,6 +11,7 @@ import {
   ToolbarButton,
   TooltipProvider,
 } from '@office/ui-kit';
+import { LineSvgRenderer, ShapeSvgRenderer } from './canvas/ShapeSvgRenderer';
 
 interface SlideThumbnailListProps {
   slides: SlideItem[];
@@ -21,6 +22,151 @@ interface SlideThumbnailListProps {
   onDeleteSlide?: (index: number) => void;
   onMoveSlide?: (fromIndex: number, toIndex: number) => void;
 }
+
+const SlideMiniaturePreview = ({ slide }: { slide: SlideItem }) => {
+  return (
+    <div
+      className="pointer-events-none relative aspect-[16/9] w-full overflow-hidden select-none"
+      style={{
+        backgroundColor: slide.background || '#ffffff',
+        background: slide.backgroundGradient || slide.backgroundImage || slide.background || '#ffffff',
+      }}
+    >
+      {slide.elements.map((el) => {
+        const leftPercent = (el.x / 960) * 100;
+        const topPercent = (el.y / 540) * 100;
+        const widthPercent = (el.width / 960) * 100;
+        const heightPercent = (el.height / 540) * 100;
+        const rot = el.rotation ? `rotate(${el.rotation}deg)` : '';
+        const flip = `${el.flipH ? 'scaleX(-1)' : ''} ${el.flipV ? 'scaleY(-1)' : ''}`.trim();
+        const transform = `${rot} ${flip}`.trim() || undefined;
+
+        if (el.type === 'shape') {
+          return (
+            <div
+              key={el.id}
+              style={{
+                position: 'absolute',
+                left: `${leftPercent}%`,
+                top: `${topPercent}%`,
+                width: `${widthPercent}%`,
+                height: `${heightPercent}%`,
+                transform,
+              }}
+            >
+              <ShapeSvgRenderer element={el} />
+            </div>
+          );
+        }
+
+        if (el.type === 'line') {
+          return (
+            <div
+              key={el.id}
+              style={{
+                position: 'absolute',
+                left: `${leftPercent}%`,
+                top: `${topPercent}%`,
+                width: `${widthPercent}%`,
+                height: `${heightPercent}%`,
+                transform,
+              }}
+            >
+              <LineSvgRenderer element={el} />
+            </div>
+          );
+        }
+
+        if (el.type === 'table' && el.tableData) {
+          return (
+            <div
+              key={el.id}
+              style={{
+                position: 'absolute',
+                left: `${leftPercent}%`,
+                top: `${topPercent}%`,
+                width: `${widthPercent}%`,
+                height: `${heightPercent}%`,
+                transform,
+              }}
+              className="overflow-hidden rounded-[1px] border border-border/80"
+            >
+              <div
+                className="grid h-full w-full"
+                style={{ gridTemplateColumns: `repeat(${el.tableData.cols || 2}, 1fr)` }}
+              >
+                {el.tableData.cells.flatMap((row, rIdx) =>
+                  row.map((cell, cIdx) => (
+                    <div
+                      key={`${rIdx}-${cIdx}`}
+                      className="border-[0.5px] border-border/60 truncate p-[0.5px] text-[3.5px] leading-none"
+                      style={{
+                        backgroundColor:
+                          el.tableData?.cellFills?.[rIdx]?.[cIdx] ||
+                          (rIdx === 0 && el.tableData?.headerRow ? 'rgba(0,0,0,0.06)' : undefined),
+                      }}
+                    >
+                      {cell}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        if (el.type === 'image') {
+          return (
+            <img
+              key={el.id}
+              src={el.url}
+              alt=""
+              style={{
+                position: 'absolute',
+                left: `${leftPercent}%`,
+                top: `${topPercent}%`,
+                width: `${widthPercent}%`,
+                height: `${heightPercent}%`,
+                transform,
+                borderRadius: el.borderRadius ? `${el.borderRadius * 0.15}px` : undefined,
+              }}
+              className="object-contain"
+            />
+          );
+        }
+
+        // Text element
+        const miniFontSize = el.fontSize ? Math.max(3.5, Math.round(el.fontSize * 0.18)) : 4.5;
+        return (
+          <div
+            key={el.id}
+            style={{
+              position: 'absolute',
+              left: `${leftPercent}%`,
+              top: `${topPercent}%`,
+              width: `${widthPercent}%`,
+              height: `${heightPercent}%`,
+              transform,
+              color: el.color || '#0f172a',
+              backgroundColor: el.fill || undefined,
+              border: el.stroke ? `0.5px solid ${el.stroke}` : undefined,
+              borderRadius: el.fill ? '2px' : undefined,
+              textAlign: el.align || 'left',
+              fontWeight: el.fontWeight || 'normal',
+              fontStyle: el.fontStyle || 'normal',
+              textDecoration: el.textDecoration || 'none',
+              fontSize: `${miniFontSize}px`,
+              lineHeight: 1.15,
+            }}
+            className="overflow-hidden p-[1px] whitespace-pre-wrap break-words"
+          >
+            {el.content}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 export const SlideThumbnailList = ({
   slides,
@@ -61,34 +207,13 @@ export const SlideThumbnailList = ({
                 </span>
 
                 <div
-                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-md border bg-white p-2 text-[6px] shadow-xs transition-all duration-200 ease-out hover:scale-[1.02] dark:bg-slate-900 ${
+                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-md border shadow-xs transition-all duration-200 ease-out hover:scale-[1.02] ${
                     isActive
                       ? 'border-[var(--o-kind-slides)] ring-2 ring-[var(--o-kind-slides)]/30 shadow-md'
                       : 'border-border hover:border-foreground/40 hover:shadow-xs'
                   }`}
-                  style={{
-                    backgroundColor: slide.background || undefined,
-                    background: slide.backgroundGradient || slide.backgroundImage || slide.background || undefined,
-                  }}
                 >
-                  {slide.elements.slice(0, 4).map((el) => (
-                    <div
-                      key={el.id}
-                      className="truncate text-foreground/80"
-                      style={{
-                        fontSize: el.fontSize ? Math.max(5, Math.round(el.fontSize * 0.16)) : 6,
-                        textAlign: el.align || 'left',
-                        color: el.color || undefined,
-                      }}
-                    >
-                      {el.content || (el.type === 'shape' ? '■' : '')}
-                    </div>
-                  ))}
-                  {slide.elements.length === 0 && (
-                    <div className="flex h-full items-center justify-center text-[7px] text-muted-foreground/60">
-                      {t('editor.noSlides')}
-                    </div>
-                  )}
+                  <SlideMiniaturePreview slide={slide} />
 
                   {/* 3-dot Action Menu */}
                   <div
@@ -101,7 +226,7 @@ export const SlideThumbnailList = ({
                           <Button
                             variant="secondary"
                             size="sm"
-                            className="h-5 w-5 rounded-xs p-0 shadow-xs"
+                            className="h-5 w-5 rounded-xs p-0 shadow-xs backdrop-blur-xs bg-background/80 hover:bg-background"
                           />
                         }
                       >
