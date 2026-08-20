@@ -4,11 +4,16 @@ import {
   Bookmark,
   Checklist,
   ClearFormatting,
+  Column,
+  Columns,
   Comments,
   type CommentsStore,
+  Footnote,
   ImageResize,
   LineSpacing,
   LinkPopover,
+  MathBlock,
+  MathInline,
   Mention,
   MentionSuggestion,
   ParagraphSpacing,
@@ -128,6 +133,11 @@ export const useDocsEditor = (
     Toc,
     SectionBreak,
     Bookmark,
+    MathInline,
+    MathBlock,
+    Footnote,
+    Columns,
+    Column,
     ...(commentsStore
       ? [
           Comments.configure({

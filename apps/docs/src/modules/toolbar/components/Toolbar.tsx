@@ -26,6 +26,7 @@ export interface ToolbarProps {
   onInsertImage: (file: File) => void;
   onInsertTable: () => void;
   onInsertPageBreak: () => void;
+  onInsertMath?: () => void;
   onPageSetup: () => void;
   onViewModeChange: (mode: ViewMode) => void;
   isReadOnly?: boolean;
@@ -51,6 +52,7 @@ export const Toolbar = ({
   onInsertImage,
   onInsertTable,
   onInsertPageBreak,
+  onInsertMath,
   onPageSetup,
   onViewModeChange,
   isReadOnly = false,
@@ -60,41 +62,17 @@ export const Toolbar = ({
   if (!editor) {
     return (
       <div
-        className="toolbar flex h-9 items-center gap-0.5 overflow-x-auto border-b border-border bg-background px-3"
-        aria-label={t('toolbar.ariaLabel')}
-      />
-    );
-  }
-
-  if (isReadOnly) {
-    return (
-      <div
-        className="toolbar flex h-9 min-w-0 items-center justify-between gap-2 overflow-x-auto border-b border-border bg-background px-3"
-        aria-label={t('toolbar.ariaLabel')}
+        className="doc-toolbar border-b border-border bg-card/80 px-3 py-1 flex items-center gap-0.5 overflow-x-auto min-h-10 shrink-0"
+        role="toolbar"
+        aria-label={t('toolbar.formattingToolbar')}
       >
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25 select-none">
-            <Icon name="eye" size={14} className="shrink-0 text-amber-600 dark:text-amber-400" />
-            <span className="font-semibold">{t('toolbar.viewOnlyNotice')}</span>
-            <span className="hidden md:inline text-muted-foreground font-normal">
-              — {t('toolbar.viewOnlyDescription')}
-            </span>
-          </span>
-        </div>
-
-        <div className="flex items-center gap-0.5">
-          <DocTools
-            findOpen={findOpen}
-            viewMode={viewMode}
-            canDelete={false}
-            onToggleFind={onToggleFind}
-            onViewModeChange={onViewModeChange}
-            onPageSetup={onPageSetup}
-            onPrint={onPrint}
-            onExportHtml={onExportHtml}
-            onExportText={onExportText}
-            onDelete={onDelete}
-          />
+        <div className="flex items-center gap-1 opacity-40 pointer-events-none">
+          <ToolbarButton label={t('toolbar.undo')} disabled onClick={() => undefined}>
+            <Icon name="undo-2" />
+          </ToolbarButton>
+          <ToolbarButton label={t('toolbar.redo')} disabled onClick={() => undefined}>
+            <Icon name="redo-2" />
+          </ToolbarButton>
         </div>
       </div>
     );
@@ -102,44 +80,22 @@ export const Toolbar = ({
 
   return (
     <div
-      className="toolbar flex h-9 min-w-0 items-center gap-0.5 overflow-x-auto border-b border-border bg-background px-3"
-      aria-label={t('toolbar.ariaLabel')}
+      className="doc-toolbar border-b border-border bg-card/80 px-3 py-1 flex items-center gap-0.5 overflow-x-auto min-h-10 shrink-0"
+      role="toolbar"
+      aria-label={t('toolbar.formattingToolbar')}
     >
-      <ToolbarButton label={t('toolbar.undo')} onClick={() => editor.chain().focus().undo().run()}>
-        <Icon name="undo" />
-      </ToolbarButton>
-      <ToolbarButton label={t('toolbar.redo')} onClick={() => editor.chain().focus().redo().run()}>
-        <Icon name="redo" />
-      </ToolbarButton>
-
-      <Sep />
-
-      {/* Paragraph / Heading quick buttons */}
-      <ToolbarButton
-        active={editor.isActive('paragraph')}
-        label={t('toolbar.normalText')}
-        onClick={() => editor.chain().focus().setParagraph().run()}
-      >
-        <Icon name="pilcrow" />
-      </ToolbarButton>
-      <ToolbarButton
-        active={editor.isActive('heading', { level: 1 })}
-        label={t('toolbar.heading1')}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-      >
-        <span className="text-[11px] font-bold leading-none">H1</span>
-      </ToolbarButton>
-      <ToolbarButton
-        active={editor.isActive('heading', { level: 2 })}
-        label={t('toolbar.heading2')}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-      >
-        <span className="text-[11px] font-bold leading-none">H2</span>
-      </ToolbarButton>
-
-      <Sep />
-
-      <TextStyleTools editor={editor} onSetLink={onSetLink} />
+      <DocTools
+        canDelete={canDelete}
+        onPrint={onPrint}
+        onDelete={onDelete}
+        onToggleFind={onToggleFind}
+        findOpen={findOpen}
+        onPageSetup={onPageSetup}
+        viewMode={viewMode}
+        onViewModeChange={onViewModeChange}
+        onExportHtml={onExportHtml}
+        onExportText={onExportText}
+      />
 
       <Sep />
 
@@ -151,31 +107,24 @@ export const Toolbar = ({
 
       <Sep />
 
+      <TextStyleTools editor={editor} onSetLink={onSetLink} />
+
+      <Sep />
+
       <ListAlignTools editor={editor} />
 
-      <Sep />
-
-      <InsertTools
-        editor={editor}
-        onInsertImage={onInsertImage}
-        onInsertTable={onInsertTable}
-        onInsertPageBreak={onInsertPageBreak}
-      />
-
-      <Sep />
-
-      <DocTools
-        findOpen={findOpen}
-        viewMode={viewMode}
-        canDelete={canDelete}
-        onToggleFind={onToggleFind}
-        onViewModeChange={onViewModeChange}
-        onPageSetup={onPageSetup}
-        onPrint={onPrint}
-        onExportHtml={onExportHtml}
-        onExportText={onExportText}
-        onDelete={onDelete}
-      />
+      {!isReadOnly && (
+        <>
+          <Sep />
+          <InsertTools
+            editor={editor}
+            onInsertImage={onInsertImage}
+            onInsertTable={onInsertTable}
+            onInsertPageBreak={onInsertPageBreak}
+            onInsertMath={onInsertMath}
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -41,6 +41,9 @@ export interface HeaderMenuActions {
   onInsertPageBreak: () => void;
   onInsertSectionBreak?: () => void;
   onInsertBookmark?: () => void;
+  onInsertMath?: () => void;
+  onInsertFootnote?: () => void;
+  onInsertColumns?: (cols?: number) => void;
   onWatermark?: () => void;
   onHeaderFooter?: () => void;
   onHelp: () => void;

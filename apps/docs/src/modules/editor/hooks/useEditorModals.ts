@@ -17,6 +17,7 @@ export const useEditorModals = () => {
   const [watermarkOpen, setWatermarkOpen] = useState(false);
   const [moveToFolderOpen, setMoveToFolderOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [mathEditorOpen, setMathEditorOpen] = useState(false);
 
   useEffect(() => {
     const handleOpenHf = (event: Event) => {
@@ -67,6 +68,7 @@ export const useEditorModals = () => {
     setWatermarkOpen(false);
     setMoveToFolderOpen(false);
     setCommentsOpen(false);
+    setMathEditorOpen(false);
   };
 
   return {
@@ -82,6 +84,7 @@ export const useEditorModals = () => {
     watermarkOpen,
     moveToFolderOpen,
     commentsOpen,
+    mathEditorOpen,
     setFindOpen,
     setDocSettingsOpen,
     setDocSettingsTab,
@@ -93,6 +96,7 @@ export const useEditorModals = () => {
     setWatermarkOpen,
     setMoveToFolderOpen,
     setCommentsOpen,
+    setMathEditorOpen,
     handleToggleSidebar,
     handleCloseSidebar,
     openPageSetup,

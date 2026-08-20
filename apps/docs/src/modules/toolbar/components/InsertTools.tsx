@@ -12,6 +12,7 @@ interface InsertToolsProps {
   onInsertImage: (file: File) => void;
   onInsertTable: () => void;
   onInsertPageBreak: () => void;
+  onInsertMath?: () => void;
 }
 
 export const InsertTools = ({
@@ -19,6 +20,7 @@ export const InsertTools = ({
   onInsertImage,
   onInsertTable,
   onInsertPageBreak,
+  onInsertMath,
 }: InsertToolsProps) => {
   const { t } = useTranslation('docs');
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -63,6 +65,11 @@ export const InsertTools = ({
       <ToolbarButton label={t('toolbar.insertToc')} onClick={() => editor.chain().focus().insertToc().run()}>
         <Icon name="list" />
       </ToolbarButton>
+      {onInsertMath && (
+        <ToolbarButton label={t('menu.insert.math')} onClick={onInsertMath}>
+          <span className="font-serif italic font-bold text-xs">∑</span>
+        </ToolbarButton>
+      )}
       <EmojiPicker
         trigger={
           <ToolbarButton label={t('toolbar.insertEmoji')} onClick={() => undefined}>

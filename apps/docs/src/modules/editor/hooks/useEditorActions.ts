@@ -19,6 +19,9 @@ export interface EditorActions {
   handleInsertPageBreak: () => void;
   handleInsertSectionBreak: (type?: 'next-page' | 'continuous') => void;
   handleInsertBookmark: () => void;
+  handleInsertMath: (tex: string, isBlock?: boolean) => void;
+  handleInsertFootnote: (content?: string) => void;
+  handleInsertColumns: (cols?: number) => void;
 }
 
 export const useEditorActions = (
@@ -93,6 +96,32 @@ export const useEditorActions = (
       ?.run();
   };
 
+  const handleInsertMath = (tex: string, isBlock = false): void => {
+    if (isBlock) {
+      (editor?.chain().focus() as unknown as { setMathBlock: (opts: { tex: string }) => { run: () => boolean } })
+        ?.setMathBlock({ tex })
+        ?.run();
+    } else {
+      (editor?.chain().focus() as unknown as { setMathInline: (opts: { tex: string }) => { run: () => boolean } })
+        ?.setMathInline({ tex })
+        ?.run();
+    }
+  };
+
+  const handleInsertFootnote = (content?: string): void => {
+    const note = content || window.prompt('Nhập nội dung chú thích cuối trang (Footnote)', 'Chú thích...');
+    if (note === null) return;
+    (editor?.chain().focus() as unknown as { setFootnote: (opts: { content: string }) => { run: () => boolean } })
+      ?.setFootnote({ content: note })
+      ?.run();
+  };
+
+  const handleInsertColumns = (cols = 2): void => {
+    (editor?.chain().focus() as unknown as { setColumns: (opts: { cols: number }) => { run: () => boolean } })
+      ?.setColumns({ cols })
+      ?.run();
+  };
+
   return {
     setLink,
     exportDocx,
@@ -104,5 +133,8 @@ export const useEditorActions = (
     handleInsertPageBreak,
     handleInsertSectionBreak,
     handleInsertBookmark,
+    handleInsertMath,
+    handleInsertFootnote,
+    handleInsertColumns,
   };
 };

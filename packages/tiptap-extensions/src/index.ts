@@ -8,4 +8,7 @@ export { Mention, MentionSuggestion } from './mention';
 export { SectionBreak } from './section';
 export { Bookmark } from './bookmark';
 export { Comments, CommentsStore, type CommentItem, type CommentThread } from './comments';
+export { MathInline, MathBlock } from './math';
+export { Footnote } from './footnote';
+export { Columns, Column } from './columns';
 export * from './shared';

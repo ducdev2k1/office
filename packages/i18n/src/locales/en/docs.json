@@ -59,6 +59,9 @@
       "pageBreak": "Page break",
       "sectionBreak": "Section break",
       "bookmark": "Bookmark",
+      "math": "Math equation (LaTeX)",
+      "footnote": "Footnote",
+      "columns": "Columns layout",
       "watermark": "Watermark",
       "headerFooter": "Header, footer & page numbers",
       "link": "Link"

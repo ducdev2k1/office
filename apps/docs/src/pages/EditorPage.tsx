@@ -141,6 +141,9 @@ export const EditorPage = () => {
     handleInsertPageBreak,
     handleInsertSectionBreak,
     handleInsertBookmark,
+    handleInsertMath,
+    handleInsertFootnote,
+    handleInsertColumns,
   } = useEditorActions(editor, activeDoc);
 
   useEffect(() => {
@@ -243,6 +246,9 @@ export const EditorPage = () => {
             onInsertPageBreak: handleInsertPageBreak,
             onInsertSectionBreak: handleInsertSectionBreak,
             onInsertBookmark: handleInsertBookmark,
+            onInsertMath: () => modals.setMathEditorOpen(true),
+            onInsertFootnote: () => handleInsertFootnote(),
+            onInsertColumns: (cols) => handleInsertColumns(cols),
             onWatermark: () => setWatermarkOpen(true),
             onHeaderFooter: openHeaderFooter,
             onHelp: () => modals.setHelpOpen(true),
@@ -268,6 +274,7 @@ export const EditorPage = () => {
           onInsertImage={handleImageUpload}
           onInsertTable={handleInsertTable}
           onInsertPageBreak={handleInsertPageBreak}
+          onInsertMath={() => modals.setMathEditorOpen(true)}
           onPageSetup={openPageSetup}
           onViewModeChange={setViewMode}
         />
@@ -365,6 +372,7 @@ export const EditorPage = () => {
           onCommitPending={handleCommitPendingComment}
           onPageSetupChange={handlePageSetupChange}
           onMoveToFolder={moveToFolder}
+          onInsertMath={(tex, isBlock) => handleInsertMath(tex, isBlock)}
         />
 
         <EditorContextMenu

@@ -4,6 +4,7 @@ import type { DocRecord, PageSetup } from '@/types/docs.types';
 import { HelpModal } from '@/modules/editor/components/HelpModal';
 import { PageHeaderFooterPanel } from '@/modules/editor/components/PageHeaderFooterPanel';
 import { WatermarkDialog } from '@/modules/editor/components/WatermarkDialog';
+import { MathEditorDialog } from '@/modules/editor/components/MathEditorDialog';
 import { CommentsPanel } from '@/modules/editor/components/comments/CommentsPanel';
 import { ShareDialog } from '@/modules/collab/components/ShareDialog';
 import { VersionHistoryDialog } from '@/modules/collab/components/VersionHistoryDialog';
@@ -29,6 +30,7 @@ interface EditorDialogsHostProps {
   onCommitPending?: (content: string) => void;
   onPageSetupChange: (setup: PageSetup) => void;
   onMoveToFolder: (docId: string, folderId: string | null) => void;
+  onInsertMath?: (tex: string, isBlock: boolean) => void;
 }
 
 export const EditorDialogsHost = ({
@@ -48,6 +50,7 @@ export const EditorDialogsHost = ({
   onCommitPending,
   onPageSetupChange,
   onMoveToFolder,
+  onInsertMath,
 }: EditorDialogsHostProps) => {
   const {
     findOpen,
@@ -60,6 +63,7 @@ export const EditorDialogsHost = ({
     watermarkOpen,
     moveToFolderOpen,
     commentsOpen,
+    mathEditorOpen,
     setFindOpen,
     setDocSettingsOpen,
     setActiveBand,
@@ -69,6 +73,7 @@ export const EditorDialogsHost = ({
     setWatermarkOpen,
     setMoveToFolderOpen,
     setCommentsOpen,
+    setMathEditorOpen,
   } = modals;
 
   return (
@@ -147,6 +152,12 @@ export const EditorDialogsHost = ({
         pendingComment={pendingComment}
         onCancelPending={onCancelPending}
         onCommitPending={onCommitPending}
+      />
+
+      <MathEditorDialog
+        open={mathEditorOpen}
+        onOpenChange={setMathEditorOpen}
+        onSave={(tex, isBlock) => onInsertMath?.(tex, isBlock)}
       />
     </>
   );

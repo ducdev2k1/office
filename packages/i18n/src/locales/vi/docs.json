@@ -59,6 +59,9 @@
       "pageBreak": "Ngắt trang",
       "sectionBreak": "Ngắt phần (Section Break)",
       "bookmark": "Dấu trang (Bookmark)",
+      "math": "Công thức toán (LaTeX)",
+      "footnote": "Chú thích cuối trang (Footnote)",
+      "columns": "Bố cục nhiều cột",
       "watermark": "Hình nền mờ (Watermark)",
       "headerFooter": "Đầu trang, chân trang & số trang",
       "link": "Đường dẫn liên kết"

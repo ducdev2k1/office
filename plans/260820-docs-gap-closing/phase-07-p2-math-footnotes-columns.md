@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P2 | **Status**: pending | **Effort**: 30h
+- **Priority**: P2 | **Status**: done | **Effort**: 30h
 - Bổ sung công thức toán (KaTeX), chú thích cuối trang (footnote), và văn bản nhiều cột (columns) — thay cho `@tiptap/extension-mathematics`, `@tiptap/extension-footnote`, `@tiptap/extension-columns` (Pro).
 
 ## Context
@@ -59,11 +59,11 @@
 
 ## Todo List
 
-- [ ] KaTeX setup + Math nodes + popup
-- [ ] Footnote node + numbering + notes area
-- [ ] Columns node + CSS + UI
-- [ ] Pagination/print tích hợp
-- [ ] i18n + typecheck + test + collab verify
+- [x] KaTeX setup + Math nodes + popup
+- [x] Footnote node + numbering + notes area
+- [x] Columns node + CSS + UI
+- [x] Pagination/print tích hợp
+- [x] i18n + typecheck + test + collab verify
 
 ## Success Criteria
 
