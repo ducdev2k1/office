@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 interface SlideShortcutsOptions {
   enabled?: boolean;
+  hasSelectedElement?: boolean;
   onPresent: () => void;
   onAddSlide: () => void;
   onDuplicateSlide: () => void;
@@ -15,6 +16,9 @@ interface SlideShortcutsOptions {
   onCopy?: () => void;
   onCut?: () => void;
   onPaste?: () => void;
+  onDeleteElement?: () => void;
+  onDuplicateElement?: () => void;
+  onEscape?: () => void;
 }
 
 const isEditableTarget = (target: EventTarget | null): boolean => {
@@ -31,6 +35,7 @@ const isEditableTarget = (target: EventTarget | null): boolean => {
 
 export const useSlideShortcuts = ({
   enabled = true,
+  hasSelectedElement = false,
   onPresent,
   onAddSlide,
   onDuplicateSlide,
@@ -44,6 +49,9 @@ export const useSlideShortcuts = ({
   onCopy,
   onCut,
   onPaste,
+  onDeleteElement,
+  onDuplicateElement,
+  onEscape,
 }: SlideShortcutsOptions) => {
   useEffect(() => {
     if (!enabled) return;
@@ -53,14 +61,23 @@ export const useSlideShortcuts = ({
       const isCmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
       const isEditing = isEditableTarget(e.target);
 
-      // 1. Present Shortcuts (F5, Ctrl+F5, Cmd/Ctrl+Enter, Ctrl+Shift+F5)
+      // 1. Present Shortcuts (F5, Ctrl+F5, Cmd/Ctrl+Enter)
       if (e.key === 'F5' || (isCmdOrCtrl && e.key === 'Enter')) {
         e.preventDefault();
         onPresent();
         return;
       }
 
-      // 2. Undo / Redo Shortcuts (Works in both editor and slide list)
+      // 2. Escape: Deselect element or exit mode
+      if (e.key === 'Escape') {
+        if (hasSelectedElement && onEscape) {
+          e.preventDefault();
+          onEscape();
+          return;
+        }
+      }
+
+      // 3. Undo / Redo Shortcuts
       if (isCmdOrCtrl && e.key.toLowerCase() === 'z') {
         if (!isEditing) {
           e.preventDefault();
@@ -79,13 +96,13 @@ export const useSlideShortcuts = ({
         return;
       }
 
-      // 3. Prevent browser default Ctrl+S
+      // 4. Prevent browser default Ctrl+S
       if (isCmdOrCtrl && e.key.toLowerCase() === 's') {
         e.preventDefault();
         return;
       }
 
-      // 4. Clipboard shortcuts when not editing text
+      // 5. Clipboard shortcuts when not editing text
       if (!isEditing) {
         if (isCmdOrCtrl && e.key.toLowerCase() === 'c' && onCopy) {
           e.preventDefault();
@@ -104,51 +121,75 @@ export const useSlideShortcuts = ({
         }
       }
 
-      // If user is typing inside text input, don't hijack editing keys
+      // If user is typing inside text input / textarea, don't hijack editing keys
       if (isEditing) return;
 
-      // 5. Slide / Element Manipulation
+      // 6. Delete handling: If an element is selected, delete that element; otherwise delete slide
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        if (hasSelectedElement && onDeleteElement) {
+          onDeleteElement();
+        } else {
+          onDeleteSlide();
+        }
+        return;
+      }
+
+      // 7. Duplicate handling: If an element is selected, duplicate that element; otherwise duplicate slide
+      if (isCmdOrCtrl && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        if (hasSelectedElement && onDuplicateElement) {
+          onDuplicateElement();
+        } else {
+          onDuplicateSlide();
+        }
+        return;
+      }
+
+      // 8. Add slide
       if (isCmdOrCtrl && e.key.toLowerCase() === 'm') {
         e.preventDefault();
         onAddSlide();
         return;
       }
 
-      if (isCmdOrCtrl && e.key.toLowerCase() === 'd') {
-        e.preventDefault();
-        onDuplicateSlide();
-        return;
-      }
+      // 9. Slide Navigation: ONLY when NO element is selected (when element is selected, arrow keys nudge the element)
+      if (!hasSelectedElement) {
+        if (
+          e.key === 'ArrowDown' ||
+          e.key === 'ArrowRight' ||
+          e.key === 'PageDown' ||
+          e.key === 'j' ||
+          e.key === 'n'
+        ) {
+          e.preventDefault();
+          onNextSlide();
+          return;
+        }
 
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        e.preventDefault();
-        onDeleteSlide();
-        return;
-      }
+        if (
+          e.key === 'ArrowUp' ||
+          e.key === 'ArrowLeft' ||
+          e.key === 'PageUp' ||
+          e.key === 'k' ||
+          e.key === 'p'
+        ) {
+          e.preventDefault();
+          onPrevSlide();
+          return;
+        }
 
-      // 6. Slide Navigation (Google Slides style)
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'j' || e.key === 'n') {
-        e.preventDefault();
-        onNextSlide();
-        return;
-      }
+        if (e.key === 'Home') {
+          e.preventDefault();
+          onFirstSlide();
+          return;
+        }
 
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'k' || e.key === 'p') {
-        e.preventDefault();
-        onPrevSlide();
-        return;
-      }
-
-      if (e.key === 'Home') {
-        e.preventDefault();
-        onFirstSlide();
-        return;
-      }
-
-      if (e.key === 'End') {
-        e.preventDefault();
-        onLastSlide();
-        return;
+        if (e.key === 'End') {
+          e.preventDefault();
+          onLastSlide();
+          return;
+        }
       }
     };
 
@@ -156,6 +197,7 @@ export const useSlideShortcuts = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
     enabled,
+    hasSelectedElement,
     onPresent,
     onAddSlide,
     onDuplicateSlide,
@@ -169,5 +211,8 @@ export const useSlideShortcuts = ({
     onCopy,
     onCut,
     onPaste,
+    onDeleteElement,
+    onDuplicateElement,
+    onEscape,
   ]);
 };

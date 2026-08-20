@@ -199,8 +199,17 @@ export const SlideThumbnailList = ({
             return (
               <div
                 key={slide.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Trang chiếu ${index + 1}`}
                 onClick={() => onSelect(index)}
-                className="group relative flex cursor-pointer items-center gap-2 transition-transform active:scale-[0.98]"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelect(index);
+                  }
+                }}
+                className="group relative flex cursor-pointer items-center gap-2 transition-transform active:scale-[0.98] outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-md"
               >
                 <span className="w-4 text-right text-xs font-medium text-muted-foreground">
                   {index + 1}

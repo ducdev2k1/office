@@ -249,7 +249,7 @@ export const SlideViewer = ({
   }, [onUpdateElement]);
 
   const handleStartMove = useCallback((e: React.PointerEvent, el: SlideElement) => {
-    if (e.button === 2) return;
+    if (e.button === 2 || editingId === el.id) return;
     e.stopPropagation();
     onSelectElement(el.id);
     const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
@@ -268,7 +268,7 @@ export const SlideViewer = ({
       elementId: el.id,
       domElement: dom,
     };
-  }, [onSelectElement]);
+  }, [onSelectElement, editingId]);
 
   const handleStartResize = useCallback((e: React.PointerEvent, el: SlideElement, handle: ResizeHandle) => {
     if (e.button === 2) return;
@@ -357,7 +357,7 @@ export const SlideViewer = ({
         }}
         onDoubleClick={(e) => {
           e.stopPropagation();
-          if (el.type === 'text') setEditingId(el.id);
+          if (el.type === 'text' || el.type === 'shape') setEditingId(el.id);
         }}
         style={{
           position: 'absolute',
@@ -427,8 +427,40 @@ export const SlideViewer = ({
         )}
 
         {el.type === 'shape' && (
-          <div className="h-full w-full overflow-hidden shadow-xs">
+          <div className="relative h-full w-full overflow-hidden shadow-xs">
             <ShapeSvgRenderer element={el} />
+            <div
+              className="absolute inset-0 flex items-center justify-center p-2 text-center pointer-events-none"
+              style={{
+                color: el.color || '#ffffff',
+                fontSize: el.fontSize ? `${(el.fontSize / 16) * 1}rem` : '0.95rem',
+                fontWeight: el.fontWeight || 'normal',
+                fontStyle: el.fontStyle || 'normal',
+                textAlign: el.align || 'center',
+              }}
+            >
+              {isEditing ? (
+                <Textarea
+                  autoFocus
+                  defaultValue={el.content}
+                  onBlur={(e) => {
+                    setEditingId(null);
+                    onUpdateElement(el.id, { content: e.target.value });
+                  }}
+                  className="pointer-events-auto h-full w-full min-h-0 resize-none border-none bg-transparent p-0 text-center shadow-none outline-none focus-visible:ring-0"
+                  style={{
+                    fontSize: 'inherit',
+                    fontFamily: 'inherit',
+                    color: 'inherit',
+                    textAlign: 'inherit',
+                    fontWeight: 'inherit',
+                    fontStyle: 'inherit',
+                  }}
+                />
+              ) : (
+                <span className="whitespace-pre-wrap select-none">{el.content}</span>
+              )}
+            </div>
           </div>
         )}
 

@@ -137,9 +137,10 @@ export const SlideToolbar = ({
 
   return (
     <TooltipProvider>
-      <div className="flex h-10 items-center justify-between border-b border-border bg-card px-3">
-        <div className="flex items-center gap-1 overflow-x-auto">
-          {/* Undo / Redo */}
+      <div className="flex h-10 items-center justify-between border-b border-border bg-card px-3 select-none">
+        {/* Left & Middle tools container */}
+        <div className="flex items-center gap-1 overflow-x-auto py-1 scrollbar-none">
+          {/* 1. Undo / Redo */}
           {onUndo && (
             <ToolbarButton label={t('toolbar.undo')} disabled={!canUndo} onClick={onUndo}>
               <Icon name="undo" size={14} />
@@ -154,7 +155,7 @@ export const SlideToolbar = ({
 
           <Separator orientation="vertical" className="mx-1 h-4" />
 
-          {/* Add Slide */}
+          {/* 2. Add Slide Button */}
           <ToolbarButton
             label={t('toolbar.addSlideShortcut')}
             onClick={onAddSlide}
@@ -164,31 +165,13 @@ export const SlideToolbar = ({
             <span>{t('toolbar.addSlide')}</span>
           </ToolbarButton>
 
-          {/* Slide Layouts Picker */}
-          {onSelectLayout && <SlideLayoutDropdown onSelectLayout={onSelectLayout} />}
-
-          <ToolbarButton label={t('toolbar.duplicateSlide')} onClick={onDuplicateSlide}>
-            <Icon name="copy" size={14} />
-          </ToolbarButton>
-
-          <ToolbarButton
-            label={t('toolbar.deleteSlide')}
-            disabled={!canDelete}
-            onClick={onDeleteSlide}
-            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-          >
-            <Icon name="trash-2" size={14} />
-          </ToolbarButton>
-
-          <Separator orientation="vertical" className="mx-1 h-4" />
-
-          {/* Insert TextBox */}
+          {/* 3. Insert Tools (Always Accessible) */}
           <ToolbarButton label={t('toolbar.textBox')} onClick={onAddTextBox} className="gap-1.5 px-2">
             <Icon name="type" size={14} />
             <span>{t('toolbar.textBox')}</span>
           </ToolbarButton>
 
-          {/* Insert Shapes Dropdown */}
+          {/* Shapes Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -243,7 +226,7 @@ export const SlideToolbar = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Insert Lines Dropdown */}
+          {/* Lines Dropdown */}
           {onAddLine && (
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -275,7 +258,7 @@ export const SlideToolbar = ({
             </DropdownMenu>
           )}
 
-          {/* Insert Table */}
+          {/* Table Dropdown */}
           {onAddTable && (
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -296,7 +279,7 @@ export const SlideToolbar = ({
             </DropdownMenu>
           )}
 
-          {/* Insert Image */}
+          {/* Image Upload Button */}
           <input
             ref={fileInputRef}
             type="file"
@@ -313,91 +296,8 @@ export const SlideToolbar = ({
             <span>{t('toolbar.image')}</span>
           </ToolbarButton>
 
-          {/* Slide Background Customizer */}
-          {onOpenBackgroundDialog && (
-            <ToolbarButton
-              label="Đổi hình nền slide (Màu sắc, Gradient, Ảnh)"
-              onClick={onOpenBackgroundDialog}
-              className="gap-1.5 px-2"
-            >
-              <Icon name="palette" size={14} className="text-amber-500" />
-              <span>{t('toolbar.background')}</span>
-            </ToolbarButton>
-          )}
-
-          {/* Slide Transitions Picker */}
-          {onChangeTransition && (
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground" />
-                }
-              >
-                <Icon name="sparkles" size={13} className="text-amber-500" />
-                <span className="truncate max-w-[120px]">
-                  {activeTransLabel} ({currentTransitionDuration}s)
-                </span>
-                <Icon name="chevron-down" size={11} className="opacity-60" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="min-w-56 p-1.5">
-                <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Kiểu chuyển tiếp slide
-                </div>
-                {transitionsList.map((item) => (
-                  <DropdownMenuItem
-                    key={item.value}
-                    onClick={() => onChangeTransition(item.value)}
-                    className={item.value === currentTransition ? 'font-semibold text-primary' : ''}
-                  >
-                    <span>{item.label}</span>
-                  </DropdownMenuItem>
-                ))}
-
-                {onChangeTransitionDuration && currentTransition !== 'none' && (
-                  <>
-                    <DropdownMenuSeparator className="my-1.5" />
-                    <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                      Tốc độ chuyển tiếp slide
-                    </div>
-                    {transitionSpeeds.map((spd) => {
-                      const isSelected = currentTransitionDuration === spd.value;
-                      return (
-                        <DropdownMenuItem
-                          key={spd.value}
-                          onClick={() => onChangeTransitionDuration(spd.value)}
-                          className={isSelected ? 'font-semibold text-primary' : ''}
-                        >
-                          <span>{spd.label}</span>
-                        </DropdownMenuItem>
-                      );
-                    })}
-                  </>
-                )}
-
-                <DropdownMenuSeparator className="my-1.5" />
-                <DropdownMenuItem
-                  onClick={() => {
-                    onChangeTransition(currentTransition || 'fade', true);
-                    if (onChangeTransitionDuration) {
-                      onChangeTransitionDuration(currentTransitionDuration, true);
-                    }
-                  }}
-                >
-                  <span className="text-xs text-muted-foreground">{t('toolbar.applyToAll')}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-
-          {/* Find and Replace */}
-          {onOpenFindReplace && (
-            <ToolbarButton label="Tìm kiếm & Thay thế (Ctrl+H)" onClick={onOpenFindReplace}>
-              <Icon name="search" size={13} />
-            </ToolbarButton>
-          )}
-
-          {/* Selected Element Formatting Bar */}
-          {selectedElement && (
+          {/* 4. CONTEXTUAL SWITCHING: ELEMENT FORMATTING vs SLIDE-LEVEL ACTIONS */}
+          {selectedElement ? (
             <>
               <Separator orientation="vertical" className="mx-1 h-4" />
               <ElementFormattingBar
@@ -414,73 +314,152 @@ export const SlideToolbar = ({
                 onSendToBack={onSendToBack}
               />
             </>
-          )}
-
-          {/* Sample PPTX Loader */}
-          {onLoadSample && (
+          ) : (
             <>
               <Separator orientation="vertical" className="mx-1 h-4" />
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 gap-1 px-2 text-xs font-medium text-muted-foreground hover:text-foreground"
-                    />
-                  }
+
+              {/* Background Color/Image Customizer */}
+              {onOpenBackgroundDialog && (
+                <ToolbarButton
+                  label="Đổi hình nền slide (Màu sắc, Gradient, Ảnh)"
+                  onClick={onOpenBackgroundDialog}
+                  className="gap-1.5 px-2"
                 >
-                  <Icon name="file-text" size={13} />
-                  <span>{t('toolbar.sampleFiles')}</span>
-                  <Icon name="chevron-down" size={11} className="opacity-70" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" sideOffset={6}>
-                  <DropdownMenuItem onClick={() => onLoadSample('sample-basic.pptx')}>
-                    <span className="font-medium">{t('toolbar.sampleBasic')}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">{t('toolbar.sampleSlidesCount', { count: 3 })}</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onLoadSample('sample-medium.pptx')}>
-                    <span className="font-medium">{t('toolbar.sampleMedium')}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">{t('toolbar.sampleSlidesCount', { count: 5 })}</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onLoadSample('sample-advanced.pptx')}>
-                    <span className="font-medium">{t('toolbar.sampleAdvanced')}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">{t('toolbar.sampleSlidesCount', { count: 10 })}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <Icon name="palette" size={14} className="text-amber-500" />
+                  <span>{t('toolbar.background')}</span>
+                </ToolbarButton>
+              )}
+
+              {/* Slide Layouts Picker */}
+              {onSelectLayout && <SlideLayoutDropdown onSelectLayout={onSelectLayout} />}
+
+              {/* Slide Transitions Picker with Speed Controls */}
+              {onChangeTransition && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground" />
+                    }
+                  >
+                    <Icon name="sparkles" size={13} className="text-amber-500" />
+                    <span className="truncate max-w-[120px]">
+                      {activeTransLabel} ({currentTransitionDuration}s)
+                    </span>
+                    <Icon name="chevron-down" size={11} className="opacity-60" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="min-w-56 p-1.5">
+                    <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      Kiểu chuyển tiếp slide
+                    </div>
+                    {transitionsList.map((item) => (
+                      <DropdownMenuItem
+                        key={item.value}
+                        onClick={() => onChangeTransition(item.value)}
+                        className={item.value === currentTransition ? 'font-semibold text-primary' : ''}
+                      >
+                        <span>{item.label}</span>
+                      </DropdownMenuItem>
+                    ))}
+
+                    {onChangeTransitionDuration && currentTransition !== 'none' && (
+                      <>
+                        <DropdownMenuSeparator className="my-1.5" />
+                        <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                          Tốc độ chuyển tiếp slide
+                        </div>
+                        {transitionSpeeds.map((spd) => {
+                          const isSelected = currentTransitionDuration === spd.value;
+                          return (
+                            <DropdownMenuItem
+                              key={spd.value}
+                              onClick={() => onChangeTransitionDuration(spd.value)}
+                              className={isSelected ? 'font-semibold text-primary' : ''}
+                            >
+                              <span>{spd.label}</span>
+                            </DropdownMenuItem>
+                          );
+                        })}
+                      </>
+                    )}
+
+                    <DropdownMenuSeparator className="my-1.5" />
+                    <DropdownMenuItem
+                      onClick={() => {
+                        onChangeTransition(currentTransition || 'fade', true);
+                        if (onChangeTransitionDuration) {
+                          onChangeTransitionDuration(currentTransitionDuration, true);
+                        }
+                      }}
+                    >
+                      <span className="text-xs text-muted-foreground">{t('toolbar.applyToAll')}</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+
+              {/* Find and Replace */}
+              {onOpenFindReplace && (
+                <ToolbarButton label="Tìm kiếm & Thay thế (Ctrl+H)" onClick={onOpenFindReplace}>
+                  <Icon name="search" size={13} />
+                </ToolbarButton>
+              )}
+
+              {/* Sample Templates Dropdown */}
+              {onLoadSample && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover" />
+                    }
+                  >
+                    <Icon name="file-text" size={13} />
+                    <span>File Mẫu</span>
+                    <Icon name="chevron-down" size={11} className="opacity-60" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuItem onClick={() => onLoadSample('sample-basic.pptx')}>
+                      1. Mẫu Cơ Bản (3 slide)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onLoadSample('sample-medium.pptx')}>
+                      2. Mẫu Trung Bình (5 slide)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onLoadSample('sample-advanced.pptx')}>
+                      3. Mẫu Nâng Cao (10 slide)
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </>
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Zoom controls */}
-          <div className="flex items-center rounded-md border border-border bg-background px-1.5 py-0.5 text-xs text-muted-foreground">
+        {/* Right side controls: Zoom & Present */}
+        <div className="flex items-center gap-1 shrink-0 pl-2">
+          <div className="flex items-center rounded-md border border-border bg-background px-1 h-7">
             <button
               type="button"
               onClick={() => onZoomChange(Math.max(50, zoom - 10))}
-              className="px-1 font-semibold hover:text-foreground transition-colors"
+              className="px-1 text-xs font-bold hover:text-primary transition-colors"
             >
               -
             </button>
-            <span className="w-10 text-center font-medium text-foreground">{zoom}%</span>
+            <span className="w-10 text-center text-xs font-semibold">{zoom}%</span>
             <button
               type="button"
               onClick={() => onZoomChange(Math.min(200, zoom + 10))}
-              className="px-1 font-semibold hover:text-foreground transition-colors"
+              className="px-1 text-xs font-bold hover:text-primary transition-colors"
             >
               +
             </button>
           </div>
 
           <Button
-            variant="default"
             size="sm"
             onClick={onPresent}
-            className="h-7 gap-1.5 bg-[var(--o-kind-slides)] px-3 text-xs text-white hover:opacity-90 shadow-xs"
+            className="h-7 gap-1.5 bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs shadow-xs transition-transform active:scale-95"
           >
             <Icon name="play" size={13} />
-            <span>{t('header.present')}</span>
+            <span>{t('toolbar.present')}</span>
           </Button>
         </div>
       </div>

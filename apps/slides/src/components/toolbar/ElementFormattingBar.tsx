@@ -99,8 +99,8 @@ export const ElementFormattingBar = ({
 
   return (
     <div className="flex items-center gap-1">
-      {/* 1. TEXT FORMATTING */}
-      {element.type === 'text' && (
+      {/* 1. TEXT & SHAPE FORMATTING */}
+      {(element.type === 'text' || element.type === 'shape') && (
         <>
           <FontFamilyDropdown
             currentFont={element.fontFamily}

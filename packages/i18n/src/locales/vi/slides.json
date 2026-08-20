@@ -60,7 +60,8 @@
     "sampleBasic": "1. Mẫu Cơ Bản",
     "sampleMedium": "2. Mẫu Trung Bình",
     "sampleAdvanced": "3. Mẫu Nâng Cao",
-    "sampleSlidesCount": "({count} slide)"
+    "sampleSlidesCount": "({count} slide)",
+    "present": "Trình chiếu"
   },
   "shapes": {
     "rect": "Hình chữ nhật",

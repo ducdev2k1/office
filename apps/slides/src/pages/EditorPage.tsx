@@ -75,6 +75,7 @@ export const EditorPage = () => {
 
   useSlideShortcuts({
     enabled: !isPresenting,
+    hasSelectedElement: slidesApi.selectedElement !== undefined,
     onPresent: () => setIsPresenting(true),
     onAddSlide: slidesApi.addSlideToActiveDeck,
     onDuplicateSlide: slidesApi.duplicateActiveSlide,
@@ -88,6 +89,9 @@ export const EditorPage = () => {
     onCopy: slidesApi.copyElement,
     onCut: slidesApi.cutElement,
     onPaste: slidesApi.pasteElement,
+    onDeleteElement: () => slidesApi.deleteElement(),
+    onDuplicateElement: () => slidesApi.duplicateElement(),
+    onEscape: () => slidesApi.setSelectedElementId(null),
   });
 
   if (slidesApi.loading) {

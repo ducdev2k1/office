@@ -60,7 +60,8 @@
     "sampleBasic": "1. Basic Sample",
     "sampleMedium": "2. Medium Sample",
     "sampleAdvanced": "3. Advanced Sample",
-    "sampleSlidesCount": "({count} slides)"
+    "sampleSlidesCount": "({count} slides)",
+    "present": "Present"
   },
   "shapes": {
     "rect": "Rectangle",
