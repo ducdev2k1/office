@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { Icon } from '@office/ui-kit';
+import { Icon, Textarea } from '@office/ui-kit';
 import { useState } from 'react';
 
 interface SpeakerNotesDrawerProps {
@@ -40,11 +40,11 @@ export const SpeakerNotesDrawer = ({
       >
         <div className="overflow-hidden bg-background border-t border-border/80">
           <div className="h-28 p-2.5">
-            <textarea
+            <Textarea
               defaultValue={notes}
               placeholder="Nhập ghi chú cho trang chiếu này (chỉ hiển thị khi thuyết trình)..."
               onBlur={(e) => onUpdateNotes(e.target.value)}
-              className="h-full w-full resize-none rounded bg-transparent p-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none leading-relaxed transition-all focus:ring-1 focus:ring-primary/40"
+              className="h-full w-full resize-none rounded-md bg-transparent p-2 text-xs text-foreground placeholder:text-muted-foreground/60 leading-relaxed shadow-none focus-visible:ring-1 focus-visible:ring-primary/50"
             />
           </div>
         </div>

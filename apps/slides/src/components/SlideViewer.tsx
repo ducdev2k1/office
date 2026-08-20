@@ -1,5 +1,6 @@
 import type { SlideElement, SlideItem } from '@/types/slides.types';
 import { useTranslation } from '@office/i18n';
+import { Textarea } from '@office/ui-kit';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ElementSelectionOverlay, type ResizeHandle } from './canvas/ElementSelectionOverlay';
 import { LineSvgRenderer, ShapeSvgRenderer } from './canvas/ShapeSvgRenderer';
@@ -402,14 +403,14 @@ export const SlideViewer = ({
             className="h-full w-full overflow-hidden p-1.5 leading-relaxed whitespace-pre-wrap"
           >
             {isEditing ? (
-              <textarea
+              <Textarea
                 autoFocus
                 defaultValue={el.content}
                 onBlur={(e) => {
                   setEditingId(null);
                   onUpdateElement(el.id, { content: e.target.value });
                 }}
-                className="h-full w-full resize-none border-none bg-transparent p-0 outline-none"
+                className="h-full w-full min-h-0 resize-none border-none bg-transparent p-0 shadow-none outline-none focus-visible:ring-0"
                 style={{
                   fontSize: 'inherit',
                   fontFamily: 'inherit',

@@ -24,6 +24,7 @@ export * from './components/ui/scroll-area';
 export * from './components/ui/tabs';
 export * from './components/ui/skeleton';
 export * from './components/ui/popover';
+export * from './components/ui/textarea';
 export * from './components/toolbar/ToolbarButton';
 export * from './components/toolbar/ColorPalettePopover';
 export * from './components/toolbar/FontSizePicker';
