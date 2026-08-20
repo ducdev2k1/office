@@ -99,6 +99,8 @@ export interface SlideElement {
   tableData?: SlideTableData;
   animation?: SlideAnimationType;
   animationOrder?: number;
+  animationDuration?: number;
+  animationDelay?: number;
 }
 
 export interface SlideItem {
@@ -109,6 +111,7 @@ export interface SlideItem {
   backgroundImage?: string;
   layout?: SlideLayoutType;
   transition?: SlideTransitionType;
+  transitionDuration?: number;
   notes?: string;
   elements: SlideElement[];
 }

@@ -102,25 +102,83 @@ body,
 }
 
 .slide-transition-fade {
-  animation: slideFadeIn 0.35s ease-out forwards;
+  animation: slideFadeIn var(--slide-transition-duration, 0.4s) ease-out forwards;
 }
 .slide-transition-slide-left {
-  animation: slideFromRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideFromRight var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .slide-transition-slide-right {
-  animation: slideFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideFromLeft var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .slide-transition-slide-up {
-  animation: slideFromBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideFromBottom var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .slide-transition-zoom {
-  animation: slideZoomIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideZoomIn var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .slide-transition-flip-3d {
-  animation: slideFlip3D 0.45s ease-out forwards;
+  animation: slideFlip3D var(--slide-transition-duration, 0.6s) ease-out forwards;
   transform-style: preserve-3d;
 }
 .slide-transition-cube-3d {
-  animation: slideCube3D 0.45s ease-out forwards;
+  animation: slideCube3D var(--slide-transition-duration, 0.6s) ease-out forwards;
   transform-style: preserve-3d;
+}
+
+/* Element Entrance Animations with Dynamic Duration & Delay */
+@keyframes elemFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes elemFlyInLeft {
+  from { transform: translateX(-100%) scale(0.9); opacity: 0; }
+  to { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes elemFlyInRight {
+  from { transform: translateX(100%) scale(0.9); opacity: 0; }
+  to { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes elemFlyInUp {
+  from { transform: translateY(100%) scale(0.9); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes elemFlyInDown {
+  from { transform: translateY(-100%) scale(0.9); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes elemZoomIn {
+  from { transform: scale(0.2); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes elemSpin {
+  from { transform: rotate(-360deg) scale(0.5); opacity: 0; }
+  to { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+
+.element-anim-fade-in {
+  animation: elemFadeIn var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+}
+.element-anim-fly-in-left {
+  animation: elemFlyInLeft var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+}
+.element-anim-fly-in-right {
+  animation: elemFlyInRight var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+}
+.element-anim-fly-in-up {
+  animation: elemFlyInUp var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+}
+.element-anim-fly-in-down {
+  animation: elemFlyInDown var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+}
+.element-anim-zoom-in {
+  animation: elemZoomIn var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+}
+.element-anim-spin {
+  animation: elemSpin var(--anim-duration, 0.8s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
 }

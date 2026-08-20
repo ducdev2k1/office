@@ -36,7 +36,9 @@ interface SlideToolbarProps {
   canUndo?: boolean;
   canRedo?: boolean;
   currentTransition?: SlideTransitionType;
+  currentTransitionDuration?: number;
   onChangeTransition?: (transition: SlideTransitionType, applyToAll?: boolean) => void;
+  onChangeTransitionDuration?: (duration: number, applyToAll?: boolean) => void;
   onSelectLayout?: (layout: SlideLayoutType) => void;
   selectedElement?: SlideElement;
   onAddTextBox: () => void;
@@ -71,8 +73,10 @@ export const SlideToolbar = ({
   onRedo,
   canUndo = false,
   canRedo = false,
-  currentTransition = 'fade',
+  currentTransition,
+  currentTransitionDuration = 0.5,
   onChangeTransition,
+  onChangeTransitionDuration,
   onSelectLayout,
   selectedElement,
   onAddTextBox,
@@ -105,6 +109,14 @@ export const SlideToolbar = ({
     { label: t('transitions.zoom'), value: 'zoom' },
     { label: t('transitions.flip3d'), value: 'flip-3d' },
     { label: t('transitions.cube3d'), value: 'cube-3d' },
+  ];
+
+  const transitionSpeeds = [
+    { label: '⚡ Rất nhanh (0.25s)', value: 0.25 },
+    { label: '🐇 Nhanh (0.4s)', value: 0.4 },
+    { label: '⚖️ Trung bình (0.6s)', value: 0.6 },
+    { label: '🐢 Chậm (1.0s)', value: 1.0 },
+    { label: '⏳ Rất chậm (1.6s)', value: 1.6 },
   ];
 
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -322,10 +334,15 @@ export const SlideToolbar = ({
                 }
               >
                 <Icon name="sparkles" size={13} className="text-amber-500" />
-                <span className="truncate max-w-[90px]">{activeTransLabel}</span>
+                <span className="truncate max-w-[120px]">
+                  {activeTransLabel} ({currentTransitionDuration}s)
+                </span>
                 <Icon name="chevron-down" size={11} className="opacity-60" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
+              <DropdownMenuContent align="start" className="min-w-56 p-1.5">
+                <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  Kiểu chuyển tiếp slide
+                </div>
                 {transitionsList.map((item) => (
                   <DropdownMenuItem
                     key={item.value}
@@ -335,8 +352,37 @@ export const SlideToolbar = ({
                     <span>{item.label}</span>
                   </DropdownMenuItem>
                 ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => onChangeTransition(currentTransition, true)}>
+
+                {onChangeTransitionDuration && currentTransition !== 'none' && (
+                  <>
+                    <DropdownMenuSeparator className="my-1.5" />
+                    <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      Tốc độ chuyển tiếp slide
+                    </div>
+                    {transitionSpeeds.map((spd) => {
+                      const isSelected = currentTransitionDuration === spd.value;
+                      return (
+                        <DropdownMenuItem
+                          key={spd.value}
+                          onClick={() => onChangeTransitionDuration(spd.value)}
+                          className={isSelected ? 'font-semibold text-primary' : ''}
+                        >
+                          <span>{spd.label}</span>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </>
+                )}
+
+                <DropdownMenuSeparator className="my-1.5" />
+                <DropdownMenuItem
+                  onClick={() => {
+                    onChangeTransition(currentTransition || 'fade', true);
+                    if (onChangeTransitionDuration) {
+                      onChangeTransitionDuration(currentTransitionDuration, true);
+                    }
+                  }}
+                >
                   <span className="text-xs text-muted-foreground">{t('toolbar.applyToAll')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -69,6 +69,7 @@ export interface SlidesState {
   applySlideBackground: (bg: string, applyToAll?: boolean) => void;
   updateSlideNotes: (notes: string, index?: number) => void;
   setSlideTransition: (transition: SlideTransitionType, applyToAll?: boolean) => void;
+  setSlideTransitionDuration: (duration: number, applyToAll?: boolean) => void;
   addElement: (element: Partial<SlideElement>) => string;
   addLine: (kind: SlideLineKind) => string;
   addTable: (rows?: number, cols?: number) => string;
@@ -372,6 +373,21 @@ export const useSlides = (): SlidesState => {
     [activeSlideIndex, updateData],
   );
 
+  const setSlideTransitionDuration = useCallback(
+    (transitionDuration: number, applyToAll = false): void => {
+      const currentDeck = activeDeckRef.current;
+      if (!currentDeck?.data) return;
+      const slidesList = currentDeck.data.slides.map((s, idx) => {
+        if (applyToAll || idx === activeSlideIndex) {
+          return { ...s, transitionDuration };
+        }
+        return s;
+      });
+      updateData({ ...currentDeck.data, slides: slidesList });
+    },
+    [activeSlideIndex, updateData],
+  );
+
   const addElement = useCallback((partial: Partial<SlideElement>): string => {
     const currentDeck = activeDeckRef.current;
     if (!currentDeck?.data || !activeSlide) return '';
@@ -629,6 +645,7 @@ export const useSlides = (): SlidesState => {
     applySlideBackground,
     updateSlideNotes,
     setSlideTransition,
+    setSlideTransitionDuration,
     addElement,
     addLine,
     addTable,

@@ -34,8 +34,24 @@ const ANIMATIONS: { label: string; value: SlideAnimationType }[] = [
   { label: 'Bay vào từ trái (Fly left)', value: 'fly-in-left' },
   { label: 'Bay vào từ phải (Fly right)', value: 'fly-in-right' },
   { label: 'Bay vào từ dưới (Fly up)', value: 'fly-in-up' },
+  { label: 'Bay vào từ trên (Fly down)', value: 'fly-in-down' },
   { label: 'Thu phóng vào (Zoom in)', value: 'zoom-in' },
   { label: 'Xoay tròn (Spin)', value: 'spin' },
+];
+
+const ANIMATION_SPEEDS = [
+  { label: '⚡ Rất nhanh (0.2s)', value: 0.2 },
+  { label: '🐇 Nhanh (0.4s)', value: 0.4 },
+  { label: '⚖️ Trung bình (0.6s)', value: 0.6 },
+  { label: '🐢 Chậm (1.0s)', value: 1.0 },
+  { label: '⏳ Rất chậm (1.8s)', value: 1.8 },
+];
+
+const ANIMATION_DELAYS = [
+  { label: '0s (Ngay lập tức)', value: 0 },
+  { label: '0.3 giây', value: 0.3 },
+  { label: '0.5 giây', value: 0.5 },
+  { label: '1.0 giây', value: 1.0 },
 ];
 
 interface ElementFormattingBarProps {
@@ -275,7 +291,7 @@ export const ElementFormattingBar = ({
 
       <Separator orientation="vertical" className="mx-1 h-4" />
 
-      {/* 4. ELEMENT ANIMATIONS (Google Slides Entrance Animations) */}
+      {/* 4. ELEMENT ANIMATIONS (Google Slides Entrance Animations & Speed) */}
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
@@ -283,9 +299,16 @@ export const ElementFormattingBar = ({
           }
         >
           <Icon name="sparkles" size={13} />
-          <span>Hiệu ứng</span>
+          <span>
+            {element.animation && element.animation !== 'none'
+              ? `Hiệu ứng (${element.animationDuration || 0.6}s)`
+              : 'Hiệu ứng'}
+          </span>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="start" className="min-w-56 p-1.5">
+          <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            Kiểu hiệu ứng xuất hiện
+          </div>
           {ANIMATIONS.map((anim) => (
             <DropdownMenuItem
               key={anim.value}
@@ -295,6 +318,45 @@ export const ElementFormattingBar = ({
               <span>{anim.label}</span>
             </DropdownMenuItem>
           ))}
+
+          {element.animation && element.animation !== 'none' && (
+            <>
+              <DropdownMenuSeparator className="my-1.5" />
+              <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Tốc độ hiệu ứng (Thời lượng)
+              </div>
+              {ANIMATION_SPEEDS.map((speed) => {
+                const isCurrentSpeed =
+                  (element.animationDuration || 0.6) === speed.value;
+                return (
+                  <DropdownMenuItem
+                    key={speed.value}
+                    onClick={() => onUpdate({ animationDuration: speed.value })}
+                    className={isCurrentSpeed ? 'font-semibold text-primary' : ''}
+                  >
+                    <span>{speed.label}</span>
+                  </DropdownMenuItem>
+                );
+              })}
+
+              <DropdownMenuSeparator className="my-1.5" />
+              <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Độ trễ xuất hiện
+              </div>
+              {ANIMATION_DELAYS.map((delay) => {
+                const isCurrentDelay = (element.animationDelay || 0) === delay.value;
+                return (
+                  <DropdownMenuItem
+                    key={delay.value}
+                    onClick={() => onUpdate({ animationDelay: delay.value })}
+                    className={isCurrentDelay ? 'font-semibold text-primary' : ''}
+                  >
+                    <span>{delay.label}</span>
+                  </DropdownMenuItem>
+                );
+              })}
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

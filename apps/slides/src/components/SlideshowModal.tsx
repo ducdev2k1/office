@@ -228,6 +228,7 @@ export const SlideshowModal = ({
             aspectRatio: '16/9',
             width: 'min(100vw, 177.78vh)',
             height: 'min(56.25vw, 100vh)',
+            ['--slide-transition-duration' as any]: `${currentSlide.transitionDuration ?? 0.5}s`,
           }}
         >
           {currentSlide.elements.map((el) => {
@@ -238,11 +239,17 @@ export const SlideshowModal = ({
             const rot = el.rotation ? `rotate(${el.rotation}deg)` : '';
             const flip = `${el.flipH ? 'scaleX(-1)' : ''} ${el.flipV ? 'scaleY(-1)' : ''}`.trim();
             const transform = `${rot} ${flip}`.trim() || undefined;
+            const animClass = el.animation && el.animation !== 'none' ? `element-anim-${el.animation}` : '';
+            const animStyle: React.CSSProperties = {
+              ['--anim-duration' as any]: `${el.animationDuration ?? 0.6}s`,
+              ['--anim-delay' as any]: `${el.animationDelay ?? 0}s`,
+            };
 
             if (el.type === 'shape') {
               return (
                 <div
                   key={el.id}
+                  className={animClass}
                   style={{
                     position: 'absolute',
                     left: `${leftPercent}%`,
@@ -250,6 +257,7 @@ export const SlideshowModal = ({
                     width: `${widthPercent}%`,
                     height: `${heightPercent}%`,
                     transform,
+                    ...animStyle,
                   }}
                 >
                   <ShapeSvgRenderer element={el} />
@@ -261,6 +269,7 @@ export const SlideshowModal = ({
               return (
                 <div
                   key={el.id}
+                  className={animClass}
                   style={{
                     position: 'absolute',
                     left: `${leftPercent}%`,
@@ -268,6 +277,7 @@ export const SlideshowModal = ({
                     width: `${widthPercent}%`,
                     height: `${heightPercent}%`,
                     transform,
+                    ...animStyle,
                   }}
                 >
                   <LineSvgRenderer element={el} />
@@ -279,6 +289,7 @@ export const SlideshowModal = ({
               return (
                 <div
                   key={el.id}
+                  className={animClass}
                   style={{
                     position: 'absolute',
                     left: `${leftPercent}%`,
@@ -286,6 +297,7 @@ export const SlideshowModal = ({
                     width: `${widthPercent}%`,
                     height: `${heightPercent}%`,
                     transform,
+                    ...animStyle,
                   }}
                 >
                   <TableElementRenderer element={el} onUpdateElement={() => {}} isSelected={false} />
@@ -299,6 +311,7 @@ export const SlideshowModal = ({
                   key={el.id}
                   src={el.url}
                   alt={el.content || 'Slide image'}
+                  className={`object-contain pointer-events-none ${animClass}`}
                   style={{
                     position: 'absolute',
                     left: `${leftPercent}%`,
@@ -308,8 +321,8 @@ export const SlideshowModal = ({
                     borderRadius: el.borderRadius ? `${el.borderRadius}px` : undefined,
                     border: el.stroke ? `${el.strokeWidth || 2}px solid ${el.stroke}` : undefined,
                     transform,
+                    ...animStyle,
                   }}
-                  className="object-contain pointer-events-none"
                 />
               );
             }
@@ -333,8 +346,9 @@ export const SlideshowModal = ({
                   backgroundColor: el.fill || undefined,
                   borderRadius: el.fill ? '6px' : undefined,
                   transform,
+                  ...animStyle,
                 }}
-                className="whitespace-pre-wrap p-2 leading-relaxed"
+                className={`whitespace-pre-wrap p-2 leading-relaxed ${animClass}`}
               >
                 {el.content}
               </div>

@@ -234,9 +234,10 @@ export const EditorPage = () => {
           onUndo={slidesApi.undo}
           onRedo={slidesApi.redo}
           canUndo={slidesApi.canUndo}
-          canRedo={slidesApi.canRedo}
           currentTransition={currentSlide?.transition || 'fade'}
+          currentTransitionDuration={currentSlide?.transitionDuration ?? 0.5}
           onChangeTransition={slidesApi.setSlideTransition}
+          onChangeTransitionDuration={slidesApi.setSlideTransitionDuration}
           onSelectLayout={slidesApi.addSlideWithLayout}
           selectedElement={slidesApi.selectedElement}
           onAddTextBox={() =>
