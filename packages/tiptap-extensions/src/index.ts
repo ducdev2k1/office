@@ -5,4 +5,6 @@ export { ImageResize } from './image';
 export { LinkPopover } from './link';
 export { Toc } from './toc';
 export { Mention, MentionSuggestion } from './mention';
+export { SectionBreak } from './section';
+export { Bookmark } from './bookmark';
 export * from './shared';

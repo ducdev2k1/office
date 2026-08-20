@@ -93,6 +93,7 @@ export const FileHome = ({
         <TemplateStrip
           config={config}
           onCreate={actions.onCreate}
+          onCreateFromTemplate={actions.onCreateFromTemplate}
           onOpenFromDevice={actions.onOpenFromDevice}
         />
         <StatsCards files={files} storageMB={storageMB} />

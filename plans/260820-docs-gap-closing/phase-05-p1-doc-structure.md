@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: pending | **Effort**: 40h
+- **Priority**: P1 | **Status**: done | **Effort**: 40h
 - Bổ sung tính năng cấu trúc tài liệu (mảng B): section break, bookmark + link tới bookmark, watermark, template gallery, header/footer khác nhau trang lẻ/chẵn + trang đầu, folder/organize trong sidebar.
 
 ## Context
@@ -64,13 +64,13 @@
 
 ## Todo List
 
-- [ ] Section break node + pagination section
-- [ ] Header/footer different first/odd-even
-- [ ] Watermark panel + print
-- [ ] Bookmark + link
-- [ ] Template gallery + constants
-- [ ] Folders + sidebar tree
-- [ ] i18n + verify print
+- [x] Section break node + pagination section
+- [x] Header/footer different first/odd-even
+- [x] Watermark panel + print
+- [x] Bookmark + link
+- [x] Template gallery + constants
+- [x] Folders + sidebar tree
+- [x] i18n + verify print
 
 ## Success Criteria
 

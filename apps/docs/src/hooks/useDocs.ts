@@ -9,6 +9,7 @@ import {
   saveDoc,
   saveDocs,
 } from '@/services/docs.service';
+import { DOC_TEMPLATES } from '@/constants/templates.constants';
 import { importAnySupportedFile } from '@/services/import.service';
 import { DEFAULT_PAGE_SETUP, type DocRecord, type PageSetup } from '@/types/docs.types';
 
@@ -24,6 +25,8 @@ export interface DocsState {
   updateContent: (html: string) => void;
   updateTitle: (title: string) => void;
   addDoc: () => string;
+  addDocFromTemplate: (templateId: string) => string;
+  moveToFolder: (docId: string, folderId: string | null) => void;
   importFile: (file: File) => Promise<string>;
   deleteDoc: () => void;
   setActiveDocPageSetup: (setup: PageSetup) => void;
@@ -141,6 +144,38 @@ export const useDocs = (): DocsState => {
     void saveDoc(nextDoc);
     return nextDoc.id;
   }, []);
+
+  const addDocFromTemplate = useCallback((templateId: string): string => {
+    const template = DOC_TEMPLATES.find((t) => t.id === templateId);
+    const timestamp = now();
+    const nextDoc: DocRecord = {
+      id: `doc-${crypto.randomUUID()}`,
+      title: template?.title || 'Tài liệu từ mẫu',
+      kind: 'docs',
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      lastOpenedAt: timestamp,
+      starred: false,
+      deletedAt: null,
+      content: template?.content || '<h1>Tài liệu mới</h1><p></p>',
+      pageSetup: DEFAULT_PAGE_SETUP(),
+    };
+    setDocs((current) => [nextDoc, ...current]);
+    setActiveId(nextDoc.id);
+    void saveDoc(nextDoc);
+    return nextDoc.id;
+  }, []);
+
+  const moveToFolder = useCallback(
+    (id: string, folderId: string | null): void => {
+      updateDoc(id, (doc) => {
+        const updated = { ...doc, parentId: folderId, updatedAt: now() };
+        void saveDoc(updated);
+        return updated;
+      });
+    },
+    [updateDoc],
+  );
 
   const importFile = useCallback(async (file: File): Promise<string> => {
     const nextDoc = await importAnySupportedFile(file);
@@ -290,6 +325,8 @@ export const useDocs = (): DocsState => {
     updateContent,
     updateTitle,
     addDoc,
+    addDocFromTemplate,
+    moveToFolder,
     importFile,
     deleteDoc,
     setActiveDocPageSetup,

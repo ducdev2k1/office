@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import type { CollabUser, HocuspocusProvider } from '@office/collab-core';
 import {
+  Bookmark,
   Checklist,
   ClearFormatting,
   ImageResize,
@@ -9,6 +10,7 @@ import {
   Mention,
   MentionSuggestion,
   ParagraphSpacing,
+  SectionBreak,
   Toc,
 } from '@office/tiptap-extensions';
 import Collaboration from '@tiptap/extension-collaboration';
@@ -120,6 +122,8 @@ export const useDocsEditor = (
     Checklist,
     LinkPopover,
     Toc,
+    SectionBreak,
+    Bookmark,
     Mention.configure({}),
     MentionSuggestion.configure({
       users: mentionUsers,

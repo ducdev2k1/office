@@ -39,6 +39,9 @@ export interface HeaderMenuActions {
   onInsertImage: (file: File) => void;
   onInsertTable: () => void;
   onInsertPageBreak: () => void;
+  onInsertSectionBreak?: () => void;
+  onInsertBookmark?: () => void;
+  onWatermark?: () => void;
   onHeaderFooter?: () => void;
   onHelp: () => void;
   onVersionHistory?: () => void;

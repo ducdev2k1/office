@@ -57,6 +57,9 @@
       "table": "Bảng",
       "horizontalRule": "Đường kẻ ngang",
       "pageBreak": "Ngắt trang",
+      "sectionBreak": "Ngắt phần (Section Break)",
+      "bookmark": "Dấu trang (Bookmark)",
+      "watermark": "Hình nền mờ (Watermark)",
       "headerFooter": "Đầu trang, chân trang & số trang",
       "link": "Đường dẫn liên kết"
     },

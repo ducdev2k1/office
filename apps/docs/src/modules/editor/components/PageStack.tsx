@@ -1,6 +1,5 @@
 import { useMemo, type MouseEvent } from 'react';
-import { useTranslation } from '@office/i18n';
-import type { HFAlign, PageSetup } from '@/types/docs.types';
+import type { HFAlign, HeaderFooterSlot, PageSetup } from '@/types/docs.types';
 import { resolveSlot } from '@/modules/editor/print/page-tokens.utils';
 import type { InlineBandRect } from '@/modules/editor/components/HeaderFooterInlineEditor';
 
@@ -18,8 +17,34 @@ export interface InlineEditRequest {
   rect: InlineBandRect;
 }
 
+const getEffectiveSlot = (
+  setup: PageSetup,
+  band: 'header' | 'footer',
+  pageIndex: number,
+): HeaderFooterSlot | undefined => {
+  const isFirstPage = pageIndex === 0;
+  const isEvenPage = pageIndex % 2 === 1; // 0-based: index 1 is page 2 (even)
+
+  if (band === 'header') {
+    if (isFirstPage && setup.differentFirst) {
+      return setup.firstHeader || setup.header;
+    }
+    if (isEvenPage && setup.differentOddEven) {
+      return setup.evenHeader || setup.header;
+    }
+    return setup.header;
+  }
+
+  if (isFirstPage && setup.differentFirst) {
+    return setup.firstFooter || setup.footer;
+  }
+  if (isEvenPage && setup.differentOddEven) {
+    return setup.evenFooter || setup.footer;
+  }
+  return setup.footer;
+};
+
 export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackProps) => {
-  const { t } = useTranslation('docs');
   const tokenDate = useMemo(() => new Date(), []);
   const tokenCtx = useMemo(
     () => ({
@@ -32,8 +57,11 @@ export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackP
 
   const pages = useMemo(() => {
     return Array.from({ length: pageCount }).map((_, i) => {
+      const headerSlot = getEffectiveSlot(setup, 'header', i);
+      const footerSlot = getEffectiveSlot(setup, 'footer', i);
+
       const headerSlots = resolveSlot(
-        setup.header,
+        headerSlot,
         setup.pageNumber,
         'header',
         i,
@@ -41,7 +69,7 @@ export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackP
         tokenCtx,
       );
       const footerSlots = resolveSlot(
-        setup.footer,
+        footerSlot,
         setup.pageNumber,
         'footer',
         i,
@@ -78,9 +106,26 @@ export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackP
   return (
     <div className="page-stack" aria-hidden="true">
       {pages.map((p) => (
-        <div key={p.key} className="page">
+        <div key={p.key} className="page relative">
+          {setup.watermark?.enabled && setup.watermark.text && (
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden"
+              style={{ opacity: setup.watermark.opacity ?? 0.15 }}
+            >
+              <div
+                className="font-bold tracking-widest uppercase transform -rotate-45 whitespace-nowrap text-center"
+                style={{
+                  color: setup.watermark.color || '#64748B',
+                  fontSize: `${setup.watermark.fontSize || 48}px`,
+                }}
+              >
+                {setup.watermark.text}
+              </div>
+            </div>
+          )}
+
           <div
-            className="page-hf page-header"
+            className="page-hf page-header z-10"
             onDoubleClick={(e) => handleBandDoubleClick('header', p.key, e)}
           >
             <span>{p.header.left}</span>
@@ -88,7 +133,7 @@ export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackP
             <span>{p.header.right}</span>
           </div>
           <div
-            className="page-hf page-footer"
+            className="page-hf page-footer z-10"
             onDoubleClick={(e) => handleBandDoubleClick('footer', p.key, e)}
           >
             <span>{p.footer.left}</span>

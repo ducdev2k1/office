@@ -20,6 +20,7 @@ export const withDefaults = (doc: DocRecord): DocRecord => {
     lastOpenedAt: doc.lastOpenedAt ?? doc.updatedAt,
     starred: doc.starred ?? false,
     deletedAt: doc.deletedAt ?? null,
+    parentId: doc.parentId ?? null,
     pageSetup: {
       paperSize: setup?.paperSize ?? defaults.paperSize,
       orientation: setup?.orientation ?? defaults.orientation,
@@ -28,6 +29,15 @@ export const withDefaults = (doc: DocRecord): DocRecord => {
       footerMargin: setup?.footerMargin ?? defaults.footerMargin,
       header: setup?.header ? { ...defaults.header!, ...setup.header } : defaults.header,
       footer: setup?.footer ? { ...defaults.footer!, ...setup.footer } : defaults.footer,
+      differentFirst: setup?.differentFirst ?? defaults.differentFirst,
+      differentOddEven: setup?.differentOddEven ?? defaults.differentOddEven,
+      firstHeader: setup?.firstHeader,
+      firstFooter: setup?.firstFooter,
+      evenHeader: setup?.evenHeader,
+      evenFooter: setup?.evenFooter,
+      watermark: setup?.watermark
+        ? { ...defaults.watermark!, ...setup.watermark }
+        : defaults.watermark,
       pageNumber: setup?.pageNumber
         ? { ...defaults.pageNumber!, ...setup.pageNumber }
         : defaults.pageNumber,

@@ -14,6 +14,8 @@ export const useEditorModals = () => {
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
   const [versionHistoryOpen, setVersionHistoryOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [watermarkOpen, setWatermarkOpen] = useState(false);
+  const [moveToFolderOpen, setMoveToFolderOpen] = useState(false);
 
   useEffect(() => {
     const handleOpenHf = (event: Event) => {
@@ -59,6 +61,8 @@ export const useEditorModals = () => {
     setFindOpen(false);
     setDocSettingsOpen(false);
     setHelpOpen(false);
+    setWatermarkOpen(false);
+    setMoveToFolderOpen(false);
   };
 
   return {
@@ -71,6 +75,8 @@ export const useEditorModals = () => {
     contextMenu,
     versionHistoryOpen,
     shareOpen,
+    watermarkOpen,
+    moveToFolderOpen,
     setFindOpen,
     setDocSettingsOpen,
     setDocSettingsTab,
@@ -79,6 +85,8 @@ export const useEditorModals = () => {
     setContextMenu,
     setVersionHistoryOpen,
     setShareOpen,
+    setWatermarkOpen,
+    setMoveToFolderOpen,
     handleToggleSidebar,
     handleCloseSidebar,
     openPageSetup,

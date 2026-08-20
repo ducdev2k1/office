@@ -7,11 +7,17 @@ import type { ProductConfig } from '../types';
 interface TemplateStripProps {
   config: ProductConfig;
   onCreate: () => void;
+  onCreateFromTemplate?: (templateId: string) => void;
   onOpenFromDevice?: (file: File) => Promise<void> | void;
 }
 
 /** Day card "Tao moi" + template — giong Google Workspace home. */
-export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateStripProps) => {
+export const TemplateStrip = ({
+  config,
+  onCreate,
+  onCreateFromTemplate,
+  onOpenFromDevice,
+}: TemplateStripProps) => {
   const { t } = useTranslation('appShell');
   const IconName = KIND_ICON[config.kind];
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -39,14 +45,14 @@ export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateSt
         <button
           type="button"
           onClick={onCreate}
-          className="group flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition-shadow hover:shadow-md"
+          className="group flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition-shadow hover:shadow-md cursor-pointer"
           aria-label={config.blankLabel}
         >
           <span
-            className="flex h-28 items-center justify-center"
+            className="flex h-28 items-center justify-center transition-opacity group-hover:opacity-90"
             style={{ backgroundColor: config.accentVar }}
           >
-            <Icon name="add" size={32} className="text-white" aria-hidden="true" />
+            <Icon name="plus" size={32} className="text-white" aria-hidden="true" />
           </span>
           <span className="truncate px-2 py-2 text-sm text-foreground">{config.blankLabel}</span>
         </button>
@@ -54,10 +60,10 @@ export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateSt
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="group flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition-shadow hover:shadow-md"
+            className="group flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition-shadow hover:shadow-md cursor-pointer"
             aria-label={openLabel}
           >
-            <span className="flex h-28 items-center justify-center bg-muted">
+            <span className="flex h-28 items-center justify-center bg-muted group-hover:bg-muted/70 transition-colors">
               <Icon
                 name="upload"
                 size={32}
@@ -69,20 +75,27 @@ export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateSt
           </button>
         )}
         {config.templates.map((template) => (
-          <div
+          <button
             key={template.id}
-            className="flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm"
+            type="button"
+            onClick={() =>
+              onCreateFromTemplate ? onCreateFromTemplate(template.id) : onCreate()
+            }
+            className="group flex w-36 shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+            aria-label={template.label}
           >
-            <span className="flex h-28 items-center justify-center bg-muted">
+            <span className="flex h-28 items-center justify-center bg-muted/60 group-hover:bg-primary/10 transition-colors">
               <Icon
                 name={IconName}
-                size={40}
-                className="text-muted-foreground"
+                size={36}
+                className="text-primary/70 group-hover:text-primary transition-colors"
                 aria-hidden="true"
               />
             </span>
-            <span className="truncate px-2 py-2 text-sm text-foreground">{template.label}</span>
-          </div>
+            <span className="truncate px-2 py-2 text-sm text-foreground font-medium">
+              {template.label}
+            </span>
+          </button>
         ))}
       </div>
       <input

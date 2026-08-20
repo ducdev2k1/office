@@ -21,6 +21,7 @@ interface HeaderProps {
   onToggleTheme: () => void;
   starred?: boolean;
   onToggleStar?: () => void;
+  onMoveToFolder?: () => void;
   collabStatus?: CollabStatus;
   collaborators?: CollabUser[];
   currentUser?: CollabUser;
@@ -38,6 +39,7 @@ export const Header = ({
   onToggleTheme,
   starred = false,
   onToggleStar,
+  onMoveToFolder,
   collabStatus,
   collaborators = [],
   currentUser,
@@ -134,14 +136,14 @@ export const Header = ({
                     aria-label={t('header.moveToFolder')}
                     variant="ghost"
                     size="icon"
-                    disabled
+                    onClick={onMoveToFolder}
                   >
                     <Icon name="folder-closed" className="size-4.5" />
                   </Button>
                 }
               />
               <TooltipContent side="bottom">
-                {`${t('header.moveToFolder')} · ${t('header.comingSoon')}`}
+                {t('header.moveToFolder')}
               </TooltipContent>
             </Tooltip>
 

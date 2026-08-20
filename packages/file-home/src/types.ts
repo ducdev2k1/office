@@ -37,6 +37,7 @@ export type FileTab = 'recent' | 'starred' | 'trash';
 
 export interface FileHomeActions {
   onCreate: () => void;
+  onCreateFromTemplate?: (templateId: string) => void;
   /** Mo file (vd .docx) tu may len web de edit — tuy chon theo tung product. */
   onOpenFromDevice?: (file: File) => Promise<void> | void;
   onOpen: (id: string) => void;

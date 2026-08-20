@@ -7,8 +7,6 @@ import { useTheme } from '@/hooks/useTheme';
 import {
   EditorCanvas,
   EditorContextMenu,
-  HelpModal,
-  PageHeaderFooterPanel,
   Ruler,
   Statusbar,
   useCollabEditor,
@@ -18,16 +16,14 @@ import {
   usePrintDocument,
   type ContextMenuPosition,
 } from '@/modules/editor';
+import { EditorDialogsHost } from '@/modules/editor/components/EditorDialogsHost';
 import { FollowBanner, useFollowCollaborator } from '@/modules/collab';
 import { AccessModeBanner } from '@/modules/collab/components/AccessModeBanner';
 import { MentionPopover } from '@/modules/collab/components/MentionPopover';
 import { MentionSuggest } from '@/modules/collab/components/MentionSuggest';
-import { ShareDialog } from '@/modules/collab/components/ShareDialog';
-import { VersionHistoryDialog } from '@/modules/collab/components/VersionHistoryDialog';
 import { useAccessMode } from '@/modules/collab/hooks/useAccessMode';
 import { useVersionHistory } from '@/modules/collab/hooks/useVersionHistory';
 import { Header } from '@/modules/header';
-import { SearchAndReplace } from '@/modules/search-replace';
 import { DocsSidebar } from '@/modules/sidebar';
 import { BubbleToolbar } from '@/modules/toolbar/components/BubbleToolbar';
 import { LinkPopoverHost } from '@/modules/toolbar/components/LinkPopoverHost';
@@ -38,13 +34,16 @@ import { getOutline } from '@/utils/outline.utils';
 
 export const EditorPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { t } = useTranslation('docs');
   const navigate = useNavigate();
+  const { t } = useTranslation('docs');
+  const { theme, toggleTheme } = useTheme();
+  const [query, setQuery] = useState('');
+
   const {
     docs,
     activeDoc,
-    storageBytes,
     saveState,
+    storageBytes,
     setActiveId,
     updateContent,
     updateTitle,
@@ -52,15 +51,11 @@ export const EditorPage = () => {
     importFile,
     deleteDoc,
     setActiveDocPageSetup,
-    markOpened,
-    rename,
-    duplicate,
+    moveToFolder,
     star,
-    trash,
+    markOpened,
   } = useDocs();
-  const { theme, toggleTheme } = useTheme();
 
-  const [query, setQuery] = useState('');
   const accessMode = useAccessMode();
   const isReadOnly = accessMode === 'view';
 
@@ -68,20 +63,12 @@ export const EditorPage = () => {
   const {
     sidebarOpen,
     findOpen,
-    docSettingsOpen,
-    docSettingsTab,
-    activeBand,
-    helpOpen,
     contextMenu,
-    versionHistoryOpen,
-    shareOpen,
-    setFindOpen,
-    setDocSettingsOpen,
-    setActiveBand,
-    setHelpOpen,
     setContextMenu,
     setVersionHistoryOpen,
     setShareOpen,
+    setWatermarkOpen,
+    setMoveToFolderOpen,
     handleToggleSidebar,
     handleCloseSidebar,
     openPageSetup,
@@ -96,9 +83,7 @@ export const EditorPage = () => {
   const handleSelectDoc = (docId: string) => {
     setActiveId(docId);
     navigate(`/edit/${docId}`);
-    if (window.innerWidth < 768) {
-      handleCloseSidebar();
-    }
+    if (window.innerWidth < 768) handleCloseSidebar();
   };
 
   const handleDeleteDoc = () => {
@@ -133,6 +118,8 @@ export const EditorPage = () => {
     handleImageUpload,
     handleInsertTable,
     handleInsertPageBreak,
+    handleInsertSectionBreak,
+    handleInsertBookmark,
   } = useEditorActions(editor, activeDoc);
 
   useEffect(() => {
@@ -143,49 +130,29 @@ export const EditorPage = () => {
   }, [id, setActiveId, markOpened]);
 
   useEffect(() => {
-    if (!editor || editor.isDestroyed) return;
-    editor.storage.keyboardShortcuts.onFocusFontPicker = () => fontPickerRef.current?.click();
-    editor.storage.keyboardShortcuts.onFocusColorPicker = () => colorPickerRef.current?.click();
-    editor.storage.keyboardShortcuts.onSetLink = setLink;
-    if (editor.storage.toc) {
-      editor.storage.toc.onJump = (pos: number) => {
-        editor.commands.setTextSelection(pos);
-        editor.commands.scrollIntoView();
-        editor.commands.focus();
-      };
-    }
-  }, [editor, setLink]);
+    schedulePagination(true);
+  }, [activeDoc?.pageSetup, schedulePagination]);
 
-  useEffect(() => {
-    if (!editor || editor.isDestroyed) return;
-    editor.setEditable(!isReadOnly);
-  }, [editor, isReadOnly]);
+  const outline = useMemo(() => getOutline(editor?.getHTML() ?? ''), [editor]);
+  const activeCount = docs.filter((doc) => !doc.deletedAt).length;
+  const canDelete = activeCount > 1;
 
-  useGlobalShortcuts(toggleFind, closeAllModals);
+  const wordCount = editor?.storage.characterCount?.words?.() ?? 0;
+  const charCount = editor?.storage.characterCount?.characters?.() ?? 0;
 
   const { printDocument } = usePrintDocument(editor, activeDoc, paginationState);
 
-  const wordCount = useMemo(() => {
-    const text = editor?.state?.doc?.textContent?.trim() ?? '';
-    return text ? text.split(/\s+/).length : 0;
-  }, [editor?.state?.doc?.textContent]);
-
-  const charCount = editor?.state?.doc?.textContent?.length ?? 0;
-  const outline = useMemo(() => getOutline(activeDoc?.content ?? ''), [activeDoc?.content]);
-
-  const activeDocCount = useMemo(() => docs.filter((doc) => !doc.deletedAt).length, [docs]);
-  const canDelete = activeDocCount > 1;
-
-  const handleApplyPageSetup = (setup: PageSetup): void => {
-    setActiveDocPageSetup(setup);
-    setDocSettingsOpen(false);
-    schedulePagination(true);
-  };
+  useGlobalShortcuts(toggleFind, closeAllModals);
 
   const handleOpenFromDevice = (file: File): void => {
     void importFile(file)
       .then((docId) => navigate(`/edit/${docId}`))
       .catch(() => window.alert(t('menu.file.openFromDeviceError')));
+  };
+
+  const handlePageSetupChange = (setup: PageSetup) => {
+    setActiveDocPageSetup(setup);
+    schedulePagination(true, setup);
   };
 
   return (
@@ -199,6 +166,7 @@ export const EditorPage = () => {
           onToggleTheme={toggleTheme}
           starred={Boolean(activeDoc?.starred)}
           onToggleStar={() => activeDoc && star(activeDoc.id)}
+          onMoveToFolder={() => setMoveToFolderOpen(true)}
           collabStatus={collabStatus}
           collaborators={collaborators}
           currentUser={currentUser}
@@ -229,8 +197,11 @@ export const EditorPage = () => {
             onInsertImage: handleImageUpload,
             onInsertTable: handleInsertTable,
             onInsertPageBreak: handleInsertPageBreak,
+            onInsertSectionBreak: handleInsertSectionBreak,
+            onInsertBookmark: handleInsertBookmark,
+            onWatermark: () => setWatermarkOpen(true),
             onHeaderFooter: openHeaderFooter,
-            onHelp: () => setHelpOpen(true),
+            onHelp: () => modals.setHelpOpen(true),
             onVersionHistory: () => setVersionHistoryOpen(true),
             onShare: () => setShareOpen(true),
           }}
@@ -278,10 +249,6 @@ export const EditorPage = () => {
             onSelect={handleSelectDoc}
             onAdd={addDoc}
             onClose={handleCloseSidebar}
-            onRename={rename}
-            onDuplicate={duplicate}
-            onStar={star}
-            onTrash={trash}
           />
 
           <EditorCanvas
@@ -291,7 +258,7 @@ export const EditorPage = () => {
             sidebarOpen={sidebarOpen}
             onOpenSidebar={handleToggleSidebar}
             activeDoc={activeDoc}
-            onPageSetupChange={setActiveDocPageSetup}
+            onPageSetupChange={handlePageSetupChange}
           />
 
           {editor && <BubbleToolbar editor={editor} onSetLink={setLink} />}
@@ -301,9 +268,7 @@ export const EditorPage = () => {
             <MentionSuggest
               editor={editor}
               users={() =>
-                collaborators
-                  .filter((c) => c.name)
-                  .map((c) => ({ id: c.id, name: c.name }))
+                collaborators.filter((c) => c.name).map((c) => ({ id: c.id, name: c.name }))
               }
               getMentionedIds={() => {
                 if (!editor) return [];
@@ -333,47 +298,15 @@ export const EditorPage = () => {
           lastSavedAt={activeDoc ? new Date(activeDoc.updatedAt) : null}
         />
 
-        {editor && (
-          <SearchAndReplace
-            editor={editor}
-            open={findOpen}
-            onOpen={() => setFindOpen(true)}
-            onClose={() => setFindOpen(false)}
-          />
-        )}
-
-        {docSettingsOpen && activeDoc?.pageSetup && (
-          <PageHeaderFooterPanel
-            open={docSettingsOpen}
-            setup={activeDoc.pageSetup}
-            docTitle={activeDoc.title}
-            defaultTab={docSettingsTab}
-            activeBand={activeBand}
-            onActiveBandChange={setActiveBand}
-            onPageSetupChange={(setup) => {
-              setActiveDocPageSetup(setup);
-              schedulePagination(true, setup);
-            }}
-            onClose={() => setDocSettingsOpen(false)}
-          />
-        )}
-
-        <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
-
-        {activeDoc && (
-          <VersionHistoryDialog
-            open={versionHistoryOpen}
-            onClose={() => setVersionHistoryOpen(false)}
-            versionHistory={versionHistory}
-          />
-        )}
-        {activeDoc && (
-          <ShareDialog
-            open={shareOpen}
-            onClose={() => setShareOpen(false)}
-            docId={activeDoc.id}
-          />
-        )}
+        <EditorDialogsHost
+          editor={editor}
+          activeDoc={activeDoc}
+          docs={docs}
+          modals={modals}
+          versionHistory={versionHistory}
+          onPageSetupChange={handlePageSetupChange}
+          onMoveToFolder={moveToFolder}
+        />
 
         <EditorContextMenu
           editor={editor}

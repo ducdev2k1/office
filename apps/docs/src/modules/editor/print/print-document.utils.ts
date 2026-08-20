@@ -1,5 +1,5 @@
 import type { EditorView } from '@tiptap/pm/view';
-import { PAPER_SIZES, type PageSetup } from '@/types/docs.types';
+import { PAPER_SIZES, type HeaderFooterSlot, type PageSetup } from '@/types/docs.types';
 import { resolveSlot } from '@/modules/editor/print/page-tokens.utils';
 import { computeMetrics, type PageBreaks } from '@/modules/editor/utils/pagination.utils';
 
@@ -27,6 +27,33 @@ export const applyPrintPageRule = (setup: PageSetup): void => {
     document.head.appendChild(style);
   }
   style.textContent = `@page { size: ${width}mm ${height}mm; margin: 0; }`;
+};
+
+const getEffectiveSlot = (
+  setup: PageSetup,
+  band: 'header' | 'footer',
+  pageIndex: number,
+): HeaderFooterSlot | undefined => {
+  const isFirstPage = pageIndex === 0;
+  const isEvenPage = pageIndex % 2 === 1;
+
+  if (band === 'header') {
+    if (isFirstPage && setup.differentFirst) {
+      return setup.firstHeader || setup.header;
+    }
+    if (isEvenPage && setup.differentOddEven) {
+      return setup.evenHeader || setup.header;
+    }
+    return setup.header;
+  }
+
+  if (isFirstPage && setup.differentFirst) {
+    return setup.firstFooter || setup.footer;
+  }
+  if (isEvenPage && setup.differentOddEven) {
+    return setup.evenFooter || setup.footer;
+  }
+  return setup.footer;
 };
 
 export const buildPrintRoot = (
@@ -61,9 +88,7 @@ export const buildPrintRoot = (
   printRoot.style.setProperty('--margin-l-mm', `${mlMm}mm`);
   printRoot.style.setProperty('--header-margin-mm', `${headerMarginMm}mm`);
   printRoot.style.setProperty('--footer-margin-mm', `${footerMarginMm}mm`);
-  // px-based value — used by JS layout during screen rendering
   printRoot.style.setProperty('--usable-px', `${metrics.usable}px`);
-  // mm-based value — used by @media print CSS for resolution-independent clip height
   const usableMm = paperHMm - mtMm - mbMm;
   printRoot.style.setProperty('--usable-mm', `${usableMm}mm`);
 
@@ -79,10 +104,40 @@ export const buildPrintRoot = (
   for (let i = 0; i < pageCount; i += 1) {
     const pageEl = document.createElement('div');
     pageEl.className = 'print-page';
+    pageEl.style.position = 'relative';
+
+    // Watermark
+    if (setup.watermark?.enabled && setup.watermark.text) {
+      const watermarkEl = document.createElement('div');
+      watermarkEl.className = 'print-watermark';
+      watermarkEl.style.position = 'absolute';
+      watermarkEl.style.inset = '0';
+      watermarkEl.style.display = 'flex';
+      watermarkEl.style.alignItems = 'center';
+      watermarkEl.style.justifyContent = 'center';
+      watermarkEl.style.pointerEvents = 'none';
+      watermarkEl.style.zIndex = '0';
+      watermarkEl.style.opacity = `${setup.watermark.opacity ?? 0.15}`;
+      watermarkEl.style.overflow = 'hidden';
+
+      const textEl = document.createElement('div');
+      textEl.textContent = setup.watermark.text;
+      textEl.style.fontWeight = 'bold';
+      textEl.style.letterSpacing = '0.2em';
+      textEl.style.textTransform = 'uppercase';
+      textEl.style.transform = 'rotate(-45deg)';
+      textEl.style.whiteSpace = 'nowrap';
+      textEl.style.color = setup.watermark.color || '#64748B';
+      textEl.style.fontSize = `${setup.watermark.fontSize || 48}px`;
+
+      watermarkEl.appendChild(textEl);
+      pageEl.appendChild(watermarkEl);
+    }
 
     // Header
+    const headerSlot = getEffectiveSlot(setup, 'header', i);
     const headerSlots = resolveSlot(
-      setup.header,
+      headerSlot,
       setup.pageNumber,
       'header',
       i,
@@ -91,6 +146,8 @@ export const buildPrintRoot = (
     );
     const headerEl = document.createElement('div');
     headerEl.className = 'print-hf print-header';
+    headerEl.style.position = 'relative';
+    headerEl.style.zIndex = '1';
     const leftHeader = document.createElement('span');
     leftHeader.textContent = headerSlots.left;
     const centerHeader = document.createElement('span');
@@ -105,6 +162,8 @@ export const buildPrintRoot = (
     // Viewport & Content Clip
     const viewportEl = document.createElement('div');
     viewportEl.className = 'page-viewport is-paged';
+    viewportEl.style.position = 'relative';
+    viewportEl.style.zIndex = '1';
 
     const clipEl = document.createElement('div');
     clipEl.className = 'print-clip';
@@ -118,21 +177,16 @@ export const buildPrintRoot = (
     clone.removeAttribute('id');
     clone.removeAttribute('contenteditable');
 
-    // Reproduce the live editor's content box (width + padding) so text wraps
-    // identically in print and contentOffsets slices stay aligned page-for-page.
-    // Also forward key computed typography so the print clone is pixel-accurate.
     try {
       const liveRect = editorDom.getBoundingClientRect();
       const liveStyle = getComputedStyle(editorDom);
       clone.style.width = `${liveRect.width}px`;
       clone.style.padding = `${liveStyle.paddingTop} ${liveStyle.paddingRight} ${liveStyle.paddingBottom} ${liveStyle.paddingLeft}`;
       clone.style.boxSizing = liveStyle.boxSizing || 'border-box';
-      // Forward typography that may differ from default print UA stylesheet
       clone.style.fontFamily = liveStyle.fontFamily;
       clone.style.fontSize = liveStyle.fontSize;
       clone.style.lineHeight = liveStyle.lineHeight;
       clone.style.color = liveStyle.color;
-      // Ensure browser keeps background-colors & colors in print (no stripping)
       (
         clone.style as CSSStyleDeclaration & {
           printColorAdjust?: string;
@@ -146,10 +200,10 @@ export const buildPrintRoot = (
         }
       ).webkitPrintColorAdjust = 'exact';
     } catch {
-      /* non-browser environment (tests): keep clone's inherited box */
+      /* non-browser environment (tests) */
     }
 
-    clone.querySelectorAll('.page-break-marker').forEach((m) => {
+    clone.querySelectorAll('.page-break-marker, .section-break-divider').forEach((m) => {
       (m as HTMLElement).classList.add('print-hide-break-visual');
     });
 
@@ -159,8 +213,9 @@ export const buildPrintRoot = (
     pageEl.appendChild(viewportEl);
 
     // Footer
+    const footerSlot = getEffectiveSlot(setup, 'footer', i);
     const footerSlots = resolveSlot(
-      setup.footer,
+      footerSlot,
       setup.pageNumber,
       'footer',
       i,
@@ -169,6 +224,8 @@ export const buildPrintRoot = (
     );
     const footerEl = document.createElement('div');
     footerEl.className = 'print-hf print-footer';
+    footerEl.style.position = 'relative';
+    footerEl.style.zIndex = '1';
     const leftFooter = document.createElement('span');
     leftFooter.textContent = footerSlots.left;
     const centerFooter = document.createElement('span');

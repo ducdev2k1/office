@@ -17,6 +17,8 @@ export interface EditorActions {
   handleImageUpload: (file: File) => void;
   handleInsertTable: () => void;
   handleInsertPageBreak: () => void;
+  handleInsertSectionBreak: (type?: 'next-page' | 'continuous') => void;
+  handleInsertBookmark: () => void;
 }
 
 export const useEditorActions = (
@@ -77,6 +79,20 @@ export const useEditorActions = (
     editor?.chain().focus().setPageBreak().run();
   };
 
+  const handleInsertSectionBreak = (type: 'next-page' | 'continuous' = 'next-page'): void => {
+    (editor?.chain().focus() as unknown as { setSectionBreak: (opts: { type: string }) => { run: () => boolean } })
+      ?.setSectionBreak({ type })
+      ?.run();
+  };
+
+  const handleInsertBookmark = (): void => {
+    const name = window.prompt('Nhập tên dấu trang (Bookmark)', 'Dấu trang 1');
+    if (name === null) return;
+    (editor?.chain().focus() as unknown as { setBookmark: (name?: string) => { run: () => boolean } })
+      ?.setBookmark(name)
+      ?.run();
+  };
+
   return {
     setLink,
     exportDocx,
@@ -86,5 +102,7 @@ export const useEditorActions = (
     handleImageUpload,
     handleInsertTable,
     handleInsertPageBreak,
+    handleInsertSectionBreak,
+    handleInsertBookmark,
   };
 };

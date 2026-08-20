@@ -3,6 +3,7 @@ import { FileHome, estimateStorageMB, type ProductConfig } from '@office/file-ho
 import { useTranslation } from '@office/i18n';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { DOC_TEMPLATES } from '@/constants/templates.constants';
 import { useDocs } from '@/hooks/useDocs';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -30,7 +31,10 @@ export const HomePage = () => {
       blankLabel: t('home.blankDoc'),
       editorPath: (id) => `/edit/${id}`,
       accentVar: 'var(--o-kind-docs)',
-      templates: [],
+      templates: DOC_TEMPLATES.filter((tpl) => tpl.id !== 'template-blank').map((tpl) => ({
+        id: tpl.id,
+        label: tpl.title,
+      })),
     }),
     [t],
   );
@@ -57,6 +61,10 @@ export const HomePage = () => {
         actions={{
           onCreate: () => {
             const id = docsApi.addDoc();
+            navigate(`/edit/${id}`);
+          },
+          onCreateFromTemplate: (templateId) => {
+            const id = docsApi.addDocFromTemplate(templateId);
             navigate(`/edit/${id}`);
           },
           onOpenFromDevice: async (file) => {

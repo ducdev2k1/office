@@ -57,6 +57,9 @@
       "table": "Table",
       "horizontalRule": "Horizontal line",
       "pageBreak": "Page break",
+      "sectionBreak": "Section break",
+      "bookmark": "Bookmark",
+      "watermark": "Watermark",
       "headerFooter": "Header, footer & page numbers",
       "link": "Link"
     },

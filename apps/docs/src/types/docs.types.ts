@@ -24,6 +24,14 @@ export interface PageMargins {
   left: number;
 }
 
+export interface WatermarkSetup {
+  enabled: boolean;
+  text: string;
+  opacity: number;
+  color?: string;
+  fontSize?: number;
+}
+
 export interface PageSetup {
   paperSize: PaperSize;
   orientation: Orientation;
@@ -33,6 +41,13 @@ export interface PageSetup {
   headerMargin?: number;
   footerMargin?: number;
   pageNumber?: PageNumberSetup;
+  differentFirst?: boolean;
+  differentOddEven?: boolean;
+  firstHeader?: HeaderFooterSlot;
+  firstFooter?: HeaderFooterSlot;
+  evenHeader?: HeaderFooterSlot;
+  evenFooter?: HeaderFooterSlot;
+  watermark?: WatermarkSetup;
 }
 
 export type DocSourceType = 'docx' | 'text' | 'html' | 'markdown';
@@ -50,6 +65,8 @@ export interface DocRecord {
   pageSetup?: PageSetup;
   /** Danh dau doc duoc mo tu file (luu byte goc o docxSourceStore). */
   sourceType?: DocSourceType;
+  /** ID thu muc cha (neu co) */
+  parentId?: string | null;
 }
 
 export const PAPER_SIZES: Record<PaperSize, { width: number; height: number }> = {
@@ -73,6 +90,14 @@ export const DEFAULT_HEADER_FOOTER_SLOT = (): HeaderFooterSlot => ({
   right: '',
 });
 
+export const DEFAULT_WATERMARK_SETUP = (): WatermarkSetup => ({
+  enabled: false,
+  text: 'BẢO MẬT',
+  opacity: 0.15,
+  color: '#64748B',
+  fontSize: 48,
+});
+
 export const DEFAULT_PAGE_SETUP = (): PageSetup => ({
   paperSize: 'a4',
   orientation: 'portrait',
@@ -82,6 +107,9 @@ export const DEFAULT_PAGE_SETUP = (): PageSetup => ({
   headerMargin: 12.5,
   footerMargin: 12.5,
   pageNumber: DEFAULT_PAGE_NUMBER_SETUP(),
+  differentFirst: false,
+  differentOddEven: false,
+  watermark: DEFAULT_WATERMARK_SETUP(),
 });
 
 export const mmToPx = (mm: number | undefined | null): number =>
