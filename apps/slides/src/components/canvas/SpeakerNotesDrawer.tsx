@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { Button, Icon } from '@office/ui-kit';
+import { Icon } from '@office/ui-kit';
 import { useState } from 'react';
 
 interface SpeakerNotesDrawerProps {
@@ -15,28 +15,40 @@ export const SpeakerNotesDrawer = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-t border-border bg-card">
-      <div className="flex h-7 items-center justify-between px-3 text-xs text-muted-foreground">
+    <div className="border-t border-border bg-card transition-colors">
+      <div className="flex h-8 items-center justify-between px-3 text-xs text-muted-foreground">
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
-          className="flex items-center gap-1.5 font-medium hover:text-foreground transition-colors"
+          className="group flex items-center gap-1.5 font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
-          <Icon name={isOpen ? 'chevron-down' : 'chevron-up'} size={13} />
+          <Icon
+            name="chevron-up"
+            size={13}
+            className={`transition-transform duration-300 ease-out ${
+              isOpen ? 'rotate-180 text-primary' : 'text-muted-foreground group-hover:text-foreground'
+            }`}
+          />
           <span>Ghi chú của người thuyết trình</span>
         </button>
       </div>
 
-      {isOpen && (
-        <div className="h-24 p-2 bg-background border-t border-border animate-in slide-in-from-bottom-2 duration-150">
-          <textarea
-            defaultValue={notes}
-            placeholder="Nhập ghi chú cho trang chiếu này (chỉ hiển thị khi thuyết trình)..."
-            onBlur={(e) => onUpdateNotes(e.target.value)}
-            className="h-full w-full resize-none bg-transparent p-1 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none leading-relaxed"
-          />
+      <div
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+          isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="overflow-hidden bg-background border-t border-border/80">
+          <div className="h-28 p-2.5">
+            <textarea
+              defaultValue={notes}
+              placeholder="Nhập ghi chú cho trang chiếu này (chỉ hiển thị khi thuyết trình)..."
+              onBlur={(e) => onUpdateNotes(e.target.value)}
+              className="h-full w-full resize-none rounded bg-transparent p-1.5 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none leading-relaxed transition-all focus:ring-1 focus:ring-primary/40"
+            />
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

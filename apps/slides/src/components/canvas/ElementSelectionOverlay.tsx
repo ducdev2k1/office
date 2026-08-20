@@ -63,7 +63,7 @@ export const ElementSelectionOverlay = ({
       {element.type === 'image' && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className="absolute -top-11 left-0 z-40 flex items-center gap-0.5 rounded-lg border border-border bg-popover/95 p-1 shadow-lg backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
+          className="absolute -top-11 left-0 z-40 flex items-center gap-0.5 rounded-lg border border-border bg-popover/95 p-1 shadow-lg backdrop-blur-md animate-in fade-in zoom-in-95 duration-150"
         >
           <input
             ref={replaceImgRef}
@@ -100,7 +100,7 @@ export const ElementSelectionOverlay = ({
             >
               <Icon name="edit" size={13} />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align="start" className="animate-in fade-in zoom-in-95 duration-100">
               <DropdownMenuItem onClick={() => onUpdateElement?.({ stroke: undefined, strokeWidth: 0 })}>
                 {t('formatting.noBorder')}
               </DropdownMenuItem>
@@ -173,13 +173,13 @@ export const ElementSelectionOverlay = ({
 
       {/* 2. Google Slides Top Rotation Stem & Handle */}
       {onStartRotate && (
-        <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center">
+        <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center animate-in fade-in zoom-in-90 duration-150">
           <Tooltip>
             <TooltipTrigger
               render={
                 <div
                   onPointerDown={onStartRotate}
-                  className="flex h-5 w-5 cursor-grab items-center justify-center rounded-full border-2 border-[var(--o-kind-slides)] bg-white text-[var(--o-kind-slides)] shadow-md transition-transform hover:scale-110 active:cursor-grabbing"
+                  className="flex h-5 w-5 cursor-grab items-center justify-center rounded-full border-2 border-[var(--o-kind-slides)] bg-white text-[var(--o-kind-slides)] shadow-md transition-transform duration-100 hover:scale-125 active:cursor-grabbing"
                 >
                   <svg viewBox="0 0 24 24" className="h-3 w-3 fill-current">
                     <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
@@ -196,37 +196,37 @@ export const ElementSelectionOverlay = ({
       {/* 3. Four Corner Circular Handles (Google Slides Style) */}
       <div
         onPointerDown={(e) => onStartResize(e, 'nw')}
-        className="absolute -top-1.5 -left-1.5 z-30 h-3 w-3 cursor-nwse-resize rounded-full border-2 border-[var(--o-kind-slides)] bg-white shadow-xs"
+        className="absolute -top-1.5 -left-1.5 z-30 h-3 w-3 cursor-nwse-resize rounded-full border-2 border-[var(--o-kind-slides)] bg-white shadow-xs transition-transform duration-100 hover:scale-125"
       />
       <div
         onPointerDown={(e) => onStartResize(e, 'ne')}
-        className="absolute -top-1.5 -right-1.5 z-30 h-3 w-3 cursor-nesw-resize rounded-full border-2 border-[var(--o-kind-slides)] bg-white shadow-xs"
+        className="absolute -top-1.5 -right-1.5 z-30 h-3 w-3 cursor-nesw-resize rounded-full border-2 border-[var(--o-kind-slides)] bg-white shadow-xs transition-transform duration-100 hover:scale-125"
       />
       <div
         onPointerDown={(e) => onStartResize(e, 'se')}
-        className="absolute -bottom-1.5 -right-1.5 z-30 h-3 w-3 cursor-nwse-resize rounded-full border-2 border-[var(--o-kind-slides)] bg-white shadow-xs"
+        className="absolute -bottom-1.5 -right-1.5 z-30 h-3 w-3 cursor-nwse-resize rounded-full border-2 border-[var(--o-kind-slides)] bg-white shadow-xs transition-transform duration-100 hover:scale-125"
       />
       <div
         onPointerDown={(e) => onStartResize(e, 'sw')}
-        className="absolute -bottom-1.5 -left-1.5 z-30 h-3 w-3 cursor-nesw-resize rounded-full border-2 border-[var(--o-kind-slides)] bg-white shadow-xs"
+        className="absolute -bottom-1.5 -left-1.5 z-30 h-3 w-3 cursor-nesw-resize rounded-full border-2 border-[var(--o-kind-slides)] bg-white shadow-xs transition-transform duration-100 hover:scale-125"
       />
 
       {/* 4. Four Edge Pill Handles (Google Slides Style) */}
       <div
         onPointerDown={(e) => onStartResize(e, 'n')}
-        className="absolute -top-1 left-1/2 -translate-x-1/2 z-30 h-1.5 w-4 cursor-ns-resize rounded-full border border-[var(--o-kind-slides)] bg-[var(--o-kind-slides)] shadow-xs"
+        className="absolute -top-1 left-1/2 -translate-x-1/2 z-30 h-1.5 w-4 cursor-ns-resize rounded-full border border-[var(--o-kind-slides)] bg-[var(--o-kind-slides)] shadow-xs transition-transform duration-100 hover:scale-125"
       />
       <div
         onPointerDown={(e) => onStartResize(e, 's')}
-        className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-30 h-1.5 w-4 cursor-ns-resize rounded-full border border-[var(--o-kind-slides)] bg-[var(--o-kind-slides)] shadow-xs"
+        className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-30 h-1.5 w-4 cursor-ns-resize rounded-full border border-[var(--o-kind-slides)] bg-[var(--o-kind-slides)] shadow-xs transition-transform duration-100 hover:scale-125"
       />
       <div
         onPointerDown={(e) => onStartResize(e, 'w')}
-        className="absolute top-1/2 -left-1 -translate-y-1/2 z-30 h-4 w-1.5 cursor-ew-resize rounded-full border border-[var(--o-kind-slides)] bg-[var(--o-kind-slides)] shadow-xs"
+        className="absolute top-1/2 -left-1 -translate-y-1/2 z-30 h-4 w-1.5 cursor-ew-resize rounded-full border border-[var(--o-kind-slides)] bg-[var(--o-kind-slides)] shadow-xs transition-transform duration-100 hover:scale-125"
       />
       <div
         onPointerDown={(e) => onStartResize(e, 'e')}
-        className="absolute top-1/2 -right-1 -translate-y-1/2 z-30 h-4 w-1.5 cursor-ew-resize rounded-full border border-[var(--o-kind-slides)] bg-[var(--o-kind-slides)] shadow-xs"
+        className="absolute top-1/2 -right-1 -translate-y-1/2 z-30 h-4 w-1.5 cursor-ew-resize rounded-full border border-[var(--o-kind-slides)] bg-[var(--o-kind-slides)] shadow-xs transition-transform duration-100 hover:scale-125"
       />
     </TooltipProvider>
   );

@@ -35,13 +35,13 @@ export const SlideThumbnailList = ({
 
   return (
     <TooltipProvider>
-      <aside className="flex w-56 flex-col border-r border-border bg-card/60">
+      <aside className="flex w-56 flex-col border-r border-border bg-card/60 select-none">
         <div className="flex items-center justify-between border-b border-border p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           <span>{t('thumbnails.countHeader', { count: slides.length })}</span>
           <ToolbarButton
             label={t('thumbnails.addSlide')}
             onClick={onAddSlide}
-            className="h-6 w-6 p-0"
+            className="h-6 w-6 p-0 transition-transform active:scale-95"
           >
             <Icon name="plus" size={14} />
           </ToolbarButton>
@@ -54,19 +54,22 @@ export const SlideThumbnailList = ({
               <div
                 key={slide.id}
                 onClick={() => onSelect(index)}
-                className="group relative flex cursor-pointer items-center gap-2"
+                className="group relative flex cursor-pointer items-center gap-2 transition-transform active:scale-[0.98]"
               >
                 <span className="w-4 text-right text-xs font-medium text-muted-foreground">
                   {index + 1}
                 </span>
 
                 <div
-                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-md border bg-white p-2 text-[6px] shadow-xs transition-all dark:bg-slate-900 ${
+                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-md border bg-white p-2 text-[6px] shadow-xs transition-all duration-200 ease-out hover:scale-[1.02] dark:bg-slate-900 ${
                     isActive
-                      ? 'border-[var(--o-kind-slides)] ring-2 ring-[var(--o-kind-slides)]/30'
-                      : 'border-border hover:border-foreground/40'
+                      ? 'border-[var(--o-kind-slides)] ring-2 ring-[var(--o-kind-slides)]/30 shadow-md'
+                      : 'border-border hover:border-foreground/40 hover:shadow-xs'
                   }`}
-                  style={{ backgroundColor: slide.background || undefined }}
+                  style={{
+                    backgroundColor: slide.background || undefined,
+                    background: slide.backgroundGradient || slide.backgroundImage || slide.background || undefined,
+                  }}
                 >
                   {slide.elements.slice(0, 4).map((el) => (
                     <div
@@ -90,7 +93,7 @@ export const SlideThumbnailList = ({
                   {/* 3-dot Action Menu */}
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute right-1 top-1 opacity-0 transition-opacity group-hover:opacity-100"
+                    className="absolute right-1 top-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
                   >
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -104,7 +107,7 @@ export const SlideThumbnailList = ({
                       >
                         <Icon name="more-horizontal" size={12} />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" className="animate-in fade-in zoom-in-95 duration-100">
                         <DropdownMenuItem onClick={() => onDuplicateSlide?.(index)}>
                           <Icon name="copy" size={13} className="mr-2" />
                           <span>{t('toolbar.duplicateSlide')}</span>
@@ -145,7 +148,7 @@ export const SlideThumbnailList = ({
             variant="outline"
             size="sm"
             onClick={onAddSlide}
-            className="w-full gap-1.5 border-dashed py-3 text-xs text-muted-foreground hover:text-foreground"
+            className="w-full gap-1.5 border-dashed py-3 text-xs text-muted-foreground hover:text-foreground transition-all duration-150 active:scale-95"
           >
             <Icon name="plus" size={13} />
             <span>{t('thumbnails.addSlideBottom')}</span>
