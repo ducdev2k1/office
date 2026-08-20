@@ -60,7 +60,8 @@ export const usePrintDocument = (
     window.addEventListener('afterprint', onAfterPrint);
 
     if (import.meta.env.DEV) {
-      (window as unknown as { __triggerPrintBuild?: () => boolean }).__triggerPrintBuild = buildOrBail;
+      (window as unknown as { __triggerPrintBuild?: () => boolean }).__triggerPrintBuild =
+        buildOrBail;
     }
 
     return () => {

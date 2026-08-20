@@ -1,10 +1,10 @@
 ---
 phase: 3
-title: "Page Setup Model & Token Renderer"
+title: 'Page Setup Model & Token Renderer'
 status: done
 priority: P1
 dependencies: [2]
-effort: "0.75d"
+effort: '0.75d'
 ---
 
 # Phase 3: Page Setup Model & Token Renderer
@@ -17,18 +17,20 @@ Mở rộng `PageSetup` + token renderer. Chia thành **3a** (tối thiểu đ�
 
 P4 chỉ cần **số trang**. Free-text header/footer, `{title}`, `{date}`, `headerMargin`/`footerMargin` chỉ có consumer thật ở P5/P6.
 
-| | Nội dung | Unblock |
-|---|---|---|
-| **3a** | `PageNumberSetup`, `renderTokens` cho `{page}`/`{pages}`, normalize trong `withDefaults` | P4 |
-| **3b** | `HeaderFooterSlot`, `{title}`/`{date}`, `headerMargin`/`footerMargin`, `resolveSlot` đầy đủ | P5, P6 |
+|        | Nội dung                                                                                    | Unblock |
+| ------ | ------------------------------------------------------------------------------------------- | ------- |
+| **3a** | `PageNumberSetup`, `renderTokens` cho `{page}`/`{pages}`, normalize trong `withDefaults`    | P4      |
+| **3b** | `HeaderFooterSlot`, `{title}`/`{date}`, `headerMargin`/`footerMargin`, `resolveSlot` đầy đủ | P5, P6  |
 
 ## Requirements
 
 **Functional**
+
 - Token thay `{page}` `{pages}` `{title}` `{date}` bằng giá trị thật.
 - `startAt` và `skipFirstPage` được tôn trọng.
 
 **Non-functional**
+
 - **Backward compatible tuyệt đối**: doc cũ trong IndexedDB thiếu field mới vẫn load và render bình thường.
 - Renderer là pure function, không chạm DOM.
 - Normalize **không** được phá identity của `activeDoc.pageSetup` (xem dưới).
@@ -40,13 +42,17 @@ P4 chỉ cần **số trang**. Free-text header/footer, `{title}`, `{date}`, `he
 ```ts
 export type HFAlign = 'left' | 'center' | 'right';
 
-export interface HeaderFooterSlot { left: string; center: string; right: string }
+export interface HeaderFooterSlot {
+  left: string;
+  center: string;
+  right: string;
+}
 
 export interface PageNumberSetup {
   enabled: boolean;
   position: 'header' | 'footer';
   align: HFAlign;
-  format: string;          // '{page}' | '{page} / {pages}' | 'Trang {page}'
+  format: string; // '{page}' | '{page} / {pages}' | 'Trang {page}'
   startAt: number;
   skipFirstPage: boolean;
 }
@@ -55,11 +61,11 @@ export interface PageSetup {
   paperSize: PaperSize;
   orientation: Orientation;
   margins: PageMargins;
-  header?: HeaderFooterSlot;      // 3b
-  footer?: HeaderFooterSlot;      // 3b
-  headerMargin?: number;          // 3b — mm từ mép trên. Default 10
-  footerMargin?: number;          // 3b — mm từ mép dưới. Default 10
-  pageNumber?: PageNumberSetup;   // 3a
+  header?: HeaderFooterSlot; // 3b
+  footer?: HeaderFooterSlot; // 3b
+  headerMargin?: number; // 3b — mm từ mép trên. Default 10
+  footerMargin?: number; // 3b — mm từ mép dưới. Default 10
+  pageNumber?: PageNumberSetup; // 3a
 }
 ```
 
@@ -67,9 +73,10 @@ export interface PageSetup {
 
 ### ⚠️ Normalize ĐÚNG MỘT CHỖ: `withDefaults`
 
-Phiên bản trước ghi *"Gọi ở mọi chỗ hiện đang làm `?? DEFAULT_PAGE_SETUP()`. Grep các chỗ đó: `usePagination.ts`, `usePrintSetup.ts`, `EditorCanvas.tsx`, `PageSetupPanel.tsx`"*. **Sai sự thật.**
+Phiên bản trước ghi _"Gọi ở mọi chỗ hiện đang làm `?? DEFAULT_PAGE_SETUP()`. Grep các chỗ đó: `usePagination.ts`, `usePrintSetup.ts`, `EditorCanvas.tsx`, `PageSetupPanel.tsx`"_. **Sai sự thật.**
 
 Grep thật:
+
 - `EditorCanvas.tsx` — **0 hit** (chỉ forward callback `onPageSetupChange`)
 - `PageSetupPanel.tsx` — **0 hit** (nhận `setup` qua prop)
 - `usePagination.ts:37,103,117` — **3** site, không phải 1
@@ -80,6 +87,7 @@ Grep thật:
 Repo đã có normalizer đúng chỗ: `withDefaults()` tại `docs.service.ts:12-21`, chạy cho **cả** `loadDocs` (`:87`) và `saveDocs` (`:103`).
 
 **Fix: một dòng, đúng boundary.**
+
 ```ts
 // docs.service.ts:20
 pageSetup: { ...DEFAULT_PAGE_SETUP(), ...doc.pageSetup },
@@ -128,6 +136,7 @@ export const resolveSlot = (
 ```
 
 Quy tắc:
+
 - `page = pageIndex + startAt`
 - **`pages = pageCount`** — tổng số trang, như `NUMPAGES` của Word. Không phải `pageCount + startAt - 1`. `startAt=5`, doc 3 trang → `{page}` = 5,6,7 và `{pages}` = 3.
 - `pageNumber.enabled` và `position === band` → chèn `renderTokens(format, ctx)` vào ô `align`.
@@ -178,10 +187,10 @@ Quy tắc:
 
 ## Risk Assessment
 
-| Rủi ro | Mitigation |
-|---|---|
-| Normalize phá identity → render loop, không gõ được | Normalize ở `withDefaults` (storage boundary), không ở component. Test case "gõ vào ô margin" |
-| `mmToPx(undefined)` = `NaN` → CSS var invalid, header đè text, không throw | Guard trong `mmToPx`; test tường minh |
-| Doc cũ vỡ vì thiếu field | Field mới optional + spread default ở `withDefaults` phủ cả load lẫn save |
-| `{date}` lệch giữa các trang | Truyền `date` từ ngoài qua `TokenContext`, tính 1 lần ở call site |
-| Duplicate logic locale với `packages/i18n` | Reuse `formatDateTime` + type `Locale` |
+| Rủi ro                                                                     | Mitigation                                                                                    |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Normalize phá identity → render loop, không gõ được                        | Normalize ở `withDefaults` (storage boundary), không ở component. Test case "gõ vào ô margin" |
+| `mmToPx(undefined)` = `NaN` → CSS var invalid, header đè text, không throw | Guard trong `mmToPx`; test tường minh                                                         |
+| Doc cũ vỡ vì thiếu field                                                   | Field mới optional + spread default ở `withDefaults` phủ cả load lẫn save                     |
+| `{date}` lệch giữa các trang                                               | Truyền `date` từ ngoài qua `TokenContext`, tính 1 lần ở call site                             |
+| Duplicate logic locale với `packages/i18n`                                 | Reuse `formatDateTime` + type `Locale`                                                        |

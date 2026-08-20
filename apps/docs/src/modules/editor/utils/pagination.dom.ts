@@ -193,12 +193,7 @@ const createBandDiv = (
 
   // Edit button
   div.appendChild(
-    createEditButton(
-      band,
-      pageNum,
-      onEditBand ?? (() => {}),
-      () => div.getBoundingClientRect(),
-    ),
+    createEditButton(band, pageNum, onEditBand ?? (() => {}), () => div.getBoundingClientRect()),
   );
 
   return div;

@@ -1,10 +1,10 @@
 ---
 phase: 1
-title: "Test Infrastructure"
+title: 'Test Infrastructure'
 status: done
 priority: P1
 dependencies: []
-effort: "1d"
+effort: '1d'
 ---
 
 # Phase 1: Test Infrastructure
@@ -16,11 +16,13 @@ Dựng hạ tầng test tối thiểu **có khả năng bắt lỗi thật**. Re
 ## Requirements
 
 **Functional**
+
 - `pnpm test` chạy được ở root qua turbo, `pnpm typecheck` vẫn xanh.
 - Nạp được doc fixture có độ dài và `pageSetup` tuỳ ý vào headless Chrome.
 - Assertion phát hiện được **mất nội dung** và **cắt giữa dòng**, không chỉ lệch số trang.
 
 **Non-functional**
+
 - Không thêm dependency nào ngoài `vitest`. Không Playwright, không Puppeteer, không thư viện PDF.
 - Script CDP dùng `WebSocket` global của Node 22+ (repo đang v24.14.0).
 
@@ -41,11 +43,11 @@ Giải pháp: expose một hook DEV-only, gọi qua `Runtime.evaluate`:
 ```ts
 // chỉ trong import.meta.env.DEV
 window.__seedDoc = async (spec: {
-  blocks: number;         // số paragraph sinh tự động
+  blocks: number; // số paragraph sinh tự động
   paperSize?: PaperSize;
   orientation?: Orientation;
   margins?: Partial<PageMargins>;
-}) => Promise<string>     // trả docId để navigate tới /edit/:id
+}) => Promise<string>; // trả docId để navigate tới /edit/:id
 ```
 
 Đặt ở một module `dev/` riêng, import có điều kiện — không nằm trong `usePagination.ts`.
@@ -55,7 +57,7 @@ window.__seedDoc = async (spec: {
 Không thêm `window.__pageCount` vào `usePagination.ts`. `.page-stack` đã render đúng `pageCount` phần tử `.page` (`EditorCanvas.tsx:126-131`):
 
 ```js
-Runtime.evaluate("document.querySelectorAll('.page-stack .page').length")
+Runtime.evaluate("document.querySelectorAll('.page-stack .page').length");
 ```
 
 Zero thay đổi production code.
@@ -154,11 +156,11 @@ Xử lý: thêm `"vitest.config.ts"` vào `include`, và **import tường minh*
 
 ## Risk Assessment
 
-| Rủi ro | Mitigation |
-|---|---|
-| Font CDN không load offline → user in ra số trang lệch, test không tái lập | **Pin font local** (bước 8); vẫn chờ `document.fonts.ready` |
-| Pin font làm tăng bundle / đổi rendering nhẹ | Chỉ lấy weight đang dùng, woff2; so sánh screenshot trước/sau |
-| `__seedDoc` rò vào production bundle | Module riêng trong `dev/`, import có điều kiện `import.meta.env.DEV`, kiểm bundle sau khi compile |
-| Poll page count không bao giờ ổn định (pagination loop) | Timeout 10s + fail rõ ràng, đó cũng là tín hiệu bug thật |
-| Port 2001 bị chiếm | Đọc port từ `vite.config.ts` hoặc nhận qua `--port` |
-| `pdftotext -layout` gộp/tách dòng khác kỳ vọng | Assertion dựa trên **marker `[[N]]`**, không dựa vào layout dòng chính xác |
+| Rủi ro                                                                     | Mitigation                                                                                        |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Font CDN không load offline → user in ra số trang lệch, test không tái lập | **Pin font local** (bước 8); vẫn chờ `document.fonts.ready`                                       |
+| Pin font làm tăng bundle / đổi rendering nhẹ                               | Chỉ lấy weight đang dùng, woff2; so sánh screenshot trước/sau                                     |
+| `__seedDoc` rò vào production bundle                                       | Module riêng trong `dev/`, import có điều kiện `import.meta.env.DEV`, kiểm bundle sau khi compile |
+| Poll page count không bao giờ ổn định (pagination loop)                    | Timeout 10s + fail rõ ràng, đó cũng là tín hiệu bug thật                                          |
+| Port 2001 bị chiếm                                                         | Đọc port từ `vite.config.ts` hoặc nhận qua `--port`                                               |
+| `pdftotext -layout` gộp/tách dòng khác kỳ vọng                             | Assertion dựa trên **marker `[[N]]`**, không dựa vào layout dòng chính xác                        |

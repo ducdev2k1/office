@@ -28,7 +28,14 @@ const run = async () => {
   const a2 = ws.getCell(2, 1);
 
   console.log(`${name}: sheets=${wb.worksheets.length}`);
-  console.log('  A1 (merged header):', JSON.stringify(a1.value), 'bold=', a1.font?.bold, 'fill=', a1.fill?.type);
+  console.log(
+    '  A1 (merged header):',
+    JSON.stringify(a1.value),
+    'bold=',
+    a1.font?.bold,
+    'fill=',
+    a1.fill?.type,
+  );
   console.log('  B2 (number, numFmt):', JSON.stringify(b2.value), 'fmt=', b2.numFmt);
   console.log('  C4 (formula):', JSON.stringify(c4.value));
   console.log('  A2 (string):', JSON.stringify(a2.value));
@@ -43,4 +50,7 @@ const run = async () => {
   console.log('EXPORT TEST PASS');
 };
 
-run().catch((e) => { console.error(e); process.exit(1); });
+run().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

@@ -9,20 +9,47 @@ const MAX_SIZE = 400;
 
 /* ── Micro SVG icons ── */
 const IconMinus = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <line x1="5" y1="12" x2="19" y2="12" />
   </svg>
 );
 
 const IconPlus = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <line x1="12" y1="5" x2="12" y2="19" />
     <line x1="5" y1="12" x2="19" y2="12" />
   </svg>
 );
 
 const IconCheck = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
@@ -115,10 +142,7 @@ export const FontSizePicker = ({ currentSize, onChangeSize }: FontSizePickerProp
   return (
     <div className="flex items-center gap-0.5">
       {/* Nút giảm cỡ chữ (-) ở bên trái */}
-      <ToolbarButton
-        label={t('toolbar.decreaseFontSize')}
-        onClick={() => handleStep(-1)}
-      >
+      <ToolbarButton label={t('toolbar.decreaseFontSize')} onClick={() => handleStep(-1)}>
         <IconMinus />
       </ToolbarButton>
 
@@ -191,10 +215,7 @@ export const FontSizePicker = ({ currentSize, onChangeSize }: FontSizePickerProp
       </Popover>
 
       {/* Nút tăng cỡ chữ (+) ở bên phải */}
-      <ToolbarButton
-        label={t('toolbar.increaseFontSize')}
-        onClick={() => handleStep(1)}
-      >
+      <ToolbarButton label={t('toolbar.increaseFontSize')} onClick={() => handleStep(1)}>
         <IconPlus />
       </ToolbarButton>
     </div>

@@ -65,9 +65,7 @@ export const TemplateStrip = ({ config, onCreate, onOpenFromDevice }: TemplateSt
                 aria-hidden="true"
               />
             </span>
-            <span className="truncate px-2 py-2 text-sm text-foreground">
-              {openLabel}
-            </span>
+            <span className="truncate px-2 py-2 text-sm text-foreground">{openLabel}</span>
           </button>
         )}
         {config.templates.map((template) => (

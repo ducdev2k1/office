@@ -71,7 +71,8 @@ const basicDeck: SlideDeckData = {
           y: 130,
           width: 840,
           height: 250,
-          content: '1. Hoàn thiện bộ ba ứng dụng Docs, Sheets và Slides trên nền Web thuần.\n2. Tối ưu trải nghiệm soạn thảo ngoại tuyến (Offline-first) với IndexedDB.\n3. Đảm bảo khả năng tương thích 100% định dạng file Microsoft Office (.pptx, .xlsx, .docx).\n4. Bảo mật dữ liệu người dùng và tích hợp đăng nhập tập trung OneMail SSO.',
+          content:
+            '1. Hoàn thiện bộ ba ứng dụng Docs, Sheets và Slides trên nền Web thuần.\n2. Tối ưu trải nghiệm soạn thảo ngoại tuyến (Offline-first) với IndexedDB.\n3. Đảm bảo khả năng tương thích 100% định dạng file Microsoft Office (.pptx, .xlsx, .docx).\n4. Bảo mật dữ liệu người dùng và tích hợp đăng nhập tập trung OneMail SSO.',
           fontSize: 18,
           color: '#334155',
           align: 'left',
@@ -102,7 +103,8 @@ const basicDeck: SlideDeckData = {
           y: 130,
           width: 840,
           height: 200,
-          content: '• Tháng 8: Hoàn thành khảo sát kỹ thuật và xây dựng prototype Slides.\n• Tháng 9: Tích hợp xuất nhập PPTX đầy đủ và hoàn thiện giao diện thanh công cụ iNET.\n• Tháng 10: Thử nghiệm diện rộng nội bộ và nâng cấp độ chính xác hiển thị.',
+          content:
+            '• Tháng 8: Hoàn thành khảo sát kỹ thuật và xây dựng prototype Slides.\n• Tháng 9: Tích hợp xuất nhập PPTX đầy đủ và hoàn thiện giao diện thanh công cụ iNET.\n• Tháng 10: Thử nghiệm diện rộng nội bộ và nâng cấp độ chính xác hiển thị.',
           fontSize: 18,
           color: '#334155',
           align: 'left',
@@ -203,7 +205,8 @@ const mediumDeck: SlideDeckData = {
           y: 140,
           width: 210,
           height: 140,
-          content: 'apps/sheets\n\n• React 19 + Univer OSS\n• xlsx-io (ExcelJS)\n• Bảng tính & Biểu đồ',
+          content:
+            'apps/sheets\n\n• React 19 + Univer OSS\n• xlsx-io (ExcelJS)\n• Bảng tính & Biểu đồ',
           fontSize: 15,
           color: '#1e40af',
         },
@@ -224,7 +227,8 @@ const mediumDeck: SlideDeckData = {
           y: 140,
           width: 210,
           height: 140,
-          content: 'apps/slides\n\n• React 19 + pptx-io\n• Canvas 16:9 + Presentation\n• Trình chiếu thông minh',
+          content:
+            'apps/slides\n\n• React 19 + pptx-io\n• Canvas 16:9 + Presentation\n• Trình chiếu thông minh',
           fontSize: 15,
           color: '#92400e',
         },
@@ -253,7 +257,8 @@ const mediumDeck: SlideDeckData = {
           y: 120,
           width: 840,
           height: 300,
-          content: '• @office/app-shell: Khung vỏ giao diện chung, TopBar, chuyển đổi ứng dụng ProductSwitcher.\n• @office/file-home: Quản lý danh sách tệp tin, thùng rác, mẫu tài liệu, thống kê bộ nhớ.\n• @office/storage-adapter: Lớp trừu tượng hoá kho lưu trữ IndexedDB/Drive.\n• @office/ui-kit: Design tokens chuẩn thương hiệu iNET, bộ component Shadcn UI + Base UI.\n• @office/i18n: Đa ngôn ngữ Việt/Anh với suy diễn kiểu dữ liệu 100% tự động.',
+          content:
+            '• @office/app-shell: Khung vỏ giao diện chung, TopBar, chuyển đổi ứng dụng ProductSwitcher.\n• @office/file-home: Quản lý danh sách tệp tin, thùng rác, mẫu tài liệu, thống kê bộ nhớ.\n• @office/storage-adapter: Lớp trừu tượng hoá kho lưu trữ IndexedDB/Drive.\n• @office/ui-kit: Design tokens chuẩn thương hiệu iNET, bộ component Shadcn UI + Base UI.\n• @office/i18n: Đa ngôn ngữ Việt/Anh với suy diễn kiểu dữ liệu 100% tự động.',
           fontSize: 17,
           color: '#334155',
         },
@@ -282,7 +287,8 @@ const mediumDeck: SlideDeckData = {
           y: 130,
           width: 840,
           height: 250,
-          content: '• Tốc độ nạp trang ban đầu < 2.0s trên mạng tiêu chuẩn.\n• Thời gian phản hồi thao tác gõ chữ / kéo thả canvas đạt mức 60 FPS mượt mà.\n• Không rò rỉ bộ nhớ khi mở tài liệu lớn kéo dài nhiều giờ.\n• Kiểm tra typecheck và build tự động trong CI/CD đảm bảo 0 lỗi hồi quy.',
+          content:
+            '• Tốc độ nạp trang ban đầu < 2.0s trên mạng tiêu chuẩn.\n• Thời gian phản hồi thao tác gõ chữ / kéo thả canvas đạt mức 60 FPS mượt mà.\n• Không rò rỉ bộ nhớ khi mở tài liệu lớn kéo dài nhiều giờ.\n• Kiểm tra typecheck và build tự động trong CI/CD đảm bảo 0 lỗi hồi quy.',
           fontSize: 18,
           color: '#334155',
         },

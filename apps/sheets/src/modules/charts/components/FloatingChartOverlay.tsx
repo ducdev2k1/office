@@ -55,7 +55,7 @@ export const FloatingChartOverlay = ({
         onSelectChart(null);
       }
     },
-    [onSelectChart]
+    [onSelectChart],
   );
 
   return (

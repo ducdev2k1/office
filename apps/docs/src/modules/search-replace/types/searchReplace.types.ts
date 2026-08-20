@@ -16,8 +16,7 @@ export interface SearchAndReplaceEditorState {
 }
 
 export interface SearchAndReplaceProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>,
-    UseSearchAndReplaceConfig {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>, UseSearchAndReplaceConfig {
   open?: boolean;
   onClose?: () => void;
   onOpen?: () => void;

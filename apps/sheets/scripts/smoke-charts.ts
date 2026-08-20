@@ -35,7 +35,10 @@ const main = async () => {
   // Click Insert Chart button
   const insertChartClicked = await page.evaluate(() => {
     const buttons = [...document.querySelectorAll('button')];
-    const chartBtn = buttons.find((b) => b.getAttribute('aria-label')?.includes('biểu đồ') || b.textContent?.includes('biểu đồ'));
+    const chartBtn = buttons.find(
+      (b) =>
+        b.getAttribute('aria-label')?.includes('biểu đồ') || b.textContent?.includes('biểu đồ'),
+    );
     if (chartBtn) {
       chartBtn.click();
       return true;

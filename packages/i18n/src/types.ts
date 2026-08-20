@@ -20,7 +20,6 @@ export interface TranslationSchema {
   appShell: AppShellDictionary;
 }
 
-
 export type TranslationNamespace = keyof TranslationSchema;
 
 export type TranslationParams = Record<string, string | number>;

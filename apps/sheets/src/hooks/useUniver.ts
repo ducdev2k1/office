@@ -1,7 +1,13 @@
 import { createDefaultWorkbookData } from '@/constants/sheets.constants';
 import { UniverSheetsCorePreset } from '@univerjs/preset-sheets-core';
 import UniverPresetSheetsCoreEnUS from '@univerjs/preset-sheets-core/locales/en-US';
-import { createUniver, LocaleType, mergeLocales, type FUniver, type IWorkbookData } from '@univerjs/presets';
+import {
+  createUniver,
+  LocaleType,
+  mergeLocales,
+  type FUniver,
+  type IWorkbookData,
+} from '@univerjs/presets';
 import { useEffect, useRef } from 'react';
 
 import '@univerjs/preset-sheets-core/lib/index.css';

@@ -70,7 +70,8 @@ const applyStyle = (cell: ExcelJS.Cell, style: IStyleData | undefined): void => 
   }
 
   if (style.bd) {
-    const border: Partial<Record<'top' | 'bottom' | 'left' | 'right', Partial<ExcelJS.Border>>> = {};
+    const border: Partial<Record<'top' | 'bottom' | 'left' | 'right', Partial<ExcelJS.Border>>> =
+      {};
     const edges = [
       ['t', 'top'],
       ['b', 'bottom'],
@@ -91,8 +92,10 @@ const applyStyle = (cell: ExcelJS.Cell, style: IStyleData | undefined): void => 
 
   if (style.ht || style.vt || style.tb) {
     const alignment: Partial<ExcelJS.Alignment> = {};
-    if (style.ht) alignment.horizontal = REVERSE_H_ALIGN_MAP[style.ht] as ExcelJS.Alignment['horizontal'];
-    if (style.vt) alignment.vertical = REVERSE_V_ALIGN_MAP[style.vt] as ExcelJS.Alignment['vertical'];
+    if (style.ht)
+      alignment.horizontal = REVERSE_H_ALIGN_MAP[style.ht] as ExcelJS.Alignment['horizontal'];
+    if (style.vt)
+      alignment.vertical = REVERSE_V_ALIGN_MAP[style.vt] as ExcelJS.Alignment['vertical'];
     if (style.tb === WrapStrategy.WRAP) alignment.wrapText = true;
     cell.alignment = alignment as ExcelJS.Alignment;
   }
@@ -105,9 +108,9 @@ const setCellValue = (cell: ExcelJS.Cell, data: ICellData | undefined): void => 
   const { v, f, t } = data;
   if (f) {
     const formulaText = f.startsWith('=') ? f.slice(1) : f;
-    cell.value = (v === undefined || v === null
-      ? { formula: formulaText }
-      : { formula: formulaText, result: v }) as ExcelJS.CellValue;
+    cell.value = (
+      v === undefined || v === null ? { formula: formulaText } : { formula: formulaText, result: v }
+    ) as ExcelJS.CellValue;
     return;
   }
   if (t === CellValueType.BOOLEAN) {
@@ -127,7 +130,7 @@ const setCellValue = (cell: ExcelJS.Cell, data: ICellData | undefined): void => 
 
 export const univerToExceljs = async (
   data: IWorkbookData,
-  charts?: import('./types').XlsxChartSpec[]
+  charts?: import('./types').XlsxChartSpec[],
 ): Promise<ArrayBuffer> => {
   const workbook = new ExcelJS.Workbook();
   workbook.title = data.name ?? 'Sheet';

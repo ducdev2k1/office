@@ -7,11 +7,7 @@ import { PageScrollIndicator } from '@/modules/editor/components/PageScrollIndic
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
-import type {
-  DocRecord,
-  HeaderFooterSlot,
-  PageSetup,
-} from '@/types/docs.types';
+import type { DocRecord, HeaderFooterSlot, PageSetup } from '@/types/docs.types';
 
 interface EditorCanvasProps {
   editor: Editor | null;
@@ -63,7 +59,10 @@ export const EditorCanvas = ({
 
     const indicatorTop = Math.max(
       30,
-      Math.min(clientHeight - 30, (currentScrollTop / (scrollHeight - clientHeight)) * clientHeight),
+      Math.min(
+        clientHeight - 30,
+        (currentScrollTop / (scrollHeight - clientHeight)) * clientHeight,
+      ),
     );
 
     setScrollIndicator({
@@ -88,7 +87,9 @@ export const EditorCanvas = ({
   const handleDoubleClick = (e: MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement | null;
     const td = target?.closest('td');
-    const headerOrFooter = target?.closest('.tiptap-page-header, .tiptap-page-footer') as HTMLElement | null;
+    const headerOrFooter = target?.closest(
+      '.tiptap-page-header, .tiptap-page-footer',
+    ) as HTMLElement | null;
 
     if (td && headerOrFooter) {
       const isHeader = headerOrFooter.classList.contains('tiptap-page-header');
@@ -146,7 +147,11 @@ export const EditorCanvas = ({
         visible={scrollIndicator.visible}
       />
 
-      <div className="paper-wrap flex-1 min-w-0 overflow-y-auto" ref={paperWrapRef} onScroll={handleScroll}>
+      <div
+        className="paper-wrap flex-1 min-w-0 overflow-y-auto"
+        ref={paperWrapRef}
+        onScroll={handleScroll}
+      >
         {isOverLimit && (
           <div className="mb-2.5 py-2 px-3.5 text-center text-xs bg-amber-500/10 border-b border-amber-500/30 text-amber-700 dark:text-amber-400 rounded">
             {t('pagination.maxPagesWarning')}

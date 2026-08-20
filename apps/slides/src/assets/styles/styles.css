@@ -67,54 +67,92 @@ body,
 
 /* Slide 3D & 2D Presentation Transitions */
 @keyframes slideFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideFromRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideFromLeft {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideFromBottom {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideZoomIn {
-  from { transform: scale(0.65); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.65);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes slideFlip3D {
-  from { transform: perspective(1200px) rotateY(90deg); opacity: 0; }
-  to { transform: perspective(1200px) rotateY(0deg); opacity: 1; }
+  from {
+    transform: perspective(1200px) rotateY(90deg);
+    opacity: 0;
+  }
+  to {
+    transform: perspective(1200px) rotateY(0deg);
+    opacity: 1;
+  }
 }
 
 @keyframes slideCube3D {
-  from { transform: perspective(1200px) rotateY(-90deg) translateZ(300px); opacity: 0; }
-  to { transform: perspective(1200px) rotateY(0) translateZ(0); opacity: 1; }
+  from {
+    transform: perspective(1200px) rotateY(-90deg) translateZ(300px);
+    opacity: 0;
+  }
+  to {
+    transform: perspective(1200px) rotateY(0) translateZ(0);
+    opacity: 1;
+  }
 }
 
 .slide-transition-fade {
   animation: slideFadeIn var(--slide-transition-duration, 0.4s) ease-out forwards;
 }
 .slide-transition-slide-left {
-  animation: slideFromRight var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideFromRight var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1)
+    forwards;
 }
 .slide-transition-slide-right {
-  animation: slideFromLeft var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideFromLeft var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1)
+    forwards;
 }
 .slide-transition-slide-up {
-  animation: slideFromBottom var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideFromBottom var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1)
+    forwards;
 }
 .slide-transition-zoom {
-  animation: slideZoomIn var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideZoomIn var(--slide-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1)
+    forwards;
 }
 .slide-transition-flip-3d {
   animation: slideFlip3D var(--slide-transition-duration, 0.6s) ease-out forwards;
@@ -127,58 +165,105 @@ body,
 
 /* Element Entrance Animations with Dynamic Duration & Delay */
 @keyframes elemFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes elemFlyInLeft {
-  from { transform: translateX(-100%) scale(0.9); opacity: 0; }
-  to { transform: translateX(0) scale(1); opacity: 1; }
+  from {
+    transform: translateX(-100%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes elemFlyInRight {
-  from { transform: translateX(100%) scale(0.9); opacity: 0; }
-  to { transform: translateX(0) scale(1); opacity: 1; }
+  from {
+    transform: translateX(100%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes elemFlyInUp {
-  from { transform: translateY(100%) scale(0.9); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
+  from {
+    transform: translateY(100%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes elemFlyInDown {
-  from { transform: translateY(-100%) scale(0.9); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
+  from {
+    transform: translateY(-100%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes elemZoomIn {
-  from { transform: scale(0.2); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes elemSpin {
-  from { transform: rotate(-360deg) scale(0.5); opacity: 0; }
-  to { transform: rotate(0deg) scale(1); opacity: 1; }
+  from {
+    transform: rotate(-360deg) scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
 }
 
 .element-anim-fade-in {
-  animation: elemFadeIn var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+  animation: elemFadeIn var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1)
+    var(--anim-delay, 0s) both;
 }
 .element-anim-fly-in-left {
-  animation: elemFlyInLeft var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+  animation: elemFlyInLeft var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1)
+    var(--anim-delay, 0s) both;
 }
 .element-anim-fly-in-right {
-  animation: elemFlyInRight var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+  animation: elemFlyInRight var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1)
+    var(--anim-delay, 0s) both;
 }
 .element-anim-fly-in-up {
-  animation: elemFlyInUp var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+  animation: elemFlyInUp var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1)
+    var(--anim-delay, 0s) both;
 }
 .element-anim-fly-in-down {
-  animation: elemFlyInDown var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+  animation: elemFlyInDown var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1)
+    var(--anim-delay, 0s) both;
 }
 .element-anim-zoom-in {
-  animation: elemZoomIn var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+  animation: elemZoomIn var(--anim-duration, 0.6s) cubic-bezier(0.16, 1, 0.3, 1)
+    var(--anim-delay, 0s) both;
 }
 .element-anim-spin {
-  animation: elemSpin var(--anim-duration, 0.8s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+  animation: elemSpin var(--anim-duration, 0.8s) cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s)
+    both;
 }

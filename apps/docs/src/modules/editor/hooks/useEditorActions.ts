@@ -38,7 +38,7 @@ export const useEditorActions = (
     if (activeDoc && editor)
       downloadFile(
         `${activeDoc.title}.txt`,
-        editor.state.doc.textContent,
+        editor.state?.doc?.textContent ?? '',
         'text/plain;charset=utf-8',
       );
   };

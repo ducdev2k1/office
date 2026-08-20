@@ -23,17 +23,11 @@ export const withDefaults = (doc: DocRecord): DocRecord => {
     pageSetup: {
       paperSize: setup?.paperSize ?? defaults.paperSize,
       orientation: setup?.orientation ?? defaults.orientation,
-      margins: setup?.margins
-        ? { ...defaults.margins, ...setup.margins }
-        : defaults.margins,
+      margins: setup?.margins ? { ...defaults.margins, ...setup.margins } : defaults.margins,
       headerMargin: setup?.headerMargin ?? defaults.headerMargin,
       footerMargin: setup?.footerMargin ?? defaults.footerMargin,
-      header: setup?.header
-        ? { ...defaults.header!, ...setup.header }
-        : defaults.header,
-      footer: setup?.footer
-        ? { ...defaults.footer!, ...setup.footer }
-        : defaults.footer,
+      header: setup?.header ? { ...defaults.header!, ...setup.header } : defaults.header,
+      footer: setup?.footer ? { ...defaults.footer!, ...setup.footer } : defaults.footer,
       pageNumber: setup?.pageNumber
         ? { ...defaults.pageNumber!, ...setup.pageNumber }
         : defaults.pageNumber,

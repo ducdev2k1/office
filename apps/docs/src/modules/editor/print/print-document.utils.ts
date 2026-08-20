@@ -81,7 +81,14 @@ export const buildPrintRoot = (
     pageEl.className = 'print-page';
 
     // Header
-    const headerSlots = resolveSlot(setup.header, setup.pageNumber, 'header', i, pageCount, tokenCtx);
+    const headerSlots = resolveSlot(
+      setup.header,
+      setup.pageNumber,
+      'header',
+      i,
+      pageCount,
+      tokenCtx,
+    );
     const headerEl = document.createElement('div');
     headerEl.className = 'print-hf print-header';
     const leftHeader = document.createElement('span');
@@ -126,8 +133,18 @@ export const buildPrintRoot = (
       clone.style.lineHeight = liveStyle.lineHeight;
       clone.style.color = liveStyle.color;
       // Ensure browser keeps background-colors & colors in print (no stripping)
-      (clone.style as CSSStyleDeclaration & { printColorAdjust?: string; webkitPrintColorAdjust?: string }).printColorAdjust = 'exact';
-      (clone.style as CSSStyleDeclaration & { printColorAdjust?: string; webkitPrintColorAdjust?: string }).webkitPrintColorAdjust = 'exact';
+      (
+        clone.style as CSSStyleDeclaration & {
+          printColorAdjust?: string;
+          webkitPrintColorAdjust?: string;
+        }
+      ).printColorAdjust = 'exact';
+      (
+        clone.style as CSSStyleDeclaration & {
+          printColorAdjust?: string;
+          webkitPrintColorAdjust?: string;
+        }
+      ).webkitPrintColorAdjust = 'exact';
     } catch {
       /* non-browser environment (tests): keep clone's inherited box */
     }
@@ -142,7 +159,14 @@ export const buildPrintRoot = (
     pageEl.appendChild(viewportEl);
 
     // Footer
-    const footerSlots = resolveSlot(setup.footer, setup.pageNumber, 'footer', i, pageCount, tokenCtx);
+    const footerSlots = resolveSlot(
+      setup.footer,
+      setup.pageNumber,
+      'footer',
+      i,
+      pageCount,
+      tokenCtx,
+    );
     const footerEl = document.createElement('div');
     footerEl.className = 'print-hf print-footer';
     const leftFooter = document.createElement('span');

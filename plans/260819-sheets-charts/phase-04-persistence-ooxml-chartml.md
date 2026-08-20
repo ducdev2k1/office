@@ -1,18 +1,20 @@
 ---
 phase: 4
-title: "Persistence & OOXML Integration: Lưu IndexedDB & Đọc/Ghi ChartML (.xlsx)"
+title: 'Persistence & OOXML Integration: Lưu IndexedDB & Đọc/Ghi ChartML (.xlsx)'
 status: completed
 priority: P1
-effort: "8h"
-dependencies: ["1", "2", "3"]
+effort: '8h'
+dependencies: ['1', '2', '3']
 ---
 
 # Phase 4: Persistence & OOXML Integration: Lưu IndexedDB & Đọc/Ghi ChartML (.xlsx)
 
 ## Overview
+
 Đảm bảo tính bền vững của dữ liệu và khả năng tương thích định dạng tệp chuẩn công nghiệp: lưu trữ danh sách biểu đồ kèm tài liệu vào IndexedDB của trình duyệt, đồng thời tích hợp trực tiếp vào package `@office/xlsx-io` để phân tích (parse) và khởi tạo (generate) các thành phần DrawingML / ChartML (`xl/drawings/drawing*.xml` và `xl/charts/chart*.xml`) khi mở hoặc xuất tệp Microsoft Excel `.xlsx`.
 
 ## Requirements
+
 - **Lưu trữ Cục bộ (IndexedDB Persistence)**:
   - Mở rộng cấu trúc `StoredDocument` (trong `@office/storage-adapter`) hỗ trợ trường `charts?: ChartSpec[]`.
   - Tự động lưu biểu đồ khi người dùng thực hiện thao tác sửa đổi hoặc bấm Lưu / Xuất tệp.
@@ -43,6 +45,7 @@ flowchart LR
 ```
 
 ## Related Code Files
+
 - Create:
   - `packages/xlsx-io/src/chartml/chartml.types.ts`
   - `packages/xlsx-io/src/chartml/parseChartML.utils.ts`
@@ -60,6 +63,7 @@ flowchart LR
   - `apps/sheets/src/pages/EditorPage.tsx`
 
 ## Implementation Steps
+
 1. Cập nhật `StoredDocument` trong `@office/storage-adapter` để thêm trường `charts?: ChartSpec[]`.
 2. Xây dựng module `packages/xlsx-io/src/chartml/`:
    - `drawingCoordinates.utils.ts`: Chuyển đổi giữa `fromRow/fromCol/toRow/toCol` của web app sang định dạng `xdr:twoCellAnchor` của DrawingML (EMUs / row-col indices).
@@ -72,6 +76,7 @@ flowchart LR
    - Lưu trữ `charts` vào IndexedDB khi người dùng thao tác.
 
 ## Success Criteria
+
 - [ ] Mở file `.xlsx` có biểu đồ từ Excel hiển thị được đúng biểu đồ trên giao diện web.
 - [ ] Tạo biểu đồ trên web rồi Xuất file `.xlsx`, mở lại bằng Microsoft Excel / WPS / Google Sheets hiển thị đúng biểu đồ native chuẩn.
 - [ ] F5 tải lại trang hoặc mở tài liệu từ danh sách Home, biểu đồ vẫn giữ nguyên vẹn vị trí và cấu hình.

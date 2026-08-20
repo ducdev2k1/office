@@ -345,5 +345,17 @@
   },
   "pagination": {
     "maxPagesWarning": "Document is too long for page view (maximum 50 pages)."
+  },
+  "collab": {
+    "connected": "Live connected",
+    "connecting": "Syncing...",
+    "offline": "Offline mode (will sync when online)",
+    "editProfile": "User Profile",
+    "yourName": "Display name",
+    "cursorColor": "Cursor color",
+    "moreUsers": "+{count} others",
+    "save": "Save changes",
+    "onlineCollaborators": "Online collaborators ({count})",
+    "you": "You"
   }
 }

@@ -68,8 +68,6 @@ body,
 /* Hide bottom footer zoom slider and stats so user controls zoom exclusively via top toolbar */
 footer section.univer-justify-end,
 footer .univer-justify-end,
-footer [class*="univer-justify-end"] {
+footer [class*='univer-justify-end'] {
   display: none !important;
 }
-
-

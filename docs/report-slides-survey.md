@@ -9,6 +9,7 @@
 ## 1. Tóm tắt điều hành
 
 Ứng dụng **`apps/slides`** và thư viện **`packages/pptx-io`** đã được xây dựng, tích hợp và kiểm thử thực nghiệm thành công:
+
 - Khởi tạo hoàn chỉnh ứng dụng trình chiếu chuẩn monorepo (React 19 + Vite 6 + Tailwind CSS v4), tích hợp sâu với `@office/app-shell`, `@office/file-home` (`kind: 'slides'`) và `@office/storage-adapter` (IndexedDB).
 - Xây dựng thành công bộ parser/generator OOXML hai chiều trong `@office/pptx-io` (sử dụng `jszip` và `fast-xml-parser` giấy phép MIT): đọc file `.pptx`, ánh xạ tọa độ EMU sang Canvas 16:9, bảo toàn font chữ tiếng Việt Unicode, và xuất ngược (export) file `.pptx` chuẩn.
 - Kết quả đo đạc hiệu năng vượt trội: Bundle size ứng dụng chính chỉ **~232.8 kB gzip**, thời gian nạp và phân tích file mẫu chỉ từ **5.5ms – 16.2ms**, thời gian xuất ngược file chỉ **~1ms – 2.3ms**.
@@ -54,39 +55,39 @@ SlideDeckData JSON → pptxGenerator.service.ts → Tạo XML OOXML (Content_Typ
 
 ### 3.1 Kích thước đóng gói (Production Build)
 
-| Tệp đóng gói (Chunk) | Dung lượng thô (Raw) | Dung lượng nén (Gzip) | Đánh giá |
-|---|---|---|---|
-| `dist/assets/index-*.js` (Core App + PPTX-IO) | 720.57 kB | 232.86 kB | ✅ Rất nhẹ, tải nhanh |
-| `dist/assets/index-*.css` (Tailwind v4 + Tokens) | 154.16 kB | 19.76 kB | ✅ Tối ưu CSS tokens |
-| `dist/assets/icons-*.js` (iNET Icon Set) | 2,358.85 kB | 186.42 kB | ✅ Shared cache |
-| **Tổng ứng dụng chính khi tải** | **~874 kB** | **~252.6 kB** | ⚡ **Tải hoàn tất trong < 0.5 giây** |
+| Tệp đóng gói (Chunk)                             | Dung lượng thô (Raw) | Dung lượng nén (Gzip) | Đánh giá                             |
+| ------------------------------------------------ | -------------------- | --------------------- | ------------------------------------ |
+| `dist/assets/index-*.js` (Core App + PPTX-IO)    | 720.57 kB            | 232.86 kB             | ✅ Rất nhẹ, tải nhanh                |
+| `dist/assets/index-*.css` (Tailwind v4 + Tokens) | 154.16 kB            | 19.76 kB              | ✅ Tối ưu CSS tokens                 |
+| `dist/assets/icons-*.js` (iNET Icon Set)         | 2,358.85 kB          | 186.42 kB             | ✅ Shared cache                      |
+| **Tổng ứng dụng chính khi tải**                  | **~874 kB**          | **~252.6 kB**         | ⚡ **Tải hoàn tất trong < 0.5 giây** |
 
 ### 3.2 Tốc độ Phân tích & Xuất ngược (Benchmark trên 3 file mẫu)
 
-| Tệp tin mẫu (.pptx) | Số lượng slide | Dung lượng | Thời gian Parse | Thời gian Export | Kết quả kiểm thử |
-|---|---|---|---|---|---|
-| `sample-basic.pptx` (Cơ bản) | 3 slides | 12.76 KB | 16.17 ms | 2.31 ms | ✅ Pass (100% tiếng Việt Unicode) |
-| `sample-medium.pptx` (Trung bình) | 5 slides | 27.16 KB | 6.52 ms | 0.95 ms | ✅ Pass (Bố cục, Shape màu, Text) |
-| `sample-advanced.pptx` (Nâng cao) | 10 slides | 48.55 KB | 5.55 ms | 0.99 ms | ✅ Pass (10 slide doanh nghiệp) |
+| Tệp tin mẫu (.pptx)               | Số lượng slide | Dung lượng | Thời gian Parse | Thời gian Export | Kết quả kiểm thử                  |
+| --------------------------------- | -------------- | ---------- | --------------- | ---------------- | --------------------------------- |
+| `sample-basic.pptx` (Cơ bản)      | 3 slides       | 12.76 KB   | 16.17 ms        | 2.31 ms          | ✅ Pass (100% tiếng Việt Unicode) |
+| `sample-medium.pptx` (Trung bình) | 5 slides       | 27.16 KB   | 6.52 ms         | 0.95 ms          | ✅ Pass (Bố cục, Shape màu, Text) |
+| `sample-advanced.pptx` (Nâng cao) | 10 slides      | 48.55 KB   | 5.55 ms         | 0.99 ms          | ✅ Pass (10 slide doanh nghiệp)   |
 
 ---
 
 ## 4. Bảng Gap Checklist Tính năng
 
-| # | Tính năng | Mục tiêu MVP | Khảo sát thực tế | Trạng thái | Đánh giá / Giải pháp |
-|---|---|---|---|---|---|
-| 1 | Mở & Phân tích OOXML .pptx | ✅ | Hoàn tất trong `packages/pptx-io` | ✅ Đạt | Parse cấu trúc slide và metadata |
-| 2 | Render Text (Font, Size, Color, Align) | ✅ | Hoàn tất | ✅ Đạt | Ánh xạ chính xác EMU sang tọa độ Canvas 16:9 |
-| 3 | Hỗ trợ tiếng Việt Unicode | ✅ | Hoàn tất | ✅ Đạt | Hiển thị mượt mà trên font chữ iNET |
-| 4 | Danh sách slide & Thumbnail list | ✅ | Hoàn tất | ✅ Đạt | Hỗ trợ chọn slide, hiển thị chỉ số trang |
-| 5 | Chế độ Trình chiếu (Fullscreen Slideshow) | ✅ | Hoàn tất | ✅ Đạt | Điều hướng bằng phím mũi tên / Space / ESC |
-| 6 | Render Hình ảnh (JPEG, PNG, SVG) | ✅ | Hoàn tất | ✅ Đạt | Trích xuất từ `ppt/media/` hoặc nhúng data URI |
-| 7 | Render Hình khối (Shapes: Rect, Circle, Box) | ✅ | Hoàn tất | ✅ Đạt | Render hình khối hình học chuẩn SVG/CSS |
-| 8 | Chỉnh sửa trực tiếp trên Canvas | ✅ | Hoàn tất prototype | ✅ Đạt | Nhấp đúp sửa text inline, cập nhật state tức thời |
-| 9 | Thêm / Xoá / Nhân bản Slide | ✅ | Hoàn tất | ✅ Đạt | Đồng bộ dữ liệu với IndexedDB |
-| 10 | Xuất file .pptx (Export Round-trip) | ✅ | Hoàn tất trong `packages/pptx-io` | ✅ Đạt | Đóng gói zip OOXML chuẩn, mở lại được trên PowerPoint |
-| 11 | Hiệu ứng chuyển động (Animations / Transitions) | ❌ Hoãn | Chưa cần thiết ở MVP | ❌ Hoãn | Chuyển sang giai đoạn nâng cao |
-| 12 | Biểu đồ nhúng (Embedded Charts) | ❌ Hoãn | Opaque node / echarts bridge | ❌ Bảo toàn | Áp dụng preserve-and-patch tương tự Sheets |
+| #   | Tính năng                                       | Mục tiêu MVP | Khảo sát thực tế                  | Trạng thái  | Đánh giá / Giải pháp                                  |
+| --- | ----------------------------------------------- | ------------ | --------------------------------- | ----------- | ----------------------------------------------------- |
+| 1   | Mở & Phân tích OOXML .pptx                      | ✅           | Hoàn tất trong `packages/pptx-io` | ✅ Đạt      | Parse cấu trúc slide và metadata                      |
+| 2   | Render Text (Font, Size, Color, Align)          | ✅           | Hoàn tất                          | ✅ Đạt      | Ánh xạ chính xác EMU sang tọa độ Canvas 16:9          |
+| 3   | Hỗ trợ tiếng Việt Unicode                       | ✅           | Hoàn tất                          | ✅ Đạt      | Hiển thị mượt mà trên font chữ iNET                   |
+| 4   | Danh sách slide & Thumbnail list                | ✅           | Hoàn tất                          | ✅ Đạt      | Hỗ trợ chọn slide, hiển thị chỉ số trang              |
+| 5   | Chế độ Trình chiếu (Fullscreen Slideshow)       | ✅           | Hoàn tất                          | ✅ Đạt      | Điều hướng bằng phím mũi tên / Space / ESC            |
+| 6   | Render Hình ảnh (JPEG, PNG, SVG)                | ✅           | Hoàn tất                          | ✅ Đạt      | Trích xuất từ `ppt/media/` hoặc nhúng data URI        |
+| 7   | Render Hình khối (Shapes: Rect, Circle, Box)    | ✅           | Hoàn tất                          | ✅ Đạt      | Render hình khối hình học chuẩn SVG/CSS               |
+| 8   | Chỉnh sửa trực tiếp trên Canvas                 | ✅           | Hoàn tất prototype                | ✅ Đạt      | Nhấp đúp sửa text inline, cập nhật state tức thời     |
+| 9   | Thêm / Xoá / Nhân bản Slide                     | ✅           | Hoàn tất                          | ✅ Đạt      | Đồng bộ dữ liệu với IndexedDB                         |
+| 10  | Xuất file .pptx (Export Round-trip)             | ✅           | Hoàn tất trong `packages/pptx-io` | ✅ Đạt      | Đóng gói zip OOXML chuẩn, mở lại được trên PowerPoint |
+| 11  | Hiệu ứng chuyển động (Animations / Transitions) | ❌ Hoãn      | Chưa cần thiết ở MVP              | ❌ Hoãn     | Chuyển sang giai đoạn nâng cao                        |
+| 12  | Biểu đồ nhúng (Embedded Charts)                 | ❌ Hoãn      | Opaque node / echarts bridge      | ❌ Bảo toàn | Áp dụng preserve-and-patch tương tự Sheets            |
 
 ---
 

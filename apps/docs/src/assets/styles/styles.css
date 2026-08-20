@@ -252,7 +252,7 @@ textarea:focus-visible {
 }
 
 /* TipTap Pro Pagination Classes */
-[data-tiptap-pagination="true"] {
+[data-tiptap-pagination='true'] {
   position: relative;
   user-select: none;
 }
@@ -372,9 +372,14 @@ textarea:focus-visible {
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  transition:
+    opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.15s ease;
   z-index: 15;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.25),
+    0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .tiptap-page-header:hover .hf-edit-btn,
@@ -1138,3 +1143,35 @@ textarea:focus-visible {
 .dark .find-and-replace-result-current {
   background: var(--destructive);
 } */
+
+/* =========================================================
+   TipTap Collaboration Remote Cursors & Selection
+   ========================================================= */
+
+.collaboration-cursor__caret {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 2px solid #0d0d0d;
+  border-right: 0px;
+  word-break: normal;
+  pointer-events: none;
+}
+
+.collaboration-cursor__label {
+  position: absolute;
+  top: -1.4em;
+  left: -2px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  user-select: none;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 4px 4px 4px 0;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}

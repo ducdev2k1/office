@@ -19,12 +19,12 @@ Tuân thủ AGENTS.md: relative import trong package, path alias `@/*` trong app
 
 ## Phases
 
-| #  | Phase                                                                   | File                               | Effort | Status     |
-|----|-------------------------------------------------------------------------|------------------------------------|--------|------------|
-| 1  | xlsx-io import: chuyển `exceljsToUniver` vào package + test              | `phase-01-xlsx-import.md`          | 6h     | completed  |
-| 2  | xlsx-io export: `univerToExceljs` (snapshot → xlsx) + test               | `phase-02-xlsx-export.md`          | 8h     | completed  |
-| 3  | Tích hợp apps/sheets: export button + lưu IndexedDB + remount            | `phase-03-integrate-apps-sheets.md`| 5h     | completed  |
-| 4  | Verify round-trip + bundle + report MVP                                  | `phase-04-verify-roundtrip.md`     | 4h     | completed  |
+| #   | Phase                                                         | File                                | Effort | Status    |
+| --- | ------------------------------------------------------------- | ----------------------------------- | ------ | --------- |
+| 1   | xlsx-io import: chuyển `exceljsToUniver` vào package + test   | `phase-01-xlsx-import.md`           | 6h     | completed |
+| 2   | xlsx-io export: `univerToExceljs` (snapshot → xlsx) + test    | `phase-02-xlsx-export.md`           | 8h     | completed |
+| 3   | Tích hợp apps/sheets: export button + lưu IndexedDB + remount | `phase-03-integrate-apps-sheets.md` | 5h     | completed |
+| 4   | Verify round-trip + bundle + report MVP                       | `phase-04-verify-roundtrip.md`      | 4h     | completed |
 
 **Tổng effort: 23h**
 

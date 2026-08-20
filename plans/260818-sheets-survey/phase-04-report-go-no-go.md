@@ -26,20 +26,35 @@
 # Bao cao khao sat Univer — Giai doan 6 (Sheets)
 
 ## 1. Tom tat dieu hanh
+
 ## 2. Ket qua khao sat
+
 ### 2.1 Prototype: Univer v0.23 OSS
+
 ### 2.2 Pipeline nhap/xuat xlsx (ExcelJS → snapshot)
+
 ### 2.3 Hieu nang
+
 ### 2.4 Checklist gap tinh nang
+
 ### 2.5 Danh gia community chart plugin
+
 ### 2.6 Dark mode va theme
+
 ## 3. Quyet dinh go/no-go
+
 ## 4. De xuat pham vi MVP
+
 ### 4.1 Tinh nang trong MVP
+
 ### 4.2 Tinh nang hoan/bo qua
+
 ### 4.3 Thu tu uu tien
+
 ### 4.4 Thoi gian du kien
+
 ## 5. Risk register cap nhat
+
 ## 6. Recommend tiep theo
 ```
 

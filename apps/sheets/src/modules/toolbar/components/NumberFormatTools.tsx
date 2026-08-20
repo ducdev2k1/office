@@ -46,10 +46,7 @@ export const NumberFormatTools = ({
         <Icon name="dollar-sign" size={16} />
       </ToolbarButton>
 
-      <ToolbarButton
-        label={t('toolbar.number.percent')}
-        onClick={() => onSetNumberFormat('0.00%')}
-      >
+      <ToolbarButton label={t('toolbar.number.percent')} onClick={() => onSetNumberFormat('0.00%')}>
         <Icon name="percent" size={16} />
       </ToolbarButton>
 
@@ -96,7 +93,9 @@ export const NumberFormatTools = ({
             <DropdownMenuItem
               key={item.pattern}
               onClick={() => onSetNumberFormat(item.pattern)}
-              className={cn(currentFormat === item.pattern && 'bg-primary/10 text-primary font-medium')}
+              className={cn(
+                currentFormat === item.pattern && 'bg-primary/10 text-primary font-medium',
+              )}
             >
               <span>{t(item.labelKey)}</span>
             </DropdownMenuItem>

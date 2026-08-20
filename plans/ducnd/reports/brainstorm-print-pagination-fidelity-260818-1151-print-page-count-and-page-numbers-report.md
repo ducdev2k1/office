@@ -13,12 +13,12 @@ Yêu cầu gốc: "docs có bao nhiêu page thì in đúng chừng đấy page, 
 
 ## 2. Root cause (verified qua đọc source)
 
-| # | Nguyên nhân | Bằng chứng |
-|---|---|---|
-| 1 | Lề trên/dưới chỉ áp 1 lần cho cả element, không per-page → trang 2..N in ra không có lề, chứa nhiều nội dung hơn → ít trang hơn | `styles.css:@media print` `.doc-editor { padding: var(--margin-t) ... }` + `usePrintSetup.ts` `@page { margin: 0 }` |
-| 2 | Điểm ngắt do engine JS tính bị vứt bỏ khi in; browser tự repaginate theo thuật toán riêng | `styles.css` `@media print` `display:none` cho `.page-stack`, `.page-break-spacer`, `.page-break-marker` |
-| 3 | Không có `break-inside: avoid` / orphans / widows → browser cắt giữa đoạn tuỳ ý | grep: 0 hit |
-| 4 | Không có page number | grep `pageNumber|counter(page)|footer` → 0 hit liên quan |
+| #   | Nguyên nhân                                                                                                                     | Bằng chứng                                                                                                          |
+| --- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 1   | Lề trên/dưới chỉ áp 1 lần cho cả element, không per-page → trang 2..N in ra không có lề, chứa nhiều nội dung hơn → ít trang hơn | `styles.css:@media print` `.doc-editor { padding: var(--margin-t) ... }` + `usePrintSetup.ts` `@page { margin: 0 }` |
+| 2   | Điểm ngắt do engine JS tính bị vứt bỏ khi in; browser tự repaginate theo thuật toán riêng                                       | `styles.css` `@media print` `display:none` cho `.page-stack`, `.page-break-spacer`, `.page-break-marker`            |
+| 3   | Không có `break-inside: avoid` / orphans / widows → browser cắt giữa đoạn tuỳ ý                                                 | grep: 0 hit                                                                                                         |
+| 4   | Không có page number                                                                                                            | grep `pageNumber                                                                                                    | counter(page) | footer` → 0 hit liên quan |
 
 Kết luận: không tinh chỉnh CSS nào đảm bảo khớp 100%. Phải hợp nhất 2 đường render.
 
@@ -34,11 +34,11 @@ Kết luận: không tinh chỉnh CSS nào đảm bảo khớp 100%. Phải hợ
 
 ## 4. Approaches đánh giá
 
-| | Cách | Khớp số trang | Page number | Chi phí | Verdict |
-|---|---|---|---|---|---|
-| A | Print-from-DOM (dựng DOM in riêng theo breaks engine) | Đảm bảo | Full control | Trung bình | **Chọn** — biến thể sliding-window |
-| B | Vá CSS, browser tự flow (`@page margin`, `break-inside`) | Không đảm bảo, lệch 1-2 trang doc dài | `@bottom-center{counter(page)}` Chrome không hỗ trợ → vẫn phải JS | Thấp | Loại — không đáp ứng yêu cầu gốc |
-| C | Export PDF bằng lib (jsPDF/html2pdf) | Có | Có | Cao | Loại — đổi UX, font tiếng Việt kém, bundle nặng |
+|     | Cách                                                     | Khớp số trang                         | Page number                                                       | Chi phí    | Verdict                                         |
+| --- | -------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ----------------------------------------------- |
+| A   | Print-from-DOM (dựng DOM in riêng theo breaks engine)    | Đảm bảo                               | Full control                                                      | Trung bình | **Chọn** — biến thể sliding-window              |
+| B   | Vá CSS, browser tự flow (`@page margin`, `break-inside`) | Không đảm bảo, lệch 1-2 trang doc dài | `@bottom-center{counter(page)}` Chrome không hỗ trợ → vẫn phải JS | Thấp       | Loại — không đáp ứng yêu cầu gốc                |
+| C   | Export PDF bằng lib (jsPDF/html2pdf)                     | Có                                    | Có                                                                | Cao        | Loại — đổi UX, font tiếng Việt kém, bundle nặng |
 
 Biến thể chốt của A: **sliding-window clip** thay vì slice DOM. Lý do: nếu đi line-level (P2), cắt DOM giữa dòng cực khó. Sliding-window không cắt DOM lần nào.
 
@@ -48,20 +48,26 @@ Biến thể chốt của A: **sliding-window clip** thay vì slice DOM. Lý do:
 
 ```ts
 export type HFAlign = 'left' | 'center' | 'right';
-export interface HeaderFooterSlot { left: string; center: string; right: string }
+export interface HeaderFooterSlot {
+  left: string;
+  center: string;
+  right: string;
+}
 export interface PageNumberSetup {
   enabled: boolean;
   position: 'header' | 'footer';
   align: HFAlign;
-  format: string;          // '{page}' | '{page} / {pages}' | 'Trang {page}'
+  format: string; // '{page}' | '{page} / {pages}' | 'Trang {page}'
   startAt: number;
   skipFirstPage: boolean;
 }
 export interface PageSetup {
-  paperSize; orientation; margins;   // giữ nguyên
+  paperSize;
+  orientation;
+  margins; // giữ nguyên
   header?: HeaderFooterSlot;
   footer?: HeaderFooterSlot;
-  headerMargin?: number;             // mm từ mép trên tới header
+  headerMargin?: number; // mm từ mép trên tới header
   footerMargin?: number;
   pageNumber?: PageNumberSetup;
 }
@@ -114,22 +120,22 @@ Không chèn widget giữa 2 `<tr>` được (ProseMirror đặt sai vị trí).
 
 ## 6. Files touched
 
-| File | Việc |
-|---|---|
-| `apps/docs/src/types/docs.types.ts` | extend PageSetup |
-| `apps/docs/src/modules/editor/utils/pagination.utils.ts` | rewrite engine, trả `contentOffsets` |
-| `apps/docs/src/modules/editor/hooks/usePagination.ts` | expose offsets |
-| `apps/docs/src/modules/editor/hooks/usePrintSetup.ts` | **thay** bằng `editor/print/usePrintDocument.ts` |
-| `apps/docs/src/modules/editor/print/print-document.utils.ts` | **mới** — dựng `#print-root` |
-| `apps/docs/src/modules/editor/print/page-tokens.utils.ts` | **mới** — render token, dùng chung screen+print |
-| `apps/docs/src/modules/editor/components/PageHeaderFooterPanel.tsx` | **mới** |
-| `apps/docs/src/modules/editor/components/PageSetupPanel.tsx` | thêm entry |
-| `apps/docs/src/modules/editor/components/EditorCanvas.tsx` | page-stack render HF |
-| `apps/docs/src/modules/header/components/MenuBar.tsx` | 2 menu action |
-| `apps/docs/src/modules/header/types/header.types.ts` | 2 action trong `HeaderMenuActions` |
-| `apps/docs/src/pages/EditorPage.tsx` | wire dialog + đổi `onPrint` |
-| `apps/docs/src/assets/styles/styles.css` | `@media print` viết lại + style print-page/hf |
-| `packages/i18n/src/locales/{en,vi}/docs.json` | keys mới |
+| File                                                                | Việc                                             |
+| ------------------------------------------------------------------- | ------------------------------------------------ |
+| `apps/docs/src/types/docs.types.ts`                                 | extend PageSetup                                 |
+| `apps/docs/src/modules/editor/utils/pagination.utils.ts`            | rewrite engine, trả `contentOffsets`             |
+| `apps/docs/src/modules/editor/hooks/usePagination.ts`               | expose offsets                                   |
+| `apps/docs/src/modules/editor/hooks/usePrintSetup.ts`               | **thay** bằng `editor/print/usePrintDocument.ts` |
+| `apps/docs/src/modules/editor/print/print-document.utils.ts`        | **mới** — dựng `#print-root`                     |
+| `apps/docs/src/modules/editor/print/page-tokens.utils.ts`           | **mới** — render token, dùng chung screen+print  |
+| `apps/docs/src/modules/editor/components/PageHeaderFooterPanel.tsx` | **mới**                                          |
+| `apps/docs/src/modules/editor/components/PageSetupPanel.tsx`        | thêm entry                                       |
+| `apps/docs/src/modules/editor/components/EditorCanvas.tsx`          | page-stack render HF                             |
+| `apps/docs/src/modules/header/components/MenuBar.tsx`               | 2 menu action                                    |
+| `apps/docs/src/modules/header/types/header.types.ts`                | 2 action trong `HeaderMenuActions`               |
+| `apps/docs/src/pages/EditorPage.tsx`                                | wire dialog + đổi `onPrint`                      |
+| `apps/docs/src/assets/styles/styles.css`                            | `@media print` viết lại + style print-page/hf    |
+| `packages/i18n/src/locales/{en,vi}/docs.json`                       | keys mới                                         |
 
 ## 7. Phasing
 
@@ -152,15 +158,15 @@ Dù làm 1 lượt, vẫn chia phase để verify từng bước.
 
 ## 9. Risks
 
-| Rủi ro | Mức | Mitigation |
-|---|---|---|
-| Table row split có thể không khả thi | Cao | Spike trước P3; fallback giữ hành vi cũ |
-| `posAtCoords` không ổn định ở biên line box | Cao | Fallback về block-level cho block đó |
-| Inline spacer phá caret / IME tiếng Việt | Cao | `ignoreSelection`, `contentEditable=false`; test IME riêng |
-| Trang trắng thừa do rounding subpixel | Trung bình | `.print-page` height trừ hụt 1px hoặc dùng đơn vị mm khớp `@page size` |
-| Header/footer mặc định của browser (URL, ngày) in đè | Thấp | Không tắt được bằng CSS — ghi doc hướng dẫn user bỏ tick trong dialog |
-| Header text cao hơn vùng lề trên | Thấp | P1 clip, không đẩy content; ghi known limitation |
-| Clone DOM lớn (50 trang) tốn memory lúc in | Thấp | Clone 1 lần, `.print-content` share qua CSS `content-visibility` nếu cần |
+| Rủi ro                                               | Mức        | Mitigation                                                               |
+| ---------------------------------------------------- | ---------- | ------------------------------------------------------------------------ |
+| Table row split có thể không khả thi                 | Cao        | Spike trước P3; fallback giữ hành vi cũ                                  |
+| `posAtCoords` không ổn định ở biên line box          | Cao        | Fallback về block-level cho block đó                                     |
+| Inline spacer phá caret / IME tiếng Việt             | Cao        | `ignoreSelection`, `contentEditable=false`; test IME riêng               |
+| Trang trắng thừa do rounding subpixel                | Trung bình | `.print-page` height trừ hụt 1px hoặc dùng đơn vị mm khớp `@page size`   |
+| Header/footer mặc định của browser (URL, ngày) in đè | Thấp       | Không tắt được bằng CSS — ghi doc hướng dẫn user bỏ tick trong dialog    |
+| Header text cao hơn vùng lề trên                     | Thấp       | P1 clip, không đẩy content; ghi known limitation                         |
+| Clone DOM lớn (50 trang) tốn memory lúc in           | Thấp       | Clone 1 lần, `.print-content` share qua CSS `content-visibility` nếu cần |
 
 ## 10. Out of scope
 

@@ -128,7 +128,9 @@ export const ElementFormattingBar = ({
           <ToolbarButton
             label={t('formatting.bold')}
             active={element.fontWeight === 'bold'}
-            onClick={() => onUpdate({ fontWeight: element.fontWeight === 'bold' ? 'normal' : 'bold' })}
+            onClick={() =>
+              onUpdate({ fontWeight: element.fontWeight === 'bold' ? 'normal' : 'bold' })
+            }
           >
             <span className="font-bold text-xs">B</span>
           </ToolbarButton>
@@ -136,7 +138,9 @@ export const ElementFormattingBar = ({
           <ToolbarButton
             label={t('formatting.italic')}
             active={element.fontStyle === 'italic'}
-            onClick={() => onUpdate({ fontStyle: element.fontStyle === 'italic' ? 'normal' : 'italic' })}
+            onClick={() =>
+              onUpdate({ fontStyle: element.fontStyle === 'italic' ? 'normal' : 'italic' })
+            }
           >
             <span className="italic font-serif text-xs">I</span>
           </ToolbarButton>
@@ -156,9 +160,7 @@ export const ElementFormattingBar = ({
           {/* Text Color Picker */}
           <DropdownMenu>
             <DropdownMenuTrigger
-              render={
-                <Button variant="ghost" size="sm" className="h-7 w-7 p-0" />
-              }
+              render={<Button variant="ghost" size="sm" className="h-7 w-7 p-0" />}
             >
               <span
                 className="h-3.5 w-3.5 rounded-xs border border-border shadow-2xs"
@@ -214,7 +216,11 @@ export const ElementFormattingBar = ({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal text-muted-foreground hover:text-foreground" />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 gap-1 px-2 text-xs font-normal text-muted-foreground hover:text-foreground"
+              />
             }
           >
             <Icon name="edit" size={13} />
@@ -264,7 +270,11 @@ export const ElementFormattingBar = ({
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal text-muted-foreground hover:text-foreground" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 gap-1 px-2 text-xs font-normal text-muted-foreground hover:text-foreground"
+                />
               }
             >
               <Icon name="square" size={13} />
@@ -295,7 +305,11 @@ export const ElementFormattingBar = ({
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal text-amber-600 hover:text-amber-700" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 gap-1 px-2 text-xs font-normal text-amber-600 hover:text-amber-700"
+            />
           }
         >
           <Icon name="sparkles" size={13} />
@@ -326,8 +340,7 @@ export const ElementFormattingBar = ({
                 Tốc độ hiệu ứng (Thời lượng)
               </div>
               {ANIMATION_SPEEDS.map((speed) => {
-                const isCurrentSpeed =
-                  (element.animationDuration || 0.6) === speed.value;
+                const isCurrentSpeed = (element.animationDuration || 0.6) === speed.value;
                 return (
                   <DropdownMenuItem
                     key={speed.value}
@@ -381,9 +394,7 @@ export const ElementFormattingBar = ({
       {onCenter && (
         <DropdownMenu>
           <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" />
-            }
+            render={<Button variant="ghost" size="sm" className="h-7 w-7 p-0" />}
           >
             <Icon name="align-center" size={14} className="text-muted-foreground" />
           </DropdownMenuTrigger>
@@ -404,18 +415,20 @@ export const ElementFormattingBar = ({
 
       {/* Reorder Z-index */}
       <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" />
-          }
-        >
+        <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="h-7 w-7 p-0" />}>
           <Icon name="layers" size={14} className="text-muted-foreground" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={onBringForward}>{t('formatting.bringForward')}</DropdownMenuItem>
-          <DropdownMenuItem onClick={onBringToFront}>{t('formatting.bringToFront')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={onBringForward}>
+            {t('formatting.bringForward')}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onBringToFront}>
+            {t('formatting.bringToFront')}
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={onSendBackward}>{t('formatting.sendBackward')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={onSendBackward}>
+            {t('formatting.sendBackward')}
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={onSendToBack}>{t('formatting.sendToBack')}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

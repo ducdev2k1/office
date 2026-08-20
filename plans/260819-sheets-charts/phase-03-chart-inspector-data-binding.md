@@ -1,18 +1,20 @@
 ---
 phase: 3
-title: "Chart Inspector Sidebar: Giao diện Cấu hình, Live Preview & Data Range Binding"
+title: 'Chart Inspector Sidebar: Giao diện Cấu hình, Live Preview & Data Range Binding'
 status: completed
 priority: P1
-effort: "7h"
-dependencies: ["1", "2"]
+effort: '7h'
+dependencies: ['1', '2']
 ---
 
 # Phase 3: Chart Inspector Sidebar: Giao diện Cấu hình, Live Preview & Data Range Binding
 
 ## Overview
+
 Xây dựng Sidebar cấu hình biểu đồ (Chart Inspector) nằm ở cạnh phải màn hình, mang trải nghiệm trực quan tương tự Google Sheets. Người dùng có thể chọn vùng dữ liệu (Data Range) từ bảng tính, tự động nhận diện tiêu đề/chuỗi dữ liệu, thay đổi kiểu biểu đồ, tuỳ biến màu sắc, tiêu đề, trục toạ độ và xem trước kết quả trực tiếp theo thời gian thực (Live Preview).
 
 ## Requirements
+
 - **Trình đơn mở (Trigger & Entry Points)**:
   - Nút **Chèn Biểu đồ (Insert Chart)** trên thanh công cụ (`InsertTools.tsx`) và Menu Insert.
   - Nhấp đúp (Double-click) vào biểu đồ hoặc chọn "Chỉnh sửa biểu đồ" từ menu ngữ cảnh.
@@ -31,6 +33,7 @@ Xây dựng Sidebar cấu hình biểu đồ (Chart Inspector) nằm ở cạnh 
   - Lắng nghe sự kiện `onCommandExecuted` của Univer để tự động cập nhật lại biểu đồ khi người dùng sửa giá trị trong ô tính.
 
 ## Related Code Files
+
 - Create:
   - `apps/sheets/src/modules/charts/components/ChartInspector.tsx`
   - `apps/sheets/src/modules/charts/components/inspector/ChartSetupTab.tsx`
@@ -45,6 +48,7 @@ Xây dựng Sidebar cấu hình biểu đồ (Chart Inspector) nằm ở cạnh 
   - `apps/sheets/src/pages/EditorPage.tsx` (quản lý trạng thái mở/đóng Sidebar)
 
 ## Implementation Steps
+
 1. Xây dựng tiện ích `dataRangeParser.utils.ts`:
    - Phân tích cú pháp chuỗi range (ví dụ `'Sheet1'!A1:C15` hoặc `B2:D20`).
    - Đọc ma trận giá trị từ `univerAPI.getActiveWorkbook().getActiveSheet()`.
@@ -56,6 +60,7 @@ Xây dựng Sidebar cấu hình biểu đồ (Chart Inspector) nằm ở cạnh 
 6. Thêm nút "Biểu đồ" vào `InsertTools.tsx` với icon chart chuẩn và tooltip.
 
 ## Success Criteria
+
 - [ ] Bấm nút "Chèn Biểu đồ" khi đang chọn vùng ô dữ liệu sẽ tự động tạo biểu đồ và mở Sidebar cấu hình.
 - [ ] Đổi loại biểu đồ trong Sidebar cập nhật biểu đồ tức thì.
 - [ ] Chỉnh sửa giá trị trong các ô tính tương ứng làm biểu đồ cập nhật ngay lập tức.

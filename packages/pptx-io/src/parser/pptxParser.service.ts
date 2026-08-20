@@ -18,7 +18,9 @@ const asArray = <T>(item: T | T[] | undefined): T[] => {
   return Array.isArray(item) ? item : [item];
 };
 
-const extractTextFromTxBody = (txBody: any): { text: string; fontSize?: number; color?: string; align?: 'left' | 'center' | 'right' } => {
+const extractTextFromTxBody = (
+  txBody: any,
+): { text: string; fontSize?: number; color?: string; align?: 'left' | 'center' | 'right' } => {
   if (!txBody) return { text: '' };
 
   const paragraphs = asArray(txBody['a:p']);
@@ -97,7 +99,9 @@ export const parsePptxBuffer = async (buffer: ArrayBuffer | Uint8Array): Promise
     const rels = asArray(relsData?.['Relationships']?.['Relationship']);
     for (const rel of rels) {
       if (rel?.['@_Id'] && rel?.['@_Target']) {
-        const target = rel['@_Target'].startsWith('/') ? rel['@_Target'].slice(1) : `ppt/${rel['@_Target']}`;
+        const target = rel['@_Target'].startsWith('/')
+          ? rel['@_Target'].slice(1)
+          : `ppt/${rel['@_Target']}`;
         relsMap.set(rel['@_Id'], target.replace('ppt/ppt/', 'ppt/'));
       }
     }
@@ -191,19 +195,22 @@ export const parsePptxBuffer = async (buffer: ArrayBuffer | Uint8Array): Promise
       id: `slide-${idx + 1}`,
       title: `Trang ${idx + 1}`,
       background: '#ffffff',
-      elements: elements.length > 0 ? elements : [
-        {
-          id: `el-${crypto.randomUUID()}`,
-          type: 'text',
-          x: 60,
-          y: 60,
-          width: 840,
-          height: 60,
-          content: `Trang ${idx + 1}`,
-          fontSize: 28,
-          color: '#0f172a',
-        },
-      ],
+      elements:
+        elements.length > 0
+          ? elements
+          : [
+              {
+                id: `el-${crypto.randomUUID()}`,
+                type: 'text',
+                x: 60,
+                y: 60,
+                width: 840,
+                height: 60,
+                content: `Trang ${idx + 1}`,
+                fontSize: 28,
+                color: '#0f172a',
+              },
+            ],
     });
   }
 
@@ -211,14 +218,17 @@ export const parsePptxBuffer = async (buffer: ArrayBuffer | Uint8Array): Promise
     id: `deck-${crypto.randomUUID()}`,
     name: 'Bài trình chiếu đã nhập',
     ratio,
-    slides: slides.length > 0 ? slides : [
-      {
-        id: 'slide-1',
-        title: 'Trang 1',
-        background: '#ffffff',
-        elements: [],
-      },
-    ],
+    slides:
+      slides.length > 0
+        ? slides
+        : [
+            {
+              id: 'slide-1',
+              title: 'Trang 1',
+              background: '#ffffff',
+              elements: [],
+            },
+          ],
   };
 };
 

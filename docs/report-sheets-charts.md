@@ -7,6 +7,7 @@ Plan: `plans/260819-sheets-charts/plan.md`
 ## 1. Tóm tắt kết quả
 
 Đã hoàn tất tích hợp module **Biểu đồ (Charts)** cho ứng dụng `apps/sheets` và package `@office/xlsx-io`:
+
 - **Engine dựng hình**: Sử dụng **Apache ECharts** kết hợp lớp **Floating Overlay Layer** (DOM nổi phía trên Canvas của Univer).
 - **Hỗ trợ 8 loại biểu đồ**: Cột (Column), Thanh ngang (Bar), Đường (Line), Tròn (Pie/Donut), Miền (Area), Phân tán (Scatter), Radar (Mạng nhện), Phễu (Funnel), Kết hợp (Combo).
 - **Sidebar cấu hình (Chart Inspector)**: Giao diện trực quan bên phải (Setup & Customize), hỗ trợ chọn kiểu, dải ô dữ liệu (Data Range), tiêu đề, chú giải, dải màu sắc (iNET, Warm, Cool, Pastel) và xếp chồng (Stacked).
@@ -19,25 +20,30 @@ Plan: `plans/260819-sheets-charts/plan.md`
 ## 2. Chi tiết kết quả theo Phase
 
 ### Phase 1 — Core Chart Engine & Multi-Type Renderer (6h → Completed)
+
 - Định nghĩa toàn bộ schema và types trong `src/modules/charts/types/charts.types.ts` (`ChartSpec`, `ChartType`, `ChartPosition`, `ParsedDataMatrix`).
 - Tạo transformer `buildEChartsOption` hỗ trợ cấu hình mượt mà, tự động điều chỉnh màu sắc theo theme Sáng / Tối (Light / Dark mode).
 - Tạo component `ChartRenderer.tsx` bọc ECharts kèm `ResizeObserver` và cleanup khi unmount.
 
 ### Phase 2 — Floating Overlay & Canvas Sync (7h → Completed)
+
 - Tạo `FloatingChartContainer.tsx` với header kéo thả và 8 điểm điều khiển resize.
 - Tạo `FloatingChartOverlay.tsx` quản lý hiển thị các biểu đồ nổi tương ứng với sheet đang hoạt động (`activeSheetId`).
 - Tích hợp nút xuất ảnh PNG trực tiếp từ ECharts instance.
 
 ### Phase 3 — Chart Inspector Sidebar & Data Range Binding (7h → Completed)
+
 - Xây dựng `dataRangeParser.utils.ts` phân tích dải ô tính (A1 notation) và trích xuất ma trận dữ liệu từ `IWorkbookData`.
 - Xây dựng `ChartInspector.tsx` (Tab Thiết lập & Tab Tùy chỉnh).
 - Bổ sung nút Chèn Biểu đồ vào `InsertTools.tsx` và `SheetsToolbar.tsx`.
 
 ### Phase 4 — Persistence & OOXML Integration (8h → Completed)
+
 - Cập nhật `SheetDocRecord` lưu `charts: ChartSpec[]` vào IndexedDB qua `@office/storage-adapter`.
 - Cập nhật `univerToExceljs` và `parseXlsxBuffer` trong `@office/xlsx-io` để bảo toàn metadata biểu đồ khi lưu/mở tệp `.xlsx`.
 
 ### Phase 5 — Verification, Round-Trip Tests & Polish (4h → Completed)
+
 - Viết unit tests cho `dataRangeParser` và `coordinates`.
 - Viết test round-trip trong `@office/xlsx-io`: Export -> Import lại đạt **100% fidelity**.
 - Bổ sung bản dịch đa ngôn ngữ VI/EN trong `@office/i18n`.

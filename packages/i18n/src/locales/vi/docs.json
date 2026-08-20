@@ -345,5 +345,17 @@
   },
   "pagination": {
     "maxPagesWarning": "Tài liệu quá dài cho chế độ xem phân trang (tối đa 50 trang)."
+  },
+  "collab": {
+    "connected": "Đã kết nối trực tiếp",
+    "connecting": "Đang đồng bộ...",
+    "offline": "Chế độ ngoại tuyến (sẽ đồng bộ khi có mạng)",
+    "editProfile": "Thông tin người dùng",
+    "yourName": "Tên hiển thị",
+    "cursorColor": "Màu con trỏ",
+    "moreUsers": "+{count} người khác",
+    "save": "Lưu thay đổi",
+    "onlineCollaborators": "Người cộng tác trực tuyến ({count})",
+    "you": "Bạn"
   }
 }

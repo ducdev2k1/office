@@ -48,10 +48,7 @@ export const SheetsToolbar = ({ univerAPI, onPrint, onInsertChart }: SheetsToolb
       <Sep />
 
       {/* 3. Font Family */}
-      <FontPicker
-        currentFont={state.fontFamily}
-        onSelectFont={actions.setFontFamily}
-      />
+      <FontPicker currentFont={state.fontFamily} onSelectFont={actions.setFontFamily} />
 
       <Sep />
 

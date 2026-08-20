@@ -1,7 +1,9 @@
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from '@office/i18n';
 import { useDocs } from '@/hooks/useDocs';
 import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
 import { useTheme } from '@/hooks/useTheme';
-import { useTranslation } from '@office/i18n';
 import {
   EditorCanvas,
   EditorContextMenu,
@@ -9,7 +11,7 @@ import {
   PageHeaderFooterPanel,
   Ruler,
   Statusbar,
-  useDocsEditor,
+  useCollabEditor,
   useEditorActions,
   usePagination,
   usePrintDocument,
@@ -21,8 +23,6 @@ import { DocsSidebar } from '@/modules/sidebar';
 import { Toolbar } from '@/modules/toolbar';
 import type { PageSetup } from '@/types/docs.types';
 import { getOutline } from '@/utils/outline.utils';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 
 export const EditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -109,7 +109,11 @@ export const EditorPage = () => {
     navigate(`/edit/${remaining[0]!.id}`);
   };
 
-  const editor = useDocsEditor(activeDoc?.id ?? '', activeDoc?.content ?? '', updateContent);
+  const { editor, collabStatus, collaborators, currentUser, updateProfile } = useCollabEditor(
+    activeDoc,
+    updateContent,
+  );
+
   const paginationState = usePagination(editor, activeDoc);
   const { viewMode, setViewMode, schedulePagination } = paginationState;
 
@@ -130,12 +134,6 @@ export const EditorPage = () => {
   }, [id, setActiveId, markOpened]);
 
   useEffect(() => {
-    if (editor && !editor.isDestroyed && activeDoc && editor.getHTML() !== activeDoc.content) {
-      editor.commands.setContent(activeDoc.content, { emitUpdate: false });
-    }
-  }, [activeDoc, editor]);
-
-  useEffect(() => {
     if (!editor || editor.isDestroyed) return;
     editor.storage.keyboardShortcuts.onFocusFontPicker = () => fontPickerRef.current?.click();
     editor.storage.keyboardShortcuts.onFocusColorPicker = () => colorPickerRef.current?.click();
@@ -154,11 +152,11 @@ export const EditorPage = () => {
   const { printDocument } = usePrintDocument(editor, activeDoc, paginationState);
 
   const wordCount = useMemo(() => {
-    const text = editor?.state.doc.textContent.trim() ?? '';
+    const text = editor?.state?.doc?.textContent?.trim() ?? '';
     return text ? text.split(/\s+/).length : 0;
-  }, [editor?.state.doc.textContent]);
+  }, [editor?.state?.doc?.textContent]);
 
-  const charCount = editor?.state.doc.textContent.length ?? 0;
+  const charCount = editor?.state?.doc?.textContent?.length ?? 0;
   const outline = useMemo(() => getOutline(activeDoc?.content ?? ''), [activeDoc?.content]);
 
   const activeDocCount = useMemo(() => docs.filter((doc) => !doc.deletedAt).length, [docs]);
@@ -187,6 +185,10 @@ export const EditorPage = () => {
           onToggleTheme={toggleTheme}
           starred={Boolean(activeDoc?.starred)}
           onToggleStar={() => activeDoc && star(activeDoc.id)}
+          collabStatus={collabStatus}
+          collaborators={collaborators}
+          currentUser={currentUser}
+          onUpdateCurrentUserProfile={updateProfile}
           menuActions={{
             editor,
             viewMode,

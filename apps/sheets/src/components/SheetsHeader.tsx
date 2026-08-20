@@ -97,9 +97,7 @@ export const SheetsHeader = ({
             </Button>
             <span
               className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground pl-1"
-              title={
-                saveState === 'saving' ? tCommon('actions.saving') : t('header.savedTooltip')
-              }
+              title={saveState === 'saving' ? tCommon('actions.saving') : t('header.savedTooltip')}
             >
               <Icon
                 name="cloud"

@@ -11,10 +11,7 @@ import { buildPagesWidget } from '@/modules/editor/utils/pagination.dom';
 
 export const PAGINATION_PLUGIN_KEY = new PluginKey<PaginationPluginState>('tiptap-pagination');
 
-export const computePaginationMetrics = (
-  setup: PageSetup,
-  gapHeight = 16,
-): PaginationMetrics => {
+export const computePaginationMetrics = (setup: PageSetup, gapHeight = 16): PaginationMetrics => {
   const { width: paperW, height: paperH } = getPaperSizePx(setup);
   const marginT = mmToPx(setup.margins.top) || 76;
   const marginR = mmToPx(setup.margins.right) || 57;

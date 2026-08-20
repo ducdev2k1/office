@@ -42,7 +42,9 @@ export const resolveSlot = (
   ctx: Omit<TokenContext, 'page' | 'pages'>,
 ): Record<HFAlign, string> => {
   const result: Record<HFAlign, string> = {
-    left: slot?.left ? renderTokens(slot.left, { ...ctx, page: pageIndex + 1, pages: pageCount }) : '',
+    left: slot?.left
+      ? renderTokens(slot.left, { ...ctx, page: pageIndex + 1, pages: pageCount })
+      : '',
     center: slot?.center
       ? renderTokens(slot.center, { ...ctx, page: pageIndex + 1, pages: pageCount })
       : '',

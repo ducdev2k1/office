@@ -35,4 +35,7 @@ const main = async () => {
   console.log(failures.length > 0 ? 'RESULT: FAIL' : 'RESULT: PASS');
 };
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

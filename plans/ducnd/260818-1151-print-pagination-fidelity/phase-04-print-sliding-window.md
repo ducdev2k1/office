@@ -1,10 +1,10 @@
 ---
 phase: 4
-title: "Print Sliding-Window"
+title: 'Print Sliding-Window'
 status: done
 priority: P1
 dependencies: [3]
-effort: "1.5-2d"
+effort: '1.5-2d'
 ---
 
 # Phase 4: Print Sliding-Window
@@ -18,12 +18,14 @@ Kiến trúc đã được **spike gate ở P2b verify** trước khi vào phase
 ## Requirements
 
 **Functional**
+
 - Doc N trang paged view → in ra đúng N trang, **không mất nội dung**.
 - Header/footer + số trang trong vùng lề mỗi trang.
 - Hoạt động cả nút Print lẫn `Ctrl+P`.
 - `viewMode !== 'paged'` **hoặc** `isOverLimit` **hoặc** build fail → fallback đường in cũ, **không bao giờ ra trang trắng**.
 
 **Non-functional**
+
 - Không trang trắng thừa, cả portrait lẫn landscape.
 - Dọn sạch `#print-root` sau khi in, kể cả khi user huỷ dialog hoặc build throw.
 - `buildPrintRoot` dưới ngưỡng thời gian đã đo cho doc 50 trang.
@@ -34,11 +36,11 @@ Kiến trúc đã được **spike gate ở P2b verify** trước khi vào phase
 
 ```html
 <div id="print-root">
-  <div class="print-page">                          <!-- mm units, margin/padding = 0 -->
-    <div class="print-hf print-header">
-      <span></span><span></span><span></span>
-    </div>
-    <div class="page-viewport is-paged">            <!-- BẮT BUỘC — xem dưới -->
+  <div class="print-page">
+    <!-- mm units, margin/padding = 0 -->
+    <div class="print-hf print-header"><span></span><span></span><span></span></div>
+    <div class="page-viewport is-paged">
+      <!-- BẮT BUỘC — xem dưới -->
       <div class="print-clip">
         <div class="print-content" style="top:-{contentOffsets[i]}px">CLONE</div>
       </div>
@@ -51,6 +53,7 @@ Kiến trúc đã được **spike gate ở P2b verify** trước khi vào phase
 **Wrapper `.page-viewport.is-paged` là bắt buộc, không phải trang trí.** `view.dom` mang `class="doc-editor ProseMirror"` (`useDocsEditor.ts:56`), nhưng layout paged đến từ rule **ancestor-scoped** `.is-paged .doc-editor` (`styles.css:171-179`). Class `is-paged` nằm trên `.page-viewport` bên trong `#root` (`EditorCanvas.tsx:121`). Clone đặt vào `#print-root` — sibling của `#root` — sẽ mất ancestor đó và rơi về rule base `.doc-editor` (`styles.css:155-169`).
 
 Số cụ thể, A4 lề 15mm, `mmToPx(15) = 57`, `mmToPx(210) = 794`:
+
 - Màn hình: `794 − 57 − 57 = 680px`
 - Clone không wrapper: `794 − 82 − 82 − 2px border = 628px` → **hẹp hơn 7.6%**
 
@@ -75,25 +78,45 @@ Fix: `#print-root .page-break-marker { border: 0 } #print-root .page-break-marke
 ### CSS — đơn vị mm, zero margin
 
 ```css
-#print-root { display: none; margin: 0; padding: 0; }
+#print-root {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
 
 @media print {
-  body.printing #root { display: none !important; }
-  body.printing #print-root { display: block !important; }
+  body.printing #root {
+    display: none !important;
+  }
+  body.printing #print-root {
+    display: block !important;
+  }
 
   .print-page {
     position: relative;
-    margin: 0; padding: 0;
-    width: var(--paper-w-mm);      /* mm, khớp @page size */
+    margin: 0;
+    padding: 0;
+    width: var(--paper-w-mm); /* mm, khớp @page size */
     height: var(--paper-h-mm);
     overflow: hidden;
     break-after: page;
     page-break-after: always;
   }
-  .print-page:last-child { break-after: auto; page-break-after: auto; }
+  .print-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
 
-  .print-clip { position: relative; height: var(--usable); overflow: hidden; }
-  .print-content { position: absolute; left: 0; right: 0; }
+  .print-clip {
+    position: relative;
+    height: var(--usable);
+    overflow: hidden;
+  }
+  .print-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
 }
 ```
 
@@ -118,16 +141,22 @@ export const usePrintDocument = (
   const buildOrBail = (): boolean => {
     if (!editor || editor.isDestroyed) return false;
     if (pagination.viewMode !== 'paged') return false;
-    if (editor.view.composing) return false;              // không ép ngắt IME
-    const breaks = pagination.computeNow();               // P2c: trả PageBreaks | null
+    if (editor.view.composing) return false; // không ép ngắt IME
+    const breaks = pagination.computeNow(); // P2c: trả PageBreaks | null
     if (!breaks) return false;
-    if (breaks.contentOffsets.length >= MAX_PAGES) return false;   // quyết định đã chốt
-    try { buildPrintRoot(breaks); document.body.classList.add('printing'); return true; }
-    catch { teardownPrintRoot(); return false; }
+    if (breaks.contentOffsets.length >= MAX_PAGES) return false; // quyết định đã chốt
+    try {
+      buildPrintRoot(breaks);
+      document.body.classList.add('printing');
+      return true;
+    } catch {
+      teardownPrintRoot();
+      return false;
+    }
   };
 
   const printDocument = async () => {
-    await document.fonts.ready;      // CHỈ được await ở đường này
+    await document.fonts.ready; // CHỈ được await ở đường này
     buildOrBail();
     window.print();
   };
@@ -147,7 +176,7 @@ export const usePrintDocument = (
 
 ### Chi phí clone
 
-`plan.md` phiên bản trước ghi mitigation *"Clone 1 lần, dùng chung qua CSS"* — **bất khả thi**: mỗi `.print-page` cần `top` khác nhau nên phải có DOM subtree riêng. Chi phí thật là `pageCount × toàn bộ DOM`.
+`plan.md` phiên bản trước ghi mitigation _"Clone 1 lần, dùng chung qua CSS"_ — **bất khả thi**: mỗi `.print-page` cần `top` khác nhau nên phải có DOM subtree riêng. Chi phí thật là `pageCount × toàn bộ DOM`.
 
 Doc 50 trang + ảnh data-URL 1MB (`image.utils.ts` cho phép) → 250 lần decode bitmap, **đồng bộ trong `beforeprint`**. Phải đo và đặt ngưỡng cứng, không để dạng "cân nhắc".
 
@@ -200,14 +229,14 @@ Doc 50 trang + ảnh data-URL 1MB (`image.utils.ts` cho phép) → 250 lần dec
 
 ## Risk Assessment
 
-| Rủi ro | Mức | Mitigation |
-|---|---|---|
-| Clone mất cascade `.is-paged` → wrap lệch | **Cao** | Wrapper `.page-viewport.is-paged` + assert `scrollHeight` bằng nhau trước khi dựng |
-| Đọc React state cũ trong `beforeprint` | **Cao** | `pagination.computeNow()` trả `PageBreaks` đồng bộ; `composing` → abort |
-| N clone đồng bộ → đơ / OOM | **Cao** | Đo wall time ở bước 8, ngưỡng cứng trong AC; abort + fallback nếu vượt |
-| In ra trang trắng | **Cao** | `body.printing` chỉ set sau khi build thành công; try/catch + `finally` |
-| Trang trắng thừa ở landscape do margin lạc | Trung bình | mm units + zero margin tường minh + `:last-child { break-after: auto }`; test cả 2 hướng |
-| `.page-break-marker` in chữ "Page break" | Trung bình | Normalize marker trong clone |
-| Theme tối in nền tối | Trung bình | Force light palette trong `#print-root` |
-| Header/footer mặc định của browser (URL, ngày) | Thấp | Không tắt được bằng CSS — ghi hướng dẫn user bỏ tick |
-| Ảnh chưa render lúc clone | Thấp | `await document.fonts.ready` ở đường nút Print; kiểm `img.complete`; `beforeprint` không await được nên chấp nhận |
+| Rủi ro                                         | Mức        | Mitigation                                                                                                        |
+| ---------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| Clone mất cascade `.is-paged` → wrap lệch      | **Cao**    | Wrapper `.page-viewport.is-paged` + assert `scrollHeight` bằng nhau trước khi dựng                                |
+| Đọc React state cũ trong `beforeprint`         | **Cao**    | `pagination.computeNow()` trả `PageBreaks` đồng bộ; `composing` → abort                                           |
+| N clone đồng bộ → đơ / OOM                     | **Cao**    | Đo wall time ở bước 8, ngưỡng cứng trong AC; abort + fallback nếu vượt                                            |
+| In ra trang trắng                              | **Cao**    | `body.printing` chỉ set sau khi build thành công; try/catch + `finally`                                           |
+| Trang trắng thừa ở landscape do margin lạc     | Trung bình | mm units + zero margin tường minh + `:last-child { break-after: auto }`; test cả 2 hướng                          |
+| `.page-break-marker` in chữ "Page break"       | Trung bình | Normalize marker trong clone                                                                                      |
+| Theme tối in nền tối                           | Trung bình | Force light palette trong `#print-root`                                                                           |
+| Header/footer mặc định của browser (URL, ngày) | Thấp       | Không tắt được bằng CSS — ghi hướng dẫn user bỏ tick                                                              |
+| Ảnh chưa render lúc clone                      | Thấp       | `await document.fonts.ready` ở đường nút Print; kiểm `img.complete`; `beforeprint` không await được nên chấp nhận |

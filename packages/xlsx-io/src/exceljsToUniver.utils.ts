@@ -57,36 +57,88 @@ const DEFAULT_THEME_COLORS = [
 ];
 
 const INDEXED_COLORS: Record<number, string> = {
-  0: '#000000', 1: '#FFFFFF', 2: '#FF0000', 3: '#00FF00', 4: '#0000FF',
-  5: '#FFFF00', 6: '#FF00FF', 7: '#00FFFF', 8: '#000000', 9: '#FFFFFF',
-  10: '#FF0000', 11: '#00FF00', 12: '#0000FF', 13: '#FFFF00', 14: '#FF00FF',
-  15: '#00FFFF', 16: '#800000', 17: '#008000', 18: '#000080', 19: '#808000',
-  20: '#800080', 21: '#008080', 22: '#C0C0C0', 23: '#808080', 24: '#9999FF',
-  25: '#993366', 26: '#FFFFCC', 27: '#CCFFFF', 28: '#660066', 29: '#FF8080',
-  30: '#0066CC', 31: '#CCCCFF', 32: '#000080', 33: '#FF00FF', 34: '#FFFF00',
-  35: '#00FFFF', 36: '#800080', 37: '#800000', 38: '#008080', 39: '#0000FF',
-  40: '#00CCFF', 41: '#CCFFFF', 42: '#CCFFCC', 43: '#FFFF99', 44: '#99CCFF',
-  45: '#FF99CC', 46: '#CC99FF', 47: '#FFCC99', 48: '#3366FF', 49: '#33CCCC',
-  50: '#99CC00', 51: '#FFCC00', 52: '#FF9900', 53: '#FF6600', 54: '#666699',
-  55: '#969696', 56: '#003366', 57: '#339966', 58: '#003300', 59: '#333300',
-  60: '#993300', 61: '#993366', 62: '#333399', 63: '#333333', 64: '#000000',
+  0: '#000000',
+  1: '#FFFFFF',
+  2: '#FF0000',
+  3: '#00FF00',
+  4: '#0000FF',
+  5: '#FFFF00',
+  6: '#FF00FF',
+  7: '#00FFFF',
+  8: '#000000',
+  9: '#FFFFFF',
+  10: '#FF0000',
+  11: '#00FF00',
+  12: '#0000FF',
+  13: '#FFFF00',
+  14: '#FF00FF',
+  15: '#00FFFF',
+  16: '#800000',
+  17: '#008000',
+  18: '#000080',
+  19: '#808000',
+  20: '#800080',
+  21: '#008080',
+  22: '#C0C0C0',
+  23: '#808080',
+  24: '#9999FF',
+  25: '#993366',
+  26: '#FFFFCC',
+  27: '#CCFFFF',
+  28: '#660066',
+  29: '#FF8080',
+  30: '#0066CC',
+  31: '#CCCCFF',
+  32: '#000080',
+  33: '#FF00FF',
+  34: '#FFFF00',
+  35: '#00FFFF',
+  36: '#800080',
+  37: '#800000',
+  38: '#008080',
+  39: '#0000FF',
+  40: '#00CCFF',
+  41: '#CCFFFF',
+  42: '#CCFFCC',
+  43: '#FFFF99',
+  44: '#99CCFF',
+  45: '#FF99CC',
+  46: '#CC99FF',
+  47: '#FFCC99',
+  48: '#3366FF',
+  49: '#33CCCC',
+  50: '#99CC00',
+  51: '#FFCC00',
+  52: '#FF9900',
+  53: '#FF6600',
+  54: '#666699',
+  55: '#969696',
+  56: '#003366',
+  57: '#339966',
+  58: '#003300',
+  59: '#333300',
+  60: '#993300',
+  61: '#993366',
+  62: '#333399',
+  63: '#333333',
+  64: '#000000',
   65: '#FFFFFF',
 };
 
 const DEFAULT_STATUS_STYLES: Record<string, { bg: string; cl: string; bl?: number }> = {
   'chờ fix': { bg: '#ffd5d5', cl: '#c00000', bl: 1 },
-  'done': { bg: '#ffeb9c', cl: '#9c6500', bl: 1 },
-  'doing': { bg: '#e1d5e7', cl: '#674ea7', bl: 1 },
-  'new': { bg: '#d5e8d4', cl: '#27500a', bl: 1 },
-  'retest': { bg: '#fce5cd', cl: '#a64d79', bl: 1 },
+  done: { bg: '#ffeb9c', cl: '#9c6500', bl: 1 },
+  doing: { bg: '#e1d5e7', cl: '#674ea7', bl: 1 },
+  new: { bg: '#d5e8d4', cl: '#27500a', bl: 1 },
+  retest: { bg: '#fce5cd', cl: '#a64d79', bl: 1 },
   'done testcase': { bg: '#deeaf1', cl: '#1f4e79', bl: 1 },
-  'confirmed': { bg: '#fce4d6', cl: '#791f1f', bl: 1 },
-  'fixing': { bg: '#fff2cc', cl: '#633806', bl: 1 },
-  'resolved': { bg: '#e1f5ee', cl: '#085041', bl: 1 },
-  'critical': { bg: '#ffd5d5', cl: '#c00000', bl: 1 },
-  'high': { bg: '#fff2cc', cl: '#c55a11', bl: 1 },
-  'medium': { bg: '#deeaf1', cl: '#1f4e79', bl: 1 },
-  'low': { bg: '#e2efda', cl: '#27500a', bl: 1 },
+  confirmed: { bg: '#fce4d6', cl: '#791f1f', bl: 1 },
+  fixing: { bg: '#fff2cc', cl: '#633806', bl: 1 },
+  resolved: { bg: '#e1f5ee', cl: '#085041', bl: 1 },
+  critical: { bg: '#ffd5d5', cl: '#c00000', bl: 1 },
+  high: { bg: '#fff2cc', cl: '#c55a11', bl: 1 },
+  medium: { bg: '#deeaf1', cl: '#1f4e79', bl: 1 },
+  low: { bg: '#e2efda', cl: '#27500a', bl: 1 },
 };
 
 const genId = () => `s_${Math.random().toString(36).slice(2, 10)}`;
@@ -131,7 +183,9 @@ interface ExtendedExcelColor {
   indexed?: number;
 }
 
-const resolveExcelColor = (colorObj?: Partial<ExcelJS.Color> | ExtendedExcelColor): string | undefined => {
+const resolveExcelColor = (
+  colorObj?: Partial<ExcelJS.Color> | ExtendedExcelColor,
+): string | undefined => {
   if (!colorObj) return undefined;
   const c = colorObj as ExtendedExcelColor;
   if (c.argb) {
@@ -164,7 +218,7 @@ const convertCellValue = (
       const v = typeof res === 'object' ? undefined : (res as CellValue | undefined);
       return {
         f: formulaStr,
-        v: v !== undefined ? v : (formulaStr ? undefined : undefined),
+        v: v !== undefined ? v : formulaStr ? undefined : undefined,
         t:
           typeof res === 'number'
             ? CellValueType.NUMBER
@@ -296,7 +350,9 @@ const buildStyle = (cell: ExcelJS.Cell): IStyleData | undefined => {
 const colLetterToNumber = (col: string): number =>
   col.split('').reduce((acc, ch) => acc * 26 + (ch.charCodeAt(0) - 64), 0);
 
-const parseRangeRef = (ref: string): { startRow: number; startCol: number; endRow: number; endCol: number } | null => {
+const parseRangeRef = (
+  ref: string,
+): { startRow: number; startCol: number; endRow: number; endCol: number } | null => {
   const match = /^([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?$/i.exec(ref.trim());
   if (!match) return null;
   const startCol = colLetterToNumber(match[1]!.toUpperCase()) - 1;
@@ -349,7 +405,7 @@ export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
         cellData[r][c] = cellOut;
 
         // Content length and lines tracking
-        const strVal = v !== undefined ? String(v) : (f ? String(f) : '');
+        const strVal = v !== undefined ? String(v) : f ? String(f) : '';
         const lines = strVal.split('\n').length;
         if (lines > maxLinesInRow) maxLinesInRow = lines;
         const len = Math.max(...strVal.split('\n').map((line) => line.length));
@@ -363,7 +419,21 @@ export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
 
     // 1. Evaluate explicit conditional formatting rules from Excel model if any
     try {
-      const condFormattings = (ws.model as { conditionalFormattings?: Array<{ ref?: string; rules?: Array<{ type?: string; operator?: string; formulae?: string[]; text?: string; style?: unknown }> }> })?.conditionalFormattings ?? [];
+      const condFormattings =
+        (
+          ws.model as {
+            conditionalFormattings?: Array<{
+              ref?: string;
+              rules?: Array<{
+                type?: string;
+                operator?: string;
+                formulae?: string[];
+                text?: string;
+                style?: unknown;
+              }>;
+            }>;
+          }
+        )?.conditionalFormattings ?? [];
       for (const cf of condFormattings) {
         if (!cf.ref || !cf.rules) continue;
         const range = parseRangeRef(cf.ref);
@@ -374,7 +444,10 @@ export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
           const targetValue = (rule.formulae?.[0] ?? rule.text ?? '').replace(/^"|"$/g, '');
           const ruleStyle = rule.style as { font?: Partial<ExcelJS.Font>; fill?: ExcelJS.Fill };
           const fontColor = resolveExcelColor(ruleStyle.font?.color);
-          const fgFill = ruleStyle.fill && ruleStyle.fill.type === 'pattern' ? (ruleStyle.fill as ExcelJS.FillPattern).fgColor : undefined;
+          const fgFill =
+            ruleStyle.fill && ruleStyle.fill.type === 'pattern'
+              ? (ruleStyle.fill as ExcelJS.FillPattern).fgColor
+              : undefined;
           const fillColor = resolveExcelColor(fgFill);
 
           for (let r = range.startRow; r <= range.endRow; r++) {
@@ -384,11 +457,14 @@ export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
               const cellStr = cell.v !== undefined ? String(cell.v).trim() : '';
               const matches =
                 rule.operator === 'equal' || rule.type === 'containsText'
-                  ? cellStr.toLowerCase() === targetValue.toLowerCase() || (rule.type === 'containsText' && cellStr.toLowerCase().includes(targetValue.toLowerCase()))
+                  ? cellStr.toLowerCase() === targetValue.toLowerCase() ||
+                    (rule.type === 'containsText' &&
+                      cellStr.toLowerCase().includes(targetValue.toLowerCase()))
                   : false;
 
               if (matches) {
-                const existingStyle: IStyleData = (cell.s && typeof cell.s === 'string' ? styleMap[cell.s] : undefined) || {};
+                const existingStyle: IStyleData =
+                  (cell.s && typeof cell.s === 'string' ? styleMap[cell.s] : undefined) || {};
                 const mergedStyle: IStyleData = {
                   ...existingStyle,
                   ...(fontColor ? { cl: { rgb: fontColor } } : {}),
@@ -416,7 +492,8 @@ export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
         const textKey = String(cell.v).trim().toLowerCase();
         const badge = DEFAULT_STATUS_STYLES[textKey];
         if (badge) {
-          const curStyle: IStyleData = (cell.s && typeof cell.s === 'string' ? styleMap[cell.s] : undefined) || {};
+          const curStyle: IStyleData =
+            (cell.s && typeof cell.s === 'string' ? styleMap[cell.s] : undefined) || {};
           // Only apply status colors if no custom background color was explicitly defined
           if (!curStyle.bg?.rgb) {
             const mergedStyle: IStyleData = {

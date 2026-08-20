@@ -17,7 +17,9 @@ const main = async () => {
   });
   const page = await browser.newPage();
   const failures: string[] = [];
-  page.on('response', (res) => { if (res.status() >= 400) failures.push(`${res.status()} ${res.url()}`); });
+  page.on('response', (res) => {
+    if (res.status() >= 400) failures.push(`${res.status()} ${res.url()}`);
+  });
   page.on('pageerror', (err) => failures.push(`[pageerror] ${err.message}`));
 
   await page.goto(URL, { waitUntil: 'networkidle2', timeout: 30000 });
@@ -32,7 +34,9 @@ const main = async () => {
     const t1 = Date.now();
     const canvas = await page.evaluate(() => document.querySelectorAll('canvas').length);
     const tabs = await page.evaluate(() =>
-      [...document.querySelectorAll('[class*="tab"]')].map((el) => (el as HTMLElement).innerText).join(','),
+      [...document.querySelectorAll('[class*="tab"]')]
+        .map((el) => (el as HTMLElement).innerText)
+        .join(','),
     );
     const name = file.split('/').pop();
     console.log(`${name}: render=${t1 - t0}ms canvas=${canvas} tabs=[${tabs}]`);
@@ -43,4 +47,7 @@ const main = async () => {
   console.log(failures.length > 0 ? 'RESULT: FAIL' : 'RESULT: PASS');
 };
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

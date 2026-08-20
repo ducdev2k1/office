@@ -16,11 +16,7 @@ interface ColorFontToolsProps {
   colorPickerRef?: RefObject<HTMLButtonElement | null>;
 }
 
-export const ColorFontTools = ({
-  editor,
-  fontPickerRef,
-  colorPickerRef,
-}: ColorFontToolsProps) => {
+export const ColorFontTools = ({ editor, fontPickerRef, colorPickerRef }: ColorFontToolsProps) => {
   const { t } = useTranslation('docs');
   const textStyle = editor.getAttributes('textStyle');
   const highlightStyle = editor.getAttributes('highlight');

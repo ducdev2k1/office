@@ -198,10 +198,7 @@ export const resolveContentOffsets = (
   return out;
 };
 
-export const measureLines = (
-  view: EditorView,
-  nodeDom: HTMLElement,
-): LineMeasurement[] => {
+export const measureLines = (view: EditorView, nodeDom: HTMLElement): LineMeasurement[] => {
   const rects: { top: number; bottom: number; left: number; height: number }[] = [];
   const walker = document.createTreeWalker(nodeDom, NodeFilter.SHOW_TEXT);
   let textNode = walker.nextNode();
@@ -322,7 +319,12 @@ export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreak
   };
   return {
     ...result,
-    contentOffsets: resolveContentOffsets(result.breaks, result.contentOffsets, domTopOf, metrics.paperH),
+    contentOffsets: resolveContentOffsets(
+      result.breaks,
+      result.contentOffsets,
+      domTopOf,
+      metrics.paperH,
+    ),
   };
 };
 

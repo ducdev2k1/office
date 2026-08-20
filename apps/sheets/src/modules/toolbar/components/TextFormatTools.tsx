@@ -46,19 +46,11 @@ export const TextFormatTools = ({
         fontSizeLabel={t('toolbar.font.size')}
       />
 
-      <ToolbarButton
-        label={t('toolbar.text.bold')}
-        active={bold}
-        onClick={onToggleBold}
-      >
+      <ToolbarButton label={t('toolbar.text.bold')} active={bold} onClick={onToggleBold}>
         <Icon name="bold" size={16} />
       </ToolbarButton>
 
-      <ToolbarButton
-        label={t('toolbar.text.italic')}
-        active={italic}
-        onClick={onToggleItalic}
-      >
+      <ToolbarButton label={t('toolbar.text.italic')} active={italic} onClick={onToggleItalic}>
         <Icon name="italic" size={16} />
       </ToolbarButton>
 

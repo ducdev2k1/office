@@ -3,7 +3,10 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useTranslation } from '@office/i18n';
 import { Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
-import { HeaderFooterTokens, type TokenName } from '@/modules/editor/extensions/headerFooterTokens.extension';
+import {
+  HeaderFooterTokens,
+  type TokenName,
+} from '@/modules/editor/extensions/headerFooterTokens.extension';
 
 export interface InlineBandRect {
   top: number;
@@ -160,7 +163,13 @@ export const HeaderFooterInlineEditor = ({
 
       <div
         className="hf-inline-card z-30 overflow-hidden rounded-lg border border-border bg-card shadow-lg"
-        style={{ position: 'absolute', top: rect.top, left: rect.left, width: rect.width, minHeight: rect.height }}
+        style={{
+          position: 'absolute',
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          minHeight: rect.height,
+        }}
       >
         <EditorContent editor={editor} />
       </div>

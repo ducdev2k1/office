@@ -46,8 +46,7 @@ export const useSheets = (): SheetsState => {
   const [saveState, setSaveState] = useState<'loading' | 'saving' | 'saved'>('loading');
 
   const activeSheet =
-    sheets.find((s) => s.id === activeId && !s.deletedAt) ??
-    sheets.find((s) => !s.deletedAt);
+    sheets.find((s) => s.id === activeId && !s.deletedAt) ?? sheets.find((s) => !s.deletedAt);
   const activeSheetRef = useRef(activeSheet);
 
   useEffect(() => {
@@ -56,7 +55,7 @@ export const useSheets = (): SheetsState => {
       const first = loaded.find((s) => !s.deletedAt);
       const urlId = window.location.pathname.match(/^\/edit\/([^/]+)/)?.[1];
       const hasUrlSheet = urlId !== undefined && loaded.some((s) => s.id === urlId && !s.deletedAt);
-      setActiveId(hasUrlSheet ? urlId : first?.id ?? loaded[0]?.id ?? '');
+      setActiveId(hasUrlSheet ? urlId : (first?.id ?? loaded[0]?.id ?? ''));
       setLoading(false);
       setSaveState('saved');
     });
@@ -75,48 +74,60 @@ export const useSheets = (): SheetsState => {
     return () => window.clearTimeout(timeout);
   }, [activeSheet, loading]);
 
-  const updateSheet = useCallback((id: string, updater: (sheet: SheetDocRecord) => SheetDocRecord): void => {
-    setSheets((current) => current.map((s) => (s.id === id ? updater(s) : s)));
-  }, []);
+  const updateSheet = useCallback(
+    (id: string, updater: (sheet: SheetDocRecord) => SheetDocRecord): void => {
+      setSheets((current) => current.map((s) => (s.id === id ? updater(s) : s)));
+    },
+    [],
+  );
 
-  const updateData = useCallback((data: IWorkbookData): void => {
-    const currentSheet = activeSheetRef.current;
-    if (!currentSheet) return;
-    setSaveState('saving');
-    updateSheet(currentSheet.id, (s) => ({
-      ...s,
-      data,
-      updatedAt: now(),
-    }));
-    window.setTimeout(() => setSaveState('saved'), 300);
-  }, [updateSheet]);
-
-  const updateCharts = useCallback((charts: ChartSpec[]): void => {
-    const currentSheet = activeSheetRef.current;
-    if (!currentSheet) return;
-    setSaveState('saving');
-    updateSheet(currentSheet.id, (s) => ({
-      ...s,
-      charts,
-      updatedAt: now(),
-    }));
-    window.setTimeout(() => setSaveState('saved'), 300);
-  }, [updateSheet]);
-
-  const updateTitle = useCallback((title: string): void => {
-    const currentSheet = activeSheetRef.current;
-    if (!currentSheet) return;
-    updateSheet(currentSheet.id, (s) => {
-      const updated = {
+  const updateData = useCallback(
+    (data: IWorkbookData): void => {
+      const currentSheet = activeSheetRef.current;
+      if (!currentSheet) return;
+      setSaveState('saving');
+      updateSheet(currentSheet.id, (s) => ({
         ...s,
-        title: title.trim() || t('untitled'),
-        data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
+        data,
         updatedAt: now(),
-      };
-      void saveSheet(updated);
-      return updated;
-    });
-  }, [updateSheet, t]);
+      }));
+      window.setTimeout(() => setSaveState('saved'), 300);
+    },
+    [updateSheet],
+  );
+
+  const updateCharts = useCallback(
+    (charts: ChartSpec[]): void => {
+      const currentSheet = activeSheetRef.current;
+      if (!currentSheet) return;
+      setSaveState('saving');
+      updateSheet(currentSheet.id, (s) => ({
+        ...s,
+        charts,
+        updatedAt: now(),
+      }));
+      window.setTimeout(() => setSaveState('saved'), 300);
+    },
+    [updateSheet],
+  );
+
+  const updateTitle = useCallback(
+    (title: string): void => {
+      const currentSheet = activeSheetRef.current;
+      if (!currentSheet) return;
+      updateSheet(currentSheet.id, (s) => {
+        const updated = {
+          ...s,
+          title: title.trim() || t('untitled'),
+          data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
+          updatedAt: now(),
+        };
+        void saveSheet(updated);
+        return updated;
+      });
+    },
+    [updateSheet, t],
+  );
 
   const addSheet = useCallback((title?: string): string => {
     const nextSheet = createBlankSheet(title);
@@ -134,79 +145,97 @@ export const useSheets = (): SheetsState => {
     return nextSheet.id;
   }, []);
 
-  const star = useCallback((id: string): void => {
-    updateSheet(id, (s) => {
-      const updated = { ...s, starred: !s.starred };
-      void saveSheet(updated);
-      return updated;
-    });
-  }, [updateSheet]);
+  const star = useCallback(
+    (id: string): void => {
+      updateSheet(id, (s) => {
+        const updated = { ...s, starred: !s.starred };
+        void saveSheet(updated);
+        return updated;
+      });
+    },
+    [updateSheet],
+  );
 
-  const rename = useCallback((id: string, title: string): void => {
-    updateSheet(id, (s) => {
-      const updated = {
-        ...s,
-        title: title.trim() || t('untitled'),
-        data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
-        updatedAt: now(),
-      };
-      void saveSheet(updated);
-      return updated;
-    });
-  }, [updateSheet, t]);
+  const rename = useCallback(
+    (id: string, title: string): void => {
+      updateSheet(id, (s) => {
+        const updated = {
+          ...s,
+          title: title.trim() || t('untitled'),
+          data: s.data ? { ...s.data, name: title.trim() || t('untitled') } : undefined,
+          updatedAt: now(),
+        };
+        void saveSheet(updated);
+        return updated;
+      });
+    },
+    [updateSheet, t],
+  );
 
-  const duplicate = useCallback((id: string): void => {
-    setSheets((current) => {
-      const source = current.find((s) => s.id === id);
-      if (!source) return current;
-      const copyId = `sheet-${crypto.randomUUID()}`;
-      const copyTitle = t('copyOf', { title: source.title });
-      const copyData = source.data ? { ...source.data, id: copyId, name: copyTitle } : undefined;
-      const copy: SheetDocRecord = {
-        ...source,
-        id: copyId,
-        title: copyTitle,
-        createdAt: now(),
-        updatedAt: now(),
-        lastOpenedAt: now(),
-        starred: false,
-        deletedAt: null,
-        data: copyData,
-        charts: source.charts ? JSON.parse(JSON.stringify(source.charts)) : undefined,
-      };
-      void saveSheet(copy);
-      return [copy, ...current];
-    });
-  }, [t]);
+  const duplicate = useCallback(
+    (id: string): void => {
+      setSheets((current) => {
+        const source = current.find((s) => s.id === id);
+        if (!source) return current;
+        const copyId = `sheet-${crypto.randomUUID()}`;
+        const copyTitle = t('copyOf', { title: source.title });
+        const copyData = source.data ? { ...source.data, id: copyId, name: copyTitle } : undefined;
+        const copy: SheetDocRecord = {
+          ...source,
+          id: copyId,
+          title: copyTitle,
+          createdAt: now(),
+          updatedAt: now(),
+          lastOpenedAt: now(),
+          starred: false,
+          deletedAt: null,
+          data: copyData,
+          charts: source.charts ? JSON.parse(JSON.stringify(source.charts)) : undefined,
+        };
+        void saveSheet(copy);
+        return [copy, ...current];
+      });
+    },
+    [t],
+  );
 
-  const trash = useCallback((id: string): void => {
-    updateSheet(id, (s) => {
-      const updated = { ...s, deletedAt: now() };
-      void saveSheet(updated);
-      return updated;
-    });
-  }, [updateSheet]);
+  const trash = useCallback(
+    (id: string): void => {
+      updateSheet(id, (s) => {
+        const updated = { ...s, deletedAt: now() };
+        void saveSheet(updated);
+        return updated;
+      });
+    },
+    [updateSheet],
+  );
 
-  const restore = useCallback((id: string): void => {
-    updateSheet(id, (s) => {
-      const updated = { ...s, deletedAt: null, updatedAt: now() };
-      void saveSheet(updated);
-      return updated;
-    });
-  }, [updateSheet]);
+  const restore = useCallback(
+    (id: string): void => {
+      updateSheet(id, (s) => {
+        const updated = { ...s, deletedAt: null, updatedAt: now() };
+        void saveSheet(updated);
+        return updated;
+      });
+    },
+    [updateSheet],
+  );
 
   const deleteForever = useCallback((id: string): void => {
     setSheets((current) => current.filter((s) => s.id !== id));
     void deleteSheetRecord(id);
   }, []);
 
-  const markOpened = useCallback((id: string): void => {
-    updateSheet(id, (s) => {
-      const updated = { ...s, lastOpenedAt: now() };
-      void saveSheet(updated);
-      return updated;
-    });
-  }, [updateSheet]);
+  const markOpened = useCallback(
+    (id: string): void => {
+      updateSheet(id, (s) => {
+        const updated = { ...s, lastOpenedAt: now() };
+        void saveSheet(updated);
+        return updated;
+      });
+    },
+    [updateSheet],
+  );
 
   const files = useMemo<FileRecord[]>(() => sheets, [sheets]);
   const storageBytes = useMemo(() => getStorageUsageBytes(sheets), [sheets]);

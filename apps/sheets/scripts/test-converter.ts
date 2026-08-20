@@ -12,11 +12,15 @@ const run = async (file: string) => {
   const t2 = Date.now();
   const sheets = Object.keys(data.sheets).length;
   const cellCount = Object.values(data.sheets).reduce(
-    (acc, s) => acc + Object.values(s.cellData ?? {}).reduce((a, row) => a + Object.keys(row).length, 0),
+    (acc, s) =>
+      acc + Object.values(s.cellData ?? {}).reduce((a, row) => a + Object.keys(row).length, 0),
     0,
   );
   const styleCount = Object.keys(data.styles).length;
-  const mergeCount = Object.values(data.sheets).reduce((acc, s) => acc + (s.mergeData?.length ?? 0), 0);
+  const mergeCount = Object.values(data.sheets).reduce(
+    (acc, s) => acc + (s.mergeData?.length ?? 0),
+    0,
+  );
   const name = path.basename(file);
   const kb = Math.round(fs.statSync(file).size / 1024);
   console.log(

@@ -29,7 +29,8 @@ const SlideMiniaturePreview = ({ slide }: { slide: SlideItem }) => {
       className="pointer-events-none relative aspect-[16/9] w-full overflow-hidden select-none"
       style={{
         backgroundColor: slide.background || '#ffffff',
-        background: slide.backgroundGradient || slide.backgroundImage || slide.background || '#ffffff',
+        background:
+          slide.backgroundGradient || slide.backgroundImage || slide.background || '#ffffff',
       }}
     >
       {slide.elements.map((el) => {
@@ -108,7 +109,7 @@ const SlideMiniaturePreview = ({ slide }: { slide: SlideItem }) => {
                     >
                       {cell}
                     </div>
-                  ))
+                  )),
                 )}
               </div>
             </div>
@@ -241,7 +242,10 @@ export const SlideThumbnailList = ({
                       >
                         <Icon name="more-horizontal" size={12} />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="animate-in fade-in zoom-in-95 duration-100">
+                      <DropdownMenuContent
+                        align="end"
+                        className="animate-in fade-in zoom-in-95 duration-100"
+                      >
                         <DropdownMenuItem onClick={() => onDuplicateSlide?.(index)}>
                           <Icon name="copy" size={13} className="mr-2" />
                           <span>{t('toolbar.duplicateSlide')}</span>

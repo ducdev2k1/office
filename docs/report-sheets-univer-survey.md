@@ -32,6 +32,7 @@ File .xlsx → ExcelJS (MIT) parse → exceljsToUniver (apps/sheets/src/utils) �
 ```
 
 Converter map được (kiểm chứng qua output thật):
+
 - **Giá trị ô**: number/string/boolean/formula/richText/error/hyperlink/date → `{v, t, f}` đúng `CellValueType`.
 - **Style**: font (bold/italic/size/name/underline/color), fill pattern, border 4 cạnh (map `BorderStyleTypes`), alignment (h/v/wrap), number format → dedup về `styles` map dùng chung (3 style id cho 400K cell file).
 - **Merge cells**: parse range string `A1:C1` → `IRange` (chú ý `endRow/endColumn` **exclusive** trong Univer).
@@ -39,11 +40,11 @@ Converter map được (kiểm chứng qua output thật):
 
 ### 3.1 Hiệu năng pipeline (đo thật bằng Node + ExcelJS)
 
-| File | Kích thước | Cells | Parse (ms) | Convert (ms) | Tổng (ms) |
-|------|-----------|-------|-----------|--------------|-----------|
-| sample-small | 11 KB | 600 | 28 | 3 | 44 |
-| sample-med | 160 KB | 30K | 104 | 35 | 169 |
-| sample-large | 1.9 MB | 400K | 1223 | 140 | 1363 |
+| File         | Kích thước | Cells | Parse (ms) | Convert (ms) | Tổng (ms) |
+| ------------ | ---------- | ----- | ---------- | ------------ | --------- |
+| sample-small | 11 KB      | 600   | 28         | 3            | 44        |
+| sample-med   | 160 KB     | 30K   | 104        | 35           | 169       |
+| sample-large | 1.9 MB     | 400K  | 1223       | 140          | 1363      |
 
 → Parse ExcelJS chiếm ~90% thời gian; convert (tạo snapshot) rất nhẹ. 400K cells ~1.4s là chấp nhận được cho MVP, có thể thêm progress UI.
 
@@ -57,41 +58,43 @@ Converter map được (kiểm chứng qua output thật):
 
 ### 4.1 Bundle size (build production)
 
-| Chunk | Raw | Gzip | Ghi chú |
-|-------|-----|------|---------|
-| index (Univer core + ExcelJS + React) | 6.94 MB | 1.97 MB | Chunk chính |
-| icons | 2.36 MB | 186 KB | `@univerjs/icons` |
-| ~50 locale chunks | 0.5–765 KB mỗi cái | — | Univer bundle toàn bộ locale |
+| Chunk                                 | Raw                | Gzip    | Ghi chú                      |
+| ------------------------------------- | ------------------ | ------- | ---------------------------- |
+| index (Univer core + ExcelJS + React) | 6.94 MB            | 1.97 MB | Chunk chính                  |
+| icons                                 | 2.36 MB            | 186 KB  | `@univerjs/icons`            |
+| ~50 locale chunks                     | 0.5–765 KB mỗi cái | —       | Univer bundle toàn bộ locale |
 
 Vite cảnh báo chunk >500 KB. **Hướng tối ưu (MVP)**: dynamic import Univer theo route, `manualChunks` tách ExcelJS, giới hạn locale (chỉ EN + VI). Chưa làm trong phạm vi khảo sát.
 
 ### 4.2 Checklist gap OSS vs target iNET (đã kiểm chứng trên prototype)
 
-| Nhóm | Target iNET (giả định MVP) | Univer OSS v0.23 | Kết luận khảo sát |
-|------|---------------------------|------------------|-------------------|
-| Edit cơ bản + formula | ✅ | ✅ | Có formula engine riêng |
-| Number format, filter/sort, data validation, conditional formatting | ✅ | ✅ | Có (UI thấy trong toolbar) |
-| Hyperlink, comment, find & replace, notes, tables | ✅ | ✅ | Có |
-| **Import .xlsx** | ✅ | ❌ Pro-only | **Bắt buộc xlsx-io (ExcelJS)** — đã chứng minh khả thi |
-| **Export .xlsx** | ✅ | ❌ Pro-only | Cần `univerAPI.save()` → ExcelJS reverse |
-| **Charts** | tuỳ phạm vi | ❌ Pro-only | Community plugin cũ (2024); **hoãn** |
-| **Print/PDF** | tuỳ phạm vi | ❌ Pro-only | Hoãn, xét html2canvas sau |
-| **Collaboration** | hoãn | ❌ Pro-only | Hoãn (Yjs binding tự làm = 4–6 tuần) |
-| **Pivot** | tuỳ phạm vi | ❌ Pro-only | Hoãn |
-| i18n | ✅ | ✅ | Có locale EN/VI |
-| Dark mode | ✅ | ✅ | Có |
+| Nhóm                                                                | Target iNET (giả định MVP) | Univer OSS v0.23 | Kết luận khảo sát                                      |
+| ------------------------------------------------------------------- | -------------------------- | ---------------- | ------------------------------------------------------ |
+| Edit cơ bản + formula                                               | ✅                         | ✅               | Có formula engine riêng                                |
+| Number format, filter/sort, data validation, conditional formatting | ✅                         | ✅               | Có (UI thấy trong toolbar)                             |
+| Hyperlink, comment, find & replace, notes, tables                   | ✅                         | ✅               | Có                                                     |
+| **Import .xlsx**                                                    | ✅                         | ❌ Pro-only      | **Bắt buộc xlsx-io (ExcelJS)** — đã chứng minh khả thi |
+| **Export .xlsx**                                                    | ✅                         | ❌ Pro-only      | Cần `univerAPI.save()` → ExcelJS reverse               |
+| **Charts**                                                          | tuỳ phạm vi                | ❌ Pro-only      | Community plugin cũ (2024); **hoãn**                   |
+| **Print/PDF**                                                       | tuỳ phạm vi                | ❌ Pro-only      | Hoãn, xét html2canvas sau                              |
+| **Collaboration**                                                   | hoãn                       | ❌ Pro-only      | Hoãn (Yjs binding tự làm = 4–6 tuần)                   |
+| **Pivot**                                                           | tuỳ phạm vi                | ❌ Pro-only      | Hoãn                                                   |
+| i18n                                                                | ✅                         | ✅               | Có locale EN/VI                                        |
+| Dark mode                                                           | ✅                         | ✅               | Có                                                     |
 
 ## 5. Quyết định & đề xuất phạm vi MVP (Phase 4)
 
 ### 5.1 Go/No-Go: **GO** (có điều kiện)
 
 **Lý do GO**:
+
 1. OSS Apache-2.0 đúng ràng buộc R4 (100% bản mở).
 2. Pipeline xlsx chiều đọc hoạt động thật, hiệu năng chấp nhận được.
 3. UI/UX đầy đủ cho spreadsheet cơ bản, canvas rendering scale tốt.
 4. Cộng đồng lớn (14K★), phát triển tích cực, 1.0 đang tiến tới.
 
 **Điều kiện kèm theo**:
+
 - C1: Xác nhận license còn Apache-2.0 ở version mình dùng (khóa v0.23, theo dõi 1.0).
 - C2: Pin `@univerjs/icons@1.2.0` (bug dependency) — ghi vào AGENTS.md/migration notes.
 - C3: Export xlsx là công việc bắt buộc ngay (chiều ghi), trước khi hứa hẹn tính năng.
@@ -100,6 +103,7 @@ Vite cảnh báo chunk >500 KB. **Hướng tối ưu (MVP)**: dynamic import Uni
 ### 5.2 Phạm vi MVP Sheets đề xuất (phase tiếp theo)
 
 **Trong MVP** (thứ tự ưu tiên):
+
 1. Sheet editor cơ bản (đã có qua Univer OSS).
 2. Import .xlsx (xlsx-io: ExcelJS → snapshot) — **đã chứng minh**.
 3. Export .xlsx (xlsx-io: snapshot → ExcelJS) — cần xây.
@@ -110,12 +114,12 @@ Vite cảnh báo chunk >500 KB. **Hướng tối ưu (MVP)**: dynamic import Uni
 
 ### 5.3 Rủi ro còn lại
 
-| Rủi ro | Mức | Giảm thiểu |
-|--------|-----|-----------|
-| Version drift (1.0-alpha ra nhanh) | Trung bình | Khóa v0.23; theo dõi changelog; pin overrides |
-| Bundle 1.97 MB gzip | Trung bình | Lazy-load Univer, manualChunks, giới hạn locale |
+| Rủi ro                                               | Mức        | Giảm thiểu                                                    |
+| ---------------------------------------------------- | ---------- | ------------------------------------------------------------- |
+| Version drift (1.0-alpha ra nhanh)                   | Trung bình | Khóa v0.23; theo dõi changelog; pin overrides                 |
+| Bundle 1.97 MB gzip                                  | Trung bình | Lazy-load Univer, manualChunks, giới hạn locale               |
 | Export xlsx phải tự xây (reverse snapshot → ExcelJS) | Trung bình | Ưu tiên làm ngay trong phase sau; format/style đơn giản trước |
-| License drift khi lên 1.0 | Thấp | Verify trước mỗi upgrade |
+| License drift khi lên 1.0                            | Thấp       | Verify trước mỗi upgrade                                      |
 
 ## 6. Files sinh ra trong khảo sát
 

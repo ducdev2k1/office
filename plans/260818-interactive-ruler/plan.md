@@ -1,6 +1,7 @@
 # Kế hoạch Triển khai: Hệ thống Thước kẻ Tương tác (Interactive Ruler) chuẩn Google Docs & Sửa lỗi Console
 
 ## 1. Mục tiêu
+
 1. **Sửa dứt điểm 2 lỗi console**:
    - Vòng lặp re-render vô hạn (`Maximum update depth exceeded` tại `EditorPage.tsx:95` do thiếu `useCallback` trong `useDocs.ts`).
    - Cảnh báo trùng lặp extension TipTap (`Duplicate extension names found: ['link', 'underline']` trong `useDocsEditor.ts`).
@@ -16,6 +17,7 @@
 ## 2. Phân chia các Giai đoạn (Phases)
 
 ### 🔹 Phase 0: Khắc phục lỗi Console & Ổn định State Core
+
 - **Nhiệm vụ**:
   - `useDocs.ts`: Bọc toàn bộ các action functions (`setActiveId`, `markOpened`, `updateDoc`, `updateContent`, `updateTitle`, `addDoc`, `deleteDoc`, `star`, `rename`, `duplicate`, `trash`, `restore`, `deleteForever`, `setActiveDocPageSetup`) bằng `useCallback` để đảm bảo ổn định reference, triệt tiêu vòng lặp re-render vô hạn.
   - `useDocsEditor.ts`: Rà soát danh sách TipTap extensions, cấu hình `StarterKit.configure({ ... })` để tránh đăng ký trùng lặp `link` và `underline`.
@@ -25,6 +27,7 @@
 ---
 
 ### 🔹 Phase 1: TipTap Indent Extension & Ruler Geometry Engine
+
 - **Nhiệm vụ**:
   - Tạo TipTap extension `indent.extension.ts`:
     - Thêm các attributes `firstLineIndent`, `leftIndent`, `rightIndent` (đơn vị mm / px) cho các nodes `paragraph`, `heading`, `blockquote`.
@@ -43,6 +46,7 @@
 ---
 
 ### 🔹 Phase 2: Xây dựng UI Components Thước kẻ Tương tác
+
 - **Nhiệm vụ**:
   - `HorizontalRuler.tsx`:
     - Thước ngang nằm trên đầu trang giấy, căn khớp tuyệt đối với chiều rộng khổ giấy (`paperWidthPx`).
@@ -64,6 +68,7 @@
 ---
 
 ### 🔹 Phase 3: Tích hợp Realtime vào EditorPage & Đồng bộ Phân trang
+
 - **Nhiệm vụ**:
   - Thay thế `div.ruler` tĩnh cũ trong `EditorPage.tsx` bằng bộ `HorizontalRuler` và `VerticalRuler`.
   - Kết nối sự kiện thay đổi lề trang với `setActiveDocPageSetup({ margins: nextMargins })` và kích hoạt `schedulePagination(true)` để trang giấy tự động tính toán lại ngắt trang realtime.
@@ -77,6 +82,7 @@
 ---
 
 ### 🔹 Phase 4: Hoàn thiện (Polish), Đa ngôn ngữ (i18n) & Kiểm thử
+
 - **Nhiệm vụ**:
   - Thêm nhãn tooltip đa ngôn ngữ vào từ điển i18n (`vi/docs.json` và `en/docs.json`): `ruler.leftMargin`, `ruler.rightMargin`, `ruler.topMargin`, `ruler.bottomMargin`, `ruler.firstLineIndent`, `ruler.leftIndent`, `ruler.rightIndent`, `ruler.unit`.
   - Kiểm tra `pnpm typecheck`, `pnpm build`, `pnpm format:check`.

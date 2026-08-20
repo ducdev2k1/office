@@ -7,13 +7,7 @@ export type FontStyleProperties = {
 export type FontCategoryId = 'sansSerif' | 'serif' | 'monospace' | 'handwriting' | 'display';
 
 export type FontVariant =
-  | 'Normal'
-  | 'Medium'
-  | 'Semi Bold'
-  | 'Bold'
-  | 'Light'
-  | 'Italic'
-  | 'Bold Italic';
+  'Normal' | 'Medium' | 'Semi Bold' | 'Bold' | 'Light' | 'Italic' | 'Bold Italic';
 
 export interface FontItem {
   name: string;
@@ -108,15 +102,7 @@ export const FONT_CATEGORIES: FontCategory[] = [
   {
     id: 'display',
     labelKey: 'fontGroupDisplay',
-    fonts: [
-      'Bangers',
-      'Cinzel',
-      'Impact',
-      'Lobster',
-      'Permanent Marker',
-      'Rye',
-      'Special Elite',
-    ],
+    fonts: ['Bangers', 'Cinzel', 'Impact', 'Lobster', 'Permanent Marker', 'Rye', 'Special Elite'],
   },
 ];
 

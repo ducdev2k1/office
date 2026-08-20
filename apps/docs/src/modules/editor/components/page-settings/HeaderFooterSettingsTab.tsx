@@ -1,16 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from '@office/i18n';
 import { Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
-import type {
-  HeaderFooterSlot,
-  HFAlign,
-  PageNumberSetup,
-  PageSetup,
-} from '@/types/docs.types';
-import {
-  NumberInputWithUnit,
-  SelectField,
-} from './PageSettingsControls';
+import type { HeaderFooterSlot, HFAlign, PageNumberSetup, PageSetup } from '@/types/docs.types';
+import { NumberInputWithUnit, SelectField } from './PageSettingsControls';
 
 interface HeaderFooterSettingsTabProps {
   setup: PageSetup;
@@ -144,7 +136,12 @@ export const HeaderFooterSettingsTab = ({
             return (
               <div key={slotKey} className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className={cn('text-[11px] transition-colors', isSelected ? 'text-purple-400 font-medium' : 'text-neutral-400')}>
+                  <span
+                    className={cn(
+                      'text-[11px] transition-colors',
+                      isSelected ? 'text-purple-400 font-medium' : 'text-neutral-400',
+                    )}
+                  >
                     {label}
                   </span>
                   {isSelected && (
@@ -250,7 +247,9 @@ export const HeaderFooterSettingsTab = ({
           </div>
 
           <div className="space-y-1">
-            <span className="text-neutral-400 text-[11px]">{t('headerFooter.pageNumber.align')}</span>
+            <span className="text-neutral-400 text-[11px]">
+              {t('headerFooter.pageNumber.align')}
+            </span>
             <SelectField
               value={pageNumber.align}
               onChange={(val) => {

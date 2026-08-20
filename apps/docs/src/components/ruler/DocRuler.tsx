@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Editor } from '@tiptap/core';
-import { DEFAULT_PAGE_SETUP, PAPER_SIZES, type DocRecord, type PageSetup } from '@/types/docs.types';
+import {
+  DEFAULT_PAGE_SETUP,
+  PAPER_SIZES,
+  type DocRecord,
+  type PageSetup,
+} from '@/types/docs.types';
 import { HorizontalRuler } from './HorizontalRuler';
 import { RulerGuideLine } from './RulerGuideLine';
 import { type RulerUnit } from './ruler.utils';

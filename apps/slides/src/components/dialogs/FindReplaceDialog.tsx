@@ -114,16 +114,18 @@ export const FindReplaceDialog = ({
             />
           </div>
 
-          {statusMessage && (
-            <p className="text-[11px] font-medium text-primary">{statusMessage}</p>
-          )}
+          {statusMessage && <p className="text-[11px] font-medium text-primary">{statusMessage}</p>}
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" size="sm" onClick={handleFindNext} className="h-8 text-xs">
             Tìm tiếp
           </Button>
-          <Button size="sm" onClick={handleReplaceAll} className="h-8 text-xs bg-primary text-white">
+          <Button
+            size="sm"
+            onClick={handleReplaceAll}
+            className="h-8 text-xs bg-primary text-white"
+          >
             Thay thế tất cả
           </Button>
         </DialogFooter>

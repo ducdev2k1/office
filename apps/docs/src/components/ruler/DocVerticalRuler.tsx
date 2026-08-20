@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
-import { DEFAULT_PAGE_SETUP, PAPER_SIZES, type DocRecord, type PageSetup } from '@/types/docs.types';
+import {
+  DEFAULT_PAGE_SETUP,
+  PAPER_SIZES,
+  type DocRecord,
+  type PageSetup,
+} from '@/types/docs.types';
 import { VerticalRuler } from './VerticalRuler';
 import { RulerGuideLine } from './RulerGuideLine';
 import { type RulerUnit } from './ruler.utils';

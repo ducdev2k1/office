@@ -64,7 +64,10 @@ export const EditorPage = () => {
 
   useEffect(() => {
     const handleGlobalShortcuts = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'f')) {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'f')
+      ) {
         e.preventDefault();
         setIsFindReplaceOpen(true);
       }

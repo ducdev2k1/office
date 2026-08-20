@@ -15,4 +15,3 @@ export const en: TranslationSchema = {
 
 export type EnDictionary = typeof en;
 export { enCommon, enDocs, enSheets, enSlides, enAppShell };
-

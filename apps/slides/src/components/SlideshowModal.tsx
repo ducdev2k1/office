@@ -22,11 +22,7 @@ interface SlideshowModalProps {
   onClose: () => void;
 }
 
-export const SlideshowModal = ({
-  deck,
-  initialSlideIndex = 0,
-  onClose,
-}: SlideshowModalProps) => {
+export const SlideshowModal = ({ deck, initialSlideIndex = 0, onClose }: SlideshowModalProps) => {
   const { t } = useTranslation('slides');
   const [currentIndex, setCurrentIndex] = useState(initialSlideIndex);
   const [isLaser, setIsLaser] = useState(false);
@@ -106,13 +102,26 @@ export const SlideshowModal = ({
         return;
       }
 
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'Enter' || e.key === 'PageDown' || e.key === 'n') {
+      if (
+        e.key === 'ArrowRight' ||
+        e.key === 'ArrowDown' ||
+        e.key === ' ' ||
+        e.key === 'Enter' ||
+        e.key === 'PageDown' ||
+        e.key === 'n'
+      ) {
         e.preventDefault();
         goToNext();
         return;
       }
 
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Backspace' || e.key === 'p') {
+      if (
+        e.key === 'ArrowLeft' ||
+        e.key === 'ArrowUp' ||
+        e.key === 'PageUp' ||
+        e.key === 'Backspace' ||
+        e.key === 'p'
+      ) {
         e.preventDefault();
         goToPrev();
         return;
@@ -184,13 +193,19 @@ export const SlideshowModal = ({
       }`}
     >
       {isBlackout && (
-        <div onClick={() => setIsBlackout(false)} className="absolute inset-0 z-40 flex items-center justify-center bg-black text-xs text-white/30">
+        <div
+          onClick={() => setIsBlackout(false)}
+          className="absolute inset-0 z-40 flex items-center justify-center bg-black text-xs text-white/30"
+        >
           {t('slideshow.blackoutHint')}
         </div>
       )}
 
       {isWhiteout && (
-        <div onClick={() => setIsWhiteout(false)} className="absolute inset-0 z-40 flex items-center justify-center bg-white text-xs text-black/30">
+        <div
+          onClick={() => setIsWhiteout(false)}
+          className="absolute inset-0 z-40 flex items-center justify-center bg-white text-xs text-black/30"
+        >
           {t('slideshow.whiteoutHint')}
         </div>
       )}
@@ -207,7 +222,13 @@ export const SlideshowModal = ({
         <div className="absolute right-6 top-6 z-40 max-w-sm rounded-lg border border-white/20 bg-neutral-900/90 p-4 text-xs text-white shadow-2xl backdrop-blur-md">
           <div className="mb-2 flex items-center justify-between font-semibold text-amber-400">
             <span>Ghi chú của người thuyết trình</span>
-            <button type="button" onClick={() => setShowNotes(false)} className="text-white/60 hover:text-white">✕</button>
+            <button
+              type="button"
+              onClick={() => setShowNotes(false)}
+              className="text-white/60 hover:text-white"
+            >
+              ✕
+            </button>
           </div>
           <p className="whitespace-pre-wrap leading-relaxed text-white/90">{currentSlide.notes}</p>
         </div>
@@ -224,7 +245,11 @@ export const SlideshowModal = ({
           className={`relative flex aspect-[16/9] max-h-screen max-w-full w-auto h-auto items-center justify-center overflow-hidden shadow-2xl slide-transition-${currentSlide.transition || 'fade'}`}
           style={{
             backgroundColor: currentSlide.background || '#ffffff',
-            background: currentSlide.backgroundGradient || currentSlide.backgroundImage || currentSlide.background || '#ffffff',
+            background:
+              currentSlide.backgroundGradient ||
+              currentSlide.backgroundImage ||
+              currentSlide.background ||
+              '#ffffff',
             aspectRatio: '16/9',
             width: 'min(100vw, 177.78vh)',
             height: 'min(56.25vw, 100vh)',
@@ -239,7 +264,8 @@ export const SlideshowModal = ({
             const rot = el.rotation ? `rotate(${el.rotation}deg)` : '';
             const flip = `${el.flipH ? 'scaleX(-1)' : ''} ${el.flipV ? 'scaleY(-1)' : ''}`.trim();
             const transform = `${rot} ${flip}`.trim() || undefined;
-            const animClass = el.animation && el.animation !== 'none' ? `element-anim-${el.animation}` : '';
+            const animClass =
+              el.animation && el.animation !== 'none' ? `element-anim-${el.animation}` : '';
             const animStyle: React.CSSProperties = {
               ['--anim-duration' as any]: `${el.animationDuration ?? 0.6}s`,
               ['--anim-delay' as any]: `${el.animationDelay ?? 0}s`,
@@ -300,7 +326,11 @@ export const SlideshowModal = ({
                     ...animStyle,
                   }}
                 >
-                  <TableElementRenderer element={el} onUpdateElement={() => {}} isSelected={false} />
+                  <TableElementRenderer
+                    element={el}
+                    onUpdateElement={() => {}}
+                    isSelected={false}
+                  />
                 </div>
               );
             }
@@ -336,7 +366,9 @@ export const SlideshowModal = ({
                   top: `${topPercent}%`,
                   width: `${widthPercent}%`,
                   minHeight: `${heightPercent}%`,
-                  fontSize: el.fontSize ? `calc(${(el.fontSize / 540) * 100}cqw * 0.5625 + ${el.fontSize * 0.8}px)` : '1.5rem',
+                  fontSize: el.fontSize
+                    ? `calc(${(el.fontSize / 540) * 100}cqw * 0.5625 + ${el.fontSize * 0.8}px)`
+                    : '1.5rem',
                   fontFamily: el.fontFamily || undefined,
                   color: el.color || '#0f172a',
                   textAlign: el.align || 'left',
@@ -388,7 +420,9 @@ export const SlideshowModal = ({
                   type="button"
                   className="flex h-8 items-center gap-1 px-2 text-xs font-semibold text-white/90 hover:text-white"
                 >
-                  <span>{currentIndex + 1} / {totalSlides}</span>
+                  <span>
+                    {currentIndex + 1} / {totalSlides}
+                  </span>
                   <Icon name="chevron-down" size={12} className="opacity-60" />
                 </button>
               }
@@ -400,7 +434,9 @@ export const SlideshowModal = ({
                   onClick={() => goToSlide(idx)}
                   className={idx === currentIndex ? 'bg-accent font-semibold' : ''}
                 >
-                  <span>{t('slideshow.slideItem', { index: idx + 1, title: s.title || 'Slide' })}</span>
+                  <span>
+                    {t('slideshow.slideItem', { index: idx + 1, title: s.title || 'Slide' })}
+                  </span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -434,7 +470,9 @@ export const SlideshowModal = ({
                   size="sm"
                   onClick={() => setIsLaser((prev) => !prev)}
                   className={`h-8 w-8 rounded-full p-0 transition-colors ${
-                    isLaser ? 'bg-red-600 text-white shadow-[0_0_10px_#ef4444]' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    isLaser
+                      ? 'bg-red-600 text-white shadow-[0_0_10px_#ef4444]'
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 />
               }
@@ -453,7 +491,9 @@ export const SlideshowModal = ({
                   size="sm"
                   onClick={() => setShowNotes((prev) => !prev)}
                   className={`h-8 w-8 rounded-full p-0 transition-colors ${
-                    showNotes ? 'bg-amber-600 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    showNotes
+                      ? 'bg-amber-600 text-white'
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 />
               }
@@ -475,7 +515,9 @@ export const SlideshowModal = ({
                     setIsWhiteout(false);
                   }}
                   className={`h-8 w-8 rounded-full p-0 transition-colors ${
-                    isBlackout ? 'bg-white/30 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    isBlackout
+                      ? 'bg-white/30 text-white'
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 />
               }
@@ -494,14 +536,18 @@ export const SlideshowModal = ({
                   size="sm"
                   onClick={() => setIsAutoPlay((prev) => !prev)}
                   className={`h-8 w-8 rounded-full p-0 transition-colors ${
-                    isAutoPlay ? 'bg-[var(--o-kind-slides)] text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    isAutoPlay
+                      ? 'bg-[var(--o-kind-slides)] text-white'
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 />
               }
             >
               <Icon name={isAutoPlay ? 'pause' : 'play'} size={15} />
             </TooltipTrigger>
-            <TooltipContent>{isAutoPlay ? t('slideshow.pauseAutoPlay') : t('slideshow.autoPlay')}</TooltipContent>
+            <TooltipContent>
+              {isAutoPlay ? t('slideshow.pauseAutoPlay') : t('slideshow.autoPlay')}
+            </TooltipContent>
           </Tooltip>
 
           <div className="mx-1 h-4 w-px bg-white/20" />

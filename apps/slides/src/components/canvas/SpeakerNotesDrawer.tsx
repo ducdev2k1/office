@@ -7,10 +7,7 @@ interface SpeakerNotesDrawerProps {
   onUpdateNotes: (notes: string) => void;
 }
 
-export const SpeakerNotesDrawer = ({
-  notes = '',
-  onUpdateNotes,
-}: SpeakerNotesDrawerProps) => {
+export const SpeakerNotesDrawer = ({ notes = '', onUpdateNotes }: SpeakerNotesDrawerProps) => {
   const { t } = useTranslation('slides');
   const [isOpen, setIsOpen] = useState(false);
 
@@ -26,7 +23,9 @@ export const SpeakerNotesDrawer = ({
             name="chevron-up"
             size={13}
             className={`transition-transform duration-300 ease-out ${
-              isOpen ? 'rotate-180 text-primary' : 'text-muted-foreground group-hover:text-foreground'
+              isOpen
+                ? 'rotate-180 text-primary'
+                : 'text-muted-foreground group-hover:text-foreground'
             }`}
           />
           <span>Ghi chú của người thuyết trình</span>

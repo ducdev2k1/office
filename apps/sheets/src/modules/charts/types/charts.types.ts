@@ -1,13 +1,5 @@
 export type ChartType =
-  | 'column'
-  | 'bar'
-  | 'line'
-  | 'pie'
-  | 'area'
-  | 'scatter'
-  | 'radar'
-  | 'funnel'
-  | 'combo';
+  'column' | 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'radar' | 'funnel' | 'combo';
 
 export type LegendPosition = 'top' | 'bottom' | 'left' | 'right' | 'none';
 

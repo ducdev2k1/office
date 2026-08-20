@@ -63,9 +63,6 @@ export const ChartRenderer = ({
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className={`h-full w-full select-none overflow-hidden ${className}`}
-    />
+    <div ref={containerRef} className={`h-full w-full select-none overflow-hidden ${className}`} />
   );
 };

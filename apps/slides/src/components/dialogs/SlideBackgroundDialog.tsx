@@ -11,12 +11,36 @@ import {
 import { useRef, useState } from 'react';
 
 const SOLID_COLORS = [
-  '#ffffff', '#f8fafc', '#f1f5f9', '#e2e8f0', '#0f172a',
-  '#eff6ff', '#dbeafe', '#bfdbfe', '#1e40af', '#1e3a8a',
-  '#f0fdf4', '#dcfce7', '#bbf7d0', '#16a34a', '#14532d',
-  '#fffbeb', '#fef3c7', '#fde68a', '#b45309', '#78350f',
-  '#fef2f2', '#fee2e2', '#fecaca', '#dc2626', '#7f1d1d',
-  '#faf5ff', '#f3e8ff', '#e9d5ff', '#9333ea', '#581c87',
+  '#ffffff',
+  '#f8fafc',
+  '#f1f5f9',
+  '#e2e8f0',
+  '#0f172a',
+  '#eff6ff',
+  '#dbeafe',
+  '#bfdbfe',
+  '#1e40af',
+  '#1e3a8a',
+  '#f0fdf4',
+  '#dcfce7',
+  '#bbf7d0',
+  '#16a34a',
+  '#14532d',
+  '#fffbeb',
+  '#fef3c7',
+  '#fde68a',
+  '#b45309',
+  '#78350f',
+  '#fef2f2',
+  '#fee2e2',
+  '#fecaca',
+  '#dc2626',
+  '#7f1d1d',
+  '#faf5ff',
+  '#f3e8ff',
+  '#e9d5ff',
+  '#9333ea',
+  '#581c87',
 ];
 
 const GRADIENTS = [
@@ -89,7 +113,9 @@ export const SlideBackgroundDialog = ({
           </div>
 
           <div>
-            <label className="mb-2 block font-medium text-foreground">Màu chuyển sắc (Gradient):</label>
+            <label className="mb-2 block font-medium text-foreground">
+              Màu chuyển sắc (Gradient):
+            </label>
             <div className="grid grid-cols-4 gap-2">
               {GRADIENTS.map((g, idx) => (
                 <button

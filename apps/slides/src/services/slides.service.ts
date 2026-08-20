@@ -39,7 +39,10 @@ const createDefaultSlide = (): SlideItem => ({
   ],
 });
 
-export const createBlankDeckData = (id: string, title = 'Bài trình chiếu chưa có tiêu đề'): SlideDeckData => ({
+export const createBlankDeckData = (
+  id: string,
+  title = 'Bài trình chiếu chưa có tiêu đề',
+): SlideDeckData => ({
   id,
   name: title,
   ratio: '16:9',
@@ -102,7 +105,8 @@ const SEED_SLIDES: SlideDocRecord[] = [
               y: 270,
               width: 720,
               height: 60,
-              content: 'Bộ công cụ văn phòng trực tuyến bảo mật, độc lập và tối ưu cho doanh nghiệp',
+              content:
+                'Bộ công cụ văn phòng trực tuyến bảo mật, độc lập và tối ưu cho doanh nghiệp',
               fontSize: 18,
               color: '#475569',
               align: 'center',
@@ -133,7 +137,8 @@ const SEED_SLIDES: SlideDocRecord[] = [
               y: 130,
               width: 400,
               height: 200,
-              content: '• Xử lý hoàn toàn trên trình duyệt (Offline-first)\n• Tương thích định dạng Microsoft PowerPoint (.pptx)\n• Tích hợp hệ thống OneMail SSO & Storage\n• Tùy biến linh hoạt theo thương hiệu iNET',
+              content:
+                '• Xử lý hoàn toàn trên trình duyệt (Offline-first)\n• Tương thích định dạng Microsoft PowerPoint (.pptx)\n• Tích hợp hệ thống OneMail SSO & Storage\n• Tùy biến linh hoạt theo thương hiệu iNET',
               fontSize: 16,
               color: '#334155',
               align: 'left',
@@ -211,7 +216,9 @@ export const importSlideFile = async (file: File): Promise<SlideDocRecord> => {
   return newDeck;
 };
 
-export const loadSamplePptx = async (sampleName: 'sample-basic.pptx' | 'sample-medium.pptx' | 'sample-advanced.pptx'): Promise<SlideDocRecord> => {
+export const loadSamplePptx = async (
+  sampleName: 'sample-basic.pptx' | 'sample-medium.pptx' | 'sample-advanced.pptx',
+): Promise<SlideDocRecord> => {
   const response = await fetch(`/samples/${sampleName}`);
   const buffer = await response.arrayBuffer();
   const id = `deck-${crypto.randomUUID()}`;

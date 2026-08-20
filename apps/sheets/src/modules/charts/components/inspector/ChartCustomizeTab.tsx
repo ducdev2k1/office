@@ -8,13 +8,7 @@ export interface ChartCustomizeTabProps {
   onUpdateSpec: (partial: Partial<ChartSpec>) => void;
 }
 
-const LEGEND_POSITIONS: Array<LegendPosition | 'none'> = [
-  'top',
-  'bottom',
-  'left',
-  'right',
-  'none',
-];
+const LEGEND_POSITIONS: Array<LegendPosition | 'none'> = ['top', 'bottom', 'left', 'right', 'none'];
 
 const PALETTES = [
   { key: 'inet', colors: DEFAULT_PALETTES.inet },
@@ -58,7 +52,9 @@ export const ChartCustomizeTab = ({ spec, onUpdateSpec }: ChartCustomizeTabProps
 
       {/* 3. Chú giải (Legend) */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-semibold text-foreground">{t('chart.customize.legendLabel')}</span>
+        <span className="text-xs font-semibold text-foreground">
+          {t('chart.customize.legendLabel')}
+        </span>
         <div className="grid grid-cols-2 gap-1.5">
           {LEGEND_POSITIONS.map((pos) => {
             const isSelected =
@@ -93,7 +89,9 @@ export const ChartCustomizeTab = ({ spec, onUpdateSpec }: ChartCustomizeTabProps
 
       {/* 4. Bộ màu sắc (Palette) */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-semibold text-foreground">{t('chart.customize.paletteLabel')}</span>
+        <span className="text-xs font-semibold text-foreground">
+          {t('chart.customize.paletteLabel')}
+        </span>
         <div className="flex flex-col gap-1.5">
           {PALETTES.map((p) => {
             const isSelected =
@@ -111,7 +109,9 @@ export const ChartCustomizeTab = ({ spec, onUpdateSpec }: ChartCustomizeTabProps
                   isSelected && 'border-primary bg-primary/5 ring-1 ring-primary',
                 )}
               >
-                <span className="font-medium text-foreground">{t(`chart.customize.palettes.${p.key}`)}</span>
+                <span className="font-medium text-foreground">
+                  {t(`chart.customize.palettes.${p.key}`)}
+                </span>
                 <div className="flex items-center gap-1">
                   {p.colors.slice(0, 5).map((color, i) => (
                     <span
@@ -131,8 +131,12 @@ export const ChartCustomizeTab = ({ spec, onUpdateSpec }: ChartCustomizeTabProps
       {spec.type === 'pie' && (
         <div className="flex items-center justify-between rounded-md border border-border p-2.5">
           <div className="flex flex-col">
-            <span className="text-xs font-medium text-foreground">{t('chart.customize.donut')}</span>
-            <span className="text-[11px] text-muted-foreground">{t('chart.customize.donutHint')}</span>
+            <span className="text-xs font-medium text-foreground">
+              {t('chart.customize.donut')}
+            </span>
+            <span className="text-[11px] text-muted-foreground">
+              {t('chart.customize.donutHint')}
+            </span>
           </div>
           <Switch
             checked={Boolean(spec.isDonut)}

@@ -18,45 +18,45 @@
 
 ### Sheets core
 
-| # | Tinh nang | Target MVP | Univer OSS v0.23 | Trang thai |
-|---|-----------|-----------|------------------|------------|
-| 1 | Tao workbook moi | ✅ | ✅ | — |
-| 2 | Edit cell (text, so, formula) | ✅ | ✅ | — |
-| 3 | Copy/paste, undo/redo | ✅ | ✅ | — |
-| 4 | Format so (tien te, %, ngay, so thap phan) | ✅ | ✅ | — |
-| 5 | Conditional formatting | ✅ | ✅ | — |
-| 6 | Data validation (dropdown, rule) | ✅ | ✅ | — |
-| 7 | Filter + Sort | ✅ | ✅ | — |
-| 8 | Insert/delete rows/columns | ✅ | ✅ | — |
-| 9 | Merge cells | ✅ | ✅ | — |
-| 10 | Column width / row height resize | ✅ | ✅ | — |
-| 11 | Hyperlink | ✅ | ✅ | — |
-| 12 | Comment/note | ✅ | ✅ | — |
-| 13 | Find & Replace | ✅ | ✅ | — |
-| 14 | Tables | ✅ | ✅ | — |
-| 15 | Drawing (insert image) | ✅ | ✅ | — |
-| 16 | Multi-sheet (add/rename/delete sheet) | ✅ | ✅ | — |
+| #   | Tinh nang                                  | Target MVP | Univer OSS v0.23 | Trang thai |
+| --- | ------------------------------------------ | ---------- | ---------------- | ---------- |
+| 1   | Tao workbook moi                           | ✅         | ✅               | —          |
+| 2   | Edit cell (text, so, formula)              | ✅         | ✅               | —          |
+| 3   | Copy/paste, undo/redo                      | ✅         | ✅               | —          |
+| 4   | Format so (tien te, %, ngay, so thap phan) | ✅         | ✅               | —          |
+| 5   | Conditional formatting                     | ✅         | ✅               | —          |
+| 6   | Data validation (dropdown, rule)           | ✅         | ✅               | —          |
+| 7   | Filter + Sort                              | ✅         | ✅               | —          |
+| 8   | Insert/delete rows/columns                 | ✅         | ✅               | —          |
+| 9   | Merge cells                                | ✅         | ✅               | —          |
+| 10  | Column width / row height resize           | ✅         | ✅               | —          |
+| 11  | Hyperlink                                  | ✅         | ✅               | —          |
+| 12  | Comment/note                               | ✅         | ✅               | —          |
+| 13  | Find & Replace                             | ✅         | ✅               | —          |
+| 14  | Tables                                     | ✅         | ✅               | —          |
+| 15  | Drawing (insert image)                     | ✅         | ✅               | —          |
+| 16  | Multi-sheet (add/rename/delete sheet)      | ✅         | ✅               | —          |
 
 ### Tinh nang can tu lam (gap)
 
-| # | Tinh nang | Phuong an | Do phuc tap | Ghi chu |
-|---|-----------|-----------|-------------|---------|
-| 17 | **Import .xlsx** | ExcelJS → snapshot (Phase 2) | Trung binh | Bat buoc |
-| 18 | **Export .xlsx** | Univer snapshot → ExcelJS.writeFile | Trung binh | Bat buoc |
-| 19 | **Charts** | echarts + custom plugin hoac community plugin | Cao | Danh gia trong phase nay |
-| 20 | **Print/PDF** | html2canvas hoac Univer print (Pro) | Trung binh | Quyết lai scope |
-| 21 | **Collaboration (Yjs)** | Tu rang buoc Yjs vao Univer changeset | Rat cao | Hoan |
-| 22 | **Pivot tables** | Hoan | — | Quyết lai scope |
-| 23 | **Sparklines** | Hoan | — | — |
+| #   | Tinh nang               | Phuong an                                     | Do phuc tap | Ghi chu                  |
+| --- | ----------------------- | --------------------------------------------- | ----------- | ------------------------ |
+| 17  | **Import .xlsx**        | ExcelJS → snapshot (Phase 2)                  | Trung binh  | Bat buoc                 |
+| 18  | **Export .xlsx**        | Univer snapshot → ExcelJS.writeFile           | Trung binh  | Bat buoc                 |
+| 19  | **Charts**              | echarts + custom plugin hoac community plugin | Cao         | Danh gia trong phase nay |
+| 20  | **Print/PDF**           | html2canvas hoac Univer print (Pro)           | Trung binh  | Quyết lai scope          |
+| 21  | **Collaboration (Yjs)** | Tu rang buoc Yjs vao Univer changeset         | Rat cao     | Hoan                     |
+| 22  | **Pivot tables**        | Hoan                                          | —           | Quyết lai scope          |
+| 23  | **Sparklines**          | Hoan                                          | —           | —                        |
 
 ### Do hieu nang
 
-| Muc do | Phuong phap | Muc tieu |
-|--------|-------------|----------|
+| Muc do      | Phuong phap                                                   | Muc tieu                         |
+| ----------- | ------------------------------------------------------------- | -------------------------------- |
 | Bundle size | `vite build --mode production` + `npx vite-bundle-visualizer` | Ghi nhan tong size, chunk Univer |
-| Load time | Performance.now() trong useUniver: start → first render | < 3s cho workbook 10k cells |
-| Scroll FPS | Chrome DevTools Performance tab, scroll 1000 rows | >= 30 FPS |
-| Memory | Chrome DevTools Memory tab, workbook 100k cells | Khong memory leak sau 5 min |
+| Load time   | Performance.now() trong useUniver: start → first render       | < 3s cho workbook 10k cells      |
+| Scroll FPS  | Chrome DevTools Performance tab, scroll 1000 rows             | >= 30 FPS                        |
+| Memory      | Chrome DevTools Memory tab, workbook 100k cells               | Khong memory leak sau 5 min      |
 
 ## Implementation Steps
 

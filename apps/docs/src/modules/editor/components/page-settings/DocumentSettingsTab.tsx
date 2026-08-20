@@ -1,16 +1,7 @@
 import { useTranslation } from '@office/i18n';
 import { Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
-import {
-  PAPER_SIZES,
-  type Orientation,
-  type PageSetup,
-  type PaperSize,
-} from '@/types/docs.types';
-import {
-  NumberInputWithUnit,
-  SelectField,
-  type SettingsUnit,
-} from './PageSettingsControls';
+import { PAPER_SIZES, type Orientation, type PageSetup, type PaperSize } from '@/types/docs.types';
+import { NumberInputWithUnit, SelectField, type SettingsUnit } from './PageSettingsControls';
 
 interface DocumentSettingsTabProps {
   setup: PageSetup;
@@ -77,9 +68,7 @@ export const DocumentSettingsTab = ({
         <div className="grid grid-cols-2 gap-2">
           <SelectField
             value={setup.paperSize}
-            onChange={(val) =>
-              onPageSetupChange({ ...setup, paperSize: val as PaperSize })
-            }
+            onChange={(val) => onPageSetupChange({ ...setup, paperSize: val as PaperSize })}
             options={[
               { value: 'a4', label: 'A4' },
               { value: 'letter', label: 'Letter' },
@@ -126,10 +115,14 @@ export const DocumentSettingsTab = ({
                 : 'border-neutral-800 bg-[#1c1c1f] text-neutral-400 hover:text-neutral-200 hover:border-neutral-700',
             )}
           >
-            <div className={cn(
-              'w-3.5 h-5 rounded-xs border-2 transition-colors',
-              setup.orientation === 'portrait' ? 'border-purple-400 bg-purple-500/20' : 'border-neutral-500',
-            )} />
+            <div
+              className={cn(
+                'w-3.5 h-5 rounded-xs border-2 transition-colors',
+                setup.orientation === 'portrait'
+                  ? 'border-purple-400 bg-purple-500/20'
+                  : 'border-neutral-500',
+              )}
+            />
             <span>{t('pageSetup.portrait')}</span>
           </button>
 
@@ -143,10 +136,14 @@ export const DocumentSettingsTab = ({
                 : 'border-neutral-800 bg-[#1c1c1f] text-neutral-400 hover:text-neutral-200 hover:border-neutral-700',
             )}
           >
-            <div className={cn(
-              'w-5 h-3.5 rounded-xs border-2 transition-colors',
-              setup.orientation === 'landscape' ? 'border-purple-400 bg-purple-500/20' : 'border-neutral-500',
-            )} />
+            <div
+              className={cn(
+                'w-5 h-3.5 rounded-xs border-2 transition-colors',
+                setup.orientation === 'landscape'
+                  ? 'border-purple-400 bg-purple-500/20'
+                  : 'border-neutral-500',
+              )}
+            />
             <span>{t('pageSetup.landscape')}</span>
           </button>
         </div>
@@ -229,15 +226,12 @@ export const DocumentSettingsTab = ({
         </h3>
 
         <div className="space-y-2">
-          <NumberInputWithUnit
-            label={t('pageSetup.pageGap')}
-            value={16}
-            unit="px"
-            readOnly
-          />
+          <NumberInputWithUnit label={t('pageSetup.pageGap')} value={16} unit="px" readOnly />
 
           <div className="space-y-1">
-            <span className="text-[11px] text-neutral-400 font-normal">{t('pageSetup.backgroundColor')}</span>
+            <span className="text-[11px] text-neutral-400 font-normal">
+              {t('pageSetup.backgroundColor')}
+            </span>
             <SelectField
               value="default"
               onChange={() => {}}

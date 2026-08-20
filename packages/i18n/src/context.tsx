@@ -6,12 +6,7 @@ import {
   formatRelativeTime as baseFormatRelativeTime,
 } from './formatters';
 import { LOCALE_STORAGE_KEY, getStoredLocale, translate } from './translator';
-import type {
-  I18nContextValue,
-  Locale,
-  TranslationNamespace,
-  TranslationParams,
-} from './types';
+import type { I18nContextValue, Locale, TranslationNamespace, TranslationParams } from './types';
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 

@@ -11,14 +11,23 @@ export interface PixelBounds {
 export const calculatePixelBounds = (
   position: ChartPosition,
   containerWidth = 1920,
-  containerHeight = 1080
+  containerHeight = 1080,
 ): PixelBounds => {
   const width = Math.max(position.width || DEFAULT_CHART_SIZE.width, DEFAULT_CHART_SIZE.minWidth);
-  const height = Math.max(position.height || DEFAULT_CHART_SIZE.height, DEFAULT_CHART_SIZE.minHeight);
+  const height = Math.max(
+    position.height || DEFAULT_CHART_SIZE.height,
+    DEFAULT_CHART_SIZE.minHeight,
+  );
 
   // If pixel offsets are provided directly
-  const left = Math.min(Math.max(position.offsetX || 40, 10), Math.max(containerWidth - width - 10, 10));
-  const top = Math.min(Math.max(position.offsetY || 40, 10), Math.max(containerHeight - height - 10, 10));
+  const left = Math.min(
+    Math.max(position.offsetX || 40, 10),
+    Math.max(containerWidth - width - 10, 10),
+  );
+  const top = Math.min(
+    Math.max(position.offsetY || 40, 10),
+    Math.max(containerHeight - height - 10, 10),
+  );
 
   return {
     left,
@@ -33,10 +42,16 @@ export const applyDragDelta = (
   deltaX: number,
   deltaY: number,
   containerWidth: number,
-  containerHeight: number
+  containerHeight: number,
 ): PixelBounds => {
-  const left = Math.max(10, Math.min(initialBounds.left + deltaX, containerWidth - initialBounds.width - 10));
-  const top = Math.max(10, Math.min(initialBounds.top + deltaY, containerHeight - initialBounds.height - 10));
+  const left = Math.max(
+    10,
+    Math.min(initialBounds.left + deltaX, containerWidth - initialBounds.width - 10),
+  );
+  const top = Math.max(
+    10,
+    Math.min(initialBounds.top + deltaY, containerHeight - initialBounds.height - 10),
+  );
 
   return {
     left,
@@ -54,7 +69,7 @@ export const applyResizeDelta = (
   deltaX: number,
   deltaY: number,
   minWidth = DEFAULT_CHART_SIZE.minWidth,
-  minHeight = DEFAULT_CHART_SIZE.minHeight
+  minHeight = DEFAULT_CHART_SIZE.minHeight,
 ): PixelBounds => {
   let { left, top, width, height } = initialBounds;
 

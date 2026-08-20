@@ -1,10 +1,10 @@
 ---
 phase: 8
-title: "Table Row Split"
+title: 'Table Row Split'
 status: done
 priority: P3
 dependencies: [7]
-effort: "spike 0.5d + 1.5-2d"
+effort: 'spike 0.5d + 1.5-2d'
 ---
 
 # Phase 8: Table Row Split
@@ -38,9 +38,11 @@ Cơ chế spacer của P2 và inline widget của P7 đều **không dùng đư�
 Thử theo thứ tự, dừng ở cái đầu tiên chạy được:
 
 **A — `Decoration.node` với `padding-top` trên row đầu trang mới**
+
 ```ts
-Decoration.node(rowStart, rowEnd, { style: `padding-top: ${spacer}px` })
+Decoration.node(rowStart, rowEnd, { style: `padding-top: ${spacer}px` });
 ```
+
 Rủi ro: `padding` trên `<tr>` bị nhiều engine bỏ qua. Có thể phải áp lên từng `<td>`.
 
 **B — `border-top: {spacer}px solid transparent` trên các `<td>` của row**
@@ -53,6 +55,7 @@ Loại gần chắc: transform không đẩy layout, chỉ dời hình ảnh →
 Không dùng được: màn hình cần spacer thật để đẩy, không chỉ break hint.
 
 **Tiêu chí pass:**
+
 - Row đẩy xuống đúng vị trí trang sau, sai số < 2px
 - Column width không đổi
 - Click vào cell vẫn đặt caret đúng chỗ
@@ -65,11 +68,13 @@ Không dùng được: màn hình cần spacer thật để đẩy, không chỉ
 ## Requirements (nếu spike pass)
 
 **Functional**
+
 - Bảng dài cắt ở ranh giới row, không mất row.
 - Row cao hơn cả trang → xử như block-level (không cắt giữa cell).
 - Header row **không** lặp ở trang sau — Google Docs mặc định cũng không. Ngoài scope.
 
 **Non-functional**
+
 - Không phá column resize, cell selection, merge cell.
 - `noUncheckedIndexedAccess` → `rows[i]` là `T | undefined`.
 
@@ -78,7 +83,11 @@ Không dùng được: màn hình cần spacer thật để đẩy, không chỉ
 `measureBlocks`: gặp node `table` thì duyệt xuống `tableRow`, trả `rows?: RowMeasurement[]` tương tự `lines` của P7.
 
 ```ts
-interface RowMeasurement { offset: number; height: number; domTop: number }
+interface RowMeasurement {
+  offset: number;
+  height: number;
+  domTop: number;
+}
 ```
 
 `domTop` đọc từ `offsetTop` thật — cùng lý do với `contentOffsets` ở P2: cộng dồn height làm tròn sẽ drift qua nhiều row.
@@ -121,10 +130,10 @@ Decoration dùng cơ chế thắng spike. Nhớ map qua `tr.mapping` trong `appl
 
 ## Risk Assessment
 
-| Rủi ro | Mức | Mitigation |
-|---|---|---|
-| Không cơ chế nào đẩy được row | **Cao** | Spike gate 0.5d timebox; fallback giữ hành vi cũ (đã an toàn nhờ fix P2a) |
-| Decoration phá column resize | Cao | Tiêu chí spike bắt buộc kiểm resize |
-| `padding`/`border` trên `<tr>` bị engine bỏ qua | Cao | Ứng viên B áp lên `<td>` |
-| Merge cell (`rowspan`) bắc qua điểm ngắt | Trung bình | Không cắt tại row có `rowspan` bắc qua; đẩy cả cụm. Fixture case riêng |
-| Sai số tích luỹ qua nhiều row | Trung bình | Đọc `offsetTop` thật, không cộng dồn height |
+| Rủi ro                                          | Mức        | Mitigation                                                                |
+| ----------------------------------------------- | ---------- | ------------------------------------------------------------------------- |
+| Không cơ chế nào đẩy được row                   | **Cao**    | Spike gate 0.5d timebox; fallback giữ hành vi cũ (đã an toàn nhờ fix P2a) |
+| Decoration phá column resize                    | Cao        | Tiêu chí spike bắt buộc kiểm resize                                       |
+| `padding`/`border` trên `<tr>` bị engine bỏ qua | Cao        | Ứng viên B áp lên `<td>`                                                  |
+| Merge cell (`rowspan`) bắc qua điểm ngắt        | Trung bình | Không cắt tại row có `rowspan` bắc qua; đẩy cả cụm. Fixture case riêng    |
+| Sai số tích luỹ qua nhiều row                   | Trung bình | Đọc `offsetTop` thật, không cộng dồn height                               |

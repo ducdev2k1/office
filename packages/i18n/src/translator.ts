@@ -8,10 +8,7 @@ export const DEFAULT_LOCALE: Locale = 'vi';
 export const DICTIONARIES: Record<Locale, TranslationSchema> = { vi, en };
 
 /** Đọc chuỗi theo đường dẫn dạng "namespace.group.key" */
-export const resolveValue = (
-  dict: Record<string, unknown>,
-  path: string,
-): string | undefined => {
+export const resolveValue = (dict: Record<string, unknown>, path: string): string | undefined => {
   let current: unknown = dict;
 
   for (const segment of path.split('.')) {
@@ -28,7 +25,9 @@ export const resolveValue = (
 /** Thay các placeholder dạng {name} bằng giá trị tương ứng */
 export const interpolate = (template: string, params?: TranslationParams): string => {
   if (!params) return template;
-  return template.replace(/\{(\w+)\}/g, (match, key) => (key in params ? String(params[key]) : match));
+  return template.replace(/\{(\w+)\}/g, (match, key) =>
+    key in params ? String(params[key]) : match,
+  );
 };
 
 /**

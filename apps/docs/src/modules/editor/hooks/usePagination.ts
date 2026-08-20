@@ -7,7 +7,13 @@ import {
   PAGE_GAP,
   type PageBreaks,
 } from '@/modules/editor/utils/pagination.utils';
-import { DEFAULT_PAGE_SETUP, getPaperSizePx, mmToPx, type DocRecord, type PageSetup } from '@/types/docs.types';
+import {
+  DEFAULT_PAGE_SETUP,
+  getPaperSizePx,
+  mmToPx,
+  type DocRecord,
+  type PageSetup,
+} from '@/types/docs.types';
 import type { ViewMode } from '@/modules/editor/types/editor.types';
 import {
   computePaginationMetrics,
@@ -84,7 +90,8 @@ export const usePagination = (
 
   useEffect(() => {
     if (!editor) return;
-    const onTransaction = () => {
+    const onTransaction = ({ transaction }: { transaction: { docChanged: boolean } }) => {
+      if (!transaction.docChanged) return;
       if (viewMode === 'paged') schedulePagination();
     };
     editor.on('transaction', onTransaction);

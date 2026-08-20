@@ -18,7 +18,9 @@ export const PAGE_METRICS: PageMetrics = {
 export const block = (
   offset: number,
   height: number,
-  opts: Partial<Pick<BlockMeasurement, 'type' | 'marginTop' | 'marginBottom' | 'domTop' | 'lines'>> = {},
+  opts: Partial<
+    Pick<BlockMeasurement, 'type' | 'marginTop' | 'marginBottom' | 'domTop' | 'lines'>
+  > = {},
 ): BlockMeasurement => ({
   type: 'paragraph',
   offset,

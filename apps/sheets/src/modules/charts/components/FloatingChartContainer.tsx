@@ -40,7 +40,7 @@ export const FloatingChartContainer = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [bounds, setBounds] = useState<PixelBounds>(() =>
-    calculatePixelBounds(spec.position, containerBounds.width, containerBounds.height)
+    calculatePixelBounds(spec.position, containerBounds.width, containerBounds.height),
   );
 
   // Sync internal bounds when spec.position changes externally
@@ -63,7 +63,7 @@ export const FloatingChartContainer = ({
       e.stopPropagation();
       onSelect();
     },
-    [onSelect]
+    [onSelect],
   );
 
   const handleHeaderPointerDown = useCallback(
@@ -77,7 +77,7 @@ export const FloatingChartContainer = ({
         initialBounds: { ...bounds },
       };
     },
-    [bounds, onSelect]
+    [bounds, onSelect],
   );
 
   const handleHeaderPointerMove = useCallback(
@@ -90,11 +90,11 @@ export const FloatingChartContainer = ({
         deltaX,
         deltaY,
         containerBounds.width,
-        containerBounds.height
+        containerBounds.height,
       );
       setBounds(newBounds);
     },
-    [containerBounds.width, containerBounds.height]
+    [containerBounds.width, containerBounds.height],
   );
 
   const handleHeaderPointerUp = useCallback(
@@ -115,7 +115,7 @@ export const FloatingChartContainer = ({
         });
       }
     },
-    [bounds, onUpdatePosition, spec.position]
+    [bounds, onUpdatePosition, spec.position],
   );
 
   const handleResizePointerDown = useCallback(
@@ -129,24 +129,21 @@ export const FloatingChartContainer = ({
         initialBounds: { ...bounds },
       };
     },
-    [bounds]
+    [bounds],
   );
 
-  const handleResizePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!resizeStartRef.current) return;
-      const deltaX = e.clientX - resizeStartRef.current.x;
-      const deltaY = e.clientY - resizeStartRef.current.y;
-      const newBounds = applyResizeDelta(
-        resizeStartRef.current.initialBounds,
-        resizeStartRef.current.direction,
-        deltaX,
-        deltaY
-      );
-      setBounds(newBounds);
-    },
-    []
-  );
+  const handleResizePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!resizeStartRef.current) return;
+    const deltaX = e.clientX - resizeStartRef.current.x;
+    const deltaY = e.clientY - resizeStartRef.current.y;
+    const newBounds = applyResizeDelta(
+      resizeStartRef.current.initialBounds,
+      resizeStartRef.current.direction,
+      deltaX,
+      deltaY,
+    );
+    setBounds(newBounds);
+  }, []);
 
   const handleResizePointerUp = useCallback(
     (e: React.PointerEvent) => {
@@ -166,7 +163,7 @@ export const FloatingChartContainer = ({
         });
       }
     },
-    [bounds, onUpdatePosition, spec.position]
+    [bounds, onUpdatePosition, spec.position],
   );
 
   const handleExportPng = useCallback(() => {

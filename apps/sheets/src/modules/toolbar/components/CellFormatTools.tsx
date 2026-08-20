@@ -63,8 +63,16 @@ const DEFAULT_BORDER_STYLE: BorderStyleOption = {
 
 const BORDER_STYLES: BorderStyleOption[] = [
   DEFAULT_BORDER_STYLE,
-  { style: BorderStyleTypes.MEDIUM, labelKey: 'toolbar.border.styles.medium', borderClass: 'border-t-2' },
-  { style: BorderStyleTypes.THICK, labelKey: 'toolbar.border.styles.thick', borderClass: 'border-t-4' },
+  {
+    style: BorderStyleTypes.MEDIUM,
+    labelKey: 'toolbar.border.styles.medium',
+    borderClass: 'border-t-2',
+  },
+  {
+    style: BorderStyleTypes.THICK,
+    labelKey: 'toolbar.border.styles.thick',
+    borderClass: 'border-t-4',
+  },
   {
     style: BorderStyleTypes.DASHED,
     labelKey: 'toolbar.border.styles.dashed',
@@ -97,8 +105,7 @@ export const CellFormatTools = ({
   onApplyBorder,
 }: CellFormatToolsProps) => {
   const { t } = useTranslation('sheets');
-  const currentStyle =
-    BORDER_STYLES.find((s) => s.style === borderStyle) ?? DEFAULT_BORDER_STYLE;
+  const currentStyle = BORDER_STYLES.find((s) => s.style === borderStyle) ?? DEFAULT_BORDER_STYLE;
 
   const handleSelectBorderType = (type: BorderType) => {
     onApplyBorder(type, borderStyle, borderColor);
@@ -142,7 +149,9 @@ export const CellFormatTools = ({
 
           {/* Border color & line style controls */}
           <div className="flex items-center justify-between gap-1 text-xs">
-            <span className="text-[11px] text-muted-foreground">{t('toolbar.border.colorLabel')}</span>
+            <span className="text-[11px] text-muted-foreground">
+              {t('toolbar.border.colorLabel')}
+            </span>
             <ColorPalettePopover
               iconName="brush"
               currentColor={borderColor}
@@ -152,7 +161,9 @@ export const CellFormatTools = ({
           </div>
 
           <div className="mt-2 flex items-center justify-between gap-1 text-xs">
-            <span className="text-[11px] text-muted-foreground">{t('toolbar.border.styleLabel')}</span>
+            <span className="text-[11px] text-muted-foreground">
+              {t('toolbar.border.styleLabel')}
+            </span>
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={

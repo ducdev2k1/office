@@ -42,16 +42,26 @@ export const buildEChartsOption = (
     : undefined;
 
   const orient: 'vertical' | 'horizontal' =
-    spec.legend.position === 'left' || spec.legend.position === 'right'
-      ? 'vertical'
-      : 'horizontal';
+    spec.legend.position === 'left' || spec.legend.position === 'right' ? 'vertical' : 'horizontal';
 
   const legendOption = spec.legend.show
     ? {
         show: true,
         orient,
-        left: spec.legend.position === 'left' ? 10 : spec.legend.position === 'right' ? 'right' : 'center',
-        top: spec.legend.position === 'top' ? (spec.title ? 32 : 10) : spec.legend.position === 'bottom' ? 'bottom' : 'middle',
+        left:
+          spec.legend.position === 'left'
+            ? 10
+            : spec.legend.position === 'right'
+              ? 'right'
+              : 'center',
+        top:
+          spec.legend.position === 'top'
+            ? spec.title
+              ? 32
+              : 10
+            : spec.legend.position === 'bottom'
+              ? 'bottom'
+              : 'middle',
         textStyle: {
           color: textMuted,
           fontSize: 11,
@@ -59,7 +69,13 @@ export const buildEChartsOption = (
       }
     : { show: false };
 
-  const gridTop = spec.title ? (spec.legend.show && spec.legend.position === 'top' ? 64 : 40) : (spec.legend.show && spec.legend.position === 'top' ? 40 : 20);
+  const gridTop = spec.title
+    ? spec.legend.show && spec.legend.position === 'top'
+      ? 64
+      : 40
+    : spec.legend.show && spec.legend.position === 'top'
+      ? 40
+      : 20;
   const gridBottom = spec.legend.show && spec.legend.position === 'bottom' ? 40 : 25;
   const gridLeft = spec.legend.show && spec.legend.position === 'left' ? 80 : 40;
   const gridRight = spec.legend.show && spec.legend.position === 'right' ? 80 : 20;
@@ -72,7 +88,8 @@ export const buildEChartsOption = (
     containLabel: true,
   };
 
-  const triggerType: 'axis' | 'item' = spec.type === 'pie' || spec.type === 'funnel' ? 'item' : 'axis';
+  const triggerType: 'axis' | 'item' =
+    spec.type === 'pie' || spec.type === 'funnel' ? 'item' : 'axis';
 
   const commonTooltip = {
     trigger: triggerType,
@@ -256,7 +273,7 @@ export const buildEChartsOption = (
     case 'radar': {
       const maxVal = Math.max(
         ...data.seriesData.flatMap((s) => s.values).filter((n) => typeof n === 'number'),
-        100
+        100,
       );
       const indicator = data.categories.map((cat) => ({
         name: cat,
@@ -269,8 +286,7 @@ export const buildEChartsOption = (
         tooltip: commonTooltip,
         legend: legendOption,
         radar: {
-          indicator:
-            indicator.length > 0 ? indicator : [{ name: labels.radarIndicator, max: 100 }],
+          indicator: indicator.length > 0 ? indicator : [{ name: labels.radarIndicator, max: 100 }],
           radius: '65%',
           center: ['50%', spec.title ? '56%' : '50%'],
           axisName: { color: textMuted, fontSize: 11 },

@@ -1,10 +1,10 @@
 ---
 phase: 6
-title: "Configuration UI"
+title: 'Configuration UI'
 status: done
 priority: P2
 dependencies: [3, 5]
-effort: "0.5d"
+effort: '0.5d'
 ---
 
 # Phase 6: Configuration UI
@@ -15,24 +15,26 @@ Dialog cấu hình header/footer + số trang. **MVP cut sau red team**: một e
 
 ## MVP cut — cắt gì và vì sao
 
-| Phiên bản trước | Sau red team | Lý do |
-|---|---|---|
-| 3 entry point (menu ×2 + nút trong PageSetupPanel) | **1** entry point: `Chèn > Đầu trang, chân trang & số trang` | 2 cái kia sinh ra prop `defaultTab` — một contract tồn tại chỉ để phục vụ chính quyết định 3-entry-point, không phục vụ nhu cầu user nào |
-| Hệ tab 2 tab + prop `defaultTab` | Một dialog cuộn dọc, 2 section | `@office/ui-kit` **không có Tabs** (`index.ts:12-25` chỉ có badge, button, card, checkbox, context-menu, dialog, dropdown-menu, input, popover, scroll-area, separator, skeleton, switch, tooltip). Hedge "dùng nếu có" của bản trước sẽ đẩy implementer vào lựa chọn giữa viết Tabs mới trong package dùng chung (scope creep) hoặc tự chế |
-| Token chips + `useRef` focus tracking + `selectionStart` insertion | Chip append vào cuối ô đang focus, fallback ô center của footer | Click chip làm blur ô input → `selectionStart` mất. Bản trước không nói cách xử lý blur. Đây là phần dễ hỏng nhất của dialog |
-| Preview line | **Giữ** | Rẻ, và token là khái niệm không hiển nhiên — không có preview thì user phải đóng dialog mới biết |
+| Phiên bản trước                                                    | Sau red team                                                    | Lý do                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3 entry point (menu ×2 + nút trong PageSetupPanel)                 | **1** entry point: `Chèn > Đầu trang, chân trang & số trang`    | 2 cái kia sinh ra prop `defaultTab` — một contract tồn tại chỉ để phục vụ chính quyết định 3-entry-point, không phục vụ nhu cầu user nào                                                                                                                                                                                                    |
+| Hệ tab 2 tab + prop `defaultTab`                                   | Một dialog cuộn dọc, 2 section                                  | `@office/ui-kit` **không có Tabs** (`index.ts:12-25` chỉ có badge, button, card, checkbox, context-menu, dialog, dropdown-menu, input, popover, scroll-area, separator, skeleton, switch, tooltip). Hedge "dùng nếu có" của bản trước sẽ đẩy implementer vào lựa chọn giữa viết Tabs mới trong package dùng chung (scope creep) hoặc tự chế |
+| Token chips + `useRef` focus tracking + `selectionStart` insertion | Chip append vào cuối ô đang focus, fallback ô center của footer | Click chip làm blur ô input → `selectionStart` mất. Bản trước không nói cách xử lý blur. Đây là phần dễ hỏng nhất của dialog                                                                                                                                                                                                                |
+| Preview line                                                       | **Giữ**                                                         | Rẻ, và token là khái niệm không hiển nhiên — không có preview thì user phải đóng dialog mới biết                                                                                                                                                                                                                                            |
 
 Nút trong `PageSetupPanel` và mục `Chèn > Số trang` riêng: để vòng sau nếu user hỏi.
 
 ## Requirements
 
 **Functional**
+
 - 6 ô text: header × (trái/giữa/phải), footer × (trái/giữa/phải).
 - Token chips: `{page}` `{pages}` `{title}` `{date}`.
 - Cấu hình số trang: bật/tắt, vị trí (header/footer), căn lề, format, `startAt`, `skipFirstPage`.
 - Apply → ghi vào `activeDoc.pageSetup` qua đường persist hiện có.
 
 **Non-functional**
+
 - i18n đầy đủ `vi` và `en`.
 - Không thêm dependency, không thêm component vào `@office/ui-kit`.
 - Announce giá trị đã apply qua live region (nối tiếp yêu cầu a11y của P5).
@@ -71,6 +73,7 @@ Lưu ý đã biết: đây là autosave **toàn bộ mảng docs** mỗi lần �
 ### i18n
 
 `packages/i18n/src/locales/{en,vi}/docs.json`, nhánh `headerFooter.*`:
+
 ```
 title, header, footer, alignLeft, alignCenter, alignRight,
 tokens.label, tokens.page, tokens.pages, tokens.docTitle, tokens.date,
@@ -78,6 +81,7 @@ pageNumber.enable, pageNumber.position, pageNumber.align,
 pageNumber.format, pageNumber.startAt, pageNumber.skipFirst,
 preview, applied, apply, cancel
 ```
+
 Cộng `menu.insert.headerFooter`.
 
 `MenuBar.tsx:111-126` — menu `Chèn` hiện có 4 mục (image, table, horizontalRule, pageBreak). Thêm separator + 1 mục. `MenuItem` đã hỗ trợ `'separator'` (`header.types.ts:13`).
@@ -118,10 +122,10 @@ Cộng `menu.insert.headerFooter`.
 
 ## Risk Assessment
 
-| Rủi ro | Mitigation |
-|---|---|
+| Rủi ro                                                           | Mitigation                                                                               |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | `setup` prop identity không ổn định → render loop, không gõ được | P3 normalize ở `withDefaults`; truyền thẳng `activeDoc.pageSetup`; AC kiểm "gõ liên tục" |
-| Implementer đi viết Tabs mới trong ui-kit | Plan chốt: không tab, một dialog cuộn dọc |
-| Chip insertion mất `selectionStart` khi blur | Append vào cuối ô, không dùng `selectionStart` |
-| Thiếu i18n key một ngôn ngữ | Thêm cả 2 file cùng lúc ở bước 1 |
-| `pageSetup` không persist | Dùng đúng `onPageSetupChange` hiện có, không tạo đường lưu mới |
+| Implementer đi viết Tabs mới trong ui-kit                        | Plan chốt: không tab, một dialog cuộn dọc                                                |
+| Chip insertion mất `selectionStart` khi blur                     | Append vào cuối ô, không dùng `selectionStart`                                           |
+| Thiếu i18n key một ngôn ngữ                                      | Thêm cả 2 file cùng lúc ở bước 1                                                         |
+| `pageSetup` không persist                                        | Dùng đúng `onPageSetupChange` hiện có, không tạo đường lưu mới                           |

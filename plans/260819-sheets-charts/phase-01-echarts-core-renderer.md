@@ -1,18 +1,20 @@
 ---
 phase: 1
-title: "Core Chart Engine: Schema, Types & ECharts Multi-Type Renderer"
+title: 'Core Chart Engine: Schema, Types & ECharts Multi-Type Renderer'
 status: completed
 priority: P1
-effort: "6h"
+effort: '6h'
 dependencies: []
 ---
 
 # Phase 1: Core Chart Engine: Schema, Types & ECharts Multi-Type Renderer
 
 ## Overview
+
 Xây dựng nền tảng cho hệ thống biểu đồ: cài đặt thư viện Apache ECharts, định nghĩa toàn bộ schema và types mô tả biểu đồ (`ChartSpec`, `ChartType`, `ChartSeries`, `ChartPosition`), cùng component renderer chuẩn hóa hỗ trợ 8 loại biểu đồ mục tiêu.
 
 ## Requirements
+
 - Hỗ trợ 8 loại biểu đồ:
   1. **Column (Cột đứng)**
   2. **Bar (Thanh ngang)**
@@ -29,16 +31,8 @@ Xây dựng nền tảng cho hệ thống biểu đồ: cài đặt thư viện 
 ## Architecture & Data Model
 
 ```ts
-export type ChartType = 
-  | 'column'
-  | 'bar'
-  | 'line'
-  | 'pie'
-  | 'area'
-  | 'scatter'
-  | 'radar'
-  | 'funnel'
-  | 'combo';
+export type ChartType =
+  'column' | 'bar' | 'line' | 'pie' | 'area' | 'scatter' | 'radar' | 'funnel' | 'combo';
 
 export interface ChartSeriesConfig {
   id: string;
@@ -79,6 +73,7 @@ export interface ChartSpec {
 ```
 
 ## Related Code Files
+
 - Create:
   - `apps/sheets/src/modules/charts/types/charts.types.ts`
   - `apps/sheets/src/modules/charts/constants/charts.constants.ts`
@@ -89,6 +84,7 @@ export interface ChartSpec {
   - `apps/sheets/package.json` (thêm dependency `echarts`)
 
 ## Implementation Steps
+
 1. Cài đặt `echarts` vào `apps/sheets`.
 2. Tạo các định nghĩa kiểu trong `charts.types.ts` và hằng số cấu hình mặc định trong `charts.constants.ts`.
 3. Xây dựng transformer `buildEChartsOption(spec: ChartSpec, dataMatrix: (string | number)[][], isDark: boolean)` trong `echartsOptions.utils.ts` biến đổi `ChartSpec` thành `EChartsOption`.
@@ -96,6 +92,7 @@ export interface ChartSpec {
 5. Viết unit test cho hàm sinh cấu hình ECharts option với các mẫu dữ liệu khác nhau.
 
 ## Success Criteria
+
 - [ ] Cài đặt thành công `echarts` và build/typecheck pass không có lỗi.
 - [ ] `ChartRenderer` render chính xác 8 loại biểu đồ với dữ liệu mẫu (mock data).
 - [ ] Tự động chuyển đổi màu sắc/theme khi toggle Light/Dark mode.

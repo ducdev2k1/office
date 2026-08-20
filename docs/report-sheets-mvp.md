@@ -11,21 +11,25 @@ Plan: `plans/260819-sheets-mvp/plan.md`
 ## 2. Kết quả theo phase
 
 ### Phase 1 — xlsx-io import (6h → done)
+
 - Converter `exceljsToUniver` chuyển từ `apps/sheets` sang `packages/xlsx-io/src/exceljsToUniver.utils.ts` (import `@univerjs/core`, không dùng presets nặng).
 - API: `parseXlsxBuffer`, `parseXlsxFile`, `exceljsToUniver`.
 - Test `src/__tests__/import.test.ts` pass với 3 file (600 / 30K / 400K cells).
 
 ### Phase 2 — xlsx-io export (8h → done)
+
 - `univerToExceljs(data: IWorkbookData): Promise<ArrayBuffer>` — map ngược toàn bộ: cell value + formula (`{formula, result}`), style (font/fill/border/alignment/numFmt), merge, row/col size, hidden sheet.
 - Test export pass: file mở lại đọc đúng text, number, formula, bold, fill, numFmt, merge.
 
 ### Phase 3 — Tích hợp apps/sheets (5h → done)
+
 - Bỏ converter cục bộ, apps dùng `@office/xlsx-io`.
 - Nút **Export XLSX**: `getActiveWorkbook().save()` → `univerToExceljs` → download + lưu IndexedDB qua `createDocumentStore('sheets')`.
 - `StoredDocument` thêm field `data?` (cho sheets/slides lưu snapshot).
 - Smoke test (Puppeteer): Open → Export → file download >0 bytes, 0 lỗi console/HTTP; file export mở lại đúng.
 
 ### Phase 4 — Verify round-trip (4h → done)
+
 - `src/__tests__/roundtrip.test.ts`: import → export → import lại.
   - small (600 cells): **fidelity 100%** (cells 100%, merges 100%, styles 100%, A1 khớp).
   - med (30K cells): **fidelity 100%**.
@@ -33,11 +37,11 @@ Plan: `plans/260819-sheets-mvp/plan.md`
 
 ## 3. Số liệu hiệu năng (cập nhật)
 
-| File | Kích thước | Cells | Parse+Convert (ms) |
-|------|-----------|-------|-------------------|
-| sample-small | 11 KB | 600 | ~44 |
-| sample-med | 160 KB | 30K | ~169 |
-| sample-large | 1.9 MB | 400K | ~1363 |
+| File         | Kích thước | Cells | Parse+Convert (ms) |
+| ------------ | ---------- | ----- | ------------------ |
+| sample-small | 11 KB      | 600   | ~44                |
+| sample-med   | 160 KB     | 30K   | ~169               |
+| sample-large | 1.9 MB     | 400K  | ~1363              |
 
 Export nhanh hơn import (writeBuffer tối ưu) — chưa đo riêng, có thể thêm sau.
 

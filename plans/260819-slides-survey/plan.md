@@ -16,15 +16,16 @@ created: 2026-08-19
 Khảo sát giải pháp kỹ thuật cho `apps/slides` và `packages/pptx-io` trước khi đầu tư sâu vào sản phẩm chính thức. Không code tính năng sản phẩm phân tán — tập trung dựng prototype chạy thực tế + kiểm thử render trên bộ 3 file mẫu `.pptx` đại diện (tiếng Việt, bảng biểu, hình khối, layout) + đo hiệu năng (bundle, load time, memory) + lập gap checklist tính năng + báo cáo kỹ thuật Go/No-Go.
 
 **Ràng buộc bắt buộc**:
+
 - Chỉ dùng mã nguồn mở giấy phép dễ dãi (Apache-2.0 / MIT / BSD), không dùng bất kỳ package trả phí / AGPL nào.
 - Offline-first: lưu trữ qua `@office/storage-adapter` (IndexedDB driver).
 - Tích hợp giao diện iNET: đồng bộ `@office/app-shell`, `@office/file-home` (`kind: 'slides'`), và `@office/ui-kit`.
 
 ## Phases
 
-| # | Phase | File | Effort | Status |
-|---|---|---|---|---|
-| 1 | Scaffold `apps/slides` + AppShell + FileHome + prototype runner | `phase-01-scaffold-slides-prototype.md` | 8h | completed |
+| #   | Phase                                                           | File                                    | Effort | Status    |
+| --- | --------------------------------------------------------------- | --------------------------------------- | ------ | --------- |
+| 1   | Scaffold `apps/slides` + AppShell + FileHome + prototype runner | `phase-01-scaffold-slides-prototype.md` | 8h     | completed |
 
 | 2 | Khảo sát chiều đọc & render file PPTX qua `packages/pptx-io` | `phase-02-pptx-read-render-pipeline.md` | 10h | completed |
 

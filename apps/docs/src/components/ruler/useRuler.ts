@@ -63,11 +63,7 @@ export const useRuler = ({
   } | null>(null);
 
   const startDrag = useCallback(
-    (
-      event: React.PointerEvent,
-      target: RulerDragTarget,
-      containerElement: HTMLElement,
-    ) => {
+    (event: React.PointerEvent, target: RulerDragTarget, containerElement: HTMLElement) => {
       event.preventDefault();
       event.stopPropagation();
       const rect = containerElement.getBoundingClientRect();
@@ -148,18 +144,26 @@ export const useRuler = ({
 
         if (target === 'left-margin') {
           const rawMm = initialMargins.left + deltaMm;
-          currentMm = Math.max(5, Math.min(paperWidthMm - initialMargins.right - 20, snapValueMm(rawMm, unit)));
+          currentMm = Math.max(
+            5,
+            Math.min(paperWidthMm - initialMargins.right - 20, snapValueMm(rawMm, unit)),
+          );
           guidePositionPx = containerRect.left + mmToPx(currentMm);
           onMarginChange({ ...initialMargins, left: currentMm });
         } else if (target === 'right-margin') {
           const rawMm = initialMargins.right - deltaMm;
-          currentMm = Math.max(5, Math.min(paperWidthMm - initialMargins.left - 20, snapValueMm(rawMm, unit)));
+          currentMm = Math.max(
+            5,
+            Math.min(paperWidthMm - initialMargins.left - 20, snapValueMm(rawMm, unit)),
+          );
           guidePositionPx = containerRect.left + containerRect.width - mmToPx(currentMm);
           onMarginChange({ ...initialMargins, right: currentMm });
         } else if (target === 'first-line-indent') {
           const rawMm = initialIndents.firstLineIndent + deltaMm;
           currentMm = Math.max(-50, Math.min(100, snapValueMm(rawMm, unit)));
-          guidePositionPx = containerRect.left + mmToPx(initialMargins.left + initialIndents.leftIndent + currentMm);
+          guidePositionPx =
+            containerRect.left +
+            mmToPx(initialMargins.left + initialIndents.leftIndent + currentMm);
           onIndentChange({ ...initialIndents, firstLineIndent: currentMm });
         } else if (target === 'left-indent') {
           const rawMm = initialIndents.leftIndent + deltaMm;
@@ -169,7 +173,8 @@ export const useRuler = ({
         } else if (target === 'right-indent') {
           const rawMm = initialIndents.rightIndent - deltaMm;
           currentMm = Math.max(0, Math.min(120, snapValueMm(rawMm, unit)));
-          guidePositionPx = containerRect.left + containerRect.width - mmToPx(initialMargins.right + currentMm);
+          guidePositionPx =
+            containerRect.left + containerRect.width - mmToPx(initialMargins.right + currentMm);
           onIndentChange({ ...initialIndents, rightIndent: currentMm });
         }
       } else {
@@ -178,12 +183,18 @@ export const useRuler = ({
 
         if (target === 'top-margin') {
           const rawMm = initialMargins.top + deltaMm;
-          currentMm = Math.max(5, Math.min(paperHeightMm - initialMargins.bottom - 30, snapValueMm(rawMm, unit)));
+          currentMm = Math.max(
+            5,
+            Math.min(paperHeightMm - initialMargins.bottom - 30, snapValueMm(rawMm, unit)),
+          );
           guidePositionPx = containerRect.top + mmToPx(currentMm);
           onMarginChange({ ...initialMargins, top: currentMm });
         } else if (target === 'bottom-margin') {
           const rawMm = initialMargins.bottom - deltaMm;
-          currentMm = Math.max(5, Math.min(paperHeightMm - initialMargins.top - 30, snapValueMm(rawMm, unit)));
+          currentMm = Math.max(
+            5,
+            Math.min(paperHeightMm - initialMargins.top - 30, snapValueMm(rawMm, unit)),
+          );
           guidePositionPx = containerRect.top + containerRect.height - mmToPx(currentMm);
           onMarginChange({ ...initialMargins, bottom: currentMm });
         }

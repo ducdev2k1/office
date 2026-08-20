@@ -32,8 +32,22 @@ export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackP
 
   const pages = useMemo(() => {
     return Array.from({ length: pageCount }).map((_, i) => {
-      const headerSlots = resolveSlot(setup.header, setup.pageNumber, 'header', i, pageCount, tokenCtx);
-      const footerSlots = resolveSlot(setup.footer, setup.pageNumber, 'footer', i, pageCount, tokenCtx);
+      const headerSlots = resolveSlot(
+        setup.header,
+        setup.pageNumber,
+        'header',
+        i,
+        pageCount,
+        tokenCtx,
+      );
+      const footerSlots = resolveSlot(
+        setup.footer,
+        setup.pageNumber,
+        'footer',
+        i,
+        pageCount,
+        tokenCtx,
+      );
       return {
         key: i,
         header: headerSlots,

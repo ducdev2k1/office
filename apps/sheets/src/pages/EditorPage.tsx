@@ -91,19 +91,17 @@ export const EditorPage = () => {
       setCharts(nextCharts);
       updateCharts(nextCharts);
     },
-    [charts, updateCharts]
+    [charts, updateCharts],
   );
 
   const handleUpdateChartSpec = useCallback(
     (partial: Partial<ChartSpec>) => {
       if (!selectedChartId) return;
-      const nextCharts = charts.map((c) =>
-        c.id === selectedChartId ? { ...c, ...partial } : c
-      );
+      const nextCharts = charts.map((c) => (c.id === selectedChartId ? { ...c, ...partial } : c));
       setCharts(nextCharts);
       updateCharts(nextCharts);
     },
-    [charts, selectedChartId, updateCharts]
+    [charts, selectedChartId, updateCharts],
   );
 
   const handleDeleteChart = useCallback(
@@ -116,7 +114,7 @@ export const EditorPage = () => {
       }
       updateCharts(nextCharts);
     },
-    [charts, selectedChartId, updateCharts]
+    [charts, selectedChartId, updateCharts],
   );
 
   const handleExport = async () => {

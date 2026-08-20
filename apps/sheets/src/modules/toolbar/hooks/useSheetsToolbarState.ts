@@ -79,7 +79,11 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
       // Text wrap mode detection
       const wrapStrat = styleData?.tb;
       const currentWrapMode: TextWrapMode =
-        wrapStrat === WrapStrategy.WRAP ? 'wrap' : wrapStrat === WrapStrategy.CLIP ? 'clip' : 'overflow';
+        wrapStrat === WrapStrategy.WRAP
+          ? 'wrap'
+          : wrapStrat === WrapStrategy.CLIP
+            ? 'clip'
+            : 'overflow';
 
       // Text rotation
       const rotationAngle = (styleData?.tr?.a as TextRotationAngle) || 0;
@@ -103,12 +107,17 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
         if (cf.bold !== undefined) range.setFontWeight(cf.bold ? 'bold' : 'normal');
         if (cf.italic !== undefined) range.setFontStyle(cf.italic ? 'italic' : 'normal');
         if (cf.underline !== undefined) range.setFontLine(cf.underline ? 'underline' : 'none');
-        if (cf.strikethrough !== undefined) range.setFontLine(cf.strikethrough ? 'line-through' : 'none');
+        if (cf.strikethrough !== undefined)
+          range.setFontLine(cf.strikethrough ? 'line-through' : 'none');
         if (cf.textColor) range.setFontColor(cf.textColor);
         if (cf.fillColor !== undefined) range.setBackground(cf.fillColor);
-        if (cf.horizontalAlign) range.setHorizontalAlignment(cf.horizontalAlign === 'right' ? 'normal' : cf.horizontalAlign);
+        if (cf.horizontalAlign)
+          range.setHorizontalAlignment(
+            cf.horizontalAlign === 'right' ? 'normal' : cf.horizontalAlign,
+          );
         if (cf.verticalAlign) range.setVerticalAlignment(cf.verticalAlign);
-        if (cf.wrap !== undefined) range.setWrapStrategy(cf.wrap ? WrapStrategy.WRAP : WrapStrategy.OVERFLOW);
+        if (cf.wrap !== undefined)
+          range.setWrapStrategy(cf.wrap ? WrapStrategy.WRAP : WrapStrategy.OVERFLOW);
         if (cf.numberFormat) {
           const curVal = range.getValue();
           range.setValue({ v: curVal ?? undefined, s: { n: { pattern: cf.numberFormat } } });
@@ -302,7 +311,11 @@ export const useSheetsToolbarState = (univerAPI: FUniver | null) => {
       (mode: TextWrapMode) => {
         const range = getActiveRange();
         const strat =
-          mode === 'wrap' ? WrapStrategy.WRAP : mode === 'clip' ? WrapStrategy.CLIP : WrapStrategy.OVERFLOW;
+          mode === 'wrap'
+            ? WrapStrategy.WRAP
+            : mode === 'clip'
+              ? WrapStrategy.CLIP
+              : WrapStrategy.OVERFLOW;
         range?.setWrapStrategy(strat);
         setState((prev) => ({ ...prev, wrap: mode === 'wrap', wrapMode: mode }));
       },

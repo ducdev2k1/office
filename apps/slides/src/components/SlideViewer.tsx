@@ -161,7 +161,10 @@ export const SlideViewer = ({
       const lastEvent = events[events.length - 1] || e;
 
       if (session.type === 'rotate') {
-        const rad = Math.atan2(lastEvent.clientY - session.startY, lastEvent.clientX - session.startX);
+        const rad = Math.atan2(
+          lastEvent.clientY - session.startY,
+          lastEvent.clientX - session.startX,
+        );
         let deg = Math.round((rad * 180) / Math.PI) + 90;
         if (deg < 0) deg += 360;
         if (Math.abs(deg % 45) < 3) deg = Math.round(deg / 45) * 45;
@@ -169,8 +172,12 @@ export const SlideViewer = ({
       } else if (session.type === 'move') {
         const deltaX = (lastEvent.clientX - session.startX) / scaleFactor;
         const deltaY = (lastEvent.clientY - session.startY) / scaleFactor;
-        session.currentX = Math.round(Math.max(0, Math.min(960 - session.initialW, session.initialX + deltaX)));
-        session.currentY = Math.round(Math.max(0, Math.min(540 - session.initialH, session.initialY + deltaY)));
+        session.currentX = Math.round(
+          Math.max(0, Math.min(960 - session.initialW, session.initialX + deltaX)),
+        );
+        session.currentY = Math.round(
+          Math.max(0, Math.min(540 - session.initialH, session.initialY + deltaY)),
+        );
       } else if (session.type === 'resize' && session.handle) {
         const deltaX = (lastEvent.clientX - session.startX) / scaleFactor;
         const deltaY = (lastEvent.clientY - session.startY) / scaleFactor;
@@ -248,49 +255,59 @@ export const SlideViewer = ({
     };
   }, [onUpdateElement]);
 
-  const handleStartMove = useCallback((e: React.PointerEvent, el: SlideElement) => {
-    if (e.button === 2 || editingId === el.id) return;
-    e.stopPropagation();
-    onSelectElement(el.id);
-    const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
-    dragRef.current = {
-      type: 'move',
-      startX: e.clientX,
-      startY: e.clientY,
-      initialX: el.x,
-      initialY: el.y,
-      initialW: el.width,
-      initialH: el.height,
-      currentX: el.x,
-      currentY: el.y,
-      currentW: el.width,
-      currentH: el.height,
-      elementId: el.id,
-      domElement: dom,
-    };
-  }, [onSelectElement, editingId]);
+  const handleStartMove = useCallback(
+    (e: React.PointerEvent, el: SlideElement) => {
+      if (e.button === 2 || editingId === el.id) return;
+      e.stopPropagation();
+      onSelectElement(el.id);
+      const dom = (e.currentTarget as HTMLElement).closest(
+        '[data-slide-element]',
+      ) as HTMLElement | null;
+      dragRef.current = {
+        type: 'move',
+        startX: e.clientX,
+        startY: e.clientY,
+        initialX: el.x,
+        initialY: el.y,
+        initialW: el.width,
+        initialH: el.height,
+        currentX: el.x,
+        currentY: el.y,
+        currentW: el.width,
+        currentH: el.height,
+        elementId: el.id,
+        domElement: dom,
+      };
+    },
+    [onSelectElement, editingId],
+  );
 
-  const handleStartResize = useCallback((e: React.PointerEvent, el: SlideElement, handle: ResizeHandle) => {
-    if (e.button === 2) return;
-    e.stopPropagation();
-    const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
-    dragRef.current = {
-      type: 'resize',
-      handle,
-      startX: e.clientX,
-      startY: e.clientY,
-      initialX: el.x,
-      initialY: el.y,
-      initialW: el.width,
-      initialH: el.height,
-      currentX: el.x,
-      currentY: el.y,
-      currentW: el.width,
-      currentH: el.height,
-      elementId: el.id,
-      domElement: dom,
-    };
-  }, []);
+  const handleStartResize = useCallback(
+    (e: React.PointerEvent, el: SlideElement, handle: ResizeHandle) => {
+      if (e.button === 2) return;
+      e.stopPropagation();
+      const dom = (e.currentTarget as HTMLElement).closest(
+        '[data-slide-element]',
+      ) as HTMLElement | null;
+      dragRef.current = {
+        type: 'resize',
+        handle,
+        startX: e.clientX,
+        startY: e.clientY,
+        initialX: el.x,
+        initialY: el.y,
+        initialW: el.width,
+        initialH: el.height,
+        currentX: el.x,
+        currentY: el.y,
+        currentW: el.width,
+        currentH: el.height,
+        elementId: el.id,
+        domElement: dom,
+      };
+    },
+    [],
+  );
 
   const handleStartRotate = useCallback((e: React.PointerEvent, el: SlideElement) => {
     if (e.button === 2 || !canvasRef.current) return;
@@ -299,7 +316,9 @@ export const SlideViewer = ({
     const scaleFactor = rect.width / 960;
     const centerX = rect.left + (el.x + el.width / 2) * scaleFactor;
     const centerY = rect.top + (el.y + el.height / 2) * scaleFactor;
-    const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
+    const dom = (e.currentTarget as HTMLElement).closest(
+      '[data-slide-element]',
+    ) as HTMLElement | null;
 
     dragRef.current = {
       type: 'rotate',
@@ -521,7 +540,8 @@ export const SlideViewer = ({
           className="relative aspect-[16/9] w-[960px] max-w-[960px] overflow-hidden rounded-lg border border-border bg-white shadow-xl dark:bg-slate-900"
           style={{
             backgroundColor: slide.background || undefined,
-            background: slide.backgroundGradient || slide.backgroundImage || slide.background || undefined,
+            background:
+              slide.backgroundGradient || slide.backgroundImage || slide.background || undefined,
           }}
         >
           {slide.elements.map(renderElement)}

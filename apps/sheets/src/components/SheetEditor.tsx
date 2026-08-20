@@ -1,9 +1,5 @@
 import { useUniver } from '@/hooks/useUniver';
-import {
-  FloatingChartOverlay,
-  type ChartPosition,
-  type ChartSpec,
-} from '@/modules/charts';
+import { FloatingChartOverlay, type ChartPosition, type ChartSpec } from '@/modules/charts';
 import type { FUniver, IWorkbookData } from '@univerjs/presets';
 import { useEffect, useState, type MutableRefObject } from 'react';
 
@@ -39,7 +35,7 @@ export const SheetEditor = ({
   onDeleteChart = () => {},
 }: SheetEditorProps) => {
   const [currentWorkbookData, setCurrentWorkbookData] = useState<IWorkbookData | undefined>(
-    initialData
+    initialData,
   );
 
   const handleInternalDataChange = (data: IWorkbookData) => {

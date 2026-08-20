@@ -14,7 +14,6 @@ const PRODUCTS: { kind: ShellKind; available: boolean; icon: string }[] = [
   { kind: 'slides', available: true, icon: 'presentation' },
 ];
 
-
 interface ProductSwitcherProps {
   current: ShellKind;
   accentVar: string;

@@ -8,10 +8,7 @@ export interface ChartTypeSelectorProps {
   onSelectType: (type: ChartType) => void;
 }
 
-export const ChartTypeSelector = ({
-  selectedType,
-  onSelectType,
-}: ChartTypeSelectorProps) => {
+export const ChartTypeSelector = ({ selectedType, onSelectType }: ChartTypeSelectorProps) => {
   const { t } = useTranslation('sheets');
 
   return (

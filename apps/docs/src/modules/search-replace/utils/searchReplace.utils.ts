@@ -19,13 +19,9 @@ export const DEFAULT_SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
 export const isFindAndReplaceAvailable = (editor: Editor | null): boolean =>
   isExtensionAvailable(editor, 'findAndReplace');
 
-export const getFindAndReplaceStorage = (
-  editor: Editor | null,
-): FindAndReplaceStorage | null => {
+export const getFindAndReplaceStorage = (editor: Editor | null): FindAndReplaceStorage | null => {
   if (!editor || !isFindAndReplaceAvailable(editor)) return null;
-  return (
-    (editor.storage.findAndReplace as FindAndReplaceStorage | undefined) ?? null
-  );
+  return (editor.storage.findAndReplace as FindAndReplaceStorage | undefined) ?? null;
 };
 
 export const scrollCurrentResultIntoView = (

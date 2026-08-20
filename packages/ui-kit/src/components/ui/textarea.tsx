@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { cn } from '../../cn';
 
-export const Textarea = ({
-  className,
-  ...props
-}: React.ComponentProps<'textarea'>) => {
+export const Textarea = ({ className, ...props }: React.ComponentProps<'textarea'>) => {
   return (
     <textarea
       data-slot="textarea"

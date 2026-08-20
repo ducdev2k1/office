@@ -100,18 +100,29 @@ export const ElementSelectionOverlay = ({
             >
               <Icon name="edit" size={13} />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="animate-in fade-in zoom-in-95 duration-100">
-              <DropdownMenuItem onClick={() => onUpdateElement?.({ stroke: undefined, strokeWidth: 0 })}>
+            <DropdownMenuContent
+              align="start"
+              className="animate-in fade-in zoom-in-95 duration-100"
+            >
+              <DropdownMenuItem
+                onClick={() => onUpdateElement?.({ stroke: undefined, strokeWidth: 0 })}
+              >
                 {t('formatting.noBorder')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onUpdateElement?.({ stroke: '#0f172a', strokeWidth: 2 })}>
+              <DropdownMenuItem
+                onClick={() => onUpdateElement?.({ stroke: '#0f172a', strokeWidth: 2 })}
+              >
                 {t('formatting.borderBlack')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onUpdateElement?.({ stroke: '#1e40af', strokeWidth: 3 })}>
+              <DropdownMenuItem
+                onClick={() => onUpdateElement?.({ stroke: '#1e40af', strokeWidth: 3 })}
+              >
                 {t('formatting.borderPrimary')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onUpdateElement?.({ stroke: '#dc2626', strokeWidth: 3 })}>
+              <DropdownMenuItem
+                onClick={() => onUpdateElement?.({ stroke: '#dc2626', strokeWidth: 3 })}
+              >
                 {t('formatting.borderRed')}
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -182,7 +193,7 @@ export const ElementSelectionOverlay = ({
                   className="flex h-5 w-5 cursor-grab items-center justify-center rounded-full border-2 border-[var(--o-kind-slides)] bg-white text-[var(--o-kind-slides)] shadow-md transition-transform duration-100 hover:scale-125 active:cursor-grabbing"
                 >
                   <svg viewBox="0 0 24 24" className="h-3 w-3 fill-current">
-                    <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+                    <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" />
                   </svg>
                 </div>
               }

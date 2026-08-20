@@ -38,7 +38,9 @@ export const OutlineList = ({ outline }: OutlineListProps) => {
           </button>
         ))
       ) : (
-        <p className="my-3.5 mx-2 text-muted-foreground text-xs leading-relaxed">{t('sidebar.emptyOutline')}</p>
+        <p className="my-3.5 mx-2 text-muted-foreground text-xs leading-relaxed">
+          {t('sidebar.emptyOutline')}
+        </p>
       )}
     </div>
   );

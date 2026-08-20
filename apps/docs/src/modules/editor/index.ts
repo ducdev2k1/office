@@ -11,6 +11,7 @@ export * from '@/modules/editor/components/PageStack';
 export * from '@/modules/editor/components/HeaderFooterInlineEditor';
 export * from '@/modules/editor/extensions/headerFooterTokens.extension';
 export * from '@/modules/editor/hooks/useDocsEditor';
+export * from '@/modules/editor/hooks/useCollabEditor';
 export * from '@/modules/editor/hooks/usePagination';
 export * from '@/modules/editor/hooks/useEditorActions';
 export * from '@/modules/editor/print/use-print-document';

@@ -26,14 +26,7 @@ export type SlideLineKind = 'straight' | 'arrow' | 'double-arrow' | 'elbow' | 'c
 export type SlideLineDash = 'solid' | 'dashed' | 'dotted';
 
 export type SlideTransitionType =
-  | 'none'
-  | 'fade'
-  | 'slide-left'
-  | 'slide-right'
-  | 'slide-up'
-  | 'zoom'
-  | 'flip-3d'
-  | 'cube-3d';
+  'none' | 'fade' | 'slide-left' | 'slide-right' | 'slide-up' | 'zoom' | 'flip-3d' | 'cube-3d';
 
 export type SlideAnimationType =
   | 'none'

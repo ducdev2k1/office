@@ -40,7 +40,12 @@ export const Statusbar = ({
           {t('statusbar.pages', { count: pageCount })}
         </span>
       )}
-      <span className={cn('inline-flex items-center gap-1', isNearQuota && 'text-destructive font-semibold')}>
+      <span
+        className={cn(
+          'inline-flex items-center gap-1',
+          isNearQuota && 'text-destructive font-semibold',
+        )}
+      >
         {t('statusbar.storageUsage', { size: (storageUsage / (1024 * 1024)).toFixed(1) })}
       </span>
       {saveState === 'saving' && (

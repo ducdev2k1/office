@@ -35,10 +35,7 @@ export const snapValueMm = (mm: number, unit: RulerUnit): number => {
   return Math.round(mm);
 };
 
-export const generateHorizontalTicks = (
-  paperWidthMm: number,
-  unit: RulerUnit,
-): RulerTick[] => {
+export const generateHorizontalTicks = (paperWidthMm: number, unit: RulerUnit): RulerTick[] => {
   const ticks: RulerTick[] = [];
 
   if (unit === 'cm') {
@@ -78,9 +75,6 @@ export const generateHorizontalTicks = (
   return ticks;
 };
 
-export const generateVerticalTicks = (
-  paperHeightMm: number,
-  unit: RulerUnit,
-): RulerTick[] => {
+export const generateVerticalTicks = (paperHeightMm: number, unit: RulerUnit): RulerTick[] => {
   return generateHorizontalTicks(paperHeightMm, unit);
 };

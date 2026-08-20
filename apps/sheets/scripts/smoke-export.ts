@@ -13,12 +13,21 @@ const main = async () => {
   });
   const page = await browser.newPage();
   const failures: string[] = [];
-  page.on('response', (res) => { if (res.status() >= 400) failures.push(`${res.status()} ${res.url()}`); });
+  page.on('response', (res) => {
+    if (res.status() >= 400) failures.push(`${res.status()} ${res.url()}`);
+  });
   page.on('pageerror', (err) => failures.push(`[pageerror] ${err.message}`));
 
   const client = await page.createCDPSession();
-  await client.send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: '/tmp/opencode/downloads' });
-  await client.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: '/tmp/opencode/downloads', eventsEnabled: true });
+  await client.send('Page.setDownloadBehavior', {
+    behavior: 'allow',
+    downloadPath: '/tmp/opencode/downloads',
+  });
+  await client.send('Browser.setDownloadBehavior', {
+    behavior: 'allow',
+    downloadPath: '/tmp/opencode/downloads',
+    eventsEnabled: true,
+  });
 
   await page.goto(URL, { waitUntil: 'networkidle2', timeout: 30000 });
   await sleep(1500);
@@ -30,7 +39,9 @@ const main = async () => {
 
   const clicked = await page.evaluate(() => {
     const btns = [...document.querySelectorAll('button')];
-    const btn = btns.find((b) => b.textContent?.includes('Export') || b.textContent?.includes('Xuất'));
+    const btn = btns.find(
+      (b) => b.textContent?.includes('Export') || b.textContent?.includes('Xuất'),
+    );
     if (!btn) return false;
     btn.click();
     return true;
@@ -59,4 +70,7 @@ const main = async () => {
   }
 };
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

@@ -192,9 +192,7 @@ export const HorizontalRuler = ({
               }}
               aria-label={t('ruler.leftIndent')}
             >
-              <div
-                className="w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-t-[7px] border-t-primary shadow-sm group-hover:brightness-110"
-              />
+              <div className="w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-t-[7px] border-t-primary shadow-sm group-hover:brightness-110" />
             </div>
           }
         />
@@ -215,9 +213,7 @@ export const HorizontalRuler = ({
               }}
               aria-label={t('ruler.rightIndent')}
             >
-              <div
-                className="w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-t-[7px] border-t-primary shadow-sm group-hover:brightness-110"
-              />
+              <div className="w-0 h-0 border-l-[4.5px] border-l-transparent border-r-[4.5px] border-r-transparent border-t-[7px] border-t-primary shadow-sm group-hover:brightness-110" />
             </div>
           }
         />

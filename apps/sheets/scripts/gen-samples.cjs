@@ -48,4 +48,7 @@ const main = async () => {
   await makeSample(path.join(dir, 'sample-med.xlsx'), { rows: 1000, cols: 10, sheets: 3 });
   await makeSample(path.join(dir, 'sample-large.xlsx'), { rows: 10000, cols: 20, sheets: 2 });
 };
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

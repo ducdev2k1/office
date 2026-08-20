@@ -74,7 +74,6 @@ const run = async () => {
   assert.equal(chart.dataRange, 'A1:C3');
 
   console.log('CHART ROUND-TRIP TEST PASS');
-
 };
 
 void run();

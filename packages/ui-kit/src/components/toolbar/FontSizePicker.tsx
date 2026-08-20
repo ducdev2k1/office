@@ -166,7 +166,9 @@ export const FontSizePicker = ({
                     )}
                   >
                     <span>{size}</span>
-                    {isSelected && <Icon name="check" size={13} className="shrink-0 text-primary" />}
+                    {isSelected && (
+                      <Icon name="check" size={13} className="shrink-0 text-primary" />
+                    )}
                   </Button>
                 );
               })}

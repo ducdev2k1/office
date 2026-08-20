@@ -11,7 +11,9 @@ const perf = async (file) => {
   let cells = 0;
   wb.eachSheet((ws) => {
     ws.eachRow({ includeEmpty: true }, (row) => {
-      row.eachCell({ includeEmpty: true }, () => { cells++; });
+      row.eachCell({ includeEmpty: true }, () => {
+        cells++;
+      });
     });
   });
   const t2 = Date.now();
@@ -29,7 +31,12 @@ const main = async () => {
   const dir = '/home/ducnd/my_project/office/apps/sheets/public';
   for (const f of ['sample-small.xlsx', 'sample-med.xlsx', 'sample-large.xlsx']) {
     const r = await perf(path.join(dir, f));
-    console.log(`${r.file}: ${r.sizeKB}KB, sheets=${r.sheets}, cells=${r.cells}, parse=${r.parseMs}ms, iterate=${r.iterateMs}ms`);
+    console.log(
+      `${r.file}: ${r.sizeKB}KB, sheets=${r.sheets}, cells=${r.cells}, parse=${r.parseMs}ms, iterate=${r.iterateMs}ms`,
+    );
   }
 };
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

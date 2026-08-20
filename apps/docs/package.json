@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc -p tsconfig.json && vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "build": "tsc -b && vite build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
@@ -14,6 +15,7 @@
     "@base-ui/react": "^1.7.0",
     "@floating-ui/react": "^0.27.20",
     "@office/app-shell": "workspace:*",
+    "@office/collab-core": "workspace:*",
     "@office/docx-io": "workspace:*",
     "@office/file-home": "workspace:*",
     "@office/fonts": "workspace:*",
@@ -21,6 +23,8 @@
     "@office/storage-adapter": "workspace:*",
     "@office/ui-kit": "workspace:*",
     "@tiptap/core": "^3.30.1",
+    "@tiptap/extension-collaboration": "^3.30.1",
+    "@tiptap/extension-collaboration-cursor": "^3.0.0",
     "@tiptap/extension-color": "^3.30.1",
     "@tiptap/extension-find-and-replace": "^3.30.1",
     "@tiptap/extension-font-family": "^3.30.1",
@@ -40,6 +44,7 @@
     "@tiptap/pm": "^3.30.1",
     "@tiptap/react": "^3.30.1",
     "@tiptap/starter-kit": "^3.30.1",
+    "@tiptap/y-tiptap": "^3.0.9",
     "@vitejs/plugin-react": "^5.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -47,7 +52,8 @@
     "react-dom": "^19.0.0",
     "react-hotkeys-hook": "^5.3.3",
     "react-router-dom": "^7.18.2",
-    "vite": "^6.0.0"
+    "vite": "^6.0.0",
+    "yjs": "^13.6.23"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

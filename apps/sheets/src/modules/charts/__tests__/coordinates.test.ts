@@ -1,9 +1,5 @@
 import assert from 'node:assert/strict';
-import {
-  applyDragDelta,
-  applyResizeDelta,
-  calculatePixelBounds,
-} from '../utils/coordinates.utils';
+import { applyDragDelta, applyResizeDelta, calculatePixelBounds } from '../utils/coordinates.utils';
 
 const run = () => {
   // Test calculatePixelBounds

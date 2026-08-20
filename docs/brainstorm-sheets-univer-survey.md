@@ -11,44 +11,50 @@ Mục tiêu giai đoạn này: **không code sản phẩm**, chỉ khảo sát +
 
 ## 2. Requirements (đã chốt với anh)
 
-| # | Yêu cầu | Giá trị |
-|---|---------|---------|
-| R1 | Chỉ khảo sát Univer trước, không implement sản phẩm | Anh chọn |
-| R2 | Khảo sát trên **v0.23.0 stable** + ngó 1.0-alpha.7 để chuẩn bị migration | Anh chọn |
-| R3 | Mức độ sâu: **prototype chạy thật + report** (không chỉ đọc docs) | Anh chọn |
-| R4 | Ràng buộc **cứng**: bản mở 100%, không Pro, không AGPL | Anh chọn + roadmap C2 |
-| R5 | Cộng tác Yjs: chỉ đánh giá khả năng ràng buộc, không implement | Anh chọn |
-| R6 | Lưu trữ MVP sau này: `storage-adapter` + IndexedDB (đã có driver) | Anh chọn |
-| R7 | Giao diện: dùng UI Univer mặc định, chỉ nhúng app-shell + theme iNET cơ bản | Anh chọn |
-| R8 | Đầu ra: report khoảng cách tính năng + quyết định go/no-go + đề xuất phạm vi MVP | Anh chọn |
+| #   | Yêu cầu                                                                          | Giá trị               |
+| --- | -------------------------------------------------------------------------------- | --------------------- |
+| R1  | Chỉ khảo sát Univer trước, không implement sản phẩm                              | Anh chọn              |
+| R2  | Khảo sát trên **v0.23.0 stable** + ngó 1.0-alpha.7 để chuẩn bị migration         | Anh chọn              |
+| R3  | Mức độ sâu: **prototype chạy thật + report** (không chỉ đọc docs)                | Anh chọn              |
+| R4  | Ràng buộc **cứng**: bản mở 100%, không Pro, không AGPL                           | Anh chọn + roadmap C2 |
+| R5  | Cộng tác Yjs: chỉ đánh giá khả năng ràng buộc, không implement                   | Anh chọn              |
+| R6  | Lưu trữ MVP sau này: `storage-adapter` + IndexedDB (đã có driver)                | Anh chọn              |
+| R7  | Giao diện: dùng UI Univer mặc định, chỉ nhúng app-shell + theme iNET cơ bản      | Anh chọn              |
+| R8  | Đầu ra: report khoảng cách tính năng + quyết định go/no-go + đề xuất phạm vi MVP | Anh chọn              |
 
 ## 3. Phát hiện chính từ research (08/2026)
 
 ### 3.1 Univer OSS vs Pro — đường phân chia rất rõ
 
 Bản OSS (Apache-2.0, repo `dream-num/univer`, 14K★) có:
+
 - Sheets core: workbook/worksheet/ranges/selection, formula engine, number formatting, filter/sort, data validation, conditional formatting, notes, hyperlinks, comments, find & replace, tables, drawing.
 - Plugin-first, presets (`@univerjs/preset-sheets-*`), Facade API, canvas rendering, headless Node.js, dark mode, theming.
 
 **Pro-only** (cần Univer server + Univer Commercial License):
+
 - **Import/export xlsx** (qua server exchange API) — bản mở không có chiều nào.
 - **Charts** (bản Pro dùng echarts bên trong), pivot tables, sparklines, outlines, shapes, in-cell graphics, data connectors.
 - **Collaboration thời gian thực** (OT, 200+ users), edit history, server-side calculation.
 
 ### 3.2 Version
+
 - Hiện tại `v0.23.0` (05/2026) — bản chính thức, presets đầy đủ.
 - `1.0.0-alpha.7` (07/2026) — đang tiến tới 1.0, **chưa stable**. Không dùng cho production.
 - Kết luận khảo sát: dùng v0.23, theo dõi changelog 1.0.
 
 ### 3.3 Charts
+
 - Pro dùng echarts (Apache-2.0) — xác nhận hướng roadmap dùng echarts thay thế.
 - Community có `xxs3315/univer-chart-plugin` (echarts-based, float chart) nhưng cũ (2024), chưa migrate sang sheets-drawing-ui → **cần đánh giá trong khảo sát**, không dùng mù.
 
 ### 3.4 Collaboration
+
 - Không có binding Yjs OSS công khai cho Univer Sheets. Chỉ có `@univerjs-pro/collaboration*` (commercial).
 - Tự ràng buộc Yjs vào Univer = dự án lớn (phải translate changeset → Y.Doc). → **Xác nhận hoãn**, roadmap đúng.
 
 ### 3.5 Xác nhận quan trọng
+
 - `xlsx-io` tự xây bằng **ExcelJS** (MIT) là bắt buộc, không có lựa chọn — Univer OSS không import/export xlsx.
 - HyperFormula: roadmap ghi cần kiểm chứng license — xếp vào khảo sát, nhưng formula engine OSS của Univer đã mạnh (v0.23 giảm 15.7% thời gian tính 500K formula), khả năng **không cần**.
 
@@ -56,25 +62,25 @@ Bản OSS (Apache-2.0, repo `dream-num/univer`, 14K★) có:
 
 ### 4.1 Phạm vi giai đoạn này
 
-| Phương án | Pros | Cons | Kết luận |
-|-----------|------|------|----------|
-| **A. Khảo sát + prototype chạy thật** | Có dữ liệu thật (bundle, load time, gap tính năng); quyết định go/no-go có căn cứ; giống tuần khảo sát roadmap | Tốn ~5–8 ngày | ✅ **Chọn** |
-| B. Chỉ đọc docs + bảng so sánh | Nhanh nhất | Không đo được hiệu năng/UX thật; rủi ro bỏ sót | ❌ |
-| C. So sánh nhiều engine (Luckysheet, Handsontable, x-spreadsheet) | Toàn diện | Roadmap đã chốt Univer; lãng phí thời gian | ❌ |
+| Phương án                                                         | Pros                                                                                                           | Cons                                           | Kết luận    |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
+| **A. Khảo sát + prototype chạy thật**                             | Có dữ liệu thật (bundle, load time, gap tính năng); quyết định go/no-go có căn cứ; giống tuần khảo sát roadmap | Tốn ~5–8 ngày                                  | ✅ **Chọn** |
+| B. Chỉ đọc docs + bảng so sánh                                    | Nhanh nhất                                                                                                     | Không đo được hiệu năng/UX thật; rủi ro bỏ sót | ❌          |
+| C. So sánh nhiều engine (Luckysheet, Handsontable, x-spreadsheet) | Toàn diện                                                                                                      | Roadmap đã chốt Univer; lãng phí thời gian     | ❌          |
 
 ### 4.2 Cộng tác
 
-| Phương án | Pros | Cons | Kết luận |
-|-----------|------|------|----------|
-| Hoãn Yjs (chỉ đánh giá khả năng) | Đúng roadmap, tránh phình phạm vi | Chưa giải quyết được từ giờ | ✅ **Chọn** |
-| Làm Yjs ngay | — | Không có binding sẵn, ràng buộc changeset → Y.Doc là dự án 4–6 tuần riêng | ❌ |
+| Phương án                        | Pros                              | Cons                                                                      | Kết luận    |
+| -------------------------------- | --------------------------------- | ------------------------------------------------------------------------- | ----------- |
+| Hoãn Yjs (chỉ đánh giá khả năng) | Đúng roadmap, tránh phình phạm vi | Chưa giải quyết được từ giờ                                               | ✅ **Chọn** |
+| Làm Yjs ngay                     | —                                 | Không có binding sẵn, ràng buộc changeset → Y.Doc là dự án 4–6 tuần riêng | ❌          |
 
 ### 4.3 Giao diện
 
-| Phương án | Pros | Cons | Kết luận |
-|-----------|------|------|----------|
+| Phương án                                          | Pros                      | Cons                                    | Kết luận            |
+| -------------------------------------------------- | ------------------------- | --------------------------------------- | ------------------- |
 | UI Univer mặc định + app-shell + theme iNET cơ bản | Nhanh, MVP đúng trọng tâm | R9 (thống nhất giao diện) chưa trọn vẹn | ✅ **Chọn cho MVP** |
-| Ghi đè sâu theme Univer | Thống nhất ngay | Tốn thời gian lớn, chưa cần | ❌ (để sau) |
+| Ghi đè sâu theme Univer                            | Thống nhất ngay           | Tốn thời gian lớn, chưa cần             | ❌ (để sau)         |
 
 ## 5. Giải pháp đề xuất (final)
 
@@ -88,18 +94,18 @@ Bản OSS (Apache-2.0, repo `dream-num/univer`, 14K★) có:
 
 ### Checklist khảo sát (đo gap OSS vs target)
 
-| Nhóm | Target iNET (giả định MVP) | Univer OSS v0.23 | Kết luận khảo sát |
-|------|---------------------------|------------------|-------------------|
-| Edit cơ bản + formula | ✅ | ✅ Có | Cần kiểm chứng loại formula |
-| Number format, filter/sort, data validation, conditional formatting | ✅ | ✅ Có | — |
-| Hyperlink, comment, find & replace, notes, tables | ✅ | ✅ Có | — |
-| **Import/export .xlsx** | ✅ | ❌ **Pro-only** | **Bắt buộc xlsx-io (ExcelJS)** |
-| **Charts** | ✅ | ❌ Pro-only (echarts) | Community plugin hoặc tự build |
-| **Print/PDF** | tuỳ phạm vi | ❌ Pro-only | Quyết lại scope |
-| **Collaboration** | hoãn | ❌ Pro-only | Hoãn, không khảo sát sâu |
-| **Pivot** | tuỳ phạm vi | ❌ Pro-only | Quyết lại scope |
-| i18n | ✅ | ✅ Có locale | Kiểm chứng VN/EN |
-| Dark mode | ✅ | ✅ Có | — |
+| Nhóm                                                                | Target iNET (giả định MVP) | Univer OSS v0.23      | Kết luận khảo sát              |
+| ------------------------------------------------------------------- | -------------------------- | --------------------- | ------------------------------ |
+| Edit cơ bản + formula                                               | ✅                         | ✅ Có                 | Cần kiểm chứng loại formula    |
+| Number format, filter/sort, data validation, conditional formatting | ✅                         | ✅ Có                 | —                              |
+| Hyperlink, comment, find & replace, notes, tables                   | ✅                         | ✅ Có                 | —                              |
+| **Import/export .xlsx**                                             | ✅                         | ❌ **Pro-only**       | **Bắt buộc xlsx-io (ExcelJS)** |
+| **Charts**                                                          | ✅                         | ❌ Pro-only (echarts) | Community plugin hoặc tự build |
+| **Print/PDF**                                                       | tuỳ phạm vi                | ❌ Pro-only           | Quyết lại scope                |
+| **Collaboration**                                                   | hoãn                       | ❌ Pro-only           | Hoãn, không khảo sát sâu       |
+| **Pivot**                                                           | tuỳ phạm vi                | ❌ Pro-only           | Quyết lại scope                |
+| i18n                                                                | ✅                         | ✅ Có locale          | Kiểm chứng VN/EN               |
+| Dark mode                                                           | ✅                         | ✅ Có                 | —                              |
 
 ## 6. Implementation considerations & risks
 

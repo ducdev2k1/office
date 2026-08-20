@@ -1,10 +1,10 @@
 ---
 phase: 7
-title: "Line-Level Split"
+title: 'Line-Level Split'
 status: done
 priority: P2
 dependencies: [2]
-effort: "4-6d"
+effort: '4-6d'
 ---
 
 # Phase 7: Line-Level Split
@@ -19,7 +19,7 @@ Red team phát hiện mitigation IME của bản trước **dựa trên hai API 
 
 ### 1. `ignoreSelection` là no-op
 
-Bản trước ghi `ignoreSelection: true` với chú thích *"ProseMirror bỏ qua khi tính selection"*. **Sai.** Doc chính thức: *"selection changes **inside the widget** are ignored, and don't cause ProseMirror to try and re-sync the selection"* — chỉ có tác dụng khi widget DOM chứa nội dung **editable**. Bản trước đã set `contentEditable = 'false'` nên `ignoreSelection` đóng góp **zero** bảo vệ IME.
+Bản trước ghi `ignoreSelection: true` với chú thích _"ProseMirror bỏ qua khi tính selection"_. **Sai.** Doc chính thức: _"selection changes **inside the widget** are ignored, and don't cause ProseMirror to try and re-sync the selection"_ — chỉ có tác dụng khi widget DOM chứa nội dung **editable**. Bản trước đã set `contentEditable = 'false'` nên `ignoreSelection` đóng góp **zero** bảo vệ IME.
 
 Nghĩa là rủi ro "Cao" trong risk table của bản trước **thực chất chưa có mitigation nào**.
 
@@ -30,6 +30,7 @@ Bản trước dùng trực tiếp giá trị trả về như một position. Ph
 ### 3. Plugin `apply` không map qua `tr.mapping`
 
 `pagination.utils.ts:102-105`:
+
 ```ts
 apply(tr, value) {
   const meta = tr.getMeta('paginationBreaks');
@@ -42,13 +43,14 @@ Position trong `breaks` không được map khi document thay đổi. Với bloc
 **Failure scenario cụ thể với IME tiếng Việt:** gõ `dduongwf` giữa paragraph gần biên trang. `runPagination` bail suốt composition (`usePagination.ts:33-36` guard `view.composing`), nên spacer đứng yên ở position cũ trong khi text dịch phải 1..8 vị trí. `decorations(state)` tái tạo widget tại offset stale mỗi lần re-render, thả một `<div>` `display:block` `contenteditable=false` **vào giữa composition range**. Chromium huỷ composition → user mất dấu thanh hoặc cả âm tiết.
 
 **Mitigation thật:**
+
 - Map `breaks` qua `tr.mapping` trong `apply`.
 - **Tắt hẳn inline spacer khi `view.composing === true`** — chấp nhận layout hơi nhảy khi gõ, đổi lấy IME không vỡ.
 - Bỏ `ignoreSelection` khỏi cột mitigation (giữ hay bỏ trong code đều được, nhưng đừng tính nó là bảo vệ).
 
 ## ⚠️ Cost model của bản trước sai
 
-Bản trước ghi *"Mỗi trang có tối đa 1 block giao ranh giới → O(pages). Doc 50 trang = 50 lần đo, không phải 5000."*
+Bản trước ghi _"Mỗi trang có tối đa 1 block giao ranh giới → O(pages). Doc 50 trang = 50 lần đo, không phải 5000."_
 
 Đếm nhầm đơn vị. Mỗi "lần đo" là: TreeWalker toàn bộ text node của block + `getClientRects()` từng text node + `posAtCoords()` **từng line box**.
 
@@ -59,6 +61,7 @@ Và toàn bộ chạy trong `runPagination` được rAF gọi trên **mỗi tra
 Cost model đúng: **O(Σ số dòng của các block cắt ngang)**.
 
 Mitigation:
+
 - Cache line measurement theo `(nodeKey, width)`, invalidate khi node đổi.
 - **Trần cứng**: block có > N dòng → bỏ line-split, fallback block-level.
 - Benchmark bắt buộc: "1 bảng 50 trang" và "1 paragraph 40 trang".
@@ -66,12 +69,14 @@ Mitigation:
 ## Requirements
 
 **Functional**
+
 - Đoạn văn không vừa chỗ trống → cắt tại ranh giới dòng gần nhất, không mất chữ.
 - Đoạn văn dài hơn cả trang → trải nhiều trang.
 - Không cắt giữa một dòng.
 - Bản in tự động đúng theo — P4 không cần sửa gì (sliding-window không quan tâm break đến từ đâu).
 
 **Non-functional**
+
 - Gõ tiếng Việt (IME) quanh điểm ngắt trang không lỗi caret, không nuốt ký tự, không mất dấu.
 - Doc 50 trang không lag rõ rệt. Bảng 50 trang và paragraph 40 trang cũng vậy.
 - Fallback an toàn: đo thất bại → block-level cho block đó.
@@ -106,13 +111,17 @@ for each block:
 ### Decoration
 
 ```ts
-Decoration.widget(pos, () => {
-  const el = document.createElement('div');
-  el.className = 'page-break-spacer-inline';
-  el.style.height = `${spacer}px`;
-  el.contentEditable = 'false';
-  return el;
-}, { side: -1, key: `inline-break-${pos}:${spacer}` })
+Decoration.widget(
+  pos,
+  () => {
+    const el = document.createElement('div');
+    el.className = 'page-break-spacer-inline';
+    el.style.height = `${spacer}px`;
+    el.contentEditable = 'false';
+    return el;
+  },
+  { side: -1, key: `inline-break-${pos}:${spacer}` },
+);
 ```
 
 `side: -1` để widget đứng trước vị trí. CSS `.page-break-spacer-inline { display: block; width: 100%; user-select: none; }`.
@@ -181,14 +190,14 @@ Kích hoạt block-level khi: `posAtCoords` trả `null`; pos map ra ngoài `[no
 
 ## Risk Assessment
 
-| Rủi ro | Mức | Mitigation |
-|---|---|---|
-| Inline widget phá caret / IME tiếng Việt | **Cao** | Map `tr.mapping` + tắt spacer khi `composing`. **KHÔNG** tính `ignoreSelection` là mitigation — nó là no-op khi `contentEditable=false`. Bước 12 là gate |
-| Decoration position stale khi document đổi | **Cao** | Fix `apply` ở bước 1, trước cả line-level |
-| `posAtCoords` không ổn định ở biên | **Cao** | `?.pos` + null check + fallback block-level |
-| Hiệu năng: 1 block cắt ngang nhiều ranh giới | **Cao** | Cost model đúng là O(Σ dòng block cắt ngang). Cache + trần cứng + benchmark bảng 50 trang |
-| Vòng lặp reflow: chèn spacer → layout đổi → đo lại | Cao | rAF debounce sẵn có + so `breaks` trước khi dispatch + guard đếm vòng, dừng sau 3 lần không hội tụ |
-| Rect gom sai dòng do sai số float | Trung bình | Epsilon 1px |
-| Ảnh/inline-block làm rect bất thường | Trung bình | Fallback block-level khi phát hiện rect chồng lấn |
+| Rủi ro                                             | Mức        | Mitigation                                                                                                                                               |
+| -------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inline widget phá caret / IME tiếng Việt           | **Cao**    | Map `tr.mapping` + tắt spacer khi `composing`. **KHÔNG** tính `ignoreSelection` là mitigation — nó là no-op khi `contentEditable=false`. Bước 12 là gate |
+| Decoration position stale khi document đổi         | **Cao**    | Fix `apply` ở bước 1, trước cả line-level                                                                                                                |
+| `posAtCoords` không ổn định ở biên                 | **Cao**    | `?.pos` + null check + fallback block-level                                                                                                              |
+| Hiệu năng: 1 block cắt ngang nhiều ranh giới       | **Cao**    | Cost model đúng là O(Σ dòng block cắt ngang). Cache + trần cứng + benchmark bảng 50 trang                                                                |
+| Vòng lặp reflow: chèn spacer → layout đổi → đo lại | Cao        | rAF debounce sẵn có + so `breaks` trước khi dispatch + guard đếm vòng, dừng sau 3 lần không hội tụ                                                       |
+| Rect gom sai dòng do sai số float                  | Trung bình | Epsilon 1px                                                                                                                                              |
+| Ảnh/inline-block làm rect bất thường               | Trung bình | Fallback block-level khi phát hiện rect chồng lấn                                                                                                        |
 
 **Gate:** bước 12 (IME tiếng Việt) fail và không fix được trong 1 ngày → **dừng P7**, giữ block-level, báo user. Ngắt trang xấu hơn Google Docs vẫn tốt hơn editor gõ tiếng Việt bị lỗi.

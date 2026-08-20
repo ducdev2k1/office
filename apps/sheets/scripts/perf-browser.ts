@@ -21,9 +21,9 @@ const main = async () => {
   const bootMetrics = await page.evaluate(() => ({
     jsHeap: (performance as any).memory?.usedJSHeapSize ?? 0,
     resources: performance.getEntriesByType('resource').length,
-    transferred: performance.getEntriesByType('resource').reduce(
-      (a, e: any) => a + (e.transferSize || 0), 0,
-    ),
+    transferred: performance
+      .getEntriesByType('resource')
+      .reduce((a, e: any) => a + (e.transferSize || 0), 0),
   }));
 
   const input = await page.$('input[type=file]');
@@ -38,10 +38,26 @@ const main = async () => {
   }));
 
   console.log('initial load (networkidle-load):', loadMs, 'ms');
-  console.log('after boot: jsHeap', Math.round(bootMetrics.jsHeap / 1048576), 'MB, resources', bootMetrics.resources, 'transferred', Math.round(bootMetrics.transferred / 1024), 'KB');
+  console.log(
+    'after boot: jsHeap',
+    Math.round(bootMetrics.jsHeap / 1048576),
+    'MB, resources',
+    bootMetrics.resources,
+    'transferred',
+    Math.round(bootMetrics.transferred / 1024),
+    'KB',
+  );
   console.log('xlsx med load+render:', afterLoadMs, 'ms');
-  console.log('after xlsx: jsHeap', Math.round(afterMetrics.jsHeap / 1048576), 'MB, canvas', afterMetrics.canvas);
+  console.log(
+    'after xlsx: jsHeap',
+    Math.round(afterMetrics.jsHeap / 1048576),
+    'MB, canvas',
+    afterMetrics.canvas,
+  );
   await browser.close();
 };
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

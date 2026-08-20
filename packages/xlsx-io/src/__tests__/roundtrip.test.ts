@@ -16,7 +16,8 @@ const loadBuffer = (file: string): ArrayBuffer => {
 
 const countCells = (data: IWorkbookData) =>
   Object.values(data.sheets).reduce(
-    (acc, s) => acc + Object.values(s.cellData ?? {}).reduce((a, row) => a + Object.keys(row).length, 0),
+    (acc, s) =>
+      acc + Object.values(s.cellData ?? {}).reduce((a, row) => a + Object.keys(row).length, 0),
     0,
   );
 
@@ -65,4 +66,7 @@ const run = async () => {
   console.log('ROUND-TRIP PASS (fidelity >= 95%)');
 };
 
-run().catch((e) => { console.error(e); process.exit(1); });
+run().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

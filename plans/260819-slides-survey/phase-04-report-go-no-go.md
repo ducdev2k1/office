@@ -26,16 +26,27 @@
 # Báo cáo Khảo sát Kỹ thuật Slides — Giai đoạn 7
 
 ## 1. Tóm tắt điều hành
+
 ## 2. Kết quả Khảo sát Thực nghiệm
+
 ### 2.1 Cấu trúc Prototype & Tích hợp Monorepo
+
 ### 2.2 Đánh giá Pipeline Đọc & Render PPTX
+
 ### 2.3 Đo lường Hiệu năng (Bundle Size, Load Latency, Memory)
+
 ### 2.4 Đánh giá Độ chính xác Hiển thị (Fidelity & Font tiếng Việt)
+
 ### 2.5 Khả năng Tùy biến Giao diện theo Token iNET & Shadcn UI
+
 ### 2.6 Khả năng Xuất ngược (Export Round-trip)
+
 ## 3. Bảng Gap Checklist Tính năng
+
 ## 4. Quản trị Rủi ro & Phương án Dự phòng
+
 ## 5. Quyết định Go/No-Go
+
 ## 6. Đề xuất Phạm vi và Kế hoạch MVP Slides
 ```
 

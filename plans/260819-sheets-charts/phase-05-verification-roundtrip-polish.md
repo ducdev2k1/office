@@ -1,18 +1,20 @@
 ---
 phase: 5
-title: "Verification, Round-Trip Tests, E2E Smoke Tests & Polish"
+title: 'Verification, Round-Trip Tests, E2E Smoke Tests & Polish'
 status: completed
 priority: P1
-effort: "4h"
-dependencies: ["1", "2", "3", "4"]
+effort: '4h'
+dependencies: ['1', '2', '3', '4']
 ---
 
 # Phase 5: Verification, Round-Trip Tests, E2E Smoke Tests & Polish
 
 ## Overview
+
 Tiến hành kiểm thử toàn diện từ unit tests, kiểm thử round-trip (web -> xlsx -> web), kiểm thử giao diện tự động (Puppeteer E2E smoke tests), tối ưu hiệu năng render khi trang tính có nhiều biểu đồ hoặc nhiều dòng dữ liệu, kiểm tra i18n đầy đủ cho 2 ngôn ngữ VI và EN, và hoàn thiện tài liệu hướng dẫn.
 
 ## Requirements
+
 - **Kiểm thử tự động (Unit & Integration Tests)**:
   - Unit tests cho các hàm chuyển đổi toạ độ, phân tích dải ô tính (`dataRangeParser`), sinh cấu hình ECharts option.
   - Round-trip test cho `@office/xlsx-io`: Import file chứa biểu đồ -> Export ra buffer -> Import lại -> Đối chiếu `fidelity` kiểu biểu đồ, tiêu đề, dải ô và toạ độ đạt 100%.
@@ -29,6 +31,7 @@ Tiến hành kiểm thử toàn diện từ unit tests, kiểm thử round-trip 
   - Đạt chuẩn accessibility (phím Esc đóng sidebar, phím tắt Delete xoá chart khi đang focus).
 
 ## Related Code Files
+
 - Create:
   - `apps/sheets/src/modules/charts/__tests__/dataRangeParser.test.ts`
   - `apps/sheets/src/modules/charts/__tests__/coordinates.test.ts`
@@ -40,6 +43,7 @@ Tiến hành kiểm thử toàn diện từ unit tests, kiểm thử round-trip 
   - `docs/report-sheets-charts.md` (báo cáo hoàn thành tính năng)
 
 ## Implementation Steps
+
 1. Bổ sung các bản dịch đa ngôn ngữ cho toàn bộ UI Biểu đồ vào `packages/i18n`.
 2. Chạy bộ unit tests cho `apps/sheets` và `packages/xlsx-io`.
 3. Viết kịch bản kiểm thử tự động `smoke-test-charts.cjs` sử dụng Puppeteer để chạy thử trên trình duyệt headless.
@@ -48,6 +52,7 @@ Tiến hành kiểm thử toàn diện từ unit tests, kiểm thử round-trip 
 6. Soạn thảo báo cáo kỹ thuật `docs/report-sheets-charts.md` tổng kết kết quả đạt được.
 
 ## Success Criteria
+
 - [ ] 100% Typecheck và Build thành công trên toàn bộ workspace monorepo.
 - [ ] Toàn bộ unit tests và round-trip test cho ChartML pass 100%.
 - [ ] Puppeteer smoke test chạy trơn tru với 0 lỗi console/HTTP.

@@ -1,10 +1,10 @@
 ---
 phase: 2
-title: "Engine Seam Extraction"
+title: 'Engine Seam Extraction'
 status: done
 priority: P1
 dependencies: [1]
-effort: "1.5-2d"
+effort: '1.5-2d'
 ---
 
 # Phase 2: Engine Seam Extraction
@@ -21,9 +21,10 @@ Thứ tự này đặt rủi ro kiến trúc lớn nhất ở ngày thứ 2, kh�
 
 ## ⚠️ Bỏ ràng buộc "zero behavior change"
 
-Phiên bản trước của phase này yêu cầu *"Zero behavior change… engine hiện tại là source of truth"* và liệt một fixture case *"Block cao hơn 1 trang → vòng while đẩy nhiều trang"*. Red team chứng minh điều đó sẽ **hợp thức hoá một bug thành spec**.
+Phiên bản trước của phase này yêu cầu _"Zero behavior change… engine hiện tại là source of truth"_ và liệt một fixture case _"Block cao hơn 1 trang → vòng while đẩy nhiều trang"_. Red team chứng minh điều đó sẽ **hợp thức hoá một bug thành spec**.
 
 `pagination.utils.ts:80-92`:
+
 ```ts
 if (bottom - pageTop > usable) {
   breaks.push(offset);                                    // push ĐÚNG 1 break
@@ -39,11 +40,13 @@ Hôm nay vô hại — màn hình thiếu nền trang là lỗi thẩm mỹ, cò
 ## Requirements
 
 **Functional**
+
 - `pageCount` phản ánh số trang engine thực sự layout, kể cả trang do vòng `while` nhảy qua.
 - `contentOffsets` đọc từ vị trí DOM thật, không cộng dồn model.
 - Thuật toán trở thành hàm thuần, test được không cần DOM.
 
 **Non-functional**
+
 - `noUncheckedIndexedAccess: true` (`tsconfig.base.json:17`) → mọi `blocks[i]`, `contentOffsets[i]` là `T | undefined`, phải xử lý tường minh.
 
 ## Architecture
@@ -55,7 +58,7 @@ export interface PageBreaks {
   breaks: number[];
   spacers: number[];
   forced: boolean[];
-  contentOffsets: number[];   // MỚI — 1 entry MỖI TRANG, kể cả trang while nhảy qua
+  contentOffsets: number[]; // MỚI — 1 entry MỖI TRANG, kể cả trang while nhảy qua
 }
 ```
 
@@ -81,9 +84,12 @@ Dựng bằng tay (không cần abstraction, code vứt đi):
 
 ```html
 <div id="print-root">
-  <div class="print-page">                        <!-- mm units, margin/padding = 0 -->
-    <div class="page-viewport is-paged">          <!-- BẮT BUỘC: giữ cascade -->
-      <div class="print-clip">                    <!-- chỉ overflow:hidden + height -->
+  <div class="print-page">
+    <!-- mm units, margin/padding = 0 -->
+    <div class="page-viewport is-paged">
+      <!-- BẮT BUỘC: giữ cascade -->
+      <div class="print-clip">
+        <!-- chỉ overflow:hidden + height -->
         <div class="print-content" style="top:-{offset}px">CLONE</div>
       </div>
     </div>
@@ -92,6 +98,7 @@ Dựng bằng tay (không cần abstraction, code vứt đi):
 ```
 
 Checklist gate (**tất cả** phải pass):
+
 - [ ] `clone.scrollHeight === editor.view.dom.scrollHeight` — một assert này bắt trọn class bug cascade
 - [ ] `getComputedStyle(clone).paddingLeft === getComputedStyle(view.dom).paddingLeft`
 - [ ] Doc **40 trang** (fixture từ P1): marker `[[N]]` liền mạch, đủ, không trùng
@@ -110,13 +117,15 @@ export interface BlockMeasurement {
   height: number;
   marginTop: number;
   marginBottom: number;
-  domTop: number;        // offsetTop thật, cho contentOffsets
+  domTop: number; // offsetTop thật, cho contentOffsets
 }
 
 export const computeBreaksFromMeasurements = (
   blocks: BlockMeasurement[],
   metrics: PageMetrics,
-): PageBreaks => { /* pure */ };
+): PageBreaks => {
+  /* pure */
+};
 
 export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreaks => {
   const root = view.dom as HTMLElement;
@@ -181,10 +190,10 @@ Lưu ý: `schedulePagination(true)` hiện **không đảm bảo chạy đồng 
 
 ## Risk Assessment
 
-| Rủi ro | Mức | Mitigation |
-|---|---|---|
-| Spike gate fail → kiến trúc sliding-window không dùng được | **Cao** | Đó chính là mục đích của gate — fail sớm ở ngày 2 rẻ hơn ngày 5. Dừng và bàn lại |
-| Drift `offsetHeight` vẫn còn sau khi đổi sang `offsetTop` | Cao | Verify trên doc 40 trang, không phải 2-3 trang; ngưỡng < 1px |
-| Fix `pageCount` làm đổi `--stack-h` → layout màn hình nhảy | Trung bình | Đây là fix đúng (hôm nay đang thiếu nền trang); verify bằng mắt |
-| Fixture viết theo hành vi mình *nghĩ* | Trung bình | Bước 7 chạy trên code cũ trước, nhưng điều tra chênh lệch thay vì mặc định chiều code |
-| `noUncheckedIndexedAccess` làm pure function rườm rà | Thấp | Dùng `at()` hoặc destructure có default; không tắt flag |
+| Rủi ro                                                     | Mức        | Mitigation                                                                            |
+| ---------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------- |
+| Spike gate fail → kiến trúc sliding-window không dùng được | **Cao**    | Đó chính là mục đích của gate — fail sớm ở ngày 2 rẻ hơn ngày 5. Dừng và bàn lại      |
+| Drift `offsetHeight` vẫn còn sau khi đổi sang `offsetTop`  | Cao        | Verify trên doc 40 trang, không phải 2-3 trang; ngưỡng < 1px                          |
+| Fix `pageCount` làm đổi `--stack-h` → layout màn hình nhảy | Trung bình | Đây là fix đúng (hôm nay đang thiếu nền trang); verify bằng mắt                       |
+| Fixture viết theo hành vi mình _nghĩ_                      | Trung bình | Bước 7 chạy trên code cũ trước, nhưng điều tra chênh lệch thay vì mặc định chiều code |
+| `noUncheckedIndexedAccess` làm pure function rườm rà       | Thấp       | Dùng `at()` hoặc destructure có default; không tắt flag                               |

@@ -35,6 +35,7 @@ apps/sheets/src/
 ```
 
 **Univer init pattern** (theo docs v0.23):
+
 ```ts
 import { LocaleType, mergeLocales } from '@univerjs/core';
 import { createUniver, UniverSheetsCorePreset } from '@univerjs/preset-sheets-core';
@@ -45,14 +46,12 @@ import UniverPresetSheetsUIEnUS from '@univerjs/preset-sheets-ui/locale/en-US';
 const { univerAPI } = createUniver({
   locale: LocaleType.En_US,
   locales: mergeLocales(UniverPresetSheetsCoreEnUS, UniverPresetSheetsUIEnUS),
-  presets: [
-    UniverSheetsCorePreset(),
-    UniverSheetsUIPreset(),
-  ],
+  presets: [UniverSheetsCorePreset(), UniverSheetsUIPreset()],
 });
 ```
 
 **useUniver hook**:
+
 ```ts
 export const useUniver = (containerRef: RefObject<HTMLDivElement>) => {
   useEffect(() => {
@@ -80,10 +79,12 @@ export const useUniver = (containerRef: RefObject<HTMLDivElement>) => {
    - Tao `src/main.tsx`, `src/App.tsx` co ban.
 
 2. **Cai Univer packages** (trong `apps/sheets/`):
+
    ```bash
    pnpm add @univerjs/core@0.23.0 @univerjs/sheets@0.23.0 @univerjs/sheets-ui@0.23.0 @univerjs/ui@0.23.0 @univerjs/engine-rendering@0.23.0
    pnpm add @univerjs/preset-sheets-core@0.23.0 @univerjs/preset-sheets-ui@0.23.0
    ```
+
    Luu y: tat ca phai cung version 0.23.0, khong duoc mixed.
 
 3. **Tao `components/SheetEditor.tsx`**: mount Univer canvas vao `div ref`, lay `univerAPI` tu hook.

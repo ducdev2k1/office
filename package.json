@@ -7,9 +7,9 @@
   "scripts": {
     "dev": "turbo dev",
     "dev:docs": "pnpm --filter @office/docs dev",
+    "dev:collab": "pnpm --filter @office/collab-server dev",
     "dev:sheets": "pnpm --filter @office/sheets dev",
     "dev:slides": "pnpm --filter @office/slides dev",
-
     "build": "turbo build",
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",

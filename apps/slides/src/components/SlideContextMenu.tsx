@@ -89,7 +89,10 @@ export const SlideContextMenu = ({
         <>
           <button
             type="button"
-            onClick={() => { onCut(); onClose(); }}
+            onClick={() => {
+              onCut();
+              onClose();
+            }}
             className="flex w-full items-center justify-between rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <div className="flex items-center gap-2">
@@ -101,7 +104,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onCopy(); onClose(); }}
+            onClick={() => {
+              onCopy();
+              onClose();
+            }}
             className="flex w-full items-center justify-between rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <div className="flex items-center gap-2">
@@ -114,7 +120,10 @@ export const SlideContextMenu = ({
           {canPaste && (
             <button
               type="button"
-              onClick={() => { onPaste(); onClose(); }}
+              onClick={() => {
+                onPaste();
+                onClose();
+              }}
               className="flex w-full items-center justify-between rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
             >
               <div className="flex items-center gap-2">
@@ -127,7 +136,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onDuplicate(); onClose(); }}
+            onClick={() => {
+              onDuplicate();
+              onClose();
+            }}
             className="flex w-full items-center justify-between rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <div className="flex items-center gap-2">
@@ -139,7 +151,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onDelete(); onClose(); }}
+            onClick={() => {
+              onDelete();
+              onClose();
+            }}
             className="flex w-full items-center justify-between rounded px-2 py-1.5 text-destructive hover:bg-destructive/10"
           >
             <div className="flex items-center gap-2">
@@ -154,7 +169,10 @@ export const SlideContextMenu = ({
           {targetElement.type === 'image' && onReplaceImage && (
             <button
               type="button"
-              onClick={() => { onReplaceImage(); onClose(); }}
+              onClick={() => {
+                onReplaceImage();
+                onClose();
+              }}
               className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
             >
               <Icon name="image" size={13} />
@@ -164,7 +182,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onRotate(90); onClose(); }}
+            onClick={() => {
+              onRotate(90);
+              onClose();
+            }}
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="rotate-cw" size={13} />
@@ -173,7 +194,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onCenter('horizontal'); onClose(); }}
+            onClick={() => {
+              onCenter('horizontal');
+              onClose();
+            }}
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="align-center" size={13} />
@@ -182,7 +206,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onCenter('vertical'); onClose(); }}
+            onClick={() => {
+              onCenter('vertical');
+              onClose();
+            }}
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="align-center" size={13} />
@@ -193,7 +220,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onBringToFront(); onClose(); }}
+            onClick={() => {
+              onBringToFront();
+              onClose();
+            }}
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="layers" size={13} />
@@ -202,7 +232,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onSendToBack(); onClose(); }}
+            onClick={() => {
+              onSendToBack();
+              onClose();
+            }}
             className="flex w-full items-center gap-2 rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icon name="layers" size={13} />
@@ -213,7 +246,10 @@ export const SlideContextMenu = ({
         <>
           <button
             type="button"
-            onClick={() => { onAddSlide(); onClose(); }}
+            onClick={() => {
+              onAddSlide();
+              onClose();
+            }}
             className="flex w-full items-center justify-between rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <div className="flex items-center gap-2">
@@ -225,7 +261,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onDuplicateSlide(); onClose(); }}
+            onClick={() => {
+              onDuplicateSlide();
+              onClose();
+            }}
             className="flex w-full items-center justify-between rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
           >
             <div className="flex items-center gap-2">
@@ -237,7 +276,10 @@ export const SlideContextMenu = ({
           {canPaste && (
             <button
               type="button"
-              onClick={() => { onPaste(); onClose(); }}
+              onClick={() => {
+                onPaste();
+                onClose();
+              }}
               className="flex w-full items-center justify-between rounded px-2 py-1.5 hover:bg-accent hover:text-accent-foreground"
             >
               <div className="flex items-center gap-2">
@@ -251,7 +293,10 @@ export const SlideContextMenu = ({
           {canDeleteSlide && (
             <button
               type="button"
-              onClick={() => { onDeleteSlide(); onClose(); }}
+              onClick={() => {
+                onDeleteSlide();
+                onClose();
+              }}
               className="flex w-full items-center justify-between rounded px-2 py-1.5 text-destructive hover:bg-destructive/10"
             >
               <div className="flex items-center gap-2">
@@ -265,7 +310,10 @@ export const SlideContextMenu = ({
 
           <button
             type="button"
-            onClick={() => { onPresent(); onClose(); }}
+            onClick={() => {
+              onPresent();
+              onClose();
+            }}
             className="flex w-full items-center justify-between rounded px-2 py-1.5 font-medium text-[var(--o-kind-slides)] hover:bg-accent"
           >
             <div className="flex items-center gap-2">

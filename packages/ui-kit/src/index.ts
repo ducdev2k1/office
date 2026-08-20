@@ -28,4 +28,3 @@ export * from './components/ui/textarea';
 export * from './components/toolbar/ToolbarButton';
 export * from './components/toolbar/ColorPalettePopover';
 export * from './components/toolbar/FontSizePicker';
-

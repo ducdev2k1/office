@@ -99,18 +99,12 @@ export const FormulaTools = ({
       </DropdownMenu>
 
       {/* Clear Formatting */}
-      <ToolbarButton
-        label={t('toolbar.formula.clearFormatting')}
-        onClick={onClearFormatting}
-      >
+      <ToolbarButton label={t('toolbar.formula.clearFormatting')} onClick={onClearFormatting}>
         <Icon name="remove-formatting" size={16} />
       </ToolbarButton>
 
       {/* Find & Replace */}
-      <ToolbarButton
-        label={t('toolbar.formula.findReplace')}
-        onClick={onOpenFindReplace}
-      >
+      <ToolbarButton label={t('toolbar.formula.findReplace')} onClick={onOpenFindReplace}>
         <Icon name="search" size={16} />
       </ToolbarButton>
     </div>

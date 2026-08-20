@@ -30,7 +30,9 @@ interface SlideToolbarProps {
   canDelete: boolean;
   zoom: number;
   onZoomChange: (zoom: number) => void;
-  onLoadSample?: (sample: 'sample-basic.pptx' | 'sample-medium.pptx' | 'sample-advanced.pptx') => void;
+  onLoadSample?: (
+    sample: 'sample-basic.pptx' | 'sample-medium.pptx' | 'sample-advanced.pptx',
+  ) => void;
   onUndo?: () => void;
   onRedo?: () => void;
   canUndo?: boolean;
@@ -133,7 +135,8 @@ export const SlideToolbar = ({
   };
 
   const activeTransLabel =
-    transitionsList.find((tItem) => tItem.value === currentTransition)?.label || t('toolbar.transition');
+    transitionsList.find((tItem) => tItem.value === currentTransition)?.label ||
+    t('toolbar.transition');
 
   return (
     <TooltipProvider>
@@ -166,7 +169,11 @@ export const SlideToolbar = ({
           </ToolbarButton>
 
           {/* 3. Insert Tools (Always Accessible) */}
-          <ToolbarButton label={t('toolbar.textBox')} onClick={onAddTextBox} className="gap-1.5 px-2">
+          <ToolbarButton
+            label={t('toolbar.textBox')}
+            onClick={onAddTextBox}
+            className="gap-1.5 px-2"
+          >
             <Icon name="type" size={14} />
             <span>{t('toolbar.textBox')}</span>
           </ToolbarButton>
@@ -175,7 +182,11 @@ export const SlideToolbar = ({
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover"
+                />
               }
             >
               <Icon name="square" size={14} />
@@ -231,7 +242,11 @@ export const SlideToolbar = ({
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover"
+                  />
                 }
               >
                 <Icon name="minus" size={14} />
@@ -263,7 +278,11 @@ export const SlideToolbar = ({
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover"
+                  />
                 }
               >
                 <Icon name="table" size={14} />
@@ -338,7 +357,11 @@ export const SlideToolbar = ({
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
-                      <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground"
+                      />
                     }
                   >
                     <Icon name="sparkles" size={13} className="text-amber-500" />
@@ -355,7 +378,9 @@ export const SlideToolbar = ({
                       <DropdownMenuItem
                         key={item.value}
                         onClick={() => onChangeTransition(item.value)}
-                        className={item.value === currentTransition ? 'font-semibold text-primary' : ''}
+                        className={
+                          item.value === currentTransition ? 'font-semibold text-primary' : ''
+                        }
                       >
                         <span>{item.label}</span>
                       </DropdownMenuItem>
@@ -391,7 +416,9 @@ export const SlideToolbar = ({
                         }
                       }}
                     >
-                      <span className="text-xs text-muted-foreground">{t('toolbar.applyToAll')}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {t('toolbar.applyToAll')}
+                      </span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -409,7 +436,11 @@ export const SlideToolbar = ({
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
-                      <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover"
+                      />
                     }
                   >
                     <Icon name="file-text" size={13} />

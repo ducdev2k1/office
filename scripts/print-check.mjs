@@ -137,14 +137,18 @@ const launchChrome = async () => {
     { stdio: 'ignore' },
   );
   const activePortFile = join(userDataDir, 'DevToolsActivePort');
-  const port = await poll(async () => {
-    try {
-      const content = readFileSync(activePortFile, 'utf8').trim();
-      return Number(content.split('\n')[0]);
-    } catch {
-      return null;
-    }
-  }, 15000, 'chrome DevTools port');
+  const port = await poll(
+    async () => {
+      try {
+        const content = readFileSync(activePortFile, 'utf8').trim();
+        return Number(content.split('\n')[0]);
+      } catch {
+        return null;
+      }
+    },
+    15000,
+    'chrome DevTools port',
+  );
   console.log(`[print-check] chrome on port ${port}`);
   return { child, userDataDir, port };
 };
@@ -298,7 +302,9 @@ const assertMarkers = (text, screenPageCount, expectedPdfPages = null) => {
   }
   for (let i = 0; i < seen.length; i += 1) {
     if (seen[i] !== expected[i]) {
-      throw new Error(`marker out of order at index ${i}: expected ${expected[i]}, found ${seen[i]}`);
+      throw new Error(
+        `marker out of order at index ${i}: expected ${expected[i]}, found ${seen[i]}`,
+      );
     }
   }
 

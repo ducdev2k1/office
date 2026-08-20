@@ -1,9 +1,16 @@
+import type { CollabStatus, CollabUser } from '@office/collab-core';
+import { useTranslation } from '@office/i18n';
+import { Button, Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  CollabConnectionBadge,
+  CollaboratorAvatarStack,
+  CollabUserProfilePopover,
+} from '@/modules/collab';
 import { MenuBar } from '@/modules/header/components/MenuBar';
 import { TitleInput } from '@/modules/header/components/TitleInput';
 import type { HeaderMenuActions } from '@/modules/header/types/header.types';
-import { useTranslation } from '@office/i18n';
-import { Button, Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
-import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   title: string;
@@ -14,6 +21,10 @@ interface HeaderProps {
   onToggleTheme: () => void;
   starred?: boolean;
   onToggleStar?: () => void;
+  collabStatus?: CollabStatus;
+  collaborators?: CollabUser[];
+  currentUser?: CollabUser;
+  onUpdateCurrentUserProfile?: (partial: Partial<CollabUser>) => void;
 }
 
 export const Header = ({
@@ -24,12 +35,25 @@ export const Header = ({
   onToggleTheme,
   starred = false,
   onToggleStar,
+  collabStatus,
+  collaborators = [],
+  currentUser,
+  onUpdateCurrentUserProfile,
 }: HeaderProps) => {
   const { t, locale, setLocale } = useTranslation('docs');
   const { t: tCommon } = useTranslation('common');
+  const [copied, setCopied] = useState(false);
 
   const handleToggleLocale = () => {
     setLocale(locale === 'vi' ? 'en' : 'vi');
+  };
+
+  const handleShare = () => {
+    if (typeof window !== 'undefined') {
+      void navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -64,7 +88,10 @@ export const Header = ({
                     size="icon"
                     onClick={onToggleStar}
                   >
-                    <Icon name="star" className={cn('size-4.5', starred && 'text-amber-500 fill-amber-500')} />
+                    <Icon
+                      name="star"
+                      className={cn('size-4.5', starred && 'text-amber-500 fill-amber-500')}
+                    />
                   </Button>
                 }
               />
@@ -93,23 +120,29 @@ export const Header = ({
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <span className="inline-flex text-muted-foreground shrink-0 pl-1 cursor-default">
-                    <Icon name="cloud" className="size-4.5" />
-                  </span>
-                }
-              />
-              <TooltipContent side="bottom">
-                {tCommon('status.savedToDevice')}
-              </TooltipContent>
-            </Tooltip>
+            {collabStatus ? (
+              <CollabConnectionBadge status={collabStatus} />
+            ) : (
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <span className="inline-flex text-muted-foreground shrink-0 pl-1 cursor-default">
+                      <Icon name="cloud" className="size-4.5" />
+                    </span>
+                  }
+                />
+                <TooltipContent side="bottom">{tCommon('status.savedToDevice')}</TooltipContent>
+              </Tooltip>
+            )}
           </div>
           <MenuBar {...menuActions} />
         </div>
       </div>
       <div className="flex items-center shrink-0 gap-1.5">
+        {collaborators.length > 0 && (
+          <CollaboratorAvatarStack collaborators={collaborators} className="mr-1" />
+        )}
+
         <Tooltip>
           <TooltipTrigger
             render={
@@ -214,20 +247,40 @@ export const Header = ({
             {`${t('header.videoMeeting')} · ${t('header.comingSoon')}`}
           </TooltipContent>
         </Tooltip>
-        <Button
-          className="h-9 px-4 gap-1.5 rounded-full bg-primary/15 text-primary hover:bg-primary/25 font-medium text-sm border-0 transition-colors"
-          type="button"
-          disabled
-        >
-          <Icon name="share-2" className="size-4" /> {tCommon('actions.share')}{' '}
-          <Icon name="chevron-down" className="size-3.5" />
-        </Button>
-        <div
-          className="grid place-items-center size-8 rounded-full bg-primary text-primary-foreground font-semibold text-xs ml-1 select-none"
-          aria-label={t('header.account', { name: 'Duc' })}
-        >
-          D
-        </div>
+
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                className="h-9 px-4 gap-1.5 rounded-full bg-primary/15 text-primary hover:bg-primary/25 font-medium text-sm border-0 transition-colors"
+                type="button"
+                onClick={handleShare}
+                aria-label={copied ? 'Đã sao chép liên kết' : tCommon('actions.share')}
+              >
+                <Icon name={copied ? 'check' : 'share-2'} className="size-4" />
+                {copied ? 'Đã sao chép' : tCommon('actions.share')}
+              </Button>
+            }
+          />
+          <TooltipContent side="bottom">
+            {copied ? 'Đã sao chép liên kết vào bộ nhớ tạm' : 'Chia sẻ liên kết tài liệu'}
+          </TooltipContent>
+        </Tooltip>
+
+        {currentUser && onUpdateCurrentUserProfile ? (
+          <CollabUserProfilePopover
+            user={currentUser}
+            onUpdateProfile={onUpdateCurrentUserProfile}
+            className="ml-1"
+          />
+        ) : (
+          <div
+            className="grid place-items-center size-8 rounded-full bg-primary text-primary-foreground font-semibold text-xs ml-1 select-none"
+            aria-label={t('header.account', { name: 'Duc' })}
+          >
+            D
+          </div>
+        )}
       </div>
     </header>
   );

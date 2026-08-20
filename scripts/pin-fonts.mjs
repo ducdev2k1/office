@@ -129,7 +129,9 @@ const main = async () => {
   }
 
   writeFileSync(OUT_CSS, outLines.join('\n'));
-  console.log(`[pin-fonts] wrote ${OUT_CSS} (${faces.length} faces, ${urlToFileMap.size} unique font files)`);
+  console.log(
+    `[pin-fonts] wrote ${OUT_CSS} (${faces.length} faces, ${urlToFileMap.size} unique font files)`,
+  );
 };
 
 main().catch((err) => {

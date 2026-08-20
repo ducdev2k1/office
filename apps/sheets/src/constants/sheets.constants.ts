@@ -51,4 +51,3 @@ export const createBlankSheetRecord = (title = getUntitledTitle()): SheetDocReco
     data: createDefaultWorkbookData(id, title),
   };
 };
-

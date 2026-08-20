@@ -1,0 +1,28 @@
+{
+  "name": "@office/collab-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hocuspocus/extension-sqlite": "^2.15.0",
+    "@hocuspocus/server": "^2.15.0",
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
+    "ws": "^8.18.0",
+    "yjs": "^13.6.23"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^24.0.0",
+    "@types/ws": "^8.5.14",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}

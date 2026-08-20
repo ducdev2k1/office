@@ -21,12 +21,12 @@ Khao sat Univer v0.23.0 stable cho `apps/sheets` truoc khi dau tu sau. Khong cod
 
 ## Phases
 
-| #  | Phase                                                                 | File                                         | Effort | Status     |
-|----|-----------------------------------------------------------------------|----------------------------------------------|--------|------------|
-| 1  | Scaffold `apps/sheets` + Univer prototype + nhung app-shell           | `phase-01-scaffold-univer-prototype.md`      | 8h     | completed  |
-| 2  | Khao sat chieu doc xlsx + pipeline ExcelJS → Univer snapshot          | `phase-02-xlsx-import-pipeline.md`           | 12h    | completed  |
-| 3  | Do hieu nang (bundle, load time, scroll) + checklist gap tinh nang    | `phase-03-perf-measure-gap-checklist.md`     | 12h    | completed  |
-| 4  | Viet bao cao + de xuat MVP + quyet dinh go/no-go                     | `phase-04-report-go-no-go.md`                | 10h    | completed  |
+| #   | Phase                                                              | File                                     | Effort | Status    |
+| --- | ------------------------------------------------------------------ | ---------------------------------------- | ------ | --------- |
+| 1   | Scaffold `apps/sheets` + Univer prototype + nhung app-shell        | `phase-01-scaffold-univer-prototype.md`  | 8h     | completed |
+| 2   | Khao sat chieu doc xlsx + pipeline ExcelJS → Univer snapshot       | `phase-02-xlsx-import-pipeline.md`       | 12h    | completed |
+| 3   | Do hieu nang (bundle, load time, scroll) + checklist gap tinh nang | `phase-03-perf-measure-gap-checklist.md` | 12h    | completed |
+| 4   | Viet bao cao + de xuat MVP + quyet dinh go/no-go                   | `phase-04-report-go-no-go.md`            | 10h    | completed |
 
 **Tong effort: 42h (~5–8 ngay lam viec)**
 

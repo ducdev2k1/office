@@ -35,8 +35,7 @@ export const useSearchAndReplace = (config: UseSearchAndReplaceConfig = {}) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [replaceTerm, setReplaceTerm] = useState('');
-  const [editorState, setEditorState] =
-    useState<SearchAndReplaceEditorState>(EMPTY_EDITOR_STATE);
+  const [editorState, setEditorState] = useState<SearchAndReplaceEditorState>(EMPTY_EDITOR_STATE);
 
   const syncStateFromStorage = useCallback(() => {
     const storage = getFindAndReplaceStorage(editor);
@@ -47,9 +46,7 @@ export const useSearchAndReplace = (config: UseSearchAndReplaceConfig = {}) => {
 
     const total = storage.results?.length ?? 0;
     const currentIndex =
-      total > 0 && typeof storage.currentIndex === 'number'
-        ? storage.currentIndex
-        : null;
+      total > 0 && typeof storage.currentIndex === 'number' ? storage.currentIndex : null;
 
     setEditorState({
       total,
@@ -174,8 +171,7 @@ export const useSearchAndReplace = (config: UseSearchAndReplaceConfig = {}) => {
     replaceCurrent,
     replaceAll,
     canSearch: isAvailable && searchTerm.length > 0,
-    canReplace:
-      isAvailable && editorState.total > 0 && editorState.currentIndex !== null,
+    canReplace: isAvailable && editorState.total > 0 && editorState.currentIndex !== null,
     canReplaceAll: isAvailable && editorState.total > 0,
   };
 };

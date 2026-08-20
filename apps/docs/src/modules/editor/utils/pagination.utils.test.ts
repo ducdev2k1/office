@@ -12,7 +12,9 @@ import {
 describe('computeBreaksFromMeasurements', () => {
   for (const fixture of PAGINATION_CASES) {
     it(`matches fixture: ${fixture.name}`, () => {
-      expect(computeBreaksFromMeasurements(fixture.blocks, fixture.metrics)).toEqual(fixture.expected);
+      expect(computeBreaksFromMeasurements(fixture.blocks, fixture.metrics)).toEqual(
+        fixture.expected,
+      );
     });
   }
 
@@ -38,9 +40,9 @@ describe('resolveContentOffsets', () => {
   for (const fixture of RESOLVE_CASES) {
     it(`matches fixture: ${fixture.name}`, () => {
       const domTopOf = (offset: number): number | null => fixture.domTop[offset] ?? null;
-      expect(
-        resolveContentOffsets(fixture.breaks, fixture.simulated, domTopOf, 1000),
-      ).toEqual(fixture.expected);
+      expect(resolveContentOffsets(fixture.breaks, fixture.simulated, domTopOf, 1000)).toEqual(
+        fixture.expected,
+      );
     });
   }
 });

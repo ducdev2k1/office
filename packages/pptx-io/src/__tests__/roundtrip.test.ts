@@ -63,7 +63,8 @@ const sampleDeck: SlideDeckData = {
           y: 140,
           width: 400,
           height: 180,
-          content: '1. Xử lý tài liệu trực tiếp trên trình duyệt\n2. Tương thích chuẩn OOXML PowerPoint\n3. Hỗ trợ tiếng Việt Unicode hoàn hảo',
+          content:
+            '1. Xử lý tài liệu trực tiếp trên trình duyệt\n2. Tương thích chuẩn OOXML PowerPoint\n3. Hỗ trợ tiếng Việt Unicode hoàn hảo',
           fontSize: 16,
           color: '#334155',
           align: 'left',

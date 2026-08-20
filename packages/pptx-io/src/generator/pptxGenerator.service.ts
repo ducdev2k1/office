@@ -97,9 +97,7 @@ const renderElementXml = (el: SlideElement, idNum: number): string => {
 };
 
 const renderSlideXml = (slide: SlideItem): string => {
-  const elementsXml = slide.elements
-    .map((el, idx) => renderElementXml(el, idx + 2))
-    .join('\n');
+  const elementsXml = slide.elements.map((el, idx) => renderElementXml(el, idx + 2)).join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
@@ -178,9 +176,7 @@ export const generatePptxBuffer = async (deck: SlideDeckData): Promise<Uint8Arra
   );
 
   // ppt/presentation.xml
-  const sldIds = slides
-    .map((_, i) => `<p:sldId id="${256 + i}" r:id="rId${i + 1}"/>`)
-    .join('');
+  const sldIds = slides.map((_, i) => `<p:sldId id="${256 + i}" r:id="rId${i + 1}"/>`).join('');
 
   zip.file(
     'ppt/presentation.xml',

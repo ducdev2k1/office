@@ -16,6 +16,7 @@
 ## Architecture
 
 **Pipeline nhap xlsx:**
+
 ```text
 File .xlsx (tren may / IndexedDB)
   → ExcelJS.readFile() → workbook object
@@ -25,6 +26,7 @@ File .xlsx (tren may / IndexedDB)
 ```
 
 **IWorkbookData format** (tu Univer docs):
+
 ```ts
 interface IWorkbookData {
   id?: string;
@@ -36,10 +38,10 @@ interface IWorkbookData {
       cellData: {
         [row: number]: {
           [col: number]: {
-            v?: any;        // gia tri
-            s?: string;     // style id
-            t?: number;     // type
-            f?: string;     // formula
+            v?: any; // gia tri
+            s?: string; // style id
+            t?: number; // type
+            f?: string; // formula
             // ...
           };
         };
@@ -58,6 +60,7 @@ interface IWorkbookData {
 1. **Cai ExcelJS**: `pnpm add exceljs` trong `apps/sheets`.
 
 2. **Tao xlsx mau bang code** (de kiem soat):
+
    ```ts
    const wb = new ExcelJS.Workbook();
    const ws = wb.addWorksheet('Sheet1');

@@ -10,12 +10,7 @@ export interface SelectFieldProps {
   className?: string;
 }
 
-export const SelectField = ({
-  value,
-  onChange,
-  options,
-  className,
-}: SelectFieldProps) => (
+export const SelectField = ({ value, onChange, options, className }: SelectFieldProps) => (
   <div className={cn('relative flex items-center', className)}>
     <select
       value={value}
@@ -29,7 +24,14 @@ export const SelectField = ({
       ))}
     </select>
     <div className="absolute right-2.5 pointer-events-none text-neutral-500">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+      >
         <path d="m6 9 6 6 6-6" />
       </svg>
     </div>
@@ -107,7 +109,7 @@ export const NumberInputWithUnit = ({
           min={min}
           max={max}
           readOnly={readOnly}
-          value={readOnly ? value : (isFocused ? localVal : value)}
+          value={readOnly ? value : isFocused ? localVal : value}
           onChange={handleChange}
           onFocus={() => setIsFocused(true)}
           onBlur={handleBlur}

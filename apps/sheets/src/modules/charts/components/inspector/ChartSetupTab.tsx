@@ -14,10 +14,7 @@ export const ChartSetupTab = ({ spec, onUpdateSpec }: ChartSetupTabProps) => {
   return (
     <div className="flex flex-col gap-4">
       {/* 1. Chọn loại biểu đồ */}
-      <ChartTypeSelector
-        selectedType={spec.type}
-        onSelectType={(type) => onUpdateSpec({ type })}
-      />
+      <ChartTypeSelector selectedType={spec.type} onSelectType={(type) => onUpdateSpec({ type })} />
 
       {/* 2. Cấu hình dải dữ liệu */}
       <div className="flex flex-col gap-1.5">
@@ -31,15 +28,13 @@ export const ChartSetupTab = ({ spec, onUpdateSpec }: ChartSetupTabProps) => {
           placeholder={t('chart.setup.rangePlaceholder')}
           className="h-8 text-xs font-mono"
         />
-        <span className="text-[11px] text-muted-foreground">
-          {t('chart.setup.rangeHint')}
-        </span>
+        <span className="text-[11px] text-muted-foreground">{t('chart.setup.rangeHint')}</span>
       </div>
 
       {/* 3. Thiết lập tiêu đề hàng / cột */}
       <div className="flex flex-col gap-2 rounded-md border border-border bg-muted/20 p-3">
         <span className="text-xs font-medium text-foreground">{t('chart.setup.structure')}</span>
-        
+
         <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground hover:text-foreground">
           <Checkbox
             checked={spec.hasHeaderRow}

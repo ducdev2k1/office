@@ -12,5 +12,8 @@ export default defineConfig({
   },
   server: {
     port: 20011,
+    watch: {
+      ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/.turbo/**'],
+    },
   },
 });

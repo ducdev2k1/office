@@ -1,10 +1,10 @@
 ---
 phase: 5
-title: "Screen Header-Footer Layer"
+title: 'Screen Header-Footer Layer'
 status: done
 priority: P2
 dependencies: [3]
-effort: "0.75d"
+effort: '0.75d'
 ---
 
 # Phase 5: Screen Header-Footer Layer
@@ -18,12 +18,14 @@ Kèm một việc red team chỉ ra: phase này biến `.page-stack` từ trang 
 ## Requirements
 
 **Functional**
+
 - Mỗi `.page` hiển thị header/footer text + số trang đúng vị trí lề.
 - Nội dung y hệt bản in (dùng chung `resolveSlot` từ P3b).
 - `viewMode !== 'paged'` → không hiển thị.
 - **Số trang hiện tại / tổng số trang phải có mặt trong accessibility tree** ở đâu đó.
 
 **Non-functional**
+
 - Không selectable, không nằm trong tab order — lớp visual vẫn `aria-hidden`.
 - Không ảnh hưởng `usable` của engine phân trang.
 
@@ -32,9 +34,12 @@ Kèm một việc red team chỉ ra: phase này biến `.page-stack` từ trang 
 ### PageStack
 
 `EditorCanvas.tsx:125-131` hiện có:
+
 ```tsx
 <div className="page-stack" aria-hidden="true">
-  {Array.from({ length: pageCount }).map((_, i) => <div key={i} className="page" />)}
+  {Array.from({ length: pageCount }).map((_, i) => (
+    <div key={i} className="page" />
+  ))}
 </div>
 ```
 
@@ -43,7 +48,9 @@ Tách thành `PageStack.tsx`, render header/footer trong mỗi `.page`:
 ```tsx
 <div className="page" key={i}>
   <div className="page-hf page-header">
-    <span>{h.left}</span><span>{h.center}</span><span>{h.right}</span>
+    <span>{h.left}</span>
+    <span>{h.center}</span>
+    <span>{h.right}</span>
   </div>
   <div className="page-hf page-footer">…</div>
 </div>
@@ -58,6 +65,7 @@ Tách thành `PageStack.tsx`, render header/footer trong mỗi `.page`:
 Hệ quả: user dùng screen reader cấu hình footer qua dialog P6, Apply, và **không nhận được xác nhận nào**; cũng không có cách biết trang hiện tại / tổng số trang ở bất kỳ đâu trong app.
 
 Fix (chốt luôn, không để open question):
+
 - Giữ `.page-stack` là `aria-hidden` — nó là lớp visual.
 - Thêm **page count / current page vào `Statusbar`** (`Statusbar.tsx` hiện chỉ có word/char count). Đây cũng là chỗ user sáng mắt hay tìm.
 - Dialog P6 announce giá trị đã apply qua live region.
@@ -65,7 +73,9 @@ Fix (chốt luôn, không để open question):
 ### CSS
 
 ```css
-.is-paged .page { position: relative; }        /* hiện CHƯA có, phải thêm */
+.is-paged .page {
+  position: relative;
+} /* hiện CHƯA có, phải thêm */
 
 .is-paged .page-hf {
   position: absolute;
@@ -79,11 +89,24 @@ Fix (chốt luôn, không để open question):
   pointer-events: none;
   user-select: none;
 }
-.is-paged .page-header { top: var(--header-margin); }
-.is-paged .page-footer { bottom: var(--footer-margin); }
-.is-paged .page-hf > span { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: nowrap; }
-.is-paged .page-hf > span:nth-child(2) { text-align: center; }
-.is-paged .page-hf > span:nth-child(3) { text-align: right; }
+.is-paged .page-header {
+  top: var(--header-margin);
+}
+.is-paged .page-footer {
+  bottom: var(--footer-margin);
+}
+.is-paged .page-hf > span {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.is-paged .page-hf > span:nth-child(2) {
+  text-align: center;
+}
+.is-paged .page-hf > span:nth-child(3) {
+  text-align: right;
+}
 ```
 
 `--header-margin` / `--footer-margin` thêm vào `pageStyle` (`usePagination.ts:102-114`).
@@ -131,11 +154,11 @@ Header/footer nằm **trong** vùng lề, không đẩy content. Text header cao
 
 ## Risk Assessment
 
-| Rủi ro | Mitigation |
-|---|---|
-| `NaNpx` từ `headerMargin` undefined → header đè text, không throw | Guard `mmToPx` ở P3; bước 7 verify tường minh với doc cũ |
-| Logic dựng ô viết 2 lần (screen + print) rồi lệch | Dùng chung helper từ P3; bước 1 tách trước |
-| Nội dung thật bị chôn trong `aria-hidden` | Bổ sung `Statusbar` surface — bắt buộc, không optional |
-| `new Date()` gọi nhiều lần → `{date}` lệch qua nửa đêm | `useMemo` một lần, truyền xuống |
-| `.page` chưa có `position: relative` → absolute thoát ra ngoài | Thêm rule; kiểm ở trang 2+ chứ không chỉ trang 1 |
-| Header dài đè nội dung | `nowrap` + `overflow: hidden`; known limitation ghi vào `docs/` |
+| Rủi ro                                                            | Mitigation                                                      |
+| ----------------------------------------------------------------- | --------------------------------------------------------------- |
+| `NaNpx` từ `headerMargin` undefined → header đè text, không throw | Guard `mmToPx` ở P3; bước 7 verify tường minh với doc cũ        |
+| Logic dựng ô viết 2 lần (screen + print) rồi lệch                 | Dùng chung helper từ P3; bước 1 tách trước                      |
+| Nội dung thật bị chôn trong `aria-hidden`                         | Bổ sung `Statusbar` surface — bắt buộc, không optional          |
+| `new Date()` gọi nhiều lần → `{date}` lệch qua nửa đêm            | `useMemo` một lần, truyền xuống                                 |
+| `.page` chưa có `position: relative` → absolute thoát ra ngoài    | Thêm rule; kiểm ở trang 2+ chứ không chỉ trang 1                |
+| Header dài đè nội dung                                            | `nowrap` + `overflow: hidden`; known limitation ghi vào `docs/` |
