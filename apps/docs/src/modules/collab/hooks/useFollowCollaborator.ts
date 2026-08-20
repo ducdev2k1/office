@@ -1,6 +1,8 @@
 import type { Editor } from '@tiptap/core';
 import type { CollabUser, HocuspocusProvider } from '@office/collab-core';
+import { relativePositionToAbsolutePosition, ySyncPluginKey } from '@tiptap/y-tiptap';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import * as Y from 'yjs';
 
 interface UseFollowCollaboratorOptions {
   editor: Editor | null;
@@ -57,8 +59,13 @@ export const useFollowCollaborator = ({
       if (byUserId) return byUserId;
     }
 
-    // 3. By user name in label
+    // 3. By user name attribute or label text
     if (targetUser?.name) {
+      const byUserName = document.querySelector(
+        `.collaboration-cursor__caret[data-user-name="${targetUser.name}"]`,
+      ) as HTMLElement | null;
+      if (byUserName) return byUserName;
+
       const allCarets = Array.from(
         document.querySelectorAll('.collaboration-cursor__caret'),
       ) as HTMLElement[];
@@ -72,18 +79,81 @@ export const useFollowCollaborator = ({
     return null;
   }, []);
 
-  // Scroll smoothly to followed user's cursor
-  const scrollToTarget = useCallback(() => {
-    if (typeof document === 'undefined') return;
+  // Compute exact target screen top position
+  const getTargetScrollTop = useCallback((): number | null => {
+    if (typeof document === 'undefined') return null;
+    const paperWrap = document.querySelector('.paper-wrap') as HTMLElement | null;
+    if (!paperWrap) return null;
 
-    if (rafIdRef.current !== null) {
-      cancelAnimationFrame(rafIdRef.current);
+    const wrapRect = paperWrap.getBoundingClientRect();
+
+    // 1. Try DOM caret element
+    const caret = findCaretElement();
+    if (caret) {
+      const caretRect = caret.getBoundingClientRect();
+      if (caretRect.height > 0 || caretRect.top > 0) {
+        return (
+          paperWrap.scrollTop + (caretRect.top - wrapRect.top) - wrapRect.height / 2
+        );
+      }
     }
 
-    rafIdRef.current = requestAnimationFrame(() => {
-      const caret = findCaretElement();
+    // 2. Try Yjs awareness relative cursor position -> ProseMirror coordinates
+    const targetId = followedClientIdRef.current;
+    if (editor && provider?.awareness && provider?.document && targetId) {
+      const state = provider.awareness.getStates().get(targetId) as
+        | { cursor?: { anchor?: Y.RelativePosition; head?: Y.RelativePosition } }
+        | undefined;
 
-      // Update following class
+      const relPos = state?.cursor?.head ?? state?.cursor?.anchor;
+      if (relPos) {
+        try {
+          const ystate = ySyncPluginKey.getState(editor.state);
+          let absPos: number | null = null;
+          if (ystate?.binding?.mapping && ystate?.type) {
+            absPos = relativePositionToAbsolutePosition(
+              ystate.doc,
+              ystate.type,
+              relPos,
+              ystate.binding.mapping,
+            );
+          }
+
+          if (absPos === null || absPos === undefined) {
+            const decoded = Y.createAbsolutePositionFromRelativePosition(
+              relPos,
+              provider.document,
+            );
+            if (decoded && typeof decoded.index === 'number') {
+              absPos = decoded.index;
+            }
+          }
+
+          if (typeof absPos === 'number' && absPos >= 0) {
+            const maxPos = editor.state.doc.content.size;
+            const clampedPos = Math.max(0, Math.min(absPos, maxPos));
+            const coords = editor.view.coordsAtPos(clampedPos);
+            if (coords && (coords.top > 0 || coords.bottom > 0)) {
+              return (
+                paperWrap.scrollTop + (coords.top - wrapRect.top) - wrapRect.height / 2
+              );
+            }
+          }
+        } catch {
+          // Ignore pos decoding fallback error
+        }
+      }
+    }
+
+    return null;
+  }, [editor, findCaretElement, provider]);
+
+  // Scroll smoothly to followed user's cursor
+  const scrollToTarget = useCallback(
+    (smooth = true) => {
+      if (typeof document === 'undefined') return;
+
+      const caret = findCaretElement();
       document
         .querySelectorAll('.collaboration-cursor--following')
         .forEach((el) => {
@@ -92,22 +162,21 @@ export const useFollowCollaborator = ({
 
       if (caret) {
         caret.classList.add('collaboration-cursor--following');
+      }
 
+      const targetScrollTop = getTargetScrollTop();
+      if (targetScrollTop !== null) {
         const paperWrap = document.querySelector('.paper-wrap') as HTMLElement | null;
         if (paperWrap) {
-          const wrapRect = paperWrap.getBoundingClientRect();
-          const caretRect = caret.getBoundingClientRect();
-          const targetScrollTop =
-            paperWrap.scrollTop + (caretRect.top - wrapRect.top) - wrapRect.height / 2;
-
           paperWrap.scrollTo({
             top: Math.max(0, targetScrollTop),
-            behavior: 'smooth',
+            behavior: smooth ? 'smooth' : 'auto',
           });
         }
       }
-    });
-  }, [findCaretElement]);
+    },
+    [findCaretElement, getTargetScrollTop],
+  );
 
   const startFollow = useCallback(
     (user: CollabUser) => {
@@ -116,11 +185,17 @@ export const useFollowCollaborator = ({
       followedClientIdRef.current = user.clientId;
       followedUserRef.current = user;
 
-      // Immediate attempt + follow-up retries to catch newly rendered cursor DOM
-      scrollToTarget();
-      setTimeout(scrollToTarget, 60);
-      setTimeout(scrollToTarget, 180);
-      setTimeout(scrollToTarget, 350);
+      // Immediate synchronous jump + smooth retries to ensure exact centering
+      scrollToTarget(false);
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+      rafIdRef.current = requestAnimationFrame(() => {
+        scrollToTarget(true);
+      });
+      setTimeout(() => scrollToTarget(true), 60);
+      setTimeout(() => scrollToTarget(true), 150);
+      setTimeout(() => scrollToTarget(true), 300);
     },
     [scrollToTarget],
   );
@@ -144,11 +219,11 @@ export const useFollowCollaborator = ({
     const awareness = provider.awareness;
     const handleAwarenessUpdate = () => {
       if (followedClientIdRef.current) {
-        scrollToTarget();
+        scrollToTarget(true);
       }
     };
 
-    scrollToTarget();
+    scrollToTarget(true);
     awareness.on('change', handleAwarenessUpdate);
 
     return () => {
@@ -162,7 +237,7 @@ export const useFollowCollaborator = ({
 
     const handleTransaction = () => {
       if (followedClientIdRef.current) {
-        scrollToTarget();
+        scrollToTarget(true);
       }
     };
 
@@ -182,7 +257,6 @@ export const useFollowCollaborator = ({
 
     const handleEditorMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      // Do not break if clicking follow banner or avatar
       if (
         target?.closest('.follow-banner') ||
         target?.closest('.collaborator-avatar-btn')
@@ -198,7 +272,6 @@ export const useFollowCollaborator = ({
         stopFollow();
         return;
       }
-      // Modifier keys don't break follow
       if (['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) {
         return;
       }
