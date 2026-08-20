@@ -12,8 +12,11 @@ import type {
   SlideDocRecord,
   SlideElement,
   SlideItem,
+  SlideLayoutType,
+  SlideLineKind,
   SlideTransitionType,
 } from '@/types/slides.types';
+import { createSlideWithLayout } from '@/utils/slideLayouts.utils';
 import {
   centerElementInDeck,
   cloneDeep,
@@ -57,12 +60,17 @@ export interface SlidesState {
   deleteForever: (id: string) => void;
   markOpened: (id: string) => void;
   addSlideToActiveDeck: () => void;
+  addSlideWithLayout: (layout: SlideLayoutType) => void;
   deleteActiveSlide: () => void;
   duplicateActiveSlide: () => void;
   moveSlide: (fromIndex: number, toIndex: number) => void;
   setSlideBackground: (bg: string, index?: number) => void;
+  applySlideBackground: (bg: string, applyToAll?: boolean) => void;
+  updateSlideNotes: (notes: string, index?: number) => void;
   setSlideTransition: (transition: SlideTransitionType, applyToAll?: boolean) => void;
   addElement: (element: Partial<SlideElement>) => string;
+  addLine: (kind: SlideLineKind) => string;
+  addTable: (rows?: number, cols?: number) => string;
   updateElement: (elementId: string, patch: Partial<SlideElement>) => void;
   deleteElement: (elementId?: string) => void;
   duplicateElement: (elementId?: string) => void;
@@ -374,6 +382,68 @@ export const useSlides = (): SlidesState => {
     return newElement.id;
   }, [activeSlide, activeSlideIndex, updateData]);
 
+  const addSlideWithLayout = useCallback((layout: SlideLayoutType): void => {
+    const currentDeck = activeDeckRef.current;
+    if (!currentDeck?.data) return;
+    const newSlide = createSlideWithLayout(layout, currentDeck.data.slides.length, t);
+    const updatedDeckData: SlideDeckData = {
+      ...currentDeck.data,
+      slides: [...currentDeck.data.slides, newSlide],
+    };
+    updateData(updatedDeckData);
+    setActiveSlideIndex(updatedDeckData.slides.length - 1);
+    setSelectedElementId(null);
+  }, [t, updateData]);
+
+  const updateSlideNotes = useCallback((notes: string, index?: number): void => {
+    const currentDeck = activeDeckRef.current;
+    if (!currentDeck?.data) return;
+    const targetIndex = index ?? activeSlideIndex;
+    const slidesList = currentDeck.data.slides.map((s, idx) =>
+      idx === targetIndex ? { ...s, notes } : s,
+    );
+    updateData({ ...currentDeck.data, slides: slidesList });
+  }, [activeSlideIndex, updateData]);
+
+  const applySlideBackground = useCallback((bg: string, applyToAll = false): void => {
+    const currentDeck = activeDeckRef.current;
+    if (!currentDeck?.data) return;
+    const slidesList = currentDeck.data.slides.map((s, idx) => {
+      if (applyToAll || idx === activeSlideIndex) {
+        return { ...s, background: bg, backgroundGradient: bg.includes('gradient') ? bg : undefined };
+      }
+      return s;
+    });
+    updateData({ ...currentDeck.data, slides: slidesList });
+  }, [activeSlideIndex, updateData]);
+
+  const addLine = useCallback((kind: SlideLineKind): string => {
+    return addElement({
+      type: 'line',
+      lineKind: kind,
+      x: 280,
+      y: 260,
+      width: 400,
+      height: 40,
+      stroke: '#0f172a',
+      strokeWidth: 3,
+    });
+  }, [addElement]);
+
+  const addTable = useCallback((rows = 3, cols = 3): string => {
+    const cells = Array.from({ length: rows }, (_, r) =>
+      Array.from({ length: cols }, (_, c) => (r === 0 ? `Tiêu đề ${c + 1}` : `Ô ${r + 1},${c + 1}`)),
+    );
+    return addElement({
+      type: 'table',
+      x: 180,
+      y: 120,
+      width: 600,
+      height: 240,
+      tableData: { rows, cols, cells, headerRow: true },
+    });
+  }, [addElement]);
+
   const updateElement = useCallback((elementId: string, patch: Partial<SlideElement>): void => {
     const currentDeck = activeDeckRef.current;
     if (!currentDeck?.data || !activeSlide) return;
@@ -549,12 +619,17 @@ export const useSlides = (): SlidesState => {
     deleteForever,
     markOpened,
     addSlideToActiveDeck,
+    addSlideWithLayout,
     deleteActiveSlide,
     duplicateActiveSlide,
     moveSlide,
     setSlideBackground,
+    applySlideBackground,
+    updateSlideNotes,
     setSlideTransition,
     addElement,
+    addLine,
+    addTable,
     updateElement,
     deleteElement,
     duplicateElement,

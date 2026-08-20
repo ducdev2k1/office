@@ -1,4 +1,10 @@
-import type { SlideElement, SlideShapeKind, SlideTransitionType } from '@/types/slides.types';
+import type {
+  SlideElement,
+  SlideLayoutType,
+  SlideLineKind,
+  SlideShapeKind,
+  SlideTransitionType,
+} from '@/types/slides.types';
 import { useTranslation } from '@office/i18n';
 import {
   Button,
@@ -14,20 +20,7 @@ import {
 } from '@office/ui-kit';
 import React, { useRef } from 'react';
 import { ElementFormattingBar } from './toolbar/ElementFormattingBar';
-
-const PALETTE_COLORS = [
-  { label: 'Trắng', value: '#ffffff' },
-  { label: 'Xám sáng', value: '#f8fafc' },
-  { label: 'Đen than', value: '#0f172a' },
-  { label: 'Xanh iNET', value: '#1e40af' },
-  { label: 'Xanh nhạt', value: '#eff6ff' },
-  { label: 'Vàng cam', value: '#b45309' },
-  { label: 'Vàng ấm', value: '#fffbeb' },
-  { label: 'Xanh lá', value: '#16a34a' },
-  { label: 'Xanh ngọc', value: '#f0fdf4' },
-  { label: 'Đỏ', value: '#dc2626' },
-  { label: 'Tím', value: '#9333ea' },
-];
+import { SlideLayoutDropdown } from './toolbar/SlideLayoutDropdown';
 
 interface SlideToolbarProps {
   onAddSlide: () => void;
@@ -44,11 +37,15 @@ interface SlideToolbarProps {
   canRedo?: boolean;
   currentTransition?: SlideTransitionType;
   onChangeTransition?: (transition: SlideTransitionType, applyToAll?: boolean) => void;
+  onSelectLayout?: (layout: SlideLayoutType) => void;
   selectedElement?: SlideElement;
   onAddTextBox: () => void;
   onAddShape: (kind: SlideShapeKind) => void;
+  onAddLine?: (kind: SlideLineKind) => void;
+  onAddTable?: (rows: number, cols: number) => void;
   onAddImage: (dataUrl: string) => void;
-  onChangeSlideBackground: (color: string) => void;
+  onOpenBackgroundDialog?: () => void;
+  onOpenFindReplace?: () => void;
   onUpdateSelectedElement: (patch: Partial<SlideElement>) => void;
   onDeleteSelectedElement: () => void;
   onDuplicateSelectedElement: () => void;
@@ -76,11 +73,15 @@ export const SlideToolbar = ({
   canRedo = false,
   currentTransition = 'fade',
   onChangeTransition,
+  onSelectLayout,
   selectedElement,
   onAddTextBox,
   onAddShape,
+  onAddLine,
+  onAddTable,
   onAddImage,
-  onChangeSlideBackground,
+  onOpenBackgroundDialog,
+  onOpenFindReplace,
   onUpdateSelectedElement,
   onDeleteSelectedElement,
   onDuplicateSelectedElement,
@@ -125,7 +126,7 @@ export const SlideToolbar = ({
   return (
     <TooltipProvider>
       <div className="flex h-10 items-center justify-between border-b border-border bg-card px-3">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-auto">
           {/* Undo / Redo */}
           {onUndo && (
             <ToolbarButton label={t('toolbar.undo')} disabled={!canUndo} onClick={onUndo}>
@@ -150,6 +151,9 @@ export const SlideToolbar = ({
             <Icon name="plus" size={14} />
             <span>{t('toolbar.addSlide')}</span>
           </ToolbarButton>
+
+          {/* Slide Layouts Picker */}
+          {onSelectLayout && <SlideLayoutDropdown onSelectLayout={onSelectLayout} />}
 
           <ToolbarButton label={t('toolbar.duplicateSlide')} onClick={onDuplicateSlide}>
             <Icon name="copy" size={14} />
@@ -183,34 +187,102 @@ export const SlideToolbar = ({
               <span>{t('toolbar.shapes')}</span>
               <Icon name="chevron-down" size={11} className="opacity-60" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align="start" className="grid grid-cols-2 gap-1 p-2 w-64">
               <DropdownMenuItem onClick={() => onAddShape('rect')}>
-                <div className="mr-2 h-3.5 w-3.5 border border-primary bg-primary/20" />
+                <span className="mr-2 text-xs">⬛</span>
                 <span>{t('shapes.rect')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAddShape('rounded')}>
-                <div className="mr-2 h-3.5 w-3.5 rounded-xs border border-primary bg-primary/20" />
+                <span className="mr-2 text-xs">🔲</span>
                 <span>{t('shapes.rounded')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAddShape('circle')}>
-                <div className="mr-2 h-3.5 w-3.5 rounded-full border border-primary bg-primary/20" />
+                <span className="mr-2 text-xs">⚪</span>
                 <span>{t('shapes.circle')}</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onAddShape('triangle')}>
                 <span className="mr-2 text-xs">🔺</span>
                 <span>{t('shapes.triangle')}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onAddShape('arrow')}>
-                <span className="mr-2 text-xs">➡️</span>
-                <span>{t('shapes.arrow')}</span>
+              <DropdownMenuItem onClick={() => onAddShape('diamond')}>
+                <span className="mr-2 text-xs">🔶</span>
+                <span>Hình thoi</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onAddShape('hexagon')}>
+                <span className="mr-2 text-xs">⬡</span>
+                <span>Hình lục giác</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAddShape('star')}>
                 <span className="mr-2 text-xs">⭐</span>
                 <span>{t('shapes.star')}</span>
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onAddShape('callout')}>
+                <span className="mr-2 text-xs">💬</span>
+                <span>Khung hội thoại</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onAddShape('heart')}>
+                <span className="mr-2 text-xs">❤️</span>
+                <span>Trái tim</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onAddShape('cloud')}>
+                <span className="mr-2 text-xs">☁️</span>
+                <span>Đám mây</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Insert Lines Dropdown */}
+          {onAddLine && (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover" />
+                }
+              >
+                <Icon name="minus" size={14} />
+                <span>Đường kẻ</span>
+                <Icon name="chevron-down" size={11} className="opacity-60" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={() => onAddLine('straight')}>
+                  <span>— Đường thẳng</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddLine('arrow')}>
+                  <span>➡️ Mũi tên</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddLine('double-arrow')}>
+                  <span>↔️ Mũi tên 2 đầu</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddLine('elbow')}>
+                  <span>↪️ Đường gấp khúc (Elbow)</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddLine('curved')}>
+                  <span>〰️ Đường cong (Curved)</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          {/* Insert Table */}
+          {onAddTable && (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal hover:bg-hover" />
+                }
+              >
+                <Icon name="table" size={14} />
+                <span>Bảng</span>
+                <Icon name="chevron-down" size={11} className="opacity-60" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={() => onAddTable(2, 2)}>Bảng 2 x 2</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddTable(3, 3)}>Bảng 3 x 3</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddTable(4, 4)}>Bảng 4 x 4</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddTable(5, 3)}>Bảng 5 x 3</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           {/* Insert Image */}
           <input
@@ -229,30 +301,19 @@ export const SlideToolbar = ({
             <span>{t('toolbar.image')}</span>
           </ToolbarButton>
 
-          {/* Slide Background Color Picker */}
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground" />
-              }
+          {/* Slide Background Customizer */}
+          {onOpenBackgroundDialog && (
+            <ToolbarButton
+              label="Đổi hình nền slide (Màu sắc, Gradient, Ảnh)"
+              onClick={onOpenBackgroundDialog}
+              className="gap-1.5 px-2"
             >
-              <span className="h-3 w-3 rounded-full border border-border bg-gradient-to-tr from-amber-400 to-blue-500 shadow-2xs" />
+              <Icon name="palette" size={14} className="text-amber-500" />
               <span>{t('toolbar.background')}</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="grid grid-cols-4 gap-1 p-2">
-              {PALETTE_COLORS.map((c) => (
-                <button
-                  key={c.value}
-                  type="button"
-                  onClick={() => onChangeSlideBackground(c.value)}
-                  className="h-6 w-6 rounded border border-border shadow-2xs hover:scale-110 transition-transform"
-                  style={{ backgroundColor: c.value }}
-                />
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </ToolbarButton>
+          )}
 
-          {/* Slide Transitions Picker (Google Slides Animation Style) */}
+          {/* Slide Transitions Picker */}
           {onChangeTransition && (
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -280,6 +341,13 @@ export const SlideToolbar = ({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          )}
+
+          {/* Find and Replace */}
+          {onOpenFindReplace && (
+            <ToolbarButton label="Tìm kiếm & Thay thế (Ctrl+H)" onClick={onOpenFindReplace}>
+              <Icon name="search" size={13} />
+            </ToolbarButton>
           )}
 
           {/* Selected Element Formatting Bar */}
@@ -339,7 +407,7 @@ export const SlideToolbar = ({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Zoom controls */}
           <div className="flex items-center rounded-md border border-border bg-background px-1.5 py-0.5 text-xs text-muted-foreground">
             <button

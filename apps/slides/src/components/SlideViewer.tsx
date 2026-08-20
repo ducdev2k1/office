@@ -2,6 +2,8 @@ import type { SlideElement, SlideItem } from '@/types/slides.types';
 import { useTranslation } from '@office/i18n';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ElementSelectionOverlay, type ResizeHandle } from './canvas/ElementSelectionOverlay';
+import { LineSvgRenderer, ShapeSvgRenderer } from './canvas/ShapeSvgRenderer';
+import { TableElementRenderer } from './canvas/TableElementRenderer';
 
 interface SlideViewerProps {
   slide?: SlideItem;
@@ -61,7 +63,6 @@ export const SlideViewer = ({
   const rafIdRef = useRef<number | null>(null);
   const lastWheelTimeRef = useRef<number>(0);
 
-  // Mouse wheel navigation & zoom
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
       if (e.ctrlKey || e.metaKey) {
@@ -87,7 +88,6 @@ export const SlideViewer = ({
     [zoom, onZoomChange, onNextSlide, onPrevSlide],
   );
 
-  // Keyboard navigation & deletion on selected element
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!selectedElementId || editingId) return;
@@ -126,7 +126,6 @@ export const SlideViewer = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedElementId, editingId, slide, onDeleteElement, onDuplicateElement, onUpdateElement]);
 
-  // 120 FPS+ GPU-accelerated Pointer Move engine using requestAnimationFrame
   useEffect(() => {
     const applyDirectTransform = () => {
       const session = dragRef.current;
@@ -217,9 +216,7 @@ export const SlideViewer = ({
 
       const session = dragRef.current;
       if (session) {
-        if (session.domElement) {
-          session.domElement.style.willChange = 'auto';
-        }
+        if (session.domElement) session.domElement.style.willChange = 'auto';
         if (session.type === 'rotate' && session.currentRot !== undefined) {
           onUpdateElement(session.elementId, { rotation: session.currentRot });
         } else if (
@@ -330,52 +327,6 @@ export const SlideViewer = ({
     );
   }
 
-  const renderShapeSvg = (el: SlideElement) => {
-    const kind = el.shapeKind || 'rect';
-    const fill = el.fill || '#3b82f6';
-    const stroke = el.stroke || 'none';
-    const strokeWidth = el.strokeWidth || 0;
-
-    if (kind === 'circle') {
-      return (
-        <svg viewBox="0 0 100 100" className="h-full w-full pointer-events-none">
-          <ellipse cx="50" cy="50" rx="48" ry="48" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
-        </svg>
-      );
-    }
-    if (kind === 'triangle') {
-      return (
-        <svg viewBox="0 0 100 100" className="h-full w-full pointer-events-none">
-          <polygon points="50,4 96,96 4,96" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
-        </svg>
-      );
-    }
-    if (kind === 'arrow') {
-      return (
-        <svg viewBox="0 0 100 60" className="h-full w-full pointer-events-none">
-          <polygon points="0,20 60,20 60,0 100,30 60,60 60,40 0,40" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
-        </svg>
-      );
-    }
-    if (kind === 'star') {
-      return (
-        <svg viewBox="0 0 100 100" className="h-full w-full pointer-events-none">
-          <polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" fill={fill} stroke={stroke} strokeWidth={strokeWidth} />
-        </svg>
-      );
-    }
-    return (
-      <div
-        className="h-full w-full"
-        style={{
-          backgroundColor: fill,
-          border: stroke !== 'none' ? `${strokeWidth || 2}px solid ${stroke}` : undefined,
-          borderRadius: kind === 'rounded' ? '12px' : '0px',
-        }}
-      />
-    );
-  };
-
   const renderElement = (el: SlideElement) => {
     const isSelected = selectedElementId === el.id;
     const isEditing = editingId === el.id;
@@ -385,6 +336,8 @@ export const SlideViewer = ({
     const widthPercent = (el.width / 960) * 100;
     const heightPercent = (el.height / 540) * 100;
     const rotationDeg = el.rotation || 0;
+    const flip = `${el.flipH ? 'scaleX(-1)' : ''} ${el.flipV ? 'scaleY(-1)' : ''}`.trim();
+    const transform = `rotate(${rotationDeg}deg) ${flip} translateZ(0)`.trim();
 
     return (
       <div
@@ -411,7 +364,7 @@ export const SlideViewer = ({
           top: `${topPercent}%`,
           width: `${widthPercent}%`,
           height: `${heightPercent}%`,
-          transform: `rotate(${rotationDeg}deg) translateZ(0)`,
+          transform,
           backfaceVisibility: 'hidden',
         }}
         className={`group select-none touch-none ${
@@ -436,6 +389,7 @@ export const SlideViewer = ({
           <div
             style={{
               fontSize: el.fontSize ? `${(el.fontSize / 16) * 1}rem` : '1.125rem',
+              fontFamily: el.fontFamily || undefined,
               color: el.color || '#0f172a',
               textAlign: el.align || 'left',
               fontWeight: el.fontWeight || 'normal',
@@ -458,6 +412,7 @@ export const SlideViewer = ({
                 className="h-full w-full resize-none border-none bg-transparent p-0 outline-none"
                 style={{
                   fontSize: 'inherit',
+                  fontFamily: 'inherit',
                   color: 'inherit',
                   textAlign: 'inherit',
                   fontWeight: 'inherit',
@@ -472,8 +427,22 @@ export const SlideViewer = ({
 
         {el.type === 'shape' && (
           <div className="h-full w-full overflow-hidden shadow-xs">
-            {renderShapeSvg(el)}
+            <ShapeSvgRenderer element={el} />
           </div>
+        )}
+
+        {el.type === 'line' && (
+          <div className="h-full w-full overflow-hidden">
+            <LineSvgRenderer element={el} />
+          </div>
+        )}
+
+        {el.type === 'table' && (
+          <TableElementRenderer
+            element={el}
+            onUpdateElement={(patch) => onUpdateElement(el.id, patch)}
+            isSelected={isSelected}
+          />
         )}
 
         {el.type === 'image' && (
@@ -517,7 +486,10 @@ export const SlideViewer = ({
         <div
           ref={canvasRef}
           className="relative aspect-[16/9] w-[960px] max-w-[960px] overflow-hidden rounded-lg border border-border bg-white shadow-xl dark:bg-slate-900"
-          style={{ backgroundColor: slide.background || undefined }}
+          style={{
+            backgroundColor: slide.background || undefined,
+            background: slide.backgroundGradient || slide.backgroundImage || slide.background || undefined,
+          }}
         >
           {slide.elements.map(renderElement)}
         </div>

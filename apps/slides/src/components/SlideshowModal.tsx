@@ -13,6 +13,8 @@ import {
   TooltipTrigger,
 } from '@office/ui-kit';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { LineSvgRenderer, ShapeSvgRenderer } from './canvas/ShapeSvgRenderer';
+import { TableElementRenderer } from './canvas/TableElementRenderer';
 
 interface SlideshowModalProps {
   deck: SlideDeckData;
@@ -32,6 +34,7 @@ export const SlideshowModal = ({
   const [isBlackout, setIsBlackout] = useState(false);
   const [isWhiteout, setIsWhiteout] = useState(false);
   const [isAutoPlay, setIsAutoPlay] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [showControls, setShowControls] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -146,6 +149,12 @@ export const SlideshowModal = ({
         setIsLaser((prev) => !prev);
         return;
       }
+
+      if (e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        setShowNotes((prev) => !prev);
+        return;
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -193,6 +202,17 @@ export const SlideshowModal = ({
         />
       )}
 
+      {/* Speaker Notes Overlay */}
+      {showNotes && currentSlide?.notes && (
+        <div className="absolute right-6 top-6 z-40 max-w-sm rounded-lg border border-white/20 bg-neutral-900/90 p-4 text-xs text-white shadow-2xl backdrop-blur-md">
+          <div className="mb-2 flex items-center justify-between font-semibold text-amber-400">
+            <span>Ghi chú của người thuyết trình</span>
+            <button type="button" onClick={() => setShowNotes(false)} className="text-white/60 hover:text-white">✕</button>
+          </div>
+          <p className="whitespace-pre-wrap leading-relaxed text-white/90">{currentSlide.notes}</p>
+        </div>
+      )}
+
       {/* Slide 16:9 Canvas with CSS 3D/2D Transition Animation */}
       {currentSlide && (
         <div
@@ -204,6 +224,7 @@ export const SlideshowModal = ({
           className={`relative flex aspect-[16/9] max-h-screen max-w-full w-auto h-auto items-center justify-center overflow-hidden shadow-2xl slide-transition-${currentSlide.transition || 'fade'}`}
           style={{
             backgroundColor: currentSlide.background || '#ffffff',
+            background: currentSlide.backgroundGradient || currentSlide.backgroundImage || currentSlide.background || '#ffffff',
             aspectRatio: '16/9',
             width: 'min(100vw, 177.78vh)',
             height: 'min(56.25vw, 100vh)',
@@ -215,6 +236,8 @@ export const SlideshowModal = ({
             const widthPercent = (el.width / 960) * 100;
             const heightPercent = (el.height / 540) * 100;
             const rot = el.rotation ? `rotate(${el.rotation}deg)` : '';
+            const flip = `${el.flipH ? 'scaleX(-1)' : ''} ${el.flipV ? 'scaleY(-1)' : ''}`.trim();
+            const transform = `${rot} ${flip}`.trim() || undefined;
 
             if (el.type === 'shape') {
               return (
@@ -226,12 +249,47 @@ export const SlideshowModal = ({
                     top: `${topPercent}%`,
                     width: `${widthPercent}%`,
                     height: `${heightPercent}%`,
-                    backgroundColor: el.fill || '#3b82f6',
-                    border: el.stroke ? `2px solid ${el.stroke}` : undefined,
-                    borderRadius: el.borderRadius ? `${el.borderRadius}px` : '8px',
-                    transform: rot || undefined,
+                    transform,
                   }}
-                />
+                >
+                  <ShapeSvgRenderer element={el} />
+                </div>
+              );
+            }
+
+            if (el.type === 'line') {
+              return (
+                <div
+                  key={el.id}
+                  style={{
+                    position: 'absolute',
+                    left: `${leftPercent}%`,
+                    top: `${topPercent}%`,
+                    width: `${widthPercent}%`,
+                    height: `${heightPercent}%`,
+                    transform,
+                  }}
+                >
+                  <LineSvgRenderer element={el} />
+                </div>
+              );
+            }
+
+            if (el.type === 'table') {
+              return (
+                <div
+                  key={el.id}
+                  style={{
+                    position: 'absolute',
+                    left: `${leftPercent}%`,
+                    top: `${topPercent}%`,
+                    width: `${widthPercent}%`,
+                    height: `${heightPercent}%`,
+                    transform,
+                  }}
+                >
+                  <TableElementRenderer element={el} onUpdateElement={() => {}} isSelected={false} />
+                </div>
               );
             }
 
@@ -249,7 +307,7 @@ export const SlideshowModal = ({
                     height: `${heightPercent}%`,
                     borderRadius: el.borderRadius ? `${el.borderRadius}px` : undefined,
                     border: el.stroke ? `${el.strokeWidth || 2}px solid ${el.stroke}` : undefined,
-                    transform: rot || undefined,
+                    transform,
                   }}
                   className="object-contain pointer-events-none"
                 />
@@ -266,13 +324,15 @@ export const SlideshowModal = ({
                   width: `${widthPercent}%`,
                   minHeight: `${heightPercent}%`,
                   fontSize: el.fontSize ? `calc(${(el.fontSize / 540) * 100}cqw * 0.5625 + ${el.fontSize * 0.8}px)` : '1.5rem',
+                  fontFamily: el.fontFamily || undefined,
                   color: el.color || '#0f172a',
                   textAlign: el.align || 'left',
                   fontWeight: el.fontWeight || 'normal',
                   fontStyle: el.fontStyle || 'normal',
+                  textDecoration: el.textDecoration || 'none',
                   backgroundColor: el.fill || undefined,
                   borderRadius: el.fill ? '6px' : undefined,
-                  transform: rot || undefined,
+                  transform,
                 }}
                 className="whitespace-pre-wrap p-2 leading-relaxed"
               >
@@ -351,6 +411,7 @@ export const SlideshowModal = ({
 
           <div className="mx-1 h-4 w-px bg-white/20" />
 
+          {/* Laser Pointer */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -369,6 +430,26 @@ export const SlideshowModal = ({
             <TooltipContent>{t('slideshow.laser')}</TooltipContent>
           </Tooltip>
 
+          {/* Speaker Notes Toggle */}
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowNotes((prev) => !prev)}
+                  className={`h-8 w-8 rounded-full p-0 transition-colors ${
+                    showNotes ? 'bg-amber-600 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  }`}
+                />
+              }
+            >
+              <Icon name="file-text" size={15} />
+            </TooltipTrigger>
+            <TooltipContent>Ghi chú người thuyết trình (S)</TooltipContent>
+          </Tooltip>
+
+          {/* Blackout */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -390,6 +471,7 @@ export const SlideshowModal = ({
             <TooltipContent>{t('slideshow.blackout')}</TooltipContent>
           </Tooltip>
 
+          {/* AutoPlay */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -410,6 +492,7 @@ export const SlideshowModal = ({
 
           <div className="mx-1 h-4 w-px bg-white/20" />
 
+          {/* Exit */}
           <Tooltip>
             <TooltipTrigger
               render={

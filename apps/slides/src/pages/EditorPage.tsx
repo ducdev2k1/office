@@ -4,6 +4,9 @@ import { SlideshowModal } from '@/components/SlideshowModal';
 import { SlideToolbar } from '@/components/SlideToolbar';
 import { SlideViewer } from '@/components/SlideViewer';
 import { SlidesHeader } from '@/components/SlidesHeader';
+import { SpeakerNotesDrawer } from '@/components/canvas/SpeakerNotesDrawer';
+import { FindReplaceDialog } from '@/components/dialogs/FindReplaceDialog';
+import { SlideBackgroundDialog } from '@/components/dialogs/SlideBackgroundDialog';
 import { useSlideShortcuts } from '@/hooks/useSlideShortcuts';
 import { useSlides } from '@/hooks/useSlides';
 import { useTheme } from '@/hooks/useTheme';
@@ -23,6 +26,8 @@ export const EditorPage = () => {
   const [zoom, setZoom] = useState(100);
   const [isPresenting, setIsPresenting] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [isBackgroundDialogOpen, setIsBackgroundDialogOpen] = useState(false);
+  const [isFindReplaceOpen, setIsFindReplaceOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -56,6 +61,17 @@ export const EditorPage = () => {
       setExporting(false);
     }
   }, [deck, t]);
+
+  useEffect(() => {
+    const handleGlobalShortcuts = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'f')) {
+        e.preventDefault();
+        setIsFindReplaceOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalShortcuts);
+    return () => window.removeEventListener('keydown', handleGlobalShortcuts);
+  }, []);
 
   useSlideShortcuts({
     enabled: !isPresenting,
@@ -122,6 +138,24 @@ export const EditorPage = () => {
           onClose={() => setIsPresenting(false)}
         />
       )}
+
+      {/* Slide Background Dialog */}
+      <SlideBackgroundDialog
+        open={isBackgroundDialogOpen}
+        onOpenChange={setIsBackgroundDialogOpen}
+        currentBg={currentSlide?.background}
+        onApplyBackground={slidesApi.applySlideBackground}
+      />
+
+      {/* Find and Replace Dialog */}
+      <FindReplaceDialog
+        open={isFindReplaceOpen}
+        onOpenChange={setIsFindReplaceOpen}
+        deck={deck.data}
+        onUpdateDeckData={slidesApi.updateData}
+        onSelectSlideIndex={slidesApi.setActiveSlideIndex}
+        onSelectElementId={slidesApi.setSelectedElementId}
+      />
 
       {/* Floating Context Menu */}
       {contextMenu && (
@@ -203,6 +237,7 @@ export const EditorPage = () => {
           canRedo={slidesApi.canRedo}
           currentTransition={currentSlide?.transition || 'fade'}
           onChangeTransition={slidesApi.setSlideTransition}
+          onSelectLayout={slidesApi.addSlideWithLayout}
           selectedElement={slidesApi.selectedElement}
           onAddTextBox={() =>
             slidesApi.addElement({
@@ -226,6 +261,8 @@ export const EditorPage = () => {
               y: 195,
             })
           }
+          onAddLine={slidesApi.addLine}
+          onAddTable={slidesApi.addTable}
           onAddImage={(dataUrl) =>
             slidesApi.addElement({
               type: 'image',
@@ -236,7 +273,8 @@ export const EditorPage = () => {
               y: 150,
             })
           }
-          onChangeSlideBackground={slidesApi.setSlideBackground}
+          onOpenBackgroundDialog={() => setIsBackgroundDialogOpen(true)}
+          onOpenFindReplace={() => setIsFindReplaceOpen(true)}
           onUpdateSelectedElement={(patch) => {
             if (slidesApi.selectedElementId) {
               slidesApi.updateElement(slidesApi.selectedElementId, patch);
@@ -277,21 +315,27 @@ export const EditorPage = () => {
             }}
             onMoveSlide={slidesApi.moveSlide}
           />
-          <SlideViewer
-            slide={currentSlide}
-            zoom={zoom}
-            onZoomChange={setZoom}
-            selectedElementId={slidesApi.selectedElementId}
-            onSelectElement={slidesApi.setSelectedElementId}
-            onUpdateElement={slidesApi.updateElement}
-            onDeleteElement={slidesApi.deleteElement}
-            onDuplicateElement={slidesApi.duplicateElement}
-            onCenterElement={slidesApi.centerElement}
-            onReplaceImage={slidesApi.replaceImage}
-            onNextSlide={slidesApi.nextSlide}
-            onPrevSlide={slidesApi.prevSlide}
-            onOpenContextMenu={(x, y, el) => setContextMenu({ x, y, element: el })}
-          />
+          <div className="flex flex-1 flex-col overflow-hidden">
+            <SlideViewer
+              slide={currentSlide}
+              zoom={zoom}
+              onZoomChange={setZoom}
+              selectedElementId={slidesApi.selectedElementId}
+              onSelectElement={slidesApi.setSelectedElementId}
+              onUpdateElement={slidesApi.updateElement}
+              onDeleteElement={slidesApi.deleteElement}
+              onDuplicateElement={slidesApi.duplicateElement}
+              onCenterElement={slidesApi.centerElement}
+              onReplaceImage={slidesApi.replaceImage}
+              onNextSlide={slidesApi.nextSlide}
+              onPrevSlide={slidesApi.prevSlide}
+              onOpenContextMenu={(x, y, el) => setContextMenu({ x, y, element: el })}
+            />
+            <SpeakerNotesDrawer
+              notes={currentSlide?.notes}
+              onUpdateNotes={slidesApi.updateSlideNotes}
+            />
+          </div>
         </div>
       </div>
     </ShellLayout>

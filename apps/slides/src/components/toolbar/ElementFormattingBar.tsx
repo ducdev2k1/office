@@ -1,4 +1,4 @@
-import type { SlideElement } from '@/types/slides.types';
+import type { SlideAnimationType, SlideElement } from '@/types/slides.types';
 import { useTranslation } from '@office/i18n';
 import {
   Button,
@@ -12,6 +12,7 @@ import {
   ToolbarButton,
 } from '@office/ui-kit';
 import React, { useRef } from 'react';
+import { FontFamilyDropdown } from './FontFamilyDropdown';
 
 const PALETTE_COLORS = [
   { label: 'Trắng', value: '#ffffff' },
@@ -25,6 +26,16 @@ const PALETTE_COLORS = [
   { label: 'Xanh ngọc', value: '#f0fdf4' },
   { label: 'Đỏ', value: '#dc2626' },
   { label: 'Tím', value: '#9333ea' },
+];
+
+const ANIMATIONS: { label: string; value: SlideAnimationType }[] = [
+  { label: 'Không hiệu ứng', value: 'none' },
+  { label: 'Mờ dần vào (Fade in)', value: 'fade-in' },
+  { label: 'Bay vào từ trái (Fly left)', value: 'fly-in-left' },
+  { label: 'Bay vào từ phải (Fly right)', value: 'fly-in-right' },
+  { label: 'Bay vào từ dưới (Fly up)', value: 'fly-in-up' },
+  { label: 'Thu phóng vào (Zoom in)', value: 'zoom-in' },
+  { label: 'Xoay tròn (Spin)', value: 'spin' },
 ];
 
 interface ElementFormattingBarProps {
@@ -75,6 +86,11 @@ export const ElementFormattingBar = ({
       {/* 1. TEXT FORMATTING */}
       {element.type === 'text' && (
         <>
+          <FontFamilyDropdown
+            currentFont={element.fontFamily}
+            onSelectFont={(fontFamily) => onUpdate({ fontFamily })}
+          />
+
           <div className="flex items-center rounded-md border border-border bg-background px-1 h-7">
             <button
               type="button"
@@ -107,6 +123,18 @@ export const ElementFormattingBar = ({
             onClick={() => onUpdate({ fontStyle: element.fontStyle === 'italic' ? 'normal' : 'italic' })}
           >
             <span className="italic font-serif text-xs">I</span>
+          </ToolbarButton>
+
+          <ToolbarButton
+            label="Gạch chân (Ctrl+U)"
+            active={element.textDecoration === 'underline'}
+            onClick={() =>
+              onUpdate({
+                textDecoration: element.textDecoration === 'underline' ? 'none' : 'underline',
+              })
+            }
+          >
+            <span className="underline text-xs">U</span>
           </ToolbarButton>
 
           {/* Text Color Picker */}
@@ -144,6 +172,23 @@ export const ElementFormattingBar = ({
             }}
           >
             <Icon name="align-center" size={14} />
+          </ToolbarButton>
+
+          {/* Bullet list toggle */}
+          <ToolbarButton
+            label="Danh sách dấu đầu dòng"
+            onClick={() => {
+              if (element.content) {
+                const lines = element.content.split('\n');
+                const isBulleted = lines.every((l) => l.startsWith('• '));
+                const nextContent = isBulleted
+                  ? lines.map((l) => l.replace(/^• /, '')).join('\n')
+                  : lines.map((l) => (l.startsWith('• ') ? l : `• ${l}`)).join('\n');
+                onUpdate({ content: nextContent });
+              }
+            }}
+          >
+            <Icon name="list" size={14} />
           </ToolbarButton>
         </>
       )}
@@ -230,12 +275,46 @@ export const ElementFormattingBar = ({
 
       <Separator orientation="vertical" className="mx-1 h-4" />
 
-      {/* 4. COMMON ACTIONS: ROTATE, CENTER, Z-INDEX, DUPLICATE, DELETE */}
+      {/* 4. ELEMENT ANIMATIONS (Google Slides Entrance Animations) */}
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-xs font-normal text-amber-600 hover:text-amber-700" />
+          }
+        >
+          <Icon name="sparkles" size={13} />
+          <span>Hiệu ứng</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          {ANIMATIONS.map((anim) => (
+            <DropdownMenuItem
+              key={anim.value}
+              onClick={() => onUpdate({ animation: anim.value })}
+              className={element.animation === anim.value ? 'font-semibold text-primary' : ''}
+            >
+              <span>{anim.label}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Separator orientation="vertical" className="mx-1 h-4" />
+
+      {/* 5. COMMON ACTIONS: ROTATE, FLIP, CENTER, Z-INDEX, DUPLICATE, DELETE */}
       {onRotate && (
         <ToolbarButton label={t('formatting.rotate90')} onClick={() => onRotate(90)}>
           <Icon name="rotate-cw" size={14} />
         </ToolbarButton>
       )}
+
+      {/* Flip Horizontal / Vertical */}
+      <ToolbarButton
+        label="Lật ngang"
+        active={element.flipH}
+        onClick={() => onUpdate({ flipH: !element.flipH })}
+      >
+        <Icon name="columns" size={13} />
+      </ToolbarButton>
 
       {onCenter && (
         <DropdownMenu>
