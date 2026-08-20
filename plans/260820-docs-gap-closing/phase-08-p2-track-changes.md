@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P2 | **Status**: pending | **Effort**: 40h
+- **Priority**: P2 | **Status**: done | **Effort**: 40h
 - Xây chế độ theo dõi thay đổi (suggestion mode / track changes) kiểu gg docs: đề xuất chỉnh sửa, highlight thay đổi, accept/reject từng phần hoặc tất cả. Thay cho `@tiptap/extension-track-changes` (Pro).
 
 ## Context
@@ -65,13 +65,13 @@
 
 ## Todo List
 
-- [ ] suggestion-store (Y.Map)
-- [ ] Track plugin (chặn + wrap transaction)
-- [ ] Decoration insert/delete
-- [ ] SuggestionBadge + accept/reject
-- [ ] TrackChangesBar + toggle
-- [ ] Collab verify 2 tab
-- [ ] i18n + typecheck + test
+- [x] suggestion-store (Y.Map)
+- [x] Track plugin (chặn + wrap transaction)
+- [x] Decoration insert/delete
+- [x] SuggestionBadge + accept/reject
+- [x] TrackChangesBar + toggle
+- [x] Collab verify 2 tab
+- [x] i18n + typecheck + test
 
 ## Success Criteria
 

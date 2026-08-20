@@ -16,6 +16,9 @@ import {
   usePrintDocument,
 } from '@/modules/editor';
 import { EditorDialogsHost } from '@/modules/editor/components/EditorDialogsHost';
+import { TrackChangesBar } from '@/modules/editor/components/track-changes/TrackChangesBar';
+import { useEditorComments } from '@/modules/editor/hooks/useEditorComments';
+import { useTrackChanges } from '@/modules/editor/hooks/useTrackChanges';
 import { FollowBanner, useFollowCollaborator } from '@/modules/collab';
 import { AccessModeBanner } from '@/modules/collab/components/AccessModeBanner';
 import { MentionPopover } from '@/modules/collab/components/MentionPopover';
@@ -57,7 +60,6 @@ export const EditorPage = () => {
 
   const accessMode = useAccessMode();
   const isReadOnly = accessMode === 'view';
-
   const modals = useEditorModals();
   const {
     sidebarOpen,
@@ -78,13 +80,6 @@ export const EditorPage = () => {
     closeAllModals,
   } = modals;
 
-  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
-  const [pendingComment, setPendingComment] = useState<{
-    from: number;
-    to: number;
-    text: string;
-  } | null>(null);
-
   const fontPickerRef = useRef<HTMLButtonElement>(null);
   const colorPickerRef = useRef<HTMLButtonElement>(null);
 
@@ -103,11 +98,6 @@ export const EditorPage = () => {
     navigate(`/edit/${remaining[0]!.id}`);
   };
 
-  const handleSelectCommentThread = (threadId: string) => {
-    setSelectedThreadId(threadId);
-    setCommentsOpen(true);
-  };
-
   const {
     editor,
     collabStatus,
@@ -117,7 +107,20 @@ export const EditorPage = () => {
     collabRoom,
     commentsStore,
     threads,
-  } = useCollabEditor(activeDoc, updateContent, isReadOnly, handleSelectCommentThread);
+    suggestionStore,
+    suggestions,
+  } = useCollabEditor(
+    activeDoc,
+    updateContent,
+    isReadOnly,
+    (threadId) => comments.handleSelectCommentThread(threadId),
+    (sugId) => trackChanges.handleSelectSuggestion(sugId),
+  );
+
+  const comments = useEditorComments(editor, commentsStore, currentUser, () =>
+    setCommentsOpen(true),
+  );
+  const trackChanges = useTrackChanges(suggestionStore, suggestions);
 
   const { followedUser, followedClientId, stopFollow, toggleFollow } = useFollowCollaborator({
     editor,
@@ -127,7 +130,6 @@ export const EditorPage = () => {
 
   const paginationState = usePagination(editor, activeDoc);
   const { viewMode, setViewMode, schedulePagination, zoom, setZoom } = paginationState;
-
   const versionHistory = useVersionHistory(activeDoc, collabRoom.doc);
 
   const {
@@ -177,27 +179,6 @@ export const EditorPage = () => {
   const handlePageSetupChange = (setup: PageSetup) => {
     setActiveDocPageSetup(setup);
     schedulePagination(true, setup);
-  };
-
-  const handleStartAddComment = () => {
-    if (!editor || editor.state.selection.empty) return;
-    const { from, to } = editor.state.selection;
-    const text = editor.state.doc.textBetween(from, to, ' ');
-    setPendingComment({ from, to, text });
-    setCommentsOpen(true);
-  };
-
-  const handleCommitPendingComment = (content: string) => {
-    if (!pendingComment) return;
-    commentsStore.addThread({
-      fromIndex: pendingComment.from,
-      toIndex: pendingComment.to,
-      text: content,
-      authorId: currentUser?.id || 'me',
-      authorName: currentUser?.name || 'Bạn',
-      highlightedText: pendingComment.text,
-    });
-    setPendingComment(null);
   };
 
   return (
@@ -290,6 +271,16 @@ export const EditorPage = () => {
           <AccessModeBanner mode={accessMode} />
           <FollowBanner followedUser={followedUser} onStopFollow={stopFollow} />
 
+          <TrackChangesBar
+            isSuggesting={trackChanges.isSuggesting}
+            onToggleSuggesting={() => trackChanges.setIsSuggesting((prev) => !prev)}
+            pendingSuggestions={trackChanges.pendingSuggestions}
+            onAcceptAll={() => suggestionStore.acceptAll()}
+            onRejectAll={() => suggestionStore.rejectAll()}
+            onSelectNext={trackChanges.handleSelectNextSuggestion}
+            onSelectPrev={trackChanges.handleSelectPrevSuggestion}
+          />
+
           <DocsSidebar
             docs={docs}
             activeId={activeDoc?.id ?? ''}
@@ -316,7 +307,7 @@ export const EditorPage = () => {
             <BubbleToolbar
               editor={editor}
               onSetLink={setLink}
-              onAddComment={handleStartAddComment}
+              onAddComment={comments.handleStartAddComment}
             />
           )}
           {editor && <LinkPopoverHost editor={editor} />}
@@ -365,14 +356,18 @@ export const EditorPage = () => {
           threads={threads}
           currentUserId={currentUser?.id}
           currentUserName={currentUser?.name}
-          selectedThreadId={selectedThreadId}
-          onSelectThread={setSelectedThreadId}
-          pendingComment={pendingComment}
-          onCancelPending={() => setPendingComment(null)}
-          onCommitPending={handleCommitPendingComment}
+          selectedThreadId={comments.selectedThreadId}
+          onSelectThread={comments.setSelectedThreadId}
+          pendingComment={comments.pendingComment}
+          onCancelPending={() => comments.setPendingComment(null)}
+          onCommitPending={comments.handleCommitPendingComment}
           onPageSetupChange={handlePageSetupChange}
           onMoveToFolder={moveToFolder}
           onInsertMath={(tex, isBlock) => handleInsertMath(tex, isBlock)}
+          selectedSuggestion={trackChanges.selectedSuggestion}
+          onAcceptSuggestion={trackChanges.handleAcceptSuggestion}
+          onRejectSuggestion={trackChanges.handleRejectSuggestion}
+          onCloseSuggestion={() => trackChanges.setSelectedSuggestionId(null)}
         />
 
         <EditorContextMenu
@@ -383,7 +378,7 @@ export const EditorPage = () => {
           onInsertTable={handleInsertTable}
           onInsertPageBreak={handleInsertPageBreak}
           onToggleFind={toggleFind}
-          onAddComment={handleStartAddComment}
+          onAddComment={comments.handleStartAddComment}
           isReadOnly={isReadOnly}
         />
       </main>

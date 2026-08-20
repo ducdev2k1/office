@@ -18,7 +18,9 @@ import {
   MentionSuggestion,
   ParagraphSpacing,
   SectionBreak,
+  type SuggestionStore,
   Toc,
+  TrackChanges,
 } from '@office/tiptap-extensions';
 import Collaboration from '@tiptap/extension-collaboration';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
@@ -62,6 +64,8 @@ export const useDocsEditor = (
   collabConfig?: DocsCollabConfig | null,
   commentsStore?: CommentsStore,
   onSelectCommentThread?: (threadId: string) => void,
+  suggestionStore?: SuggestionStore,
+  onSelectSuggestion?: (suggestionId: string) => void,
 ) => {
   const isCollab = Boolean(collabConfig?.ydoc && collabConfig?.provider);
 
@@ -146,6 +150,14 @@ export const useDocsEditor = (
           }),
         ]
       : []),
+    ...(suggestionStore
+      ? [
+          TrackChanges.configure({
+            store: suggestionStore,
+            onSelectSuggestion,
+          }),
+        ]
+      : []),
     Mention.configure({}),
     MentionSuggestion.configure({
       users: mentionUsers,
@@ -161,7 +173,7 @@ export const useDocsEditor = (
       editorProps: { attributes: { class: 'doc-editor' } },
       onUpdate: isCollab ? undefined : ({ editor }) => onUpdate(editor.getHTML()),
     },
-    [docId, isCollab, collabConfig?.provider, commentsStore],
+    [docId, isCollab, collabConfig?.provider, commentsStore, suggestionStore],
   );
   editorRef.current = editor;
 

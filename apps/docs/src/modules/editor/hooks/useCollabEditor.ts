@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useCollabAwareness, useCollabRoom, useCollabStatus } from '@office/collab-core';
-import { CommentsStore, type CommentThread } from '@office/tiptap-extensions';
+import {
+  CommentsStore,
+  type CommentThread,
+  SuggestionStore,
+  type TrackSuggestion,
+} from '@office/tiptap-extensions';
 import { useCurrentUserProfile } from '@/modules/collab';
 import { useDocsEditor } from '@/modules/editor/hooks/useDocsEditor';
 import type { DocRecord } from '@/types/docs.types';
@@ -10,6 +15,7 @@ export const useCollabEditor = (
   updateContent: (html: string) => void,
   isReadOnly = false,
   onSelectCommentThread?: (threadId: string) => void,
+  onSelectSuggestion?: (suggestionId: string) => void,
 ) => {
   const { profile: currentUser, updateProfile } = useCurrentUserProfile();
 
@@ -32,6 +38,14 @@ export const useCollabEditor = (
   );
   const [threads, setThreads] = useState<CommentThread[]>(() => commentsStore.getThreads());
 
+  const suggestionStore = useMemo(
+    () => new SuggestionStore(collabRoom.doc),
+    [collabRoom.doc],
+  );
+  const [suggestions, setSuggestions] = useState<TrackSuggestion[]>(() =>
+    suggestionStore.getSuggestions(),
+  );
+
   useEffect(() => {
     commentsStore.setYDoc(collabRoom.doc);
     setThreads(commentsStore.getThreads());
@@ -41,6 +55,16 @@ export const useCollabEditor = (
     });
     return unsubscribe;
   }, [commentsStore, collabRoom.doc]);
+
+  useEffect(() => {
+    suggestionStore.setYDoc(collabRoom.doc);
+    setSuggestions(suggestionStore.getSuggestions());
+
+    const unsubscribe = suggestionStore.subscribe(() => {
+      setSuggestions([...suggestionStore.getSuggestions()]);
+    });
+    return unsubscribe;
+  }, [suggestionStore, collabRoom.doc]);
 
   const collabConfig = useMemo(() => {
     if (!collabRoom.doc || !collabRoom.provider) return null;
@@ -63,6 +87,8 @@ export const useCollabEditor = (
     collabConfig,
     commentsStore,
     onSelectCommentThread,
+    suggestionStore,
+    onSelectSuggestion,
   );
 
   // Periodic offline local cache update (only when editing)
@@ -97,5 +123,7 @@ export const useCollabEditor = (
     collabRoom,
     commentsStore,
     threads,
+    suggestionStore,
+    suggestions,
   };
 };

@@ -11,4 +11,11 @@ export { Comments, CommentsStore, type CommentItem, type CommentThread } from '.
 export { MathInline, MathBlock } from './math';
 export { Footnote } from './footnote';
 export { Columns, Column } from './columns';
+export {
+  TrackChanges,
+  SuggestionStore,
+  type TrackSuggestion,
+  type SuggestionType,
+  type SuggestionStatus,
+} from './track-changes';
 export * from './shared';

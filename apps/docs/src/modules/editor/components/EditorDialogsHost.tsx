@@ -1,10 +1,11 @@
 import type { Editor } from '@tiptap/core';
-import type { CommentsStore, CommentThread } from '@office/tiptap-extensions';
+import type { CommentsStore, CommentThread, TrackSuggestion } from '@office/tiptap-extensions';
 import type { DocRecord, PageSetup } from '@/types/docs.types';
 import { HelpModal } from '@/modules/editor/components/HelpModal';
 import { PageHeaderFooterPanel } from '@/modules/editor/components/PageHeaderFooterPanel';
 import { WatermarkDialog } from '@/modules/editor/components/WatermarkDialog';
 import { MathEditorDialog } from '@/modules/editor/components/MathEditorDialog';
+import { SuggestionCard } from '@/modules/editor/components/track-changes/SuggestionCard';
 import { CommentsPanel } from '@/modules/editor/components/comments/CommentsPanel';
 import { ShareDialog } from '@/modules/collab/components/ShareDialog';
 import { VersionHistoryDialog } from '@/modules/collab/components/VersionHistoryDialog';
@@ -31,6 +32,10 @@ interface EditorDialogsHostProps {
   onPageSetupChange: (setup: PageSetup) => void;
   onMoveToFolder: (docId: string, folderId: string | null) => void;
   onInsertMath?: (tex: string, isBlock: boolean) => void;
+  selectedSuggestion?: TrackSuggestion | null;
+  onAcceptSuggestion?: (id: string) => void;
+  onRejectSuggestion?: (id: string) => void;
+  onCloseSuggestion?: () => void;
 }
 
 export const EditorDialogsHost = ({
@@ -51,6 +56,10 @@ export const EditorDialogsHost = ({
   onPageSetupChange,
   onMoveToFolder,
   onInsertMath,
+  selectedSuggestion,
+  onAcceptSuggestion,
+  onRejectSuggestion,
+  onCloseSuggestion,
 }: EditorDialogsHostProps) => {
   const {
     findOpen,
@@ -159,6 +168,17 @@ export const EditorDialogsHost = ({
         onOpenChange={setMathEditorOpen}
         onSave={(tex, isBlock) => onInsertMath?.(tex, isBlock)}
       />
+
+      {selectedSuggestion && onAcceptSuggestion && onRejectSuggestion && onCloseSuggestion && (
+        <div className="fixed bottom-14 right-6 z-50 animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <SuggestionCard
+            suggestion={selectedSuggestion}
+            onAccept={onAcceptSuggestion}
+            onReject={onRejectSuggestion}
+            onClose={onCloseSuggestion}
+          />
+        </div>
+      )}
     </>
   );
 };
