@@ -5,6 +5,16 @@ export type SlideElementType = 'text' | 'shape' | 'image' | 'table';
 
 export type SlideShapeKind = 'rect' | 'rounded' | 'circle' | 'triangle' | 'arrow' | 'star';
 
+export type SlideTransitionType =
+  | 'none'
+  | 'fade'
+  | 'slide-left'
+  | 'slide-right'
+  | 'slide-up'
+  | 'zoom'
+  | 'flip-3d'
+  | 'cube-3d';
+
 export interface SlideElement {
   id: string;
   type: SlideElementType;
@@ -32,6 +42,7 @@ export interface SlideItem {
   id: string;
   title?: string;
   background?: string;
+  transition?: SlideTransitionType;
   elements: SlideElement[];
 }
 

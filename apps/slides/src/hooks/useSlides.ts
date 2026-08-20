@@ -1,5 +1,4 @@
 import {
-  createBlankDeckData,
   createBlankSlideDeck,
   deleteSlideRecord,
   getStorageUsageBytes,
@@ -8,7 +7,13 @@ import {
   loadSlides,
   saveSlides,
 } from '@/services/slides.service';
-import type { SlideDeckData, SlideDocRecord, SlideElement, SlideItem } from '@/types/slides.types';
+import type {
+  SlideDeckData,
+  SlideDocRecord,
+  SlideElement,
+  SlideItem,
+  SlideTransitionType,
+} from '@/types/slides.types';
 import {
   centerElementInDeck,
   cloneDeep,
@@ -56,6 +61,7 @@ export interface SlidesState {
   duplicateActiveSlide: () => void;
   moveSlide: (fromIndex: number, toIndex: number) => void;
   setSlideBackground: (bg: string, index?: number) => void;
+  setSlideTransition: (transition: SlideTransitionType, applyToAll?: boolean) => void;
   addElement: (element: Partial<SlideElement>) => string;
   updateElement: (elementId: string, patch: Partial<SlideElement>) => void;
   deleteElement: (elementId?: string) => void;
@@ -273,6 +279,7 @@ export const useSlides = (): SlidesState => {
       id: `slide-${crypto.randomUUID()}`,
       title: `Trang ${currentDeck.data.slides.length + 1}`,
       background: '#ffffff',
+      transition: 'fade',
       elements: [
         createNewElement({
           type: 'text',
@@ -339,6 +346,21 @@ export const useSlides = (): SlidesState => {
     );
     updateData({ ...currentDeck.data, slides: slidesList });
   }, [activeSlideIndex, updateData]);
+
+  const setSlideTransition = useCallback(
+    (transition: SlideTransitionType, applyToAll = false): void => {
+      const currentDeck = activeDeckRef.current;
+      if (!currentDeck?.data) return;
+      const slidesList = currentDeck.data.slides.map((s, idx) => {
+        if (applyToAll || idx === activeSlideIndex) {
+          return { ...s, transition };
+        }
+        return s;
+      });
+      updateData({ ...currentDeck.data, slides: slidesList });
+    },
+    [activeSlideIndex, updateData],
+  );
 
   const addElement = useCallback((partial: Partial<SlideElement>): string => {
     const currentDeck = activeDeckRef.current;
@@ -531,6 +553,7 @@ export const useSlides = (): SlidesState => {
     duplicateActiveSlide,
     moveSlide,
     setSlideBackground,
+    setSlideTransition,
     addElement,
     updateElement,
     deleteElement,

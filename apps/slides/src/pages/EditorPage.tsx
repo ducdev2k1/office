@@ -57,7 +57,6 @@ export const EditorPage = () => {
     }
   }, [deck, t]);
 
-  // Attach Google Slides keyboard shortcuts in editor mode
   useSlideShortcuts({
     enabled: !isPresenting,
     onPresent: () => setIsPresenting(true),
@@ -140,6 +139,24 @@ export const EditorPage = () => {
           onDelete={() => slidesApi.deleteElement(contextMenu.element?.id)}
           onCenter={(axis) => slidesApi.centerElement(axis, contextMenu.element?.id)}
           onRotate={(deg) => slidesApi.rotateElement(deg, contextMenu.element?.id)}
+          onReplaceImage={() => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+              const file = (e.target as HTMLInputElement).files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                  if (typeof reader.result === 'string') {
+                    slidesApi.replaceImage(reader.result, contextMenu.element?.id);
+                  }
+                };
+                reader.readAsDataURL(file);
+              }
+            };
+            input.click();
+          }}
           onBringForward={() => slidesApi.bringElementForward(contextMenu.element?.id)}
           onSendBackward={() => slidesApi.sendElementBackward(contextMenu.element?.id)}
           onBringToFront={() => slidesApi.bringElementToFront(contextMenu.element?.id)}
@@ -184,6 +201,8 @@ export const EditorPage = () => {
           onRedo={slidesApi.redo}
           canUndo={slidesApi.canUndo}
           canRedo={slidesApi.canRedo}
+          currentTransition={currentSlide?.transition || 'fade'}
+          onChangeTransition={slidesApi.setSlideTransition}
           selectedElement={slidesApi.selectedElement}
           onAddTextBox={() =>
             slidesApi.addElement({
@@ -267,6 +286,8 @@ export const EditorPage = () => {
             onUpdateElement={slidesApi.updateElement}
             onDeleteElement={slidesApi.deleteElement}
             onDuplicateElement={slidesApi.duplicateElement}
+            onCenterElement={slidesApi.centerElement}
+            onReplaceImage={slidesApi.replaceImage}
             onNextSlide={slidesApi.nextSlide}
             onPrevSlide={slidesApi.prevSlide}
             onOpenContextMenu={(x, y, el) => setContextMenu({ x, y, element: el })}

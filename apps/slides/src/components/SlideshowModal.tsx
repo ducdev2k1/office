@@ -42,7 +42,6 @@ export const SlideshowModal = ({
   const totalSlides = slides.length;
   const currentSlide: SlideItem | undefined = slides[currentIndex];
 
-  // Request HTML5 Fullscreen on mount
   useEffect(() => {
     const el = containerRef.current;
     if (el && !document.fullscreenElement) {
@@ -50,9 +49,7 @@ export const SlideshowModal = ({
     }
 
     const handleFullscreenChange = () => {
-      if (!document.fullscreenElement) {
-        onClose();
-      }
+      if (!document.fullscreenElement) onClose();
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
@@ -64,7 +61,6 @@ export const SlideshowModal = ({
     };
   }, [onClose]);
 
-  // Handle Auto-hide Controls on mouse inactivity
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setShowControls(true);
     setLaserPos({ x: e.clientX, y: e.clientY });
@@ -95,7 +91,6 @@ export const SlideshowModal = ({
     setCurrentIndex(index);
   }, []);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -151,23 +146,12 @@ export const SlideshowModal = ({
         setIsLaser((prev) => !prev);
         return;
       }
-
-      if (e.key.toLowerCase() === 'f') {
-        e.preventDefault();
-        if (!document.fullscreenElement) {
-          containerRef.current?.requestFullscreen?.().catch(() => {});
-        } else {
-          document.exitFullscreen?.().catch(() => {});
-        }
-        return;
-      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [goToNext, goToPrev, goToSlide, isBlackout, isWhiteout, onClose, totalSlides]);
 
-  // Auto-play timer
   useEffect(() => {
     if (isAutoPlay) {
       autoPlayIntervalRef.current = window.setInterval(() => {
@@ -178,9 +162,7 @@ export const SlideshowModal = ({
       autoPlayIntervalRef.current = null;
     }
     return () => {
-      if (autoPlayIntervalRef.current) {
-        window.clearInterval(autoPlayIntervalRef.current);
-      }
+      if (autoPlayIntervalRef.current) window.clearInterval(autoPlayIntervalRef.current);
     };
   }, [isAutoPlay, totalSlides]);
 
@@ -192,27 +174,18 @@ export const SlideshowModal = ({
         isLaser ? 'cursor-none' : ''
       }`}
     >
-      {/* Blackout Screen Overlay */}
       {isBlackout && (
-        <div
-          onClick={() => setIsBlackout(false)}
-          className="absolute inset-0 z-40 flex items-center justify-center bg-black text-xs text-white/30"
-        >
+        <div onClick={() => setIsBlackout(false)} className="absolute inset-0 z-40 flex items-center justify-center bg-black text-xs text-white/30">
           Nhấn phím B để tiếp tục trình chiếu
         </div>
       )}
 
-      {/* Whiteout Screen Overlay */}
       {isWhiteout && (
-        <div
-          onClick={() => setIsWhiteout(false)}
-          className="absolute inset-0 z-40 flex items-center justify-center bg-white text-xs text-black/30"
-        >
+        <div onClick={() => setIsWhiteout(false)} className="absolute inset-0 z-40 flex items-center justify-center bg-white text-xs text-black/30">
           Nhấn phím W để tiếp tục trình chiếu
         </div>
       )}
 
-      {/* Laser Pointer Glowing Dot */}
       {isLaser && !isBlackout && !isWhiteout && (
         <div
           className="pointer-events-none fixed z-50 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444,0_0_20px_#ef4444]"
@@ -220,15 +193,15 @@ export const SlideshowModal = ({
         />
       )}
 
-      {/* Slide 16:9 Canvas Area */}
+      {/* Slide 16:9 Canvas with CSS 3D/2D Transition Animation */}
       {currentSlide && (
         <div
+          key={`${currentSlide.id}-${currentIndex}`}
           onClick={(e) => {
-            // Only advance if clicked directly on slide background, not on controls
             if ((e.target as HTMLElement).closest('.slideshow-controls')) return;
             goToNext();
           }}
-          className="relative flex aspect-[16/9] max-h-screen max-w-full w-auto h-auto items-center justify-center overflow-hidden shadow-2xl transition-all"
+          className={`relative flex aspect-[16/9] max-h-screen max-w-full w-auto h-auto items-center justify-center overflow-hidden shadow-2xl slide-transition-${currentSlide.transition || 'fade'}`}
           style={{
             backgroundColor: currentSlide.background || '#ffffff',
             aspectRatio: '16/9',
@@ -241,6 +214,7 @@ export const SlideshowModal = ({
             const topPercent = (el.y / 540) * 100;
             const widthPercent = (el.width / 960) * 100;
             const heightPercent = (el.height / 540) * 100;
+            const rot = el.rotation ? `rotate(${el.rotation}deg)` : '';
 
             if (el.type === 'shape') {
               return (
@@ -252,10 +226,32 @@ export const SlideshowModal = ({
                     top: `${topPercent}%`,
                     width: `${widthPercent}%`,
                     height: `${heightPercent}%`,
-                    backgroundColor: el.fill || '#e2e8f0',
+                    backgroundColor: el.fill || '#3b82f6',
                     border: el.stroke ? `2px solid ${el.stroke}` : undefined,
-                    borderRadius: '8px',
+                    borderRadius: el.borderRadius ? `${el.borderRadius}px` : '8px',
+                    transform: rot || undefined,
                   }}
+                />
+              );
+            }
+
+            if (el.type === 'image') {
+              return (
+                <img
+                  key={el.id}
+                  src={el.url}
+                  alt={el.content || 'Slide image'}
+                  style={{
+                    position: 'absolute',
+                    left: `${leftPercent}%`,
+                    top: `${topPercent}%`,
+                    width: `${widthPercent}%`,
+                    height: `${heightPercent}%`,
+                    borderRadius: el.borderRadius ? `${el.borderRadius}px` : undefined,
+                    border: el.stroke ? `${el.strokeWidth || 2}px solid ${el.stroke}` : undefined,
+                    transform: rot || undefined,
+                  }}
+                  className="object-contain pointer-events-none"
                 />
               );
             }
@@ -272,10 +268,13 @@ export const SlideshowModal = ({
                   fontSize: el.fontSize ? `calc(${(el.fontSize / 540) * 100}cqw * 0.5625 + ${el.fontSize * 0.8}px)` : '1.5rem',
                   color: el.color || '#0f172a',
                   textAlign: el.align || 'left',
+                  fontWeight: el.fontWeight || 'normal',
+                  fontStyle: el.fontStyle || 'normal',
                   backgroundColor: el.fill || undefined,
                   borderRadius: el.fill ? '6px' : undefined,
+                  transform: rot || undefined,
                 }}
-                className="whitespace-pre-wrap p-2 font-medium leading-relaxed"
+                className="whitespace-pre-wrap p-2 leading-relaxed"
               >
                 {el.content}
               </div>
@@ -284,14 +283,13 @@ export const SlideshowModal = ({
         </div>
       )}
 
-      {/* Floating Bottom Control Bar (Auto-hide) */}
+      {/* Floating Bottom Control Bar */}
       <TooltipProvider>
         <div
-          className={`slideshow-controls fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/10 bg-neutral-900/80 px-3 py-1.5 backdrop-blur-md shadow-2xl transition-opacity duration-300 ${
+          className={`slideshow-controls fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/10 bg-neutral-900/85 px-3 py-1.5 backdrop-blur-md shadow-2xl transition-opacity duration-300 ${
             showControls ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         >
-          {/* Previous Slide Button */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -309,7 +307,6 @@ export const SlideshowModal = ({
             <TooltipContent>Trang trước (← / P)</TooltipContent>
           </Tooltip>
 
-          {/* Slide Jump Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -335,7 +332,6 @@ export const SlideshowModal = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Next Slide Button */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -355,7 +351,6 @@ export const SlideshowModal = ({
 
           <div className="mx-1 h-4 w-px bg-white/20" />
 
-          {/* Laser Pointer Toggle */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -364,9 +359,7 @@ export const SlideshowModal = ({
                   size="sm"
                   onClick={() => setIsLaser((prev) => !prev)}
                   className={`h-8 w-8 rounded-full p-0 transition-colors ${
-                    isLaser
-                      ? 'bg-red-600 text-white shadow-[0_0_10px_#ef4444]'
-                      : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    isLaser ? 'bg-red-600 text-white shadow-[0_0_10px_#ef4444]' : 'text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 />
               }
@@ -376,7 +369,6 @@ export const SlideshowModal = ({
             <TooltipContent>Bút laser ảo (L)</TooltipContent>
           </Tooltip>
 
-          {/* Blackout Screen Toggle */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -398,7 +390,6 @@ export const SlideshowModal = ({
             <TooltipContent>Màn hình đen (B)</TooltipContent>
           </Tooltip>
 
-          {/* Auto-play slideshow */}
           <Tooltip>
             <TooltipTrigger
               render={
@@ -419,7 +410,6 @@ export const SlideshowModal = ({
 
           <div className="mx-1 h-4 w-px bg-white/20" />
 
-          {/* Exit Fullscreen Button */}
           <Tooltip>
             <TooltipTrigger
               render={

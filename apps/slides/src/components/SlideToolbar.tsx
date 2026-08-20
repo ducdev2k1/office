@@ -1,4 +1,4 @@
-import type { SlideElement, SlideShapeKind } from '@/types/slides.types';
+import type { SlideElement, SlideShapeKind, SlideTransitionType } from '@/types/slides.types';
 import { useTranslation } from '@office/i18n';
 import {
   Button,
@@ -29,6 +29,17 @@ const PALETTE_COLORS = [
   { label: 'Tím', value: '#9333ea' },
 ];
 
+const TRANSITIONS: { label: string; value: SlideTransitionType; icon: string }[] = [
+  { label: 'Không hiệu ứng', value: 'none', icon: 'square' },
+  { label: 'Mờ dần (Fade)', value: 'fade', icon: 'sparkles' },
+  { label: 'Trượt từ phải (Slide Left)', value: 'slide-left', icon: 'arrow-right' },
+  { label: 'Trượt từ trái (Slide Right)', value: 'slide-right', icon: 'arrow-left' },
+  { label: 'Trượt từ dưới (Slide Up)', value: 'slide-up', icon: 'arrow-up' },
+  { label: 'Thu phóng (Zoom)', value: 'zoom', icon: 'maximize' },
+  { label: 'Lật thẻ 3D (3D Flip)', value: 'flip-3d', icon: 'rotate-cw' },
+  { label: 'Khối 3D Cube (3D Cube)', value: 'cube-3d', icon: 'box' },
+];
+
 interface SlideToolbarProps {
   onAddSlide: () => void;
   onDeleteSlide: () => void;
@@ -42,6 +53,8 @@ interface SlideToolbarProps {
   onRedo?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
+  currentTransition?: SlideTransitionType;
+  onChangeTransition?: (transition: SlideTransitionType, applyToAll?: boolean) => void;
   selectedElement?: SlideElement;
   onAddTextBox: () => void;
   onAddShape: (kind: SlideShapeKind) => void;
@@ -72,6 +85,8 @@ export const SlideToolbar = ({
   onRedo,
   canUndo = false,
   canRedo = false,
+  currentTransition = 'fade',
+  onChangeTransition,
   selectedElement,
   onAddTextBox,
   onAddShape,
@@ -103,6 +118,9 @@ export const SlideToolbar = ({
     reader.readAsDataURL(file);
     e.target.value = '';
   };
+
+  const activeTransLabel =
+    TRANSITIONS.find((tItem) => tItem.value === currentTransition)?.label || 'Chuyển cảnh';
 
   return (
     <TooltipProvider>
@@ -219,7 +237,7 @@ export const SlideToolbar = ({
               }
             >
               <span className="h-3 w-3 rounded-full border border-border bg-gradient-to-tr from-amber-400 to-blue-500 shadow-2xs" />
-              <span>Nền Slide</span>
+              <span>Nền</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="grid grid-cols-4 gap-1 p-2">
               {PALETTE_COLORS.map((c) => (
@@ -233,6 +251,36 @@ export const SlideToolbar = ({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Slide Transitions Picker (Google Slides Animation Style) */}
+          {onChangeTransition && (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs font-normal text-muted-foreground hover:text-foreground" />
+                }
+              >
+                <Icon name="sparkles" size={13} className="text-amber-500" />
+                <span className="truncate max-w-[90px]">{activeTransLabel}</span>
+                <Icon name="chevron-down" size={11} className="opacity-60" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {TRANSITIONS.map((item) => (
+                  <DropdownMenuItem
+                    key={item.value}
+                    onClick={() => onChangeTransition(item.value)}
+                    className={item.value === currentTransition ? 'font-semibold text-primary' : ''}
+                  >
+                    <span>{item.label}</span>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onChangeTransition(currentTransition, true)}>
+                  <span className="text-xs text-muted-foreground">Áp dụng cho tất cả slide</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           {/* Selected Element Formatting Bar */}
           {selectedElement && (

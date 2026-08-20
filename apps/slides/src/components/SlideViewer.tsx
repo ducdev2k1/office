@@ -1,6 +1,7 @@
 import type { SlideElement, SlideItem } from '@/types/slides.types';
 import { useTranslation } from '@office/i18n';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ElementSelectionOverlay, type ResizeHandle } from './canvas/ElementSelectionOverlay';
 
 interface SlideViewerProps {
   slide?: SlideItem;
@@ -11,15 +12,15 @@ interface SlideViewerProps {
   onUpdateElement: (elementId: string, patch: Partial<SlideElement>) => void;
   onDeleteElement: (elementId: string) => void;
   onDuplicateElement: (elementId: string) => void;
+  onCenterElement?: (axis: 'horizontal' | 'vertical' | 'both') => void;
+  onReplaceImage?: (url: string) => void;
   onNextSlide?: () => void;
   onPrevSlide?: () => void;
   onOpenContextMenu?: (x: number, y: number, element?: SlideElement | null) => void;
 }
 
-type ResizeHandle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w';
-
 interface DragSession {
-  type: 'move' | 'resize';
+  type: 'move' | 'resize' | 'rotate';
   handle?: ResizeHandle;
   startX: number;
   startY: number;
@@ -27,10 +28,12 @@ interface DragSession {
   initialY: number;
   initialW: number;
   initialH: number;
+  initialRot?: number;
   currentX: number;
   currentY: number;
   currentW: number;
   currentH: number;
+  currentRot?: number;
   elementId: string;
   domElement: HTMLElement | null;
 }
@@ -44,6 +47,8 @@ export const SlideViewer = ({
   onUpdateElement,
   onDeleteElement,
   onDuplicateElement,
+  onCenterElement,
+  onReplaceImage,
   onNextSlide,
   onPrevSlide,
   onOpenContextMenu,
@@ -68,7 +73,6 @@ export const SlideViewer = ({
         return;
       }
 
-      // Wheel down / up to switch slides (debounced 350ms to prevent rapid jumps)
       const now = Date.now();
       if (now - lastWheelTimeRef.current < 350) return;
 
@@ -128,6 +132,12 @@ export const SlideViewer = ({
       const session = dragRef.current;
       if (!session || !session.domElement) return;
 
+      if (session.type === 'rotate') {
+        session.domElement.style.transform = `rotate(${session.currentRot || 0}deg) translateZ(0)`;
+        session.domElement.style.willChange = 'transform';
+        return;
+      }
+
       const leftPercent = (session.currentX / 960) * 100;
       const topPercent = (session.currentY / 540) * 100;
       const widthPercent = (session.currentW / 960) * 100;
@@ -150,13 +160,20 @@ export const SlideViewer = ({
       const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
       const lastEvent = events[events.length - 1] || e;
 
-      const deltaX = (lastEvent.clientX - session.startX) / scaleFactor;
-      const deltaY = (lastEvent.clientY - session.startY) / scaleFactor;
-
-      if (session.type === 'move') {
+      if (session.type === 'rotate') {
+        const rad = Math.atan2(lastEvent.clientY - session.startY, lastEvent.clientX - session.startX);
+        let deg = Math.round((rad * 180) / Math.PI) + 90;
+        if (deg < 0) deg += 360;
+        if (Math.abs(deg % 45) < 3) deg = Math.round(deg / 45) * 45;
+        session.currentRot = deg % 360;
+      } else if (session.type === 'move') {
+        const deltaX = (lastEvent.clientX - session.startX) / scaleFactor;
+        const deltaY = (lastEvent.clientY - session.startY) / scaleFactor;
         session.currentX = Math.round(Math.max(0, Math.min(960 - session.initialW, session.initialX + deltaX)));
         session.currentY = Math.round(Math.max(0, Math.min(540 - session.initialH, session.initialY + deltaY)));
       } else if (session.type === 'resize' && session.handle) {
+        const deltaX = (lastEvent.clientX - session.startX) / scaleFactor;
+        const deltaY = (lastEvent.clientY - session.startY) / scaleFactor;
         const handle = session.handle;
         let newX = session.initialX;
         let newY = session.initialY;
@@ -203,7 +220,9 @@ export const SlideViewer = ({
         if (session.domElement) {
           session.domElement.style.willChange = 'auto';
         }
-        if (
+        if (session.type === 'rotate' && session.currentRot !== undefined) {
+          onUpdateElement(session.elementId, { rotation: session.currentRot });
+        } else if (
           session.currentX !== session.initialX ||
           session.currentY !== session.initialY ||
           session.currentW !== session.initialW ||
@@ -232,7 +251,7 @@ export const SlideViewer = ({
   }, [onUpdateElement]);
 
   const handleStartMove = useCallback((e: React.PointerEvent, el: SlideElement) => {
-    if (e.button === 2) return; // Ignore right click for drag start
+    if (e.button === 2) return;
     e.stopPropagation();
     onSelectElement(el.id);
     const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
@@ -270,6 +289,34 @@ export const SlideViewer = ({
       currentY: el.y,
       currentW: el.width,
       currentH: el.height,
+      elementId: el.id,
+      domElement: dom,
+    };
+  }, []);
+
+  const handleStartRotate = useCallback((e: React.PointerEvent, el: SlideElement) => {
+    if (e.button === 2 || !canvasRef.current) return;
+    e.stopPropagation();
+    const rect = canvasRef.current.getBoundingClientRect();
+    const scaleFactor = rect.width / 960;
+    const centerX = rect.left + (el.x + el.width / 2) * scaleFactor;
+    const centerY = rect.top + (el.y + el.height / 2) * scaleFactor;
+    const dom = (e.currentTarget as HTMLElement).closest('[data-slide-element]') as HTMLElement | null;
+
+    dragRef.current = {
+      type: 'rotate',
+      startX: centerX,
+      startY: centerY,
+      initialX: el.x,
+      initialY: el.y,
+      initialW: el.width,
+      initialH: el.height,
+      initialRot: el.rotation || 0,
+      currentX: el.x,
+      currentY: el.y,
+      currentW: el.width,
+      currentH: el.height,
+      currentRot: el.rotation || 0,
       elementId: el.id,
       domElement: dom,
     };
@@ -329,28 +376,6 @@ export const SlideViewer = ({
     );
   };
 
-  const renderHandles = (el: SlideElement) => {
-    const handles: ResizeHandle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
-    const handlePositions: Record<ResizeHandle, string> = {
-      nw: 'top-0 left-0 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize',
-      n: 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize',
-      ne: 'top-0 right-0 translate-x-1/2 -translate-y-1/2 cursor-nesw-resize',
-      e: 'top-1/2 right-0 translate-x-1/2 -translate-y-1/2 cursor-ew-resize',
-      se: 'bottom-0 right-0 translate-x-1/2 translate-y-1/2 cursor-nwse-resize',
-      s: 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 cursor-ns-resize',
-      sw: 'bottom-0 left-0 -translate-x-1/2 translate-y-1/2 cursor-nesw-resize',
-      w: 'top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize',
-    };
-
-    return handles.map((h) => (
-      <div
-        key={h}
-        onPointerDown={(e) => handleStartResize(e, el, h)}
-        className={`absolute z-30 h-2.5 w-2.5 rounded-xs border border-white bg-[var(--o-kind-slides)] shadow-xs ${handlePositions[h]}`}
-      />
-    ));
-  };
-
   const renderElement = (el: SlideElement) => {
     const isSelected = selectedElementId === el.id;
     const isEditing = editingId === el.id;
@@ -391,7 +416,17 @@ export const SlideViewer = ({
             : 'hover:ring-1 hover:ring-[var(--o-kind-slides)]/50'
         }`}
       >
-        {isSelected && renderHandles(el)}
+        {isSelected && (
+          <ElementSelectionOverlay
+            element={el}
+            onStartResize={(e, h) => handleStartResize(e, el, h)}
+            onStartRotate={(e) => handleStartRotate(e, el)}
+            onUpdateElement={(patch) => onUpdateElement(el.id, patch)}
+            onDeleteElement={() => onDeleteElement(el.id)}
+            onCenterElement={onCenterElement}
+            onReplaceImage={onReplaceImage}
+          />
+        )}
 
         {el.type === 'text' && (
           <div
@@ -443,6 +478,7 @@ export const SlideViewer = ({
             alt={el.content || 'Hình ảnh slide'}
             style={{
               border: el.stroke ? `${el.strokeWidth || 2}px solid ${el.stroke}` : undefined,
+              borderRadius: el.borderRadius ? `${el.borderRadius}px` : undefined,
             }}
             className="h-full w-full rounded object-contain pointer-events-none"
             draggable={false}
