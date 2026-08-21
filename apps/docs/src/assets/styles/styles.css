@@ -1199,3 +1199,71 @@ textarea:focus-visible {
     filter: drop-shadow(0 0 16px rgba(37, 99, 235, 1)) drop-shadow(0 0 32px rgba(37, 99, 235, 0.85));
   }
 }
+
+/* =========================================================
+   Callout Blocks
+   ========================================================= */
+.callout {
+  position: relative;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.callout-info {
+  border-left: 4px solid #3b82f6;
+  background-color: rgba(59, 130, 246, 0.08);
+}
+.callout-tip {
+  border-left: 4px solid #10b981;
+  background-color: rgba(16, 185, 129, 0.08);
+}
+.callout-warning {
+  border-left: 4px solid #f59e0b;
+  background-color: rgba(245, 158, 11, 0.08);
+}
+.callout-danger {
+  border-left: 4px solid #ef4444;
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+/* =========================================================
+   Paragraph Borders & Shading
+   ========================================================= */
+.doc-editor p[data-border="left"] {
+  border-left: 3px solid var(--line);
+  padding-left: 0.75rem;
+}
+.doc-editor p[data-border="right"] {
+  border-right: 3px solid var(--line);
+  padding-right: 0.75rem;
+}
+.doc-editor p[data-border="top"] {
+  border-top: 1px solid var(--line);
+  padding-top: 0.5rem;
+}
+.doc-editor p[data-border="bottom"] {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.5rem;
+}
+.doc-editor p[data-border="box"],
+.doc-editor p[data-border="full"] {
+  border: 1px solid var(--line);
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.doc-editor p[data-bg-color] {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+}
+
+/* =========================================================
+   Chart Blocks
+   ========================================================= */
+.chart-block {
+  margin: 1.25rem 0;
+  user-select: none;
+}
+

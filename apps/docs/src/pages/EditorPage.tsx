@@ -8,7 +8,9 @@ import {
   EditorCanvas,
   EditorContextMenu,
   Ruler,
+  SlashCommandSuggest,
   Statusbar,
+  WordCountFloatingBadge,
   useCollabEditor,
   useEditorActions,
   useEditorModals,
@@ -28,9 +30,9 @@ import { useVersionHistory } from '@/modules/collab/hooks/useVersionHistory';
 import { Header } from '@/modules/header';
 import { DocsSidebar } from '@/modules/sidebar';
 import { BubbleToolbar } from '@/modules/toolbar/components/BubbleToolbar';
+import { ImageBubbleToolbar } from '@/modules/toolbar/components/ImageBubbleToolbar';
 import { LinkPopoverHost } from '@/modules/toolbar/components/LinkPopoverHost';
 import { Toolbar } from '@/modules/toolbar';
-import { ZoomControl } from '@/modules/toolbar/components/ZoomControl';
 import type { PageSetup } from '@/types/docs.types';
 import { getOutline } from '@/utils/outline.utils';
 
@@ -82,6 +84,7 @@ export const EditorPage = () => {
 
   const fontPickerRef = useRef<HTMLButtonElement>(null);
   const colorPickerRef = useRef<HTMLButtonElement>(null);
+  const hiddenImageInputRef = useRef<HTMLInputElement>(null);
 
   const handleSelectDoc = (docId: string) => {
     setActiveId(docId);
@@ -117,9 +120,7 @@ export const EditorPage = () => {
     (sugId) => trackChanges.handleSelectSuggestion(sugId),
   );
 
-  const comments = useEditorComments(editor, commentsStore, currentUser, () =>
-    setCommentsOpen(true),
-  );
+  const comments = useEditorComments(editor, commentsStore, currentUser, () => setCommentsOpen(true));
   const trackChanges = useTrackChanges(suggestionStore, suggestions);
 
   const { followedUser, followedClientId, stopFollow, toggleFollow } = useFollowCollaborator({
@@ -146,7 +147,20 @@ export const EditorPage = () => {
     handleInsertMath,
     handleInsertFootnote,
     handleInsertColumns,
+    handleInsertChart,
+    handleInsertCallout,
   } = useEditorActions(editor, activeDoc);
+
+  useEffect(() => {
+    if (!editor) return;
+    const storage = (editor.storage as any)?.chartBlock;
+    if (storage) {
+      storage.onEditChart = (attrs: any) => {
+        modals.setEditingChartAttrs(attrs);
+        modals.setChartEditorOpen(true);
+      };
+    }
+  }, [editor, modals]);
 
   useEffect(() => {
     if (id) {
@@ -230,8 +244,12 @@ export const EditorPage = () => {
             onInsertMath: () => modals.setMathEditorOpen(true),
             onInsertFootnote: () => handleInsertFootnote(),
             onInsertColumns: (cols) => handleInsertColumns(cols),
+            onInsertChart: () => modals.setChartEditorOpen(true),
+            onInsertCallout: () => handleInsertCallout('info'),
             onWatermark: () => setWatermarkOpen(true),
             onHeaderFooter: openHeaderFooter,
+            onWordCount: () => modals.setWordCountOpen(true),
+            onVnAdmin: () => modals.setVnAdminOpen(true),
             onHelp: () => modals.setHelpOpen(true),
             onVersionHistory: () => setVersionHistoryOpen(true),
             onShare: () => setShareOpen(true),
@@ -242,6 +260,8 @@ export const EditorPage = () => {
           editor={editor}
           findOpen={findOpen}
           viewMode={viewMode}
+          zoom={zoom}
+          onZoomChange={setZoom}
           fontPickerRef={fontPickerRef}
           colorPickerRef={colorPickerRef}
           canDelete={canDelete}
@@ -310,6 +330,7 @@ export const EditorPage = () => {
               onAddComment={comments.handleStartAddComment}
             />
           )}
+          {editor && <ImageBubbleToolbar editor={editor} />}
           {editor && <LinkPopoverHost editor={editor} />}
           {editor && <MentionPopover editor={editor} />}
           {editor && (
@@ -331,9 +352,33 @@ export const EditorPage = () => {
               }}
             />
           )}
-          <div className="absolute bottom-4 right-4 z-20 flex items-center gap-0.5 rounded-lg border border-border bg-card/90 px-1.5 py-1 shadow-lg backdrop-blur">
-            <ZoomControl zoom={zoom} onZoomChange={setZoom} />
-          </div>
+
+          {editor && (
+            <SlashCommandSuggest
+              editor={editor}
+              onOpenImageUpload={() => hiddenImageInputRef.current?.click()}
+              onOpenMathDialog={() => modals.setMathEditorOpen(true)}
+              onOpenChartDialog={() => modals.setChartEditorOpen(true)}
+            />
+          )}
+
+          <WordCountFloatingBadge
+            editor={editor}
+            visible={modals.showFloatingWordCount}
+            onClick={() => modals.setWordCountOpen(true)}
+          />
+
+          <input
+            ref={hiddenImageInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageUpload(file);
+              e.target.value = '';
+            }}
+          />
         </div>
 
         <Statusbar
@@ -364,6 +409,8 @@ export const EditorPage = () => {
           onPageSetupChange={handlePageSetupChange}
           onMoveToFolder={moveToFolder}
           onInsertMath={(tex, isBlock) => handleInsertMath(tex, isBlock)}
+          onInsertChart={(attrs) => handleInsertChart(attrs)}
+          pageCount={paginationState.pageCount}
           selectedSuggestion={trackChanges.selectedSuggestion}
           onAcceptSuggestion={trackChanges.handleAcceptSuggestion}
           onRejectSuggestion={trackChanges.handleRejectSuggestion}
