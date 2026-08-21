@@ -1,7 +1,17 @@
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
-import { cn, Icon } from '@office/ui-kit';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  Icon,
+} from '@office/ui-kit';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
 
 interface EditorContextMenuProps {
@@ -38,55 +48,36 @@ export const EditorContextMenu = ({
 }: EditorContextMenuProps) => {
   const { t } = useTranslation('docs');
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState<ContextMenuPosition>({
-    x: position?.x ?? 0,
-    y: position?.y ?? 0,
-  });
 
-  useLayoutEffect(() => {
-    if (!position) return;
-    const el = menuRef.current;
-    const width = el?.offsetWidth ?? 230;
-    const height = el?.offsetHeight ?? 420;
-    const pad = 8;
+  const isOpen = position !== null && editor !== null;
 
-    let x = position.x;
-    let y = position.y;
+  const virtualAnchor = useMemo(
+    () =>
+      position
+        ? {
+            getBoundingClientRect: () => ({
+              x: position.x,
+              y: position.y,
+              width: 0,
+              height: 0,
+              top: position.y,
+              right: position.x,
+              bottom: position.y,
+              left: position.x,
+              toJSON: () => {},
+            }),
+          }
+        : undefined,
+    [position?.x, position?.y],
+  );
 
-    if (x + width > window.innerWidth - pad) {
-      x = Math.max(pad, window.innerWidth - width - pad);
-    }
-    if (y + height > window.innerHeight - pad) {
-      y = Math.max(pad, window.innerHeight - height - pad);
-    }
-    setCoords({ x, y });
-  }, [position]);
+  const inTable = editor?.isActive('table') ?? false;
+  const inImage = editor?.isActive('imageResize') ?? false;
+  const hasSelection = editor ? !editor.state.selection.empty : false;
+  const isViewOnly = isReadOnly || !editor?.isEditable;
 
-  useEffect(() => {
-    if (!position) return;
-    const handleOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    window.addEventListener('mousedown', handleOutside);
-    window.addEventListener('keydown', handleKey);
-    return () => {
-      window.removeEventListener('mousedown', handleOutside);
-      window.removeEventListener('keydown', handleKey);
-    };
-  }, [position, onClose]);
-
-  if (!position || !editor) return null;
-
-  const inTable = editor.isActive('table');
-  const hasSelection = !editor.state.selection.empty;
-
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
+    if (!editor) return;
     const text = editor.state.doc.textBetween(
       editor.state.selection.from,
       editor.state.selection.to,
@@ -94,15 +85,17 @@ export const EditorContextMenu = ({
     );
     if (text) await navigator.clipboard.writeText(text);
     onClose();
-  };
+  }, [editor, onClose]);
 
-  const handleCut = async () => {
+  const handleCut = useCallback(async () => {
+    if (!editor) return;
     await handleCopy();
     editor.chain().focus().deleteSelection().run();
     onClose();
-  };
+  }, [editor, handleCopy, onClose]);
 
-  const handlePaste = async () => {
+  const handlePaste = useCallback(async () => {
+    if (!editor) return;
     try {
       const text = await navigator.clipboard.readText();
       if (text) editor.chain().focus().insertContent(text).run();
@@ -110,16 +103,31 @@ export const EditorContextMenu = ({
       /* clipboard permission denied */
     }
     onClose();
-  };
+  }, [editor, onClose]);
 
-  const runAndClose = (action: () => void) => {
-    action();
-    onClose();
-  };
+  const runAndClose = useCallback(
+    (action: () => void) => {
+      action();
+      onClose();
+    },
+    [onClose],
+  );
 
-  const isViewOnly = isReadOnly || !editor.isEditable;
+  const renderMenuItems = (items: ContextActionItem[]) =>
+    items.map((item) => (
+      <ContextMenuItem
+        key={item.label}
+        danger={item.danger}
+        className={item.active ? 'bg-accent font-medium text-primary' : undefined}
+        onClick={item.onClick}
+      >
+        <Icon name={item.icon} size={15} />
+        <span className="flex-1">{item.label}</span>
+        {item.shortcut && <ContextMenuShortcut>{item.shortcut}</ContextMenuShortcut>}
+      </ContextMenuItem>
+    ));
 
-  const clipboardGroup: ContextActionItem[] = isViewOnly
+  const clipboardItems: ContextActionItem[] = isViewOnly
     ? [
         {
           label: t('contextMenu.copy'),
@@ -132,7 +140,8 @@ export const EditorContextMenu = ({
           label: t('contextMenu.selectAll'),
           icon: 'check-square',
           shortcut: 'Ctrl+A',
-          onClick: () => runAndClose(() => editor.chain().focus().selectAll().run()),
+          onClick: () =>
+            runAndClose(() => editor!.chain().focus().selectAll().run()),
         },
         {
           label: t('menu.edit.findAndReplace'),
@@ -173,175 +182,180 @@ export const EditorContextMenu = ({
           : []),
       ];
 
-  const formatGroup: ContextActionItem[] = isViewOnly
-    ? []
-    : [
-        {
-          label: t('contextMenu.bold'),
-          icon: 'bold',
-          shortcut: 'Ctrl+B',
-          active: editor.isActive('bold'),
-          onClick: () => runAndClose(() => editor.chain().focus().toggleBold().run()),
-        },
-        {
-          label: t('contextMenu.italic'),
-          icon: 'italic',
-          shortcut: 'Ctrl+I',
-          active: editor.isActive('italic'),
-          onClick: () => runAndClose(() => editor.chain().focus().toggleItalic().run()),
-        },
-        {
-          label: t('contextMenu.underline'),
-          icon: 'underline',
-          shortcut: 'Ctrl+U',
-          active: editor.isActive('underline'),
-          onClick: () => runAndClose(() => editor.chain().focus().toggleUnderline().run()),
-        },
-      ];
+  const formatItems: ContextActionItem[] = [
+    {
+      label: t('contextMenu.bold'),
+      icon: 'bold',
+      shortcut: 'Ctrl+B',
+      active: editor?.isActive('bold'),
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().toggleBold().run()),
+    },
+    {
+      label: t('contextMenu.italic'),
+      icon: 'italic',
+      shortcut: 'Ctrl+I',
+      active: editor?.isActive('italic'),
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().toggleItalic().run()),
+    },
+    {
+      label: t('contextMenu.underline'),
+      icon: 'underline',
+      shortcut: 'Ctrl+U',
+      active: editor?.isActive('underline'),
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().toggleUnderline().run()),
+    },
+  ];
 
-  const insertGroup: ContextActionItem[] = isViewOnly
-    ? []
-    : [
-        {
-          label: t('menu.insert.image'),
-          icon: 'image',
-          onClick: () => imageInputRef.current?.click(),
-        },
-        {
-          label: t('menu.insert.table'),
-          icon: 'table',
-          onClick: () => runAndClose(onInsertTable),
-        },
-        {
-          label: t('menu.insert.pageBreak'),
-          icon: 'separator-horizontal',
-          shortcut: 'Ctrl+Enter',
-          onClick: () => runAndClose(onInsertPageBreak),
-        },
-        {
-          label: t('menu.edit.findAndReplace'),
-          icon: 'search',
-          shortcut: 'Ctrl+H',
-          onClick: () => runAndClose(onToggleFind),
-        },
-      ];
+  const insertItems: ContextActionItem[] = [
+    {
+      label: t('menu.insert.image'),
+      icon: 'image',
+      onClick: () => imageInputRef.current?.click(),
+    },
+    {
+      label: t('menu.insert.table'),
+      icon: 'table',
+      onClick: () => runAndClose(onInsertTable),
+    },
+    {
+      label: t('menu.insert.pageBreak'),
+      icon: 'separator-horizontal',
+      shortcut: 'Ctrl+Enter',
+      onClick: () => runAndClose(onInsertPageBreak),
+    },
+    {
+      label: t('menu.edit.findAndReplace'),
+      icon: 'search',
+      shortcut: 'Ctrl+H',
+      onClick: () => runAndClose(onToggleFind),
+    },
+  ];
 
-  const tableGroup: ContextActionItem[] =
-    !isViewOnly && inTable
-      ? [
-          {
-            label: t('toolbar.addRowBelow'),
-            icon: 'rows-3',
-            onClick: () => runAndClose(() => editor.chain().focus().addRowAfter().run()),
-          },
-          {
-            label: t('toolbar.addColumnRight'),
-            icon: 'columns-3',
-            onClick: () => runAndClose(() => editor.chain().focus().addColumnAfter().run()),
-          },
-          {
-            label: t('toolbar.deleteRow'),
-            icon: 'trash-2',
-            danger: true,
-            onClick: () => runAndClose(() => editor.chain().focus().deleteRow().run()),
-          },
-          {
-            label: t('toolbar.deleteColumn'),
-            icon: 'trash-2',
-            danger: true,
-            onClick: () => runAndClose(() => editor.chain().focus().deleteColumn().run()),
-          },
-          {
-            label: t('toolbar.deleteTable'),
-            icon: 'table',
-            danger: true,
-            onClick: () => runAndClose(() => editor.chain().focus().deleteTable().run()),
-          },
-        ]
-      : [];
+  const tableItems: ContextActionItem[] = [
+    {
+      label: t('toolbar.addRowBelow'),
+      icon: 'rows-3',
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().addRowAfter().run()),
+    },
+    {
+      label: t('toolbar.addColumnRight'),
+      icon: 'columns-3',
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().addColumnAfter().run()),
+    },
+    {
+      label: t('toolbar.deleteRow'),
+      icon: 'trash-2',
+      danger: true,
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().deleteRow().run()),
+    },
+    {
+      label: t('toolbar.deleteColumn'),
+      icon: 'trash-2',
+      danger: true,
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().deleteColumn().run()),
+    },
+    {
+      label: t('toolbar.deleteTable'),
+      icon: 'table',
+      danger: true,
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().deleteTable().run()),
+    },
+  ];
+
+  const imageItems: ContextActionItem[] = [
+    {
+      label: t('toolbar.alignLeft'),
+      icon: 'align-left',
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().setImageAlign('left').run()),
+    },
+    {
+      label: t('toolbar.alignCenter'),
+      icon: 'align-center',
+      onClick: () =>
+        runAndClose(() =>
+          editor!.chain().focus().setImageAlign('center').run(),
+        ),
+    },
+    {
+      label: t('toolbar.alignRight'),
+      icon: 'align-right',
+      onClick: () =>
+        runAndClose(() =>
+          editor!.chain().focus().setImageAlign('right').run(),
+        ),
+    },
+    {
+      label: t('toolbar.deleteImage'),
+      icon: 'trash-2',
+      danger: true,
+      onClick: () =>
+        runAndClose(() => editor!.chain().focus().deleteImage().run()),
+    },
+  ];
+
+  if (!editor) return null;
 
   return (
     <>
-      <div
-        ref={menuRef}
-        className="fixed z-50 min-w-[220px] py-1.5 rounded-lg border border-border bg-popover text-popover-foreground shadow-xl select-none animate-in fade-in-0 zoom-in-95 duration-100"
-        style={{ left: `${coords.x}px`, top: `${coords.y}px` }}
-        role="menu"
-        aria-label="Editor context menu"
-      >
-        {clipboardGroup.map((item) => (
-          <button
-            key={item.label}
-            type="button"
-            className="flex items-center gap-2.5 w-full px-3.5 py-1.5 text-left text-xs hover:bg-hover transition-colors cursor-pointer text-foreground"
-            onClick={item.onClick}
-          >
-            <Icon name={item.icon} size={15} />
-            <span>{item.label}</span>
-            {item.shortcut && (
-              <kbd className="ml-auto text-[11px] text-muted-foreground font-mono">
-                {item.shortcut}
-              </kbd>
-            )}
-          </button>
-        ))}
-        {formatGroup.length > 0 && <div className="h-px my-1 bg-border" />}
-        {formatGroup.map((item) => (
-          <button
-            key={item.label}
-            type="button"
-            className={cn(
-              'flex items-center gap-2.5 w-full px-3.5 py-1.5 text-left text-xs hover:bg-hover transition-colors cursor-pointer text-foreground',
-              item.active && 'bg-accent font-medium text-primary',
-            )}
-            onClick={item.onClick}
-          >
-            <Icon name={item.icon} size={15} />
-            <span>{item.label}</span>
-            {item.shortcut && (
-              <kbd className="ml-auto text-[11px] text-muted-foreground font-mono">
-                {item.shortcut}
-              </kbd>
-            )}
-          </button>
-        ))}
-        {insertGroup.length > 0 && <div className="h-px my-1 bg-border" />}
-        {insertGroup.map((item) => (
-          <button
-            key={item.label}
-            type="button"
-            className="flex items-center gap-2.5 w-full px-3.5 py-1.5 text-left text-xs hover:bg-hover transition-colors cursor-pointer text-foreground"
-            onClick={item.onClick}
-          >
-            <Icon name={item.icon} size={15} />
-            <span>{item.label}</span>
-            {item.shortcut && (
-              <kbd className="ml-auto text-[11px] text-muted-foreground font-mono">
-                {item.shortcut}
-              </kbd>
-            )}
-          </button>
-        ))}
-        {tableGroup.length > 0 && (
-          <>
-            <div className="h-px my-1 bg-border" />
-            {tableGroup.map((item) => (
-              <button
-                key={item.label}
-                type="button"
-                className={cn(
-                  'flex items-center gap-2.5 w-full px-3.5 py-1.5 text-left text-xs hover:bg-hover transition-colors cursor-pointer text-foreground',
-                  item.danger && 'text-destructive hover:bg-destructive/10',
-                )}
-                onClick={item.onClick}
-              >
-                <Icon name={item.icon} size={15} />
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </>
-        )}
-      </div>
+      <ContextMenu open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <ContextMenuContent anchor={virtualAnchor}>
+          {renderMenuItems(clipboardItems)}
+          {(!isViewOnly || inTable || inImage) && <ContextMenuSeparator />}
+          {!isViewOnly && (
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>
+                <Icon name="type" size={15} />
+                <span>{t('menu.format.label')}</span>
+              </ContextMenuSubTrigger>
+              <ContextMenuSubContent>
+                {renderMenuItems(formatItems)}
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          )}
+          {!isViewOnly && (
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>
+                <Icon name="plus" size={15} />
+                <span>{t('menu.insert.label')}</span>
+              </ContextMenuSubTrigger>
+              <ContextMenuSubContent>
+                {renderMenuItems(insertItems)}
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          )}
+          {inTable && (
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>
+                <Icon name="table" size={15} />
+                <span>{t('menu.insert.table')}</span>
+              </ContextMenuSubTrigger>
+              <ContextMenuSubContent>
+                {renderMenuItems(tableItems)}
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          )}
+          {inImage && (
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>
+                <Icon name="image" size={15} />
+                <span>{t('menu.insert.image')}</span>
+              </ContextMenuSubTrigger>
+              <ContextMenuSubContent>
+                {renderMenuItems(imageItems)}
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          )}
+        </ContextMenuContent>
+      </ContextMenu>
       <input
         ref={imageInputRef}
         className="hidden"
