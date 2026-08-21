@@ -278,5 +278,39 @@
     "plan": {
       "title": "Bảng tính kế hoạch Q3"
     }
+  },
+  "contextMenu": {
+    "cut": "Cắt",
+    "copy": "Sao chép",
+    "paste": "Dán",
+    "pasteSpecial": "Dán đặc biệt",
+    "pasteValuesOnly": "Chỉ dán giá trị",
+    "pasteFormatOnly": "Chỉ dán định dạng",
+    "insert": "Chèn",
+    "insertRowAbove": "Chèn 1 hàng lên trên",
+    "insertRowBelow": "Chèn 1 hàng xuống dưới",
+    "insertColumnLeft": "Chèn 1 cột bên trái",
+    "insertColumnRight": "Chèn 1 cột bên phải",
+    "insertCells": "Chèn ô...",
+    "delete": "Xoá",
+    "deleteRow": "Xoá hàng",
+    "deleteColumn": "Xoá cột",
+    "deleteCells": "Xoá các ô...",
+    "clear": "Xoá sạch",
+    "clearAll": "Xoá tất cả",
+    "clearContents": "Xoá nội dung",
+    "clearFormats": "Xoá định dạng",
+    "freeze": "Cố định dòng/cột",
+    "freezeFirstRow": "Cố định 1 hàng đầu",
+    "freezeFirstColumn": "Cố định 1 cột đầu",
+    "freezeUpToRow": "Cố định đến hàng hiện tại ({row})",
+    "freezeUpToColumn": "Cố định đến cột hiện tại ({col})",
+    "unfreeze": "Hủy cố định",
+    "sort": "Sắp xếp dải ô",
+    "sortAsc": "Sắp xếp A → Z",
+    "sortDesc": "Sắp xếp Z → A",
+    "insertLink": "Chèn đường liên kết",
+    "createFilter": "Tạo bộ lọc",
+    "insertChart": "Tạo biểu đồ"
   }
 }

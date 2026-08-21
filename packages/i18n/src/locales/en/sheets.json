@@ -278,5 +278,39 @@
     "plan": {
       "title": "Q3 plan spreadsheet"
     }
+  },
+  "contextMenu": {
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "pasteSpecial": "Paste special",
+    "pasteValuesOnly": "Paste values only",
+    "pasteFormatOnly": "Paste format only",
+    "insert": "Insert",
+    "insertRowAbove": "Insert 1 row above",
+    "insertRowBelow": "Insert 1 row below",
+    "insertColumnLeft": "Insert 1 column left",
+    "insertColumnRight": "Insert 1 column right",
+    "insertCells": "Insert cells...",
+    "delete": "Delete",
+    "deleteRow": "Delete row",
+    "deleteColumn": "Delete column",
+    "deleteCells": "Delete cells...",
+    "clear": "Clear",
+    "clearAll": "Clear all",
+    "clearContents": "Clear contents",
+    "clearFormats": "Clear formatting",
+    "freeze": "Freeze rows/columns",
+    "freezeFirstRow": "Freeze 1 row",
+    "freezeFirstColumn": "Freeze 1 column",
+    "freezeUpToRow": "Freeze up to current row ({row})",
+    "freezeUpToColumn": "Freeze up to current column ({col})",
+    "unfreeze": "No freeze",
+    "sort": "Sort range",
+    "sortAsc": "Sort sheet A → Z",
+    "sortDesc": "Sort sheet Z → A",
+    "insertLink": "Insert link",
+    "createFilter": "Create a filter",
+    "insertChart": "Insert chart"
   }
 }
