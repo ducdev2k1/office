@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import type { Theme } from '@/types/common.types';
+import { useEffect, useState } from 'react';
 
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(() => {
@@ -8,7 +8,10 @@ export const useTheme = () => {
   });
 
   useEffect(() => {
+    // Apply .dark for app shell (Header, Toolbar, Inspector sidebar, Modals)
     document.documentElement.classList.toggle('dark', theme === 'dark');
+    // Ensure .univer-dark is never applied to keep spreadsheet canvas always in clean light mode
+    document.documentElement.classList.remove('univer-dark');
     localStorage.setItem('sheets-theme', theme);
   }, [theme]);
 
@@ -18,3 +21,5 @@ export const useTheme = () => {
 
   return { theme, toggleTheme, setTheme };
 };
+
+

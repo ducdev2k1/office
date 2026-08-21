@@ -71,3 +71,231 @@ footer .univer-justify-end,
 footer [class*='univer-justify-end'] {
   display: none !important;
 }
+
+/* ==========================================================================
+   Univer Context Menu & Submenu Overrides
+   Fixes invisible/light submenu text and aligns with One Seri Design System
+   ========================================================================== */
+
+/* Universal Button text reset to prevent browser default ButtonText color */
+button {
+  color: inherit;
+}
+
+/* Submenu Portal Container */
+[data-u-context-menu-submenu] {
+  color: var(--foreground);
+}
+
+[data-u-context-menu-submenu] > div {
+  background-color: var(--card, #ffffff) !important;
+  border: 1px solid var(--border, #dadce0) !important;
+  box-shadow: var(--paper-shadow, 0 4px 12px rgba(0, 0, 0, 0.12)) !important;
+}
+
+[data-u-context-menu-submenu] button,
+[data-u-context-menu-submenu] [role='menuitem'],
+[data-u-context-menu-submenu] .univer-cursor-pointer,
+[data-u-context-menu-submenu] span,
+[data-u-context-menu-submenu] div {
+  color: var(--foreground);
+}
+
+[data-u-context-menu-submenu] button:hover,
+[data-u-context-menu-submenu] [role='menuitem']:hover,
+[data-u-context-menu-submenu] .univer-cursor-pointer:hover {
+  background-color: var(--hover, #f1f3f4) !important;
+  color: var(--foreground) !important;
+}
+
+[data-u-context-menu-submenu] button[disabled],
+[data-u-context-menu-submenu] button[aria-disabled='true'],
+[data-u-context-menu-submenu] .univer-cursor-not-allowed,
+[data-u-context-menu-submenu] .univer-cursor-not-allowed span {
+  color: var(--muted-foreground, #5f6368) !important;
+  opacity: 0.6;
+}
+
+/* Main Context Menu Rect Popup */
+[data-u-comp='rect-popup'] {
+  color: var(--foreground);
+}
+
+[data-u-comp='rect-popup'] section > div,
+[data-u-comp='rect-popup'] .univer-bg-white {
+  background-color: var(--card, #ffffff) !important;
+  border: 1px solid var(--border, #dadce0) !important;
+  box-shadow: var(--paper-shadow, 0 4px 12px rgba(0, 0, 0, 0.12)) !important;
+}
+
+[data-u-comp='rect-popup'] button,
+[data-u-comp='rect-popup'] [role='menuitem'],
+[data-u-comp='rect-popup'] .univer-cursor-pointer,
+[data-u-comp='rect-popup'] span {
+  color: var(--foreground);
+}
+
+[data-u-comp='rect-popup'] button:hover,
+[data-u-comp='rect-popup'] [role='menuitem']:hover,
+[data-u-comp='rect-popup'] .univer-cursor-pointer:hover {
+  background-color: var(--hover, #f1f3f4) !important;
+  color: var(--foreground) !important;
+}
+
+[data-u-comp='rect-popup'] button[disabled],
+[data-u-comp='rect-popup'] button[aria-disabled='true'],
+[data-u-comp='rect-popup'] .univer-cursor-not-allowed,
+[data-u-comp='rect-popup'] .univer-cursor-not-allowed span {
+  color: var(--muted-foreground, #5f6368) !important;
+  opacity: 0.6;
+}
+
+/* Dark Mode Context Menu & Submenu Overrides */
+.dark [data-u-context-menu-submenu],
+.univer-dark [data-u-context-menu-submenu] {
+  color: var(--foreground, #f5f5f5);
+}
+
+.dark [data-u-context-menu-submenu] > div,
+.univer-dark [data-u-context-menu-submenu] > div {
+  background-color: var(--card, #1a1a1a) !important;
+  border-color: var(--border, #2e2e2e) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+}
+
+.dark [data-u-context-menu-submenu] button,
+.dark [data-u-context-menu-submenu] [role='menuitem'],
+.dark [data-u-context-menu-submenu] .univer-cursor-pointer,
+.dark [data-u-context-menu-submenu] span,
+.dark [data-u-context-menu-submenu] div,
+.univer-dark [data-u-context-menu-submenu] button,
+.univer-dark [data-u-context-menu-submenu] [role='menuitem'],
+.univer-dark [data-u-context-menu-submenu] .univer-cursor-pointer,
+.univer-dark [data-u-context-menu-submenu] span,
+.univer-dark [data-u-context-menu-submenu] div {
+  color: var(--foreground, #f5f5f5);
+}
+
+.dark [data-u-context-menu-submenu] button:hover,
+.dark [data-u-context-menu-submenu] [role='menuitem']:hover,
+.dark [data-u-context-menu-submenu] .univer-cursor-pointer:hover,
+.univer-dark [data-u-context-menu-submenu] button:hover,
+.univer-dark [data-u-context-menu-submenu] [role='menuitem']:hover,
+.univer-dark [data-u-context-menu-submenu] .univer-cursor-pointer:hover {
+  background-color: var(--hover, rgba(255, 255, 255, 0.08)) !important;
+  color: var(--foreground, #f5f5f5) !important;
+}
+
+.dark [data-u-context-menu-submenu] button[disabled],
+.dark [data-u-context-menu-submenu] button[aria-disabled='true'],
+.dark [data-u-context-menu-submenu] .univer-cursor-not-allowed,
+.dark [data-u-context-menu-submenu] .univer-cursor-not-allowed span,
+.univer-dark [data-u-context-menu-submenu] button[disabled],
+.univer-dark [data-u-context-menu-submenu] button[aria-disabled='true'],
+.univer-dark [data-u-context-menu-submenu] .univer-cursor-not-allowed,
+.univer-dark [data-u-context-menu-submenu] .univer-cursor-not-allowed span {
+  color: var(--muted-foreground, #a6a6a6) !important;
+  opacity: 0.5;
+}
+
+.dark [data-u-comp='rect-popup'] section > div,
+.dark [data-u-comp='rect-popup'] .univer-bg-white,
+.univer-dark [data-u-comp='rect-popup'] section > div,
+.univer-dark [data-u-comp='rect-popup'] .univer-bg-white {
+  background-color: var(--card, #1a1a1a) !important;
+  border-color: var(--border, #2e2e2e) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+}
+
+.dark [data-u-comp='rect-popup'] button,
+.dark [data-u-comp='rect-popup'] [role='menuitem'],
+.dark [data-u-comp='rect-popup'] .univer-cursor-pointer,
+.dark [data-u-comp='rect-popup'] span,
+.univer-dark [data-u-comp='rect-popup'] button,
+.univer-dark [data-u-comp='rect-popup'] [role='menuitem'],
+.univer-dark [data-u-comp='rect-popup'] .univer-cursor-pointer,
+.univer-dark [data-u-comp='rect-popup'] span {
+  color: var(--foreground, #f5f5f5);
+}
+
+.dark [data-u-comp='rect-popup'] button:hover,
+.dark [data-u-comp='rect-popup'] [role='menuitem']:hover,
+.dark [data-u-comp='rect-popup'] .univer-cursor-pointer:hover,
+.univer-dark [data-u-comp='rect-popup'] button:hover,
+.univer-dark [data-u-comp='rect-popup'] [role='menuitem']:hover,
+.univer-dark [data-u-comp='rect-popup'] .univer-cursor-pointer:hover {
+  background-color: var(--hover, rgba(255, 255, 255, 0.08)) !important;
+  color: var(--foreground, #f5f5f5) !important;
+}
+
+.dark [data-u-comp='rect-popup'] button[disabled],
+.dark [data-u-comp='rect-popup'] button[aria-disabled='true'],
+.dark [data-u-comp='rect-popup'] .univer-cursor-not-allowed,
+.dark [data-u-comp='rect-popup'] .univer-cursor-not-allowed span,
+.univer-dark [data-u-comp='rect-popup'] button[disabled],
+.univer-dark [data-u-comp='rect-popup'] button[aria-disabled='true'],
+.univer-dark [data-u-comp='rect-popup'] .univer-cursor-not-allowed,
+.univer-dark [data-u-comp='rect-popup'] .univer-cursor-not-allowed span {
+  color: var(--muted-foreground, #a6a6a6) !important;
+  opacity: 0.5;
+}
+
+/* Suppress Univer built-in context menu and submenu popups */
+[data-u-comp='rect-popup']:has([class*='context-menu']),
+[data-u-comp='rect-popup']:has([class*='ContextMenu']),
+[data-u-context-menu-submenu] {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Formula Bar & Spreadsheet Area Light Mode Assurance
+   Ensure the Formula Bar (Name box, x/✓/fx buttons, dropdown, text editor)
+   always remains crisp and clearly visible with light background and dark text/icons
+   ========================================================================== */
+
+[data-u-comp='formula-bar'] {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #dadce0 !important;
+  color: #1f2937 !important;
+}
+
+[data-u-comp='formula-bar'] *,
+.dark [data-u-comp='formula-bar'] * {
+  border-color: #dadce0 !important;
+}
+
+/* Formula bar Name box & input (e.g. "D12") */
+[data-u-comp='formula-bar'] input,
+[data-u-comp='formula-bar'] [class*='DefinedName'],
+[data-u-comp='formula-bar'] [class*='defined-name'] {
+  color: #1f2937 !important;
+  background-color: transparent !important;
+}
+
+/* Formula bar icons (x, ✓, fx, dropdown) */
+[data-u-comp='formula-bar'] span,
+[data-u-comp='formula-bar'] svg,
+[data-u-comp='formula-bar'] [class*='univer-text-'] {
+  color: #5f6368 !important;
+}
+
+[data-u-comp='formula-bar'] span:hover {
+  background-color: #f1f3f4 !important;
+  color: #1f2937 !important;
+}
+
+/* Formula editor input container */
+[data-u-comp='formula-bar'] [contenteditable='true'],
+[data-u-comp='formula-bar'] [data-u-comp*='editor'] {
+  color: #1f2937 !important;
+}
+
+/* Spreadsheet canvas frame, corner cell & header separator borders */
+.univer-workbench,
+.univer-workbench [class*='border'],
+[data-u-comp='spreadsheet'],
+[data-u-comp='spreadsheet'] [class*='border'] {
+  border-color: #dadce0 !important;
+}
+
+

@@ -1,3 +1,5 @@
+import { SheetContextMenu } from '@/components/SheetContextMenu';
+import { useSheetContextMenu } from '@/hooks/useSheetContextMenu';
 import { useUniver } from '@/hooks/useUniver';
 import { FloatingChartOverlay, type ChartPosition, type ChartSpec } from '@/modules/charts';
 import type { FUniver, IWorkbookData } from '@univerjs/presets';
@@ -18,6 +20,7 @@ export interface SheetEditorProps {
   onDoubleClickChart?: (id: string) => void;
   onUpdateChartPosition?: (id: string, newPos: ChartPosition) => void;
   onDeleteChart?: (id: string) => void;
+  onInsertChart?: () => void;
 }
 
 export const SheetEditor = ({
@@ -33,6 +36,7 @@ export const SheetEditor = ({
   onDoubleClickChart = () => {},
   onUpdateChartPosition = () => {},
   onDeleteChart = () => {},
+  onInsertChart,
 }: SheetEditorProps) => {
   const [currentWorkbookData, setCurrentWorkbookData] = useState<IWorkbookData | undefined>(
     initialData,
@@ -43,10 +47,23 @@ export const SheetEditor = ({
     onDataChange?.(data);
   };
 
-  const { containerRef, getWorkbookData } = useUniver({
+  const { containerRef, univerAPI, getWorkbookData } = useUniver({
     initialData,
     onDataChange: handleInternalDataChange,
     onReady,
+    isDark,
+  });
+
+  const {
+    position: contextMenuPosition,
+    menuItems: contextMenuItems,
+    activeSubmenuId,
+    setActiveSubmenuId,
+    closeMenu: closeContextMenu,
+  } = useSheetContextMenu({
+    univerAPI,
+    containerRef,
+    onInsertChart,
   });
 
   useEffect(() => {
@@ -69,6 +86,15 @@ export const SheetEditor = ({
         onDoubleClickChart={onDoubleClickChart}
         onUpdateChartPosition={onUpdateChartPosition}
         onDeleteChart={onDeleteChart}
+      />
+
+      {/* Custom Context Menu */}
+      <SheetContextMenu
+        position={contextMenuPosition}
+        items={contextMenuItems}
+        activeSubmenuId={activeSubmenuId}
+        onSetActiveSubmenuId={setActiveSubmenuId}
+        onClose={closeContextMenu}
       />
     </div>
   );

@@ -193,7 +193,7 @@ export const EditorPage = () => {
             charts={charts}
             selectedChartId={selectedChartId}
             activeSheetId={activeWorksheetId}
-            isDark={theme === 'dark'}
+            isDark={false}
             onSelectChart={(id) => {
               setSelectedChartId(id);
               if (!id) setIsInspectorOpen(false);
@@ -204,6 +204,7 @@ export const EditorPage = () => {
             }}
             onUpdateChartPosition={handleUpdateChartPosition}
             onDeleteChart={handleDeleteChart}
+            onInsertChart={handleInsertChart}
           />
         </div>
 

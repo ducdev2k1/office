@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 interface SheetsHeaderProps {
   title: string;
   onTitleChange: (title: string) => void;
-  theme: 'light' | 'dark';
-  onToggleTheme: () => void;
+  theme?: 'light' | 'dark';
+  onToggleTheme?: () => void;
   starred?: boolean;
   onToggleStar?: () => void;
   saveState: 'loading' | 'saving' | 'saved';
@@ -19,7 +19,7 @@ interface SheetsHeaderProps {
 export const SheetsHeader = ({
   title,
   onTitleChange,
-  theme,
+  theme = 'light',
   onToggleTheme,
   starred = false,
   onToggleStar,

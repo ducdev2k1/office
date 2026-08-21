@@ -16,9 +16,15 @@ export interface UseUniverOptions {
   initialData?: IWorkbookData;
   onDataChange?: (data: IWorkbookData) => void;
   onReady?: (api: FUniver) => void;
+  isDark?: boolean;
 }
 
-export const useUniver = ({ initialData, onDataChange, onReady }: UseUniverOptions = {}) => {
+export const useUniver = ({
+  initialData,
+  onDataChange,
+  onReady,
+  isDark = false,
+}: UseUniverOptions = {}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<FUniver | null>(null);
   const onDataChangeRef = useRef(onDataChange);
@@ -29,11 +35,19 @@ export const useUniver = ({ initialData, onDataChange, onReady }: UseUniverOptio
     onReadyRef.current = onReady;
   }, [onDataChange, onReady]);
 
+  // Handle dynamic dark mode toggle in-place without reloading/remounting
+  useEffect(() => {
+    if (instanceRef.current) {
+      instanceRef.current.toggleDarkMode(isDark);
+    }
+  }, [isDark]);
+
   useEffect(() => {
     if (!containerRef.current || instanceRef.current) return;
 
     const { univerAPI } = createUniver({
       locale: LocaleType.EN_US,
+      darkMode: isDark,
       locales: {
         [LocaleType.EN_US]: mergeLocales(UniverPresetSheetsCoreEnUS),
       },
@@ -42,6 +56,7 @@ export const useUniver = ({ initialData, onDataChange, onReady }: UseUniverOptio
           container: containerRef.current,
           toolbar: false,
           header: true,
+          contextMenu: false,
         }),
       ],
     });
@@ -67,6 +82,14 @@ export const useUniver = ({ initialData, onDataChange, onReady }: UseUniverOptio
 
     return () => {
       if (debounceTimer) window.clearTimeout(debounceTimer);
+      try {
+        const saved = univerAPI.getActiveWorkbook()?.save();
+        if (saved && onDataChangeRef.current) {
+          onDataChangeRef.current(saved);
+        }
+      } catch {
+        // Safe dispose
+      }
       disposable?.dispose?.();
       instanceRef.current = null;
       univerAPI.dispose();
