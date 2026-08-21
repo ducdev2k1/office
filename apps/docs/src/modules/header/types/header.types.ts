@@ -44,8 +44,12 @@ export interface HeaderMenuActions {
   onInsertMath?: () => void;
   onInsertFootnote?: () => void;
   onInsertColumns?: (cols?: number) => void;
+  onInsertChart?: () => void;
+  onInsertCallout?: () => void;
   onWatermark?: () => void;
   onHeaderFooter?: () => void;
+  onWordCount?: () => void;
+  onVnAdmin?: () => void;
   onHelp: () => void;
   onVersionHistory?: () => void;
   onShare?: () => void;

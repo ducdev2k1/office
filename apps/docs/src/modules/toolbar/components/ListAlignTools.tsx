@@ -10,6 +10,34 @@ interface ListAlignToolsProps {
 export const ListAlignTools = ({ editor }: ListAlignToolsProps) => {
   const { t } = useTranslation('docs');
 
+  const isImage = editor.isActive('imageResize');
+  const imageAttrs = isImage
+    ? (editor.getAttributes('imageResize') as { align?: 'left' | 'center' | 'right'; float?: string | null })
+    : null;
+
+  const isAlignLeft = isImage
+    ? !imageAttrs?.float && (imageAttrs?.align === 'left' || !imageAttrs?.align)
+    : editor.isActive({ textAlign: 'left' });
+
+  const isAlignCenter = isImage
+    ? !imageAttrs?.float && imageAttrs?.align === 'center'
+    : editor.isActive({ textAlign: 'center' });
+
+  const isAlignRight = isImage
+    ? !imageAttrs?.float && imageAttrs?.align === 'right'
+    : editor.isActive({ textAlign: 'right' });
+
+  const isAlignJustify = !isImage && editor.isActive({ textAlign: 'justify' });
+
+  const handleAlign = (alignment: 'left' | 'center' | 'right' | 'justify') => {
+    if (isImage) {
+      if (alignment === 'justify') return;
+      editor.chain().focus().setImageAlign(alignment).run();
+    } else {
+      editor.chain().focus().setTextAlign(alignment).run();
+    }
+  };
+
   return (
     <>
       <ToolbarButton
@@ -27,30 +55,31 @@ export const ListAlignTools = ({ editor }: ListAlignToolsProps) => {
         <Icon name="list-ordered" />
       </ToolbarButton>
       <ToolbarButton
-        active={editor.isActive({ textAlign: 'left' })}
+        active={isAlignLeft}
         label={t('toolbar.alignLeft')}
-        onClick={() => editor.chain().focus().setTextAlign('left').run()}
+        onClick={() => handleAlign('left')}
       >
         <Icon name="align-left" />
       </ToolbarButton>
       <ToolbarButton
-        active={editor.isActive({ textAlign: 'center' })}
+        active={isAlignCenter}
         label={t('toolbar.alignCenter')}
-        onClick={() => editor.chain().focus().setTextAlign('center').run()}
+        onClick={() => handleAlign('center')}
       >
         <Icon name="align-center" />
       </ToolbarButton>
       <ToolbarButton
-        active={editor.isActive({ textAlign: 'right' })}
+        active={isAlignRight}
         label={t('toolbar.alignRight')}
-        onClick={() => editor.chain().focus().setTextAlign('right').run()}
+        onClick={() => handleAlign('right')}
       >
         <Icon name="align-right" />
       </ToolbarButton>
       <ToolbarButton
-        active={editor.isActive({ textAlign: 'justify' })}
+        active={isAlignJustify}
+        disabled={isImage}
         label={t('toolbar.alignJustify')}
-        onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+        onClick={() => handleAlign('justify')}
       >
         <Icon name="align-justify" />
       </ToolbarButton>

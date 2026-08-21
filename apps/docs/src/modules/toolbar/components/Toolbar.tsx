@@ -14,6 +14,8 @@ export interface ToolbarProps {
   editor: Editor | null;
   findOpen: boolean;
   viewMode: ViewMode;
+  zoom: number;
+  onZoomChange: (zoom: number) => void;
   fontPickerRef?: RefObject<HTMLButtonElement | null>;
   colorPickerRef?: RefObject<HTMLButtonElement | null>;
   canDelete: boolean;
@@ -40,6 +42,8 @@ export const Toolbar = ({
   editor,
   findOpen,
   viewMode,
+  zoom,
+  onZoomChange,
   fontPickerRef,
   colorPickerRef,
   canDelete,
@@ -85,16 +89,12 @@ export const Toolbar = ({
       aria-label={t('toolbar.formattingToolbar')}
     >
       <DocTools
-        canDelete={canDelete}
         onPrint={onPrint}
-        onDelete={onDelete}
-        onToggleFind={onToggleFind}
-        findOpen={findOpen}
         onPageSetup={onPageSetup}
         viewMode={viewMode}
+        zoom={zoom}
+        onZoomChange={onZoomChange}
         onViewModeChange={onViewModeChange}
-        onExportHtml={onExportHtml}
-        onExportText={onExportText}
       />
 
       <Sep />
@@ -125,6 +125,31 @@ export const Toolbar = ({
           />
         </>
       )}
+
+      <Sep />
+
+      <ToolbarButton active={findOpen} label={t('toolbar.findAndReplace')} onClick={onToggleFind}>
+        <Icon name="search" />
+      </ToolbarButton>
+
+      <span className="flex-1" />
+
+      <ToolbarButton label={t('toolbar.exportHtml')} onClick={onExportHtml}>
+        <Icon name="download" />
+        <span>HTML</span>
+      </ToolbarButton>
+      <ToolbarButton label={t('toolbar.exportTxt')} onClick={onExportText}>
+        <Icon name="download" />
+        <span>TXT</span>
+      </ToolbarButton>
+      <ToolbarButton
+        disabled={!canDelete}
+        label={t('toolbar.deleteDocument')}
+        tone="danger"
+        onClick={onDelete}
+      >
+        <Icon name="trash-2" />
+      </ToolbarButton>
     </div>
   );
 };

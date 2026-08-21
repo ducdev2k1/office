@@ -52,8 +52,12 @@ export const MenuBar = ({
   onInsertMath,
   onInsertFootnote,
   onInsertColumns,
+  onInsertChart,
+  onInsertCallout,
   onWatermark,
   onHeaderFooter,
+  onWordCount,
+  onVnAdmin,
   onHelp,
   isReadOnly = false,
 }: HeaderMenuActions) => {
@@ -170,6 +174,16 @@ export const MenuBar = ({
             disabled: isReadOnly,
             onClick: () => onInsertColumns?.(2),
           },
+          {
+            label: t('chart.insertChart'),
+            disabled: isReadOnly,
+            onClick: () => onInsertChart?.(),
+          },
+          {
+            label: t('slash.callouts'),
+            disabled: isReadOnly,
+            onClick: () => onInsertCallout?.(),
+          },
           'separator',
           {
             label: t('menu.insert.watermark'),
@@ -259,6 +273,16 @@ export const MenuBar = ({
         label: t('menu.tools.label'),
         items: [
           {
+            label: t('wordCount.title'),
+            shortcut: 'Ctrl+Shift+C',
+            onClick: () => onWordCount?.(),
+          },
+          {
+            label: t('vnAdmin.title'),
+            onClick: () => onVnAdmin?.(),
+          },
+          'separator',
+          {
             label: `${t('menu.tools.wordCount')}: ${wordCount}`,
             disabled: true,
             onClick: () => undefined,
@@ -301,8 +325,12 @@ export const MenuBar = ({
     onInsertMath,
     onInsertFootnote,
     onInsertColumns,
+    onInsertChart,
+    onInsertCallout,
     onWatermark,
     onHeaderFooter,
+    onWordCount,
+    onVnAdmin,
     onHelp,
     t,
   ]);

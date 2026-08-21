@@ -8,3 +8,5 @@ export * from '@/modules/toolbar/components/DocTools';
 export * from '@/modules/toolbar/components/InsertTools';
 export * from '@/modules/toolbar/components/ListAlignTools';
 export * from '@/modules/toolbar/components/TextStyleTools';
+export * from '@/modules/toolbar/components/BubbleToolbar';
+export * from '@/modules/toolbar/components/ImageBubbleToolbar';
