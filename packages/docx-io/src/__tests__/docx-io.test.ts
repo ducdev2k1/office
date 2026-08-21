@@ -137,4 +137,29 @@ describe('docx-io', () => {
     expect(imported).toContain('<h1>Chào</h1>');
     expect(imported).toContain('<p>Thế giới</p>');
   });
+
+  it('should map Callout, Paragraph borders, and Chart blocks to OOXML', () => {
+    const html = `
+      <div data-type="callout" data-callout-type="tip"><p>Nội dung mẹo hay</p></div>
+      <p data-border="left" data-border-color="#3b82f6" data-bg-color="#eff6ff">Đoạn văn có viền trái và màu nền</p>
+      <div data-type="chart-block" data-chart-title="Doanh số 2026" data-chart-categories='["Q1","Q2"]' data-chart-series='[{"name":"Kế hoạch","data":[10,20]}]'></div>
+    `;
+
+    const mapper = new OoxmlMapper();
+    const result = mapper.convert(html);
+
+    // Callout verification
+    expect(result.bodyXml).toContain('MẸO HAY');
+    expect(result.bodyXml).toContain('Nội dung mẹo hay');
+    expect(result.bodyXml).toContain('<w:pBdr>');
+
+    // Paragraph border & shading verification
+    expect(result.bodyXml).toContain('<w:left w:val="single"');
+    expect(result.bodyXml).toContain('<w:shd w:val="clear" w:color="auto" w:fill="EFF6FF"/>');
+
+    // Chart block table summary verification
+    expect(result.bodyXml).toContain('Doanh số 2026');
+    expect(result.bodyXml).toContain('Kế hoạch');
+    expect(result.bodyXml).toContain('Q1');
+  });
 });

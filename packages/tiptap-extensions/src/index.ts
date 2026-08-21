@@ -1,7 +1,7 @@
 export { ClearFormatting } from './clear-formatting';
 export { LineSpacing, ParagraphSpacing } from './line-spacing';
 export { Checklist, ChecklistItem } from './checklist';
-export { ImageResize } from './image';
+export { ImageResize, type ImageResizeOptions, type ImageWrapMode } from './image';
 export { LinkPopover } from './link';
 export { Toc } from './toc';
 export { Mention, MentionSuggestion } from './mention';
@@ -18,4 +18,20 @@ export {
   type SuggestionType,
   type SuggestionStatus,
 } from './track-changes';
+export { Callout, type CalloutType, type CalloutOptions } from './callout';
+export {
+  SlashCommand,
+  slashPluginKey,
+  type SlashCommandItem,
+  type SlashCommandStorage,
+} from './slash-command';
+export {
+  ChartBlock,
+  DEFAULT_CHART_ATTRS,
+  type ChartType,
+  type ChartSeries,
+  type ChartBlockAttrs,
+  type ChartBlockStorage,
+} from './chart';
+export { ParagraphStyle, type ParagraphBorderType } from './paragraph-style';
 export * from './shared';

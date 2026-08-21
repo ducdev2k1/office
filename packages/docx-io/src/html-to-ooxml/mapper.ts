@@ -9,6 +9,11 @@ import {
   pxToEmu,
   pxToHalfPt,
 } from './xml.utils';
+import {
+  renderCalloutXml,
+  renderChartBlockXml,
+  renderTableXml,
+} from './block-renderer.utils';
 
 interface InlineContext {
   bold?: boolean;
@@ -107,7 +112,42 @@ export class OoxmlMapper {
     if (tag === 'p') {
       const jcXml = this.renderJc(styles['text-align']);
       const spacingXml = this.renderSpacing(styles['line-height']);
-      return `<w:p><w:pPr>${jcXml}${spacingXml}</w:pPr>${this.renderInlines(node.children, {})}</w:p>`;
+      
+      const borderAttr = node.attributes['data-border'];
+      const borderColor = colorToHex(node.attributes['data-border-color'] ?? '') ?? '94A3B8';
+      const bgHex = colorToHex(node.attributes['data-bg-color'] ?? '') ?? colorToHex(styles['background-color'] ?? '');
+      
+      let pBdrXml = '';
+      if (borderAttr) {
+        if (borderAttr === 'left') {
+          pBdrXml = `<w:pBdr><w:left w:val="single" w:sz="18" w:space="8" w:color="${borderColor}"/></w:pBdr>`;
+        } else if (borderAttr === 'top') {
+          pBdrXml = `<w:pBdr><w:top w:val="single" w:sz="12" w:space="4" w:color="${borderColor}"/></w:pBdr>`;
+        } else if (borderAttr === 'bottom') {
+          pBdrXml = `<w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="${borderColor}"/></w:pBdr>`;
+        } else if (borderAttr === 'right') {
+          pBdrXml = `<w:pBdr><w:right w:val="single" w:sz="18" w:space="8" w:color="${borderColor}"/></w:pBdr>`;
+        } else if (borderAttr === 'box' || borderAttr === 'full') {
+          pBdrXml = `<w:pBdr><w:top w:val="single" w:sz="8" w:space="4" w:color="${borderColor}"/><w:left w:val="single" w:sz="8" w:space="8" w:color="${borderColor}"/><w:bottom w:val="single" w:sz="8" w:space="4" w:color="${borderColor}"/><w:right w:val="single" w:sz="8" w:space="8" w:color="${borderColor}"/></w:pBdr>`;
+        }
+      }
+
+      let shdXml = '';
+      if (bgHex) {
+        shdXml = `<w:shd w:val="clear" w:color="auto" w:fill="${bgHex}"/>`;
+      }
+
+      return `<w:p><w:pPr>${jcXml}${spacingXml}${pBdrXml}${shdXml}</w:pPr>${this.renderInlines(node.children, {})}</w:p>`;
+    }
+
+    // Callout box
+    if (node.attributes['data-type'] === 'callout' || (node.attributes.class && node.attributes.class.includes('callout'))) {
+      return renderCalloutXml(node, (child) => this.renderBlockNode(child, listDepth, listType));
+    }
+
+    // Chart Block
+    if (node.attributes['data-type'] === 'chart-block') {
+      return renderChartBlockXml(node);
     }
 
     // Blockquote
@@ -155,7 +195,11 @@ export class OoxmlMapper {
 
     // Table
     if (tag === 'table') {
-      return this.renderTable(node);
+      return renderTableXml(
+        node,
+        (nodes, ctx) => this.renderInlines(nodes, ctx),
+        (nodes) => this.renderNodes(nodes, 0, null),
+      );
     }
 
     // Generic div / container
@@ -201,55 +245,6 @@ export class OoxmlMapper {
     }
 
     return result;
-  }
-
-  private renderTable(tableNode: HtmlNode): string {
-    const rows: HtmlNode[] = [];
-    for (const child of tableNode.children) {
-      if (child.tagName === 'tr') {
-        rows.push(child);
-      } else if (child.tagName === 'tbody' || child.tagName === 'thead') {
-        rows.push(...child.children.filter((c) => c.tagName === 'tr'));
-      }
-    }
-
-    let tblXml = '<w:tbl>';
-    tblXml +=
-      '<w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/><w:left w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/><w:right w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/></w:tblBorders></w:tblPr>';
-
-    for (const row of rows) {
-      tblXml += '<w:tr>';
-      for (const cell of row.children) {
-        if (cell.tagName === 'td' || cell.tagName === 'th') {
-          const isHeader = cell.tagName === 'th';
-          const styles = parseInlineStyles(cell.attributes.style ?? '');
-          const colSpan = parseInt(cell.attributes.colspan ?? '1', 10);
-          const bgHex =
-            colorToHex(styles['background-color'] ?? '') ?? (isHeader ? 'F1F5F9' : null);
-
-          let tcPr = '<w:tcPr>';
-          if (colSpan > 1) {
-            tcPr += `<w:gridSpan w:val="${colSpan}"/>`;
-          }
-          if (bgHex) {
-            tcPr += `<w:shd w:val="clear" w:color="auto" w:fill="${bgHex}"/>`;
-          }
-          tcPr += '</w:tcPr>';
-
-          const cellContent =
-            cell.children.length === 0
-              ? '<w:p/>'
-              : cell.children.some((c) => c.tagName === 'p')
-                ? this.renderNodes(cell.children, 0, null)
-                : `<w:p>${this.renderInlines(cell.children, { bold: isHeader })}</w:p>`;
-
-          tblXml += `<w:tc>${tcPr}${cellContent}</w:tc>`;
-        }
-      }
-      tblXml += '</w:tr>';
-    }
-    tblXml += '</w:tbl>';
-    return tblXml;
   }
 
   private renderInlines(nodes: HtmlNode[], ctx: InlineContext): string {

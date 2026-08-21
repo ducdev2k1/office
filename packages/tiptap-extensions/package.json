@@ -22,7 +22,11 @@
     "./footnote": "./src/footnote/index.ts",
     "./comments": "./src/comments/index.ts",
     "./track-changes": "./src/track-changes/index.ts",
-    "./math": "./src/math/index.ts"
+    "./math": "./src/math/index.ts",
+    "./callout": "./src/callout/index.ts",
+    "./slash-command": "./src/slash-command/index.ts",
+    "./chart": "./src/chart/index.ts",
+    "./paragraph-style": "./src/paragraph-style/index.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",

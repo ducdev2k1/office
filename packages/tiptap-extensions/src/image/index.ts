@@ -1,2 +1,1 @@
-export { ImageResize } from './image-resize';
-export type { ImageResizeOptions } from './image-resize';
+export { ImageResize, type ImageResizeOptions, type ImageWrapMode } from './image-resize';
