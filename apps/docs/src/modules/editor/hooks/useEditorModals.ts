@@ -15,9 +15,16 @@ export const useEditorModals = () => {
   const [versionHistoryOpen, setVersionHistoryOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [watermarkOpen, setWatermarkOpen] = useState(false);
-  const [moveToFolderOpen, setMoveToFolderOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [mathEditorOpen, setMathEditorOpen] = useState(false);
+  const [chartEditorOpen, setChartEditorOpen] = useState(false);
+  const [editingChartAttrs, setEditingChartAttrs] = useState<any>(null);
+  const [wordCountOpen, setWordCountOpen] = useState(false);
+  const [vnAdminOpen, setVnAdminOpen] = useState(false);
+  const [showFloatingWordCount, setShowFloatingWordCount] = useState(() => {
+    const saved = localStorage.getItem('docs-floating-word-count');
+    return saved === 'true';
+  });
 
   useEffect(() => {
     const handleOpenHf = (event: Event) => {
@@ -61,6 +68,11 @@ export const useEditorModals = () => {
   const toggleFind = () => setFindOpen((prev) => !prev);
   const toggleComments = () => setCommentsOpen((prev) => !prev);
 
+  const toggleFloatingWordCount = (val: boolean) => {
+    setShowFloatingWordCount(val);
+    localStorage.setItem('docs-floating-word-count', String(val));
+  };
+
   const closeAllModals = () => {
     setFindOpen(false);
     setDocSettingsOpen(false);
@@ -69,6 +81,9 @@ export const useEditorModals = () => {
     setMoveToFolderOpen(false);
     setCommentsOpen(false);
     setMathEditorOpen(false);
+    setChartEditorOpen(false);
+    setWordCountOpen(false);
+    setVnAdminOpen(false);
   };
 
   return {
@@ -85,6 +100,11 @@ export const useEditorModals = () => {
     moveToFolderOpen,
     commentsOpen,
     mathEditorOpen,
+    chartEditorOpen,
+    editingChartAttrs,
+    wordCountOpen,
+    vnAdminOpen,
+    showFloatingWordCount,
     setFindOpen,
     setDocSettingsOpen,
     setDocSettingsTab,
@@ -97,6 +117,12 @@ export const useEditorModals = () => {
     setMoveToFolderOpen,
     setCommentsOpen,
     setMathEditorOpen,
+    setChartEditorOpen,
+    setEditingChartAttrs,
+    setWordCountOpen,
+    setVnAdminOpen,
+    setShowFloatingWordCount,
+    toggleFloatingWordCount,
     handleToggleSidebar,
     handleCloseSidebar,
     openPageSetup,

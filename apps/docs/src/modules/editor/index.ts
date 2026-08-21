@@ -26,3 +26,9 @@ export * from '@/modules/editor/utils/shortcuts.utils';
 export * from '@/modules/editor/utils/image.utils';
 export * from '@/modules/editor/print/page-tokens.utils';
 export * from '@/modules/editor/hooks/useEditorModals';
+export * from '@/modules/editor/components/WordCountDialog';
+export * from '@/modules/editor/components/WordCountFloatingBadge';
+export * from '@/modules/editor/components/ChartEditorDialog';
+export * from '@/modules/editor/components/VnAdminStandardDialog';
+export * from '@/modules/editor/components/SlashCommandSuggest';
+

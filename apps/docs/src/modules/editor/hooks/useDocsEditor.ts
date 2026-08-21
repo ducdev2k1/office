@@ -2,6 +2,8 @@ import { useRef } from 'react';
 import type { CollabUser, HocuspocusProvider } from '@office/collab-core';
 import {
   Bookmark,
+  Callout,
+  ChartBlock,
   Checklist,
   ClearFormatting,
   Column,
@@ -17,7 +19,9 @@ import {
   Mention,
   MentionSuggestion,
   ParagraphSpacing,
+  ParagraphStyle,
   SectionBreak,
+  SlashCommand,
   type SuggestionStore,
   Toc,
   TrackChanges,
@@ -131,6 +135,7 @@ export const useDocsEditor = (
     ClearFormatting,
     LineSpacing.configure({ types: ['textStyle'] }),
     ParagraphSpacing,
+    ParagraphStyle,
     TaskItem.configure({ nested: true }),
     Checklist,
     LinkPopover,
@@ -142,6 +147,9 @@ export const useDocsEditor = (
     Footnote,
     Columns,
     Column,
+    Callout,
+    SlashCommand,
+    ChartBlock,
     ...(commentsStore
       ? [
           Comments.configure({

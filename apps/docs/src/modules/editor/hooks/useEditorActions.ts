@@ -22,6 +22,8 @@ export interface EditorActions {
   handleInsertMath: (tex: string, isBlock?: boolean) => void;
   handleInsertFootnote: (content?: string) => void;
   handleInsertColumns: (cols?: number) => void;
+  handleInsertChart: (attrs?: any) => void;
+  handleInsertCallout: (type?: 'info' | 'tip' | 'warning' | 'danger') => void;
 }
 
 export const useEditorActions = (
@@ -122,6 +124,18 @@ export const useEditorActions = (
       ?.run();
   };
 
+  const handleInsertChart = (attrs?: any): void => {
+    (editor?.chain().focus() as unknown as { insertChart: (attrs?: any) => { run: () => boolean } })
+      ?.insertChart(attrs)
+      ?.run();
+  };
+
+  const handleInsertCallout = (type: 'info' | 'tip' | 'warning' | 'danger' = 'info'): void => {
+    (editor?.chain().focus() as unknown as { setCallout: (opts: { type: string }) => { run: () => boolean } })
+      ?.setCallout({ type })
+      ?.run();
+  };
+
   return {
     setLink,
     exportDocx,
@@ -136,5 +150,7 @@ export const useEditorActions = (
     handleInsertMath,
     handleInsertFootnote,
     handleInsertColumns,
+    handleInsertChart,
+    handleInsertCallout,
   };
 };

@@ -5,6 +5,9 @@ import { HelpModal } from '@/modules/editor/components/HelpModal';
 import { PageHeaderFooterPanel } from '@/modules/editor/components/PageHeaderFooterPanel';
 import { WatermarkDialog } from '@/modules/editor/components/WatermarkDialog';
 import { MathEditorDialog } from '@/modules/editor/components/MathEditorDialog';
+import { ChartEditorDialog } from '@/modules/editor/components/ChartEditorDialog';
+import { WordCountDialog } from '@/modules/editor/components/WordCountDialog';
+import { VnAdminStandardDialog } from '@/modules/editor/components/VnAdminStandardDialog';
 import { SuggestionCard } from '@/modules/editor/components/track-changes/SuggestionCard';
 import { CommentsPanel } from '@/modules/editor/components/comments/CommentsPanel';
 import { ShareDialog } from '@/modules/collab/components/ShareDialog';
@@ -32,6 +35,8 @@ interface EditorDialogsHostProps {
   onPageSetupChange: (setup: PageSetup) => void;
   onMoveToFolder: (docId: string, folderId: string | null) => void;
   onInsertMath?: (tex: string, isBlock: boolean) => void;
+  onInsertChart?: (attrs: any) => void;
+  pageCount?: number;
   selectedSuggestion?: TrackSuggestion | null;
   onAcceptSuggestion?: (id: string) => void;
   onRejectSuggestion?: (id: string) => void;
@@ -167,6 +172,41 @@ export const EditorDialogsHost = ({
         open={mathEditorOpen}
         onOpenChange={setMathEditorOpen}
         onSave={(tex, isBlock) => onInsertMath?.(tex, isBlock)}
+      />
+
+      <ChartEditorDialog
+        open={modals.chartEditorOpen}
+        initialAttrs={modals.editingChartAttrs}
+        onClose={() => {
+          modals.setChartEditorOpen(false);
+          modals.setEditingChartAttrs(null);
+        }}
+        onSave={(attrs) => {
+          if (modals.editingChartAttrs && editor) {
+            editor.chain().focus().updateChart(attrs).run();
+          } else if (onInsertChart) {
+            onInsertChart(attrs);
+          } else if (editor) {
+            editor.chain().focus().insertChart(attrs).run();
+          }
+        }}
+      />
+
+      <WordCountDialog
+        open={modals.wordCountOpen}
+        editor={editor}
+        pageCount={pageCount ?? 1}
+        onClose={() => modals.setWordCountOpen(false)}
+        showFloating={modals.showFloatingWordCount}
+        onToggleFloating={modals.toggleFloatingWordCount}
+      />
+
+      <VnAdminStandardDialog
+        open={modals.vnAdminOpen}
+        editor={editor}
+        pageSetup={activeDoc?.pageSetup}
+        onClose={() => modals.setVnAdminOpen(false)}
+        onApplyPageSetup={onPageSetupChange}
       />
 
       {selectedSuggestion && onAcceptSuggestion && onRejectSuggestion && onCloseSuggestion && (
