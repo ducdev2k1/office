@@ -2,6 +2,7 @@ import { useState, type KeyboardEvent, type MouseEvent } from 'react';
 import type { DocRecord } from '@/types/docs.types';
 import { useTranslation } from '@office/i18n';
 import {
+  Button,
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -13,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Icon,
+  Input,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -144,10 +146,10 @@ export const DocRow = ({
         <Icon name="file-text" className="size-4 shrink-0 text-primary" aria-hidden="true" />
         <div className="min-w-0 flex-1 mr-1">
           {isEditing ? (
-            <input
+            <Input
               autoFocus
               aria-label={tShell('fileActions.rename')}
-              className="w-full h-6 px-1.5 text-xs font-medium text-foreground bg-background border border-primary rounded outline-none"
+              className="w-full h-6 px-1.5 text-xs font-medium"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={handleRenameKey}
@@ -180,16 +182,18 @@ export const DocRow = ({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <button
+              <Button
                 type="button"
-                className="grid place-items-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100 shrink-0 ml-auto transition-opacity cursor-pointer"
+                variant="ghost"
+                size="icon"
+                className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 data-[popup-open]:opacity-100 shrink-0 ml-auto"
                 aria-label={tShell('fileActions.moreOptions')}
                 onClick={(event: MouseEvent) => event.stopPropagation()}
-              />
+              >
+                <Icon name="more-vertical" size={15} aria-hidden="true" />
+              </Button>
             }
-          >
-            <Icon name="more-vertical" size={15} aria-hidden="true" />
-          </DropdownMenuTrigger>
+          />
           <DropdownMenuContent align="end" sideOffset={4}>
             {renderMenuItems(false)}
           </DropdownMenuContent>

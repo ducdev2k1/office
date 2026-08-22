@@ -104,30 +104,38 @@ textarea:focus-visible {
    ========================================================= */
 
 .paper-wrap {
-  flex: 1;
+  flex: 1 1 0%;
   min-width: 0;
+  height: 100%;
   overflow-y: auto;
   overflow-x: auto;
-  padding: 24px 24px 60px;
+  padding: 24px 24px 80px;
   background: var(--workspace);
-  display: flex;
-  justify-content: center;
 }
 
 .paper-wrap > div {
   min-width: 0;
-  width: auto;
   margin: 0 auto;
 }
 
 .page-viewport {
   position: relative;
   min-height: 100%;
+  width: var(--paper-w, 793.701px);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.page-viewport > div {
+  width: 100%;
+  margin: 0 auto;
 }
 
 .is-paged .page-stack {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   display: grid;
   align-content: start;
   gap: 24px;
@@ -135,14 +143,15 @@ textarea:focus-visible {
 
 .is-paged .page {
   position: relative;
-  width: var(--paper-w);
-  height: var(--paper-h);
+  width: var(--paper-w, 793.701px);
+  height: var(--paper-h, 1122.52px);
   margin: 0 auto;
   background: #fff;
   box-shadow:
     0 1px 3px rgb(60 64 67 / 20%),
     0 6px 18px rgb(60 64 67 / 12%);
   animation: page-fade 160ms ease-out;
+  box-sizing: border-box;
 }
 
 .is-paged .page-hf {
@@ -153,17 +162,23 @@ textarea:focus-visible {
   justify-content: space-between;
   align-items: center;
   gap: 8px;
+  padding: 2px 8px;
   font-size: 9pt;
-  color: #5f6368;
+  color: var(--muted-foreground, #5f6368);
   pointer-events: auto;
   user-select: none;
-  cursor: text;
-  border-radius: 4px;
-  transition: background-color 120ms ease;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1.5px dashed transparent;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+  box-sizing: border-box;
 }
 
 .is-paged .page-hf:hover {
-  background: rgb(26 115 232 / 6%);
+  background-color: var(--blue-soft, rgb(26 115 232 / 8%));
+  border-color: var(--blue, #1a73e8);
 }
 
 .is-paged .page-header {
@@ -192,6 +207,74 @@ textarea:focus-visible {
   text-align: right;
 }
 
+.is-paged .page-hf .hf-band-badge {
+  position: absolute;
+  left: 0;
+  background: var(--blue, #1a73e8);
+  color: #ffffff;
+  font-size: 10px;
+  font-family: inherit;
+  font-weight: 600;
+  padding: 1.5px 8px;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+  box-shadow: 0 1px 4px rgb(26 115 232 / 30%);
+}
+
+.is-paged .page-header .hf-band-badge {
+  bottom: 100%;
+  border-radius: 4px 4px 0 0;
+}
+
+.is-paged .page-footer .hf-band-badge {
+  top: 100%;
+  border-radius: 0 0 4px 4px;
+}
+
+.is-paged .page-hf:hover .hf-band-badge {
+  opacity: 1;
+}
+
+.is-paged .page-hf .hf-edit-btn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%) scale(0.95);
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-radius: 4px;
+  border: none;
+  background: var(--blue, #1a73e8);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    background-color 0.15s ease;
+  z-index: 15;
+  box-shadow: 0 2px 6px rgb(26 115 232 / 25%);
+}
+
+.is-paged .page-hf:hover .hf-edit-btn {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+  pointer-events: auto;
+}
+
+.is-paged .page-hf .hf-edit-btn:hover {
+  filter: brightness(1.1);
+}
+
 /* Inline header/footer edit overlay (double-click header/footer band) */
 .hf-inline-card .hf-inline-editor {
   min-height: 28px;
@@ -200,6 +283,7 @@ textarea:focus-visible {
   line-height: 1.5;
   color: var(--foreground);
   outline: none;
+  box-sizing: border-box;
 }
 
 .hf-inline-card .hf-inline-editor p {
@@ -223,11 +307,18 @@ textarea:focus-visible {
   }
 }
 
+.tiptap {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
+}
+
 .doc-editor {
+  box-sizing: border-box !important;
   width: var(--paper-w, min(100%, 796px));
   max-width: 100%;
   min-height: calc(var(--paper-h, 1050px) + 48px);
-  margin: 0 auto;
+  margin: 0 auto !important;
   padding: 72px 82px;
   border: 1px solid #c8cacc;
   background: #fff;
@@ -240,14 +331,39 @@ textarea:focus-visible {
 }
 
 .is-paged .doc-editor {
+  box-sizing: border-box !important;
   position: relative;
   z-index: 1;
-  width: var(--paper-w, 793.701px);
+  width: var(--paper-w, 793.701px) !important;
+  max-width: var(--paper-w, 793.701px) !important;
   min-height: var(--stack-h);
+  margin: 0 auto !important;
   padding: var(--margin-t) var(--margin-r) var(--margin-b) var(--margin-l) !important;
-  border: none;
-  background: transparent;
-  box-shadow: none;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.doc-editor p,
+.doc-editor h1,
+.doc-editor h2,
+.doc-editor h3,
+.doc-editor h4,
+.doc-editor h5,
+.doc-editor h6,
+.doc-editor blockquote,
+.doc-editor pre,
+.doc-editor ul,
+.doc-editor ol {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+.doc-editor img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* TipTap Pro Pagination Classes */
@@ -1212,19 +1328,15 @@ textarea:focus-visible {
 }
 
 .callout-info {
-  border-left: 4px solid #3b82f6;
   background-color: rgba(59, 130, 246, 0.08);
 }
 .callout-tip {
-  border-left: 4px solid #10b981;
   background-color: rgba(16, 185, 129, 0.08);
 }
 .callout-warning {
-  border-left: 4px solid #f59e0b;
   background-color: rgba(245, 158, 11, 0.08);
 }
 .callout-danger {
-  border-left: 4px solid #ef4444;
   background-color: rgba(239, 68, 68, 0.08);
 }
 

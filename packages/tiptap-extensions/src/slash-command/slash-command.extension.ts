@@ -63,8 +63,9 @@ export const SlashCommand = Extension.create<Record<string, never>, SlashCommand
               // Only trigger if at start of block or preceded by whitespace
               if (before === '' || /\s$/.test(before)) {
                 setTimeout(() => {
-                  const coords = view.coordsAtPos(from);
-                  const anchor = new DOMRect(coords.left, coords.bottom + 4, 0, 0);
+                  const { selection } = view.state;
+                  const coords = view.coordsAtPos(selection.from);
+                  const anchor = new DOMRect(coords.left, coords.bottom + 4, 0, Math.max(16, coords.bottom - coords.top));
                   storage.onOpen?.({ query: '', anchor });
                 }, 10);
               }

@@ -247,14 +247,16 @@ export const ColorPalettePopover = ({
             <Tooltip>
               <TooltipTrigger
                 render={
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="icon"
                     aria-label={t('toolbar.customColor')}
                     onClick={() => customInputRef.current?.click()}
-                    className="size-5 rounded-full border border-dashed border-border hover:border-foreground/60 flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer transition-colors bg-muted/30"
+                    className="size-5 rounded-full border-dashed border-border hover:border-foreground/60 text-muted-foreground hover:text-foreground bg-muted/30"
                   >
                     <Icon name="plus" size={12} />
-                  </button>
+                  </Button>
                 }
               />
               <TooltipContent side="top">{t('toolbar.customColor')}</TooltipContent>

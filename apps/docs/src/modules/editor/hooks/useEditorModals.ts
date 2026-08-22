@@ -15,6 +15,7 @@ export const useEditorModals = () => {
   const [versionHistoryOpen, setVersionHistoryOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [watermarkOpen, setWatermarkOpen] = useState(false);
+  const [moveToFolderOpen, setMoveToFolderOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [mathEditorOpen, setMathEditorOpen] = useState(false);
   const [chartEditorOpen, setChartEditorOpen] = useState(false);

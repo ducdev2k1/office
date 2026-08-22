@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type KeyboardEvent, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
-import { cn, Popover, PopoverContent, PopoverTrigger } from '@office/ui-kit';
+import { Button, Input, cn, Popover, PopoverContent, PopoverTrigger } from '@office/ui-kit';
 import {
   FONT_CATEGORIES,
   type FontVariant,
@@ -144,16 +144,13 @@ const FontRow = ({ font, isSelected, onSelect, onSelectVariant }: FontRowProps) 
   return (
     <>
       <div ref={rowRef} onMouseEnter={openSub} onMouseLeave={scheduleClose}>
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => onSelect(font)}
-          className={cn(
-            'w-full flex items-center justify-between px-3 py-1.5',
-            'text-foreground hover:bg-hover transition-colors cursor-pointer',
-          )}
+          className="w-full justify-between px-3 py-1.5 h-auto text-foreground"
         >
           <span className="flex items-center gap-1.5 min-w-0">
-            {/* checkmark luôn chiếm space, chỉ ẩn opacity */}
             <span className={cn('text-primary shrink-0', !isSelected && 'opacity-0')}>
               <IconCheck />
             </span>
@@ -161,11 +158,10 @@ const FontRow = ({ font, isSelected, onSelect, onSelectVariant }: FontRowProps) 
               {font}
             </span>
           </span>
-          {/* chevron luôn hiển thị để cho thấy có submenu */}
           <span className="text-muted-foreground shrink-0 ml-2">
             <IconChevronRight />
           </span>
-        </button>
+        </Button>
       </div>
 
       {subOpen &&
@@ -177,18 +173,19 @@ const FontRow = ({ font, isSelected, onSelect, onSelectVariant }: FontRowProps) 
             onMouseLeave={scheduleClose}
           >
             {FONT_VARIANTS.map((variant) => (
-              <button
+              <Button
                 key={variant}
                 type="button"
+                variant="ghost"
                 onClick={() => onSelectVariant(font, variant)}
-                className="w-full px-4 py-1.5 text-left text-[13px] text-foreground hover:bg-hover transition-colors cursor-pointer"
+                className="w-full justify-start px-4 py-1.5 h-auto text-[13px] text-foreground"
                 style={{
                   ...fontStyle,
                   fontWeight: FONT_VARIANT_WEIGHTS[variant],
                 }}
               >
                 {variant}
-              </button>
+              </Button>
             ))}
           </div>,
           document.body,
@@ -254,15 +251,16 @@ export const FontPickerPopover = ({
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         render={
-          <button
+          <Button
             id="font-picker-trigger"
             ref={triggerRef}
             type="button"
+            variant="ghost"
             aria-label={`Font: ${displayName}`}
             className={cn(
-              'flex items-center gap-1 h-7 px-2 rounded border border-transparent',
-              'text-[13px] text-foreground bg-transparent hover:bg-hover hover:border-border',
-              'transition-colors cursor-pointer min-w-[100px] max-w-[155px]',
+              'gap-1 h-7 px-2',
+              'text-[13px] text-foreground',
+              'min-w-[100px] max-w-[155px]',
               open && 'bg-hover border-border',
             )}
           />
@@ -288,23 +286,25 @@ export const FontPickerPopover = ({
             <span className="text-muted-foreground shrink-0">
               <IconSearch />
             </span>
-            <input
+            <Input
               ref={searchRef}
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Tìm font..."
-              className="flex-1 bg-transparent text-[12px] text-foreground placeholder:text-muted-foreground outline-none"
+              className="flex-1 bg-transparent text-[12px] text-foreground placeholder:text-muted-foreground border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-auto p-0"
             />
             {search && (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => setSearch('')}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <IconX />
-              </button>
+              </Button>
             )}
           </div>
         </div>

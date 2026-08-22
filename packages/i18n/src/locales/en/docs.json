@@ -291,7 +291,11 @@
     "apply": "Apply",
     "cancel": "Cancel",
     "done": "Done",
-    "editHint": "Double-click the header / footer area to edit"
+    "editHint": "Double-click the header / footer area to edit",
+    "editHeader": "Edit header",
+    "editFooter": "Edit footer",
+    "emptyHeaderPlaceholder": "Double-click or click Edit to add header...",
+    "emptyFooterPlaceholder": "Double-click or click Edit to add footer..."
   },
   "helpModal": {
     "title": "Keyboard Shortcuts",

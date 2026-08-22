@@ -1,6 +1,5 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer, type NodeViewProps, NodeViewWrapper } from '@tiptap/react';
-import { useState } from 'react';
 
 export type ChartType = 'bar' | 'line' | 'pie' | 'area';
 
@@ -158,7 +157,6 @@ const DEFAULT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '
 const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, editor }: NodeViewProps) => {
   const attrs = node.attrs as ChartBlockAttrs;
   const { chartType, title, categories = [], series = [], height = 320 } = attrs;
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   const handleEdit = () => {
     const storage = (editor.storage as any)?.chartBlock;
@@ -167,14 +165,12 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
     }
   };
 
-  // SVG Chart Dimensions
   const padding = { top: 40, right: 30, bottom: 50, left: 55 };
   const width = 680;
   const chartHeight = Math.max(260, height);
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = chartHeight - padding.top - padding.bottom;
 
-  // Max value calculation
   const allValues = series.flatMap((s) => s.data);
   const maxVal = Math.max(10, ...allValues) * 1.15;
   const numTicks = 5;
@@ -186,7 +182,6 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
       }`}
       data-type="chart-block"
     >
-      {/* Header */}
       <div className="mb-2 flex items-center justify-between border-b border-border/60 pb-2.5">
         <div className="flex items-center gap-2">
           <span className="text-base font-semibold text-foreground">{title || 'Biểu đồ số liệu'}</span>
@@ -200,6 +195,7 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
             type="button"
             className="flex items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground hover:bg-hover transition-colors cursor-pointer shadow-2xs"
             onClick={handleEdit}
+            aria-label="Chỉnh sửa số liệu"
           >
             <span>⚙️</span>
             <span>Chỉnh sửa số liệu</span>
@@ -208,21 +204,15 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
             type="button"
             className="rounded-md p-1 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
             onClick={deleteNode}
-            title="Xóa biểu đồ"
+            aria-label="Xóa biểu đồ"
           >
             ✕
           </button>
         </div>
       </div>
 
-      {/* SVG Chart Graphic */}
       <div className="flex justify-center select-none overflow-x-auto py-2">
-        <svg
-          viewBox={`0 0 ${width} ${chartHeight}`}
-          className="w-full max-w-[680px] h-auto text-muted-foreground"
-          style={{ minHeight: `${chartHeight}px` }}
-        >
-          {/* Y Axis Grid & Ticks */}
+        <svg viewBox={`0 0 ${width} ${chartHeight}`} className="w-full max-w-[680px] h-auto text-muted-foreground">
           {Array.from({ length: numTicks + 1 }).map((_, i) => {
             const val = Math.round((maxVal / numTicks) * (numTicks - i));
             const y = padding.top + (plotHeight / numTicks) * i;
@@ -237,21 +227,13 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
                   strokeOpacity={0.15}
                   strokeDasharray={i === numTicks ? 'none' : '3 3'}
                 />
-                <text
-                  x={padding.left - 8}
-                  y={y + 4}
-                  textAnchor="end"
-                  fontSize="11"
-                  fill="currentColor"
-                  className="fill-muted-foreground text-[11px]"
-                >
+                <text x={padding.left - 8} y={y + 4} textAnchor="end" fontSize="11" fill="currentColor">
                   {val}
                 </text>
               </g>
             );
           })}
 
-          {/* Bar Chart */}
           {chartType === 'bar' &&
             categories.map((cat, catIdx) => {
               const groupWidth = plotWidth / categories.length;
@@ -293,7 +275,6 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
               );
             })}
 
-          {/* Line / Area Chart */}
           {(chartType === 'line' || chartType === 'area') && (
             <>
               {categories.map((cat, catIdx) => {
@@ -320,19 +301,14 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
                   return { x, y, val };
                 });
 
-                const pathData = points.reduce(
-                  (acc, pt, i) => `${acc} ${i === 0 ? 'M' : 'L'} ${pt.x} ${pt.y}`,
-                  '',
-                );
+                const pathData = points.reduce((acc, pt, i) => `${acc} ${i === 0 ? 'M' : 'L'} ${pt.x} ${pt.y}`, '');
                 const areaData = `${pathData} L ${points[points.length - 1]?.x} ${
                   padding.top + plotHeight
                 } L ${points[0]?.x} ${padding.top + plotHeight} Z`;
 
                 return (
                   <g key={sIdx}>
-                    {chartType === 'area' && (
-                      <path d={areaData} fill={color} fillOpacity={0.18} />
-                    )}
+                    {chartType === 'area' && <path d={areaData} fill={color} fillOpacity={0.18} />}
                     <path
                       d={pathData}
                       fill="none"
@@ -359,7 +335,6 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
             </>
           )}
 
-          {/* Pie Chart */}
           {chartType === 'pie' && (
             <g transform={`translate(${width / 2}, ${chartHeight / 2 - 10})`}>
               {(() => {
@@ -396,7 +371,6 @@ const ChartBlockNodeView = ({ node, selected, updateAttributes, deleteNode, edit
         </svg>
       </div>
 
-      {/* Legends */}
       <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-xs">
         {chartType === 'pie'
           ? categories.map((cat, i) => (

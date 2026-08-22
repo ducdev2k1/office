@@ -104,12 +104,11 @@ export const Callout = Node.create<CalloutOptions>({
 
 const CALLOUT_CONFIG: Record<
   CalloutType,
-  { label: string; icon: string; border: string; bg: string; text: string; badge: string }
+  { label: string; icon: string; bg: string; text: string; badge: string }
 > = {
   info: {
     label: 'Thông tin',
     icon: 'ℹ️',
-    border: 'border-blue-300 dark:border-blue-700/60',
     bg: 'bg-blue-50/70 dark:bg-blue-950/30',
     text: 'text-blue-900 dark:text-blue-200',
     badge: 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300',
@@ -117,7 +116,6 @@ const CALLOUT_CONFIG: Record<
   tip: {
     label: 'Mẹo',
     icon: '💡',
-    border: 'border-emerald-300 dark:border-emerald-700/60',
     bg: 'bg-emerald-50/70 dark:bg-emerald-950/30',
     text: 'text-emerald-900 dark:text-emerald-200',
     badge: 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300',
@@ -125,7 +123,6 @@ const CALLOUT_CONFIG: Record<
   warning: {
     label: 'Chú ý',
     icon: '⚠️',
-    border: 'border-amber-300 dark:border-amber-700/60',
     bg: 'bg-amber-50/70 dark:bg-amber-950/30',
     text: 'text-amber-900 dark:text-amber-200',
     badge: 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300',
@@ -133,7 +130,6 @@ const CALLOUT_CONFIG: Record<
   danger: {
     label: 'Cảnh báo',
     icon: '🚨',
-    border: 'border-rose-300 dark:border-rose-700/60',
     bg: 'bg-rose-50/70 dark:bg-rose-950/30',
     text: 'text-rose-900 dark:text-rose-200',
     badge: 'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-300',
@@ -152,7 +148,7 @@ const CalloutNodeView = ({ node, updateAttributes, deleteNode }: NodeViewProps) 
 
   return (
     <NodeViewWrapper
-      className={`callout callout-${currentType} my-4 rounded-xl border-l-4 ${config.border} ${config.bg} p-4 shadow-xs transition-colors`}
+      className={`callout callout-${currentType} my-4 rounded-xl ${config.bg} p-4 shadow-xs transition-colors`}
       data-type="callout"
       data-callout-type={currentType}
     >
@@ -162,7 +158,7 @@ const CalloutNodeView = ({ node, updateAttributes, deleteNode }: NodeViewProps) 
             type="button"
             className={`flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-semibold ${config.badge} cursor-pointer hover:opacity-85 transition-opacity`}
             onClick={() => setShowMenu((prev) => !prev)}
-            title="Đổi loại ghi chú"
+            aria-label="Đổi loại ghi chú"
           >
             <span>{config.icon}</span>
             <span>{config.label}</span>
@@ -198,7 +194,7 @@ const CalloutNodeView = ({ node, updateAttributes, deleteNode }: NodeViewProps) 
           type="button"
           className="text-xs text-muted-foreground hover:text-destructive cursor-pointer px-1.5 py-0.5 rounded-sm hover:bg-destructive/10 transition-colors"
           onClick={deleteNode}
-          title="Xóa hộp ghi chú"
+          aria-label="Xóa hộp ghi chú"
         >
           ✕
         </button>

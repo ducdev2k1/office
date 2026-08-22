@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from '@office/i18n';
-import { Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
+import { Button, Checkbox, Input, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
 import type { HeaderFooterSlot, HFAlign, PageNumberSetup, PageSetup } from '@/types/docs.types';
 import { NumberInputWithUnit, SelectField } from './PageSettingsControls';
 
@@ -61,34 +61,27 @@ export const HeaderFooterSettingsTab = ({
     <>
       {/* Section: Layout */}
       <div className="space-y-2.5">
-        <h3 className="font-semibold text-neutral-100 text-xs tracking-tight">
+        <h3 className="font-semibold text-foreground text-xs tracking-tight">
           {t('headerFooter.layout')}
         </h3>
         <div className="space-y-2 pl-0.5">
-          <label className="flex items-center gap-2.5 text-neutral-200 cursor-pointer font-medium hover:text-white transition-colors">
-            <input
-              type="checkbox"
+          <label className="flex items-center gap-2.5 text-foreground cursor-pointer font-medium hover:text-primary transition-colors">
+            <Checkbox
               checked={pageNumber.skipFirstPage}
-              onChange={(e) => updatePageNumber({ skipFirstPage: e.target.checked })}
-              className="size-4 rounded border-neutral-700 bg-neutral-900 text-purple-600 focus:ring-purple-500 cursor-pointer"
+              onCheckedChange={(checked) => updatePageNumber({ skipFirstPage: Boolean(checked) })}
             />
             <span>{t('headerFooter.differentFirstPage')}</span>
           </label>
-          <label className="flex items-center gap-2.5 text-neutral-500 cursor-not-allowed">
-            <input
-              type="checkbox"
-              checked={false}
-              disabled
-              className="size-4 rounded border-neutral-800 bg-neutral-900 opacity-40"
-            />
+          <label className="flex items-center gap-2.5 text-muted-foreground cursor-not-allowed">
+            <Checkbox checked={false} disabled />
             <span>{t('headerFooter.differentOddEven')}</span>
           </label>
         </div>
       </div>
 
       {/* Section: Distance to page edge */}
-      <div className="space-y-2.5 pt-3 border-t border-neutral-800/80">
-        <h3 className="font-semibold text-neutral-100 text-xs tracking-tight">
+      <div className="space-y-2.5 pt-3 border-t border-border">
+        <h3 className="font-semibold text-foreground text-xs tracking-tight">
           {t('headerFooter.distanceToEdge')}
         </h3>
         <div className="space-y-2">
@@ -120,8 +113,8 @@ export const HeaderFooterSettingsTab = ({
       </div>
 
       {/* Section: Content Slots */}
-      <div className="space-y-2.5 pt-3 border-t border-neutral-800/80">
-        <h3 className="font-semibold text-neutral-100 text-xs tracking-tight">
+      <div className="space-y-2.5 pt-3 border-t border-border">
+        <h3 className="font-semibold text-foreground text-xs tracking-tight">
           {t('headerFooter.content')} (
           {activeBand === 'header' ? t('headerFooter.header') : t('headerFooter.footer')})
         </h3>
@@ -139,16 +132,16 @@ export const HeaderFooterSettingsTab = ({
                   <span
                     className={cn(
                       'text-[11px] transition-colors',
-                      isSelected ? 'text-purple-400 font-medium' : 'text-neutral-400',
+                      isSelected ? 'text-primary font-medium' : 'text-muted-foreground',
                     )}
                   >
                     {label}
                   </span>
                   {isSelected && (
-                    <span className="text-[10px] text-purple-400/80 font-mono">Đang chọn</span>
+                    <span className="text-[10px] text-primary font-mono font-medium">Đang chọn</span>
                   )}
                 </div>
-                <input
+                <Input
                   type="text"
                   value={val}
                   placeholder={label}
@@ -159,10 +152,10 @@ export const HeaderFooterSettingsTab = ({
                       : updateFooterSlot(slotKey, e.target.value)
                   }
                   className={cn(
-                    'w-full h-8.5 rounded-lg border bg-[#1c1c1f] px-3 text-xs font-medium text-neutral-100 transition-all',
+                    'w-full h-8.5 rounded-lg border bg-background px-3 text-xs font-medium text-foreground transition-all',
                     isSelected
-                      ? 'border-purple-500/80 ring-1 ring-purple-500/40'
-                      : 'border-neutral-800 focus:border-purple-500/60 focus:ring-1 focus:ring-purple-500/30',
+                      ? 'border-primary ring-1 ring-primary/40'
+                      : 'border-input focus:border-primary focus-visible:ring-1 focus-visible:ring-primary/30',
                   )}
                 />
               </div>
@@ -179,15 +172,17 @@ export const HeaderFooterSettingsTab = ({
             <Tooltip key={item.token}>
               <TooltipTrigger
                 render={
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => insertTokenToActiveBand(item.token)}
                     aria-label={item.title}
-                    className="inline-flex items-center rounded-md border border-neutral-800 bg-[#1c1c1f] px-2 py-0.5 font-mono text-[11px] text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 transition-colors cursor-pointer active:scale-95"
+                    className="font-mono text-[11px] text-muted-foreground hover:text-foreground border-border bg-background hover:bg-muted"
                   >
                     + {item.label}
-                  </button>
+                  </Button>
                 }
               />
               <TooltipContent side="top">{item.title}</TooltipContent>
@@ -197,43 +192,45 @@ export const HeaderFooterSettingsTab = ({
       </div>
 
       {/* Section: Page numbers */}
-      <div className="space-y-2.5 pt-3 border-t border-neutral-800/80">
-        <h3 className="font-semibold text-neutral-100 text-xs tracking-tight">
+      <div className="space-y-2.5 pt-3 border-t border-border">
+        <h3 className="font-semibold text-foreground text-xs tracking-tight">
           {t('headerFooter.pageNumber.title')}
         </h3>
 
         <div className="space-y-2">
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={() => {
               const targetSlot = pageNumber.align || activeSlot;
               updatePageNumber({ enabled: true, format: '{page}' });
               insertTokenToActiveBand('{page}', targetSlot);
             }}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border border-neutral-800 bg-[#1c1c1f] hover:bg-[#27272a] text-left font-medium text-neutral-200 transition-all duration-150 cursor-pointer hover:border-purple-500/40"
+            className="w-full justify-start gap-2.5 px-3 py-2 border-border bg-background hover:bg-muted text-left font-medium text-foreground hover:border-primary/40"
           >
-            <span className="font-mono text-purple-400 font-bold">#</span>
+            <span className="font-mono text-primary font-bold">#</span>
             <span>{t('headerFooter.insertPageNumber')}</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={() => {
               const targetSlot = pageNumber.align || activeSlot;
               updatePageNumber({ enabled: true, format: '{page} / {pages}' });
               insertTokenToActiveBand('{page} / {pages}', targetSlot);
             }}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border border-neutral-800 bg-[#1c1c1f] hover:bg-[#27272a] text-left font-medium text-neutral-200 transition-all duration-150 cursor-pointer hover:border-purple-500/40"
+            className="w-full justify-start gap-2.5 px-3 py-2 border-border bg-background hover:bg-muted text-left font-medium text-foreground hover:border-primary/40"
           >
-            <span className="font-mono text-purple-400 font-bold">##</span>
+            <span className="font-mono text-primary font-bold">##</span>
             <span>{t('headerFooter.insertTotalPages')}</span>
-          </button>
+          </Button>
         </div>
 
         {/* Number format & position options */}
         <div className="grid grid-cols-2 gap-2 pt-1">
           <div className="space-y-1">
-            <span className="text-neutral-400 text-[11px]">
+            <span className="text-muted-foreground text-[11px]">
               {t('headerFooter.pageNumber.position')}
             </span>
             <SelectField
@@ -247,7 +244,7 @@ export const HeaderFooterSettingsTab = ({
           </div>
 
           <div className="space-y-1">
-            <span className="text-neutral-400 text-[11px]">
+            <span className="text-muted-foreground text-[11px]">
               {t('headerFooter.pageNumber.align')}
             </span>
             <SelectField

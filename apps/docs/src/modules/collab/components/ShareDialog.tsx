@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from '@office/i18n';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Icon, cn } from '@office/ui-kit';
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Icon, Input, cn } from '@office/ui-kit';
 
 type AccessRole = 'view' | 'comment' | 'edit';
 
@@ -79,27 +79,28 @@ export const ShareDialog = ({ open, onClose, docId }: ShareDialogProps) => {
             <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t('share.accessLabel')}</label>
             <div className="flex gap-1 rounded-lg bg-muted/60 p-1">
               {(['view', 'comment', 'edit'] as AccessRole[]).map((r) => (
-                <button
+                <Button
                   key={r}
                   type="button"
+                  variant="ghost"
                   className={cn(
-                    'flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors',
+                    'flex-1 rounded-md px-2 py-1.5 text-xs font-medium',
                     role === r ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
                   )}
                   onClick={() => setRole(r)}
                 >
                   {t(`share.roles.${ROLE_LABELS[r]}`)}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t('share.linkLabel')}</label>
             <div className="flex gap-2">
-              <input
+              <Input
                 readOnly
                 value={shareUrl()}
-                className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-xs text-muted-foreground"
+                className="min-w-0 flex-1 text-xs text-muted-foreground"
                 onFocus={(event) => event.currentTarget.select()}
               />
               <Button size="sm" variant="outline" onClick={() => void handleCopy()}>
@@ -111,14 +112,19 @@ export const ShareDialog = ({ open, onClose, docId }: ShareDialogProps) => {
           <div>
             <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t('share.addPeople')}</label>
             <div className="flex gap-2">
-              <input
+              <Input
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 onKeyDown={(event) => event.key === 'Enter' && handleAddUser()}
                 placeholder={t('share.emailPlaceholder')}
-                className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
+                className="min-w-0 flex-1 text-sm"
               />
-              <Button size="sm" onClick={handleAddUser}>
+              <Button
+                size="sm"
+                variant="default"
+                className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs px-3.5 cursor-pointer shadow-xs"
+                onClick={handleAddUser}
+              >
                 {t('share.add')}
               </Button>
             </div>
@@ -133,17 +139,19 @@ export const ShareDialog = ({ open, onClose, docId }: ShareDialogProps) => {
                   <span className="min-w-0 flex-1 truncate text-sm">{user.name}</span>
                   <div className="flex gap-1 rounded-md bg-muted/60 p-0.5">
                     {(['view', 'comment', 'edit'] as AccessRole[]).map((r) => (
-                      <button
+                      <Button
                         key={r}
                         type="button"
+                        variant="ghost"
+                        size="sm"
                         className={cn(
-                          'rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors',
-                          user.role === r ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground',
+                          'px-1.5 py-0.5 text-[10px] font-medium h-auto',
+                          user.role === r ? 'bg-background text-foreground shadow-sm font-semibold' : 'text-muted-foreground hover:text-foreground',
                         )}
                         onClick={() => handleRoleChange(user.id, r)}
                       >
                         {t(`share.roles.${ROLE_LABELS[r]}`)}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </li>
@@ -154,8 +162,13 @@ export const ShareDialog = ({ open, onClose, docId }: ShareDialogProps) => {
             {t('share.backendNote')}
           </p>
         </div>
-        <DialogFooter>
-          <Button size="sm" variant="outline" onClick={onClose}>
+        <DialogFooter className="border-t border-border/60 pt-4 mt-2 flex items-center justify-end">
+          <Button
+            size="default"
+            variant="outline"
+            className="px-4 text-xs font-medium border-border/80 bg-background text-foreground/80 hover:bg-muted hover:text-foreground cursor-pointer"
+            onClick={onClose}
+          >
             {tCommon('actions.close')}
           </Button>
         </DialogFooter>

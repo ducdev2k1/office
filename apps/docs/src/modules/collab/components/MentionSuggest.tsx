@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
 import { cn, Icon } from '@office/ui-kit';
@@ -155,10 +156,10 @@ export const MentionSuggest = ({ editor, users, getMentionedIds }: MentionSugges
 
   if (!state) return null;
 
-  return (
+  const content = (
     <div
       ref={containerRef}
-      className="pointer-events-auto z-50 w-60 rounded-lg border border-border bg-popover p-1 shadow-lg"
+      className="fixed z-50 w-60 rounded-xl border border-border bg-popover/95 backdrop-blur-md p-1 shadow-xl animate-in fade-in-0 zoom-in-95 duration-100"
       onMouseDown={(event) => event.preventDefault()}
     >
       <div className="px-2 py-1 text-[11px] font-medium text-muted-foreground">
@@ -173,7 +174,7 @@ export const MentionSuggest = ({ editor, users, getMentionedIds }: MentionSugges
               <button
                 type="button"
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors',
+                  'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors cursor-pointer',
                   index === state.index ? 'bg-accent text-accent-foreground' : 'hover:bg-hover',
                 )}
                 onMouseEnter={() => setState((prev) => (prev ? { ...prev, index } : prev))}
@@ -193,4 +194,6 @@ export const MentionSuggest = ({ editor, users, getMentionedIds }: MentionSugges
       )}
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : content;
 };

@@ -61,6 +61,8 @@ export const EditorDialogsHost = ({
   onPageSetupChange,
   onMoveToFolder,
   onInsertMath,
+  onInsertChart,
+  pageCount,
   selectedSuggestion,
   onAcceptSuggestion,
   onRejectSuggestion,

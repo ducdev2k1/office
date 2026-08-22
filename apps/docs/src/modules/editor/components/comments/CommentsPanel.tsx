@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Button, Icon, Input } from '@office/ui-kit';
 import type { CommentsStore, CommentThread } from '@office/tiptap-extensions';
+import { Button, Icon, Input } from '@office/ui-kit';
+import { useState } from 'react';
 import { CommentThreadCard } from './CommentThreadCard';
 
 interface CommentsPanelProps {
@@ -62,14 +62,14 @@ export const CommentsPanel = ({
           </span>
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={onClose}
           className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors cursor-pointer"
           aria-label="Đóng"
         >
-          <Icon name="close" size={16} />
-        </button>
+          <Icon name="x" size={16} />
+        </Button>
       </div>
 
       {/* Filter Tabs */}
@@ -157,9 +157,7 @@ export const CommentsPanel = ({
                 authorName: currentUserName,
               })
             }
-            onToggleResolve={(threadId, resolved) =>
-              commentsStore.setResolved(threadId, resolved)
-            }
+            onToggleResolve={(threadId, resolved) => commentsStore.setResolved(threadId, resolved)}
             onDelete={(threadId) => commentsStore.deleteThread(threadId)}
           />
         ))}

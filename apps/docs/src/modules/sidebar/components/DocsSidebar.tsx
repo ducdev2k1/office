@@ -3,7 +3,7 @@ import type { DocRecord } from '@/types/docs.types';
 import { DocRow } from '@/modules/sidebar/components/DocRow';
 import { OutlineList } from '@/modules/sidebar/components/OutlineList';
 import { useTranslation } from '@office/i18n';
-import { Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
+import { Button, Icon, Input, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
 
 interface DocsSidebarProps {
   docs: DocRecord[];
@@ -59,14 +59,14 @@ export const DocsSidebar = ({
           <Tooltip>
             <TooltipTrigger
               render={
-                <button
-                  className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors cursor-pointer"
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon"
                   aria-label={t('sidebar.closeAria')}
                   onClick={onClose}
                 >
                   <Icon name="chevron-left" size={18} />
-                </button>
+                </Button>
               }
             />
             <TooltipContent side="bottom">{t('sidebar.closeAria')}</TooltipContent>
@@ -77,14 +77,14 @@ export const DocsSidebar = ({
           <Tooltip>
             <TooltipTrigger
               render={
-                <button
-                  className="grid place-items-center size-7 rounded text-muted-foreground hover:text-foreground hover:bg-hover transition-colors cursor-pointer"
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon"
                   aria-label={t('sidebar.addAria')}
                   onClick={onAdd}
                 >
                   <Icon name="plus" size={18} />
-                </button>
+                </Button>
               }
             />
             <TooltipContent side="bottom">{t('sidebar.addAria')}</TooltipContent>
@@ -92,8 +92,8 @@ export const DocsSidebar = ({
         </div>
         <label className="flex items-center gap-2 h-8.5 px-2.5 mb-3 border border-border focus-within:border-primary rounded-md bg-background text-muted-foreground transition-colors">
           <Icon name="search" size={15} aria-hidden="true" className="shrink-0" />
-          <input
-            className="w-full min-w-0 border-0 outline-none bg-transparent text-foreground text-xs placeholder:text-muted-foreground/75"
+          <Input
+            className="w-full min-w-0 border-0 bg-transparent text-foreground text-xs placeholder:text-muted-foreground/75 focus-visible:ring-0 focus-visible:ring-offset-0 h-auto p-0"
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder={t('sidebar.searchPlaceholder')}

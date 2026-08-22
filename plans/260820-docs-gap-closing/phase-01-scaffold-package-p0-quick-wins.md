@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: pending | **Effort**: 30h
+- **Priority**: P1 | **Status**: done | **Effort**: 30h
 - Dựng khung package nội bộ `packages/tiptap-extensions` cho mọi extension "Pro" tự build. Bổ sung các tính năng nhanh mảng A: clear formatting, justify, line spacing, checklist.
 
 ## Context

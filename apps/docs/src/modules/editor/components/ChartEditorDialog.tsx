@@ -9,6 +9,9 @@ import {
   Input,
   cn,
   Icon,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@office/ui-kit';
 import { useTranslation } from '@office/i18n';
 import {
@@ -137,80 +140,92 @@ export const ChartEditorDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base font-semibold">
-            <Icon name="bar-chart-3" size={18} className="text-primary" />
-            {initialAttrs ? t('chart.editChart') : t('chart.insertChart')}
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border/80 shadow-2xl p-6">
+        <DialogHeader className="border-b border-border/60 pb-3">
+          <DialogTitle className="flex items-center gap-2.5 text-base font-semibold text-foreground">
+            <div className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary">
+              <Icon name="bar-chart-3" size={18} />
+            </div>
+            <span>{initialAttrs ? t('chart.editChart') : t('chart.insertChart')}</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-2 text-sm">
+        <div className="space-y-4 py-3 text-sm">
           {/* Chart Type selection */}
           <div>
-            <label className="text-xs font-semibold text-foreground/80 mb-1.5 block">
+            <label className="text-xs font-semibold text-foreground/80 mb-2 block">
               {t('chart.chartType')}
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {CHART_TYPES.map((item) => (
-                <button
-                  key={item.type}
-                  type="button"
-                  className={cn(
-                    'flex items-center justify-center gap-2 rounded-lg border p-2.5 text-xs font-medium transition-all cursor-pointer',
-                    chartType === item.type
-                      ? 'border-primary bg-primary/10 text-primary font-semibold shadow-2xs'
-                      : 'border-border/70 hover:bg-hover text-foreground/80',
-                  )}
-                  onClick={() => setChartType(item.type)}
-                >
-                  <Icon name={item.icon as any} size={15} />
-                  <span>{item.label}</span>
-                </button>
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {CHART_TYPES.map((item) => {
+                const active = chartType === item.type;
+                return (
+                  <Button
+                    key={item.type}
+                    type="button"
+                    variant={active ? 'outline' : 'ghost'}
+                    className={cn(
+                      'flex items-center justify-center gap-2 rounded-xl border p-2.5 text-xs font-medium',
+                      active
+                        ? 'border-primary bg-primary/10 text-primary font-semibold shadow-xs ring-1 ring-primary/40'
+                        : 'border-border/70 text-foreground/80',
+                    )}
+                    onClick={() => setChartType(item.type)}
+                  >
+                    <Icon name={item.icon as any} size={16} />
+                    <span>{item.label}</span>
+                  </Button>
+                );
+              })}
             </div>
           </div>
 
           {/* Title */}
           <div>
-            <label className="text-xs font-semibold text-foreground/80 mb-1 block">
+            <label className="text-xs font-semibold text-foreground/80 mb-1.5 block">
               {t('chart.chartTitle')}
             </label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Nhập tiêu đề biểu đồ..."
-              className="h-8 text-xs"
+              className="h-9 text-xs rounded-lg border-border/80 focus:ring-primary"
             />
           </div>
 
           {/* Mini Data Table */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-semibold text-foreground/80">
                 Bảng số liệu (Categories & Series)
               </label>
               <div className="flex items-center gap-2">
-                <button
+                <Button
                   type="button"
-                  className="flex items-center gap-1 text-[11px] font-medium text-primary hover:underline cursor-pointer"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs px-2.5 gap-1 text-primary border-primary/30 hover:bg-primary/10"
                   onClick={handleAddCategory}
                 >
-                  + {t('chart.addRow')} (Cột mốc)
-                </button>
+                  <Icon name="plus" size={13} />
+                  <span>{t('chart.addRow')} (Cột mốc)</span>
+                </Button>
                 {chartType !== 'pie' && (
-                  <button
+                  <Button
                     type="button"
-                    className="flex items-center gap-1 text-[11px] font-medium text-primary hover:underline cursor-pointer"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs px-2.5 gap-1 text-primary border-primary/30 hover:bg-primary/10"
                     onClick={handleAddSeries}
                   >
-                    + {t('chart.addSeries')} (Chuỗi)
-                  </button>
+                    <Icon name="plus" size={13} />
+                    <span>{t('chart.addSeries')} (Chuỗi)</span>
+                  </Button>
                 )}
               </div>
             </div>
 
-            <div className="overflow-x-auto rounded-lg border border-border/80 bg-muted/20 p-1">
+            <div className="overflow-x-auto rounded-xl border border-border/80 bg-muted/20 p-1">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-border/60">
@@ -224,24 +239,33 @@ export const ChartEditorDialog = ({
                             type="color"
                             value={s.color || '#3b82f6'}
                             onChange={(e) => handleSeriesColorChange(sIdx, e.target.value)}
-                            className="size-4 rounded-xs border-0 cursor-pointer p-0"
-                            title="Đổi màu chuỗi"
+                            className="size-5 rounded-md border border-border/60 cursor-pointer p-0"
+                            aria-label="Đổi màu chuỗi"
                           />
-                          <input
+                          <Input
                             type="text"
                             value={s.name}
                             onChange={(e) => handleSeriesNameChange(sIdx, e.target.value)}
-                            className="h-6 w-20 rounded border border-border/60 bg-background px-1 text-xs font-semibold"
+                            className="h-6 w-22 rounded-md border-border/60 bg-background px-1.5 text-xs font-semibold focus-visible:outline-primary"
                           />
                           {series.length > 1 && (
-                            <button
-                              type="button"
-                              className="text-muted-foreground hover:text-destructive text-[11px] cursor-pointer"
-                              onClick={() => handleRemoveSeries(sIdx)}
-                              title="Xóa chuỗi"
-                            >
-                              ✕
-                            </button>
+                            <Tooltip>
+                              <TooltipTrigger
+                                render={
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                    onClick={() => handleRemoveSeries(sIdx)}
+                                    aria-label="Xóa chuỗi"
+                                  >
+                                    ✕
+                                  </Button>
+                                }
+                              />
+                              <TooltipContent side="top">Xóa chuỗi này</TooltipContent>
+                            </Tooltip>
                           )}
                         </div>
                       </th>
@@ -253,33 +277,42 @@ export const ChartEditorDialog = ({
                   {categories.map((cat, cIdx) => (
                     <tr key={cIdx} className="border-b border-border/40 hover:bg-muted/30">
                       <td className="p-1.5">
-                        <input
+                        <Input
                           type="text"
                           value={cat}
                           onChange={(e) => handleCategoryChange(cIdx, e.target.value)}
-                          className="h-7 w-full rounded border border-border/60 bg-background px-2 text-xs font-medium"
+                          className="h-7 w-full rounded-md border-border/60 bg-background px-2 text-xs font-medium focus-visible:outline-primary"
                         />
                       </td>
                       {series.map((s, sIdx) => (
                         <td key={sIdx} className="p-1.5">
-                          <input
+                          <Input
                             type="number"
                             value={s.data[cIdx] ?? 0}
                             onChange={(e) => handleDataChange(sIdx, cIdx, e.target.value)}
-                            className="h-7 w-full rounded border border-border/60 bg-background px-2 text-xs"
+                            className="h-7 w-full rounded-md border-border/60 bg-background px-2 text-xs focus-visible:outline-primary"
                           />
                         </td>
                       ))}
                       <td className="p-1.5 text-center">
                         {categories.length > 1 && (
-                          <button
-                            type="button"
-                            className="text-muted-foreground hover:text-destructive text-xs cursor-pointer"
-                            onClick={() => handleRemoveCategory(cIdx)}
-                            title="Xóa hàng này"
-                          >
-                            ✕
-                          </button>
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon-xs"
+                                  className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => handleRemoveCategory(cIdx)}
+                                  aria-label="Xóa hàng này"
+                                >
+                                  ✕
+                                </Button>
+                              }
+                            />
+                            <TooltipContent side="left">Xóa hàng này</TooltipContent>
+                          </Tooltip>
                         )}
                       </td>
                     </tr>
@@ -290,12 +323,25 @@ export const ChartEditorDialog = ({
           </div>
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" size="sm" onClick={onClose}>
+        <DialogFooter className="border-t border-border/60 pt-4 mt-2 flex items-center justify-end gap-2.5">
+          <Button
+            type="button"
+            variant="outline"
+            size="default"
+            className="px-4 text-xs font-medium border-border/80 bg-background text-foreground/80 hover:bg-muted hover:text-foreground cursor-pointer"
+            onClick={onClose}
+          >
             Hủy
           </Button>
-          <Button size="sm" onClick={handleSave}>
-            {t('chart.save')}
+          <Button
+            type="button"
+            variant="default"
+            size="default"
+            className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white border border-emerald-600 font-semibold px-5 text-xs shadow-sm hover:shadow transition-all gap-1.5 cursor-pointer"
+            onClick={handleSave}
+          >
+            <Icon name="check" size={14} />
+            <span>{t('chart.save')}</span>
           </Button>
         </DialogFooter>
       </DialogContent>

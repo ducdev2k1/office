@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: pending | **Effort**: 50h
+- **Priority**: P1 | **Status**: done | **Effort**: 50h
 - Hoàn thiện trải nghiệm soạn thảo mảng A+B nhanh: table merge/split/màu nền ô, image resize + căn lề, link popover, emoji/special chars, code block syntax highlight, bubble toolbar, zoom, TOC trong tài liệu.
 
 ## Context

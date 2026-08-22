@@ -232,26 +232,29 @@ const ImageResizeNodeView = ({ node, selected, updateAttributes }: NodeViewProps
 
   if (wrapMode === 'wrap') {
     if (align === 'right') {
-      containerClass += 'float-right clear-right inline-block ';
+      containerClass += 'float-right clear-right inline-block max-w-full ';
       wrapStyle = { marginLeft: `${margin}px`, marginBottom: `${margin}px` };
+    } else if (align === 'center') {
+      containerClass += 'block mx-auto text-center my-3 max-w-full ';
+      wrapStyle = { marginTop: `${margin}px`, marginBottom: `${margin}px` };
     } else {
-      containerClass += 'float-left clear-left inline-block ';
+      containerClass += 'float-left clear-left inline-block max-w-full ';
       wrapStyle = { marginRight: `${margin}px`, marginBottom: `${margin}px` };
     }
   } else if (wrapMode === 'inline') {
-    containerClass += 'inline-block align-baseline ';
+    containerClass += 'inline-block align-baseline max-w-full ';
     wrapStyle = { margin: `${margin / 2}px` };
   } else if (wrapMode === 'behind') {
-    containerClass += 'block opacity-85 my-3 ';
+    containerClass += 'block opacity-85 my-3 max-w-full ';
     if (align === 'center') containerClass += 'mx-auto text-center ';
     else if (align === 'right') containerClass += 'ml-auto text-right ';
   } else if (wrapMode === 'inFront') {
-    containerClass += 'block relative z-10 my-3 ';
+    containerClass += 'block relative z-10 my-3 max-w-full ';
     if (align === 'center') containerClass += 'mx-auto text-center ';
     else if (align === 'right') containerClass += 'ml-auto text-right ';
   } else {
     // Break text
-    containerClass += 'w-full flex my-3 clear-both ';
+    containerClass += 'w-full flex my-3 clear-both max-w-full ';
     if (align === 'center') containerClass += 'justify-center';
     else if (align === 'right') containerClass += 'justify-end';
     else containerClass += 'justify-start';

@@ -47,7 +47,7 @@ export const checkVnAdminCompliance = (setup?: PageSetup): VnAdminComplianceRepo
 // Standard margins per NĐ 30/2020: Top 20mm, Bottom 20mm, Left 30mm, Right 15mm (converted to pt)
 // 1 mm ≈ 2.83465 pt
 export const STANDARD_VN_ADMIN_PAGE_SETUP: PageSetup = {
-  paperSize: 'A4',
+  paperSize: 'a4',
   orientation: 'portrait',
   margins: {
     top: 56.7, // 20 mm

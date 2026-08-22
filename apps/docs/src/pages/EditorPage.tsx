@@ -63,25 +63,6 @@ export const EditorPage = () => {
   const accessMode = useAccessMode();
   const isReadOnly = accessMode === 'view';
   const modals = useEditorModals();
-  const {
-    sidebarOpen,
-    findOpen,
-    contextMenu,
-    setContextMenu,
-    setVersionHistoryOpen,
-    setShareOpen,
-    setWatermarkOpen,
-    setMoveToFolderOpen,
-    setCommentsOpen,
-    handleToggleSidebar,
-    handleCloseSidebar,
-    openPageSetup,
-    openHeaderFooter,
-    toggleFind,
-    toggleComments,
-    closeAllModals,
-  } = modals;
-
   const fontPickerRef = useRef<HTMLButtonElement>(null);
   const colorPickerRef = useRef<HTMLButtonElement>(null);
   const hiddenImageInputRef = useRef<HTMLInputElement>(null);
@@ -89,13 +70,12 @@ export const EditorPage = () => {
   const handleSelectDoc = (docId: string) => {
     setActiveId(docId);
     navigate(`/edit/${docId}`);
-    if (window.innerWidth < 768) handleCloseSidebar();
+    if (window.innerWidth < 768) modals.handleCloseSidebar();
   };
 
   const handleDeleteDoc = () => {
-    const current = activeDoc;
-    if (!current) return;
-    const remaining = docs.filter((doc) => !doc.deletedAt && doc.id !== current.id);
+    if (!activeDoc) return;
+    const remaining = docs.filter((doc) => !doc.deletedAt && doc.id !== activeDoc.id);
     if (remaining.length === 0) return;
     deleteDoc();
     navigate(`/edit/${remaining[0]!.id}`);
@@ -120,9 +100,8 @@ export const EditorPage = () => {
     (sugId) => trackChanges.handleSelectSuggestion(sugId),
   );
 
-  const comments = useEditorComments(editor, commentsStore, currentUser, () => setCommentsOpen(true));
+  const comments = useEditorComments(editor, commentsStore, currentUser, () => modals.setCommentsOpen(true));
   const trackChanges = useTrackChanges(suggestionStore, suggestions);
-
   const { followedUser, followedClientId, stopFollow, toggleFollow } = useFollowCollaborator({
     editor,
     provider: collabRoom.provider,
@@ -133,6 +112,7 @@ export const EditorPage = () => {
   const { viewMode, setViewMode, schedulePagination, zoom, setZoom } = paginationState;
   const versionHistory = useVersionHistory(activeDoc, collabRoom.doc);
 
+  const actions = useEditorActions(editor, activeDoc);
   const {
     setLink,
     exportDocx,
@@ -149,7 +129,7 @@ export const EditorPage = () => {
     handleInsertColumns,
     handleInsertChart,
     handleInsertCallout,
-  } = useEditorActions(editor, activeDoc);
+  } = actions;
 
   useEffect(() => {
     if (!editor) return;
@@ -174,15 +154,12 @@ export const EditorPage = () => {
   }, [activeDoc?.pageSetup, schedulePagination]);
 
   const outline = useMemo(() => getOutline(editor?.getHTML() ?? ''), [editor]);
-  const activeCount = docs.filter((doc) => !doc.deletedAt).length;
-  const canDelete = activeCount > 1;
-
+  const canDelete = docs.filter((doc) => !doc.deletedAt).length > 1;
   const wordCount = editor?.storage.characterCount?.words?.() ?? 0;
   const charCount = editor?.storage.characterCount?.characters?.() ?? 0;
-
   const { printDocument } = usePrintDocument(editor, activeDoc, paginationState);
 
-  useGlobalShortcuts(toggleFind, closeAllModals);
+  useGlobalShortcuts(modals.toggleFind, modals.closeAllModals);
 
   const handleOpenFromDevice = (file: File): void => {
     void importFile(file)
@@ -201,13 +178,13 @@ export const EditorPage = () => {
         <Header
           title={activeDoc?.title ?? ''}
           onTitleChange={updateTitle}
-          onMenuToggle={handleToggleSidebar}
+          onMenuToggle={modals.handleToggleSidebar}
           theme={theme}
           onToggleTheme={toggleTheme}
           starred={Boolean(activeDoc?.starred)}
           onToggleStar={() => activeDoc && star(activeDoc.id)}
-          onMoveToFolder={() => setMoveToFolderOpen(true)}
-          onToggleComments={toggleComments}
+          onMoveToFolder={() => modals.setMoveToFolderOpen(true)}
+          onToggleComments={modals.toggleComments}
           commentsCount={threads.filter((t) => !t.resolved).length}
           collabStatus={collabStatus}
           collaborators={collaborators}
@@ -225,9 +202,9 @@ export const EditorPage = () => {
             isReadOnly,
             onNewDoc: addDoc,
             onOpenFromDevice: handleOpenFromDevice,
-            onToggleSidebar: handleToggleSidebar,
-            onToggleFind: toggleFind,
-            onPageSetup: openPageSetup,
+            onToggleSidebar: modals.handleToggleSidebar,
+            onToggleFind: modals.toggleFind,
+            onPageSetup: modals.openPageSetup,
             onViewModeChange: setViewMode,
             onPrint: () => void printDocument(),
             onExportDocx: () => void exportDocx(),
@@ -246,19 +223,19 @@ export const EditorPage = () => {
             onInsertColumns: (cols) => handleInsertColumns(cols),
             onInsertChart: () => modals.setChartEditorOpen(true),
             onInsertCallout: () => handleInsertCallout('info'),
-            onWatermark: () => setWatermarkOpen(true),
-            onHeaderFooter: openHeaderFooter,
+            onWatermark: () => modals.setWatermarkOpen(true),
+            onHeaderFooter: modals.openHeaderFooter,
             onWordCount: () => modals.setWordCountOpen(true),
             onVnAdmin: () => modals.setVnAdminOpen(true),
             onHelp: () => modals.setHelpOpen(true),
-            onVersionHistory: () => setVersionHistoryOpen(true),
-            onShare: () => setShareOpen(true),
+            onVersionHistory: () => modals.setVersionHistoryOpen(true),
+            onShare: () => modals.setShareOpen(true),
           }}
         />
 
         <Toolbar
           editor={editor}
-          findOpen={findOpen}
+          findOpen={modals.findOpen}
           viewMode={viewMode}
           zoom={zoom}
           onZoomChange={setZoom}
@@ -271,12 +248,12 @@ export const EditorPage = () => {
           onExportText={exportText}
           onPrint={() => void printDocument()}
           onDelete={handleDeleteDoc}
-          onToggleFind={toggleFind}
+          onToggleFind={modals.toggleFind}
           onInsertImage={handleImageUpload}
           onInsertTable={handleInsertTable}
           onInsertPageBreak={handleInsertPageBreak}
           onInsertMath={() => modals.setMathEditorOpen(true)}
-          onPageSetup={openPageSetup}
+          onPageSetup={modals.openPageSetup}
           onViewModeChange={setViewMode}
         />
 
@@ -306,47 +283,36 @@ export const EditorPage = () => {
             activeId={activeDoc?.id ?? ''}
             query={query}
             outline={outline}
-            sidebarOpen={sidebarOpen}
+            sidebarOpen={modals.sidebarOpen}
             onQueryChange={setQuery}
             onSelect={handleSelectDoc}
             onAdd={addDoc}
-            onClose={handleCloseSidebar}
+            onClose={modals.handleCloseSidebar}
           />
 
           <EditorCanvas
             editor={editor}
             paginationState={paginationState}
-            onContextMenu={setContextMenu}
-            sidebarOpen={sidebarOpen}
-            onOpenSidebar={handleToggleSidebar}
+            onContextMenu={modals.setContextMenu}
+            sidebarOpen={modals.sidebarOpen}
+            onOpenSidebar={modals.handleToggleSidebar}
             activeDoc={activeDoc}
             onPageSetupChange={handlePageSetupChange}
           />
 
-          {editor && (
-            <BubbleToolbar
-              editor={editor}
-              onSetLink={setLink}
-              onAddComment={comments.handleStartAddComment}
-            />
-          )}
+          {editor && <BubbleToolbar editor={editor} onSetLink={setLink} onAddComment={comments.handleStartAddComment} />}
           {editor && <ImageBubbleToolbar editor={editor} />}
           {editor && <LinkPopoverHost editor={editor} />}
           {editor && <MentionPopover editor={editor} />}
           {editor && (
             <MentionSuggest
               editor={editor}
-              users={() =>
-                collaborators.filter((c) => c.name).map((c) => ({ id: c.id, name: c.name }))
-              }
+              users={() => collaborators.filter((c) => c.name).map((c) => ({ id: c.id, name: c.name }))}
               getMentionedIds={() => {
                 if (!editor) return [];
                 const ids: string[] = [];
                 editor.state.doc.descendants((node) => {
-                  if (node.type.name === 'mention') {
-                    const mentionId = node.attrs.id as string | undefined;
-                    if (mentionId) ids.push(mentionId);
-                  }
+                  if (node.type.name === 'mention' && node.attrs.id) ids.push(node.attrs.id);
                 });
                 return ids;
               }}
@@ -409,7 +375,7 @@ export const EditorPage = () => {
           onPageSetupChange={handlePageSetupChange}
           onMoveToFolder={moveToFolder}
           onInsertMath={(tex, isBlock) => handleInsertMath(tex, isBlock)}
-          onInsertChart={(attrs) => handleInsertChart(attrs)}
+          onInsertChart={(chartAttrs) => handleInsertChart(chartAttrs)}
           pageCount={paginationState.pageCount}
           selectedSuggestion={trackChanges.selectedSuggestion}
           onAcceptSuggestion={trackChanges.handleAcceptSuggestion}
@@ -419,12 +385,12 @@ export const EditorPage = () => {
 
         <EditorContextMenu
           editor={editor}
-          position={contextMenu}
-          onClose={() => setContextMenu(null)}
+          position={modals.contextMenu}
+          onClose={() => modals.setContextMenu(null)}
           onInsertImage={handleImageUpload}
           onInsertTable={handleInsertTable}
           onInsertPageBreak={handleInsertPageBreak}
-          onToggleFind={toggleFind}
+          onToggleFind={modals.toggleFind}
           onAddComment={comments.handleStartAddComment}
           isReadOnly={isReadOnly}
         />

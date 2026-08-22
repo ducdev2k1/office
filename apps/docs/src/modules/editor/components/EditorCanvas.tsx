@@ -81,6 +81,7 @@ export const EditorCanvas = ({
   };
 
   const handleContextMenuEvent = (event: MouseEvent) => {
+    if (event.shiftKey) return;
     event.preventDefault();
     onContextMenu({ x: event.clientX, y: event.clientY });
   };

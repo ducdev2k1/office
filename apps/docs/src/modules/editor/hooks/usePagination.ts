@@ -144,7 +144,6 @@ export const usePagination = (
       ...pageStyle,
       '--stack-h': `${stackHeight}px`,
       minHeight: `${stackHeight * zoom}px`,
-      height: `${stackHeight * zoom}px`,
       '--zoom-scale': String(zoom),
       transform: `scale(${zoom})`,
       transformOrigin: 'top center',

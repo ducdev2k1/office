@@ -170,11 +170,23 @@ export const WatermarkDialog = ({
           )}
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="border-t border-border/60 pt-4 mt-2 flex items-center justify-end gap-2.5">
+          <Button
+            type="button"
+            variant="outline"
+            size="default"
+            className="px-4 text-xs font-medium border-border/80 bg-background text-foreground/80 hover:bg-muted hover:text-foreground cursor-pointer"
+            onClick={() => onOpenChange(false)}
+          >
             Hủy
           </Button>
-          <Button onClick={handleSave}>
+          <Button
+            type="button"
+            variant="default"
+            size="default"
+            className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white border border-emerald-600 font-semibold px-5 text-xs shadow-sm hover:shadow transition-all gap-1.5 cursor-pointer"
+            onClick={handleSave}
+          >
             Áp dụng
           </Button>
         </DialogFooter>

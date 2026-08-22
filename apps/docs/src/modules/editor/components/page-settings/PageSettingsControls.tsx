@@ -15,15 +15,15 @@ export const SelectField = ({ value, onChange, options, className }: SelectField
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full h-8.5 appearance-none rounded-lg border border-neutral-800 bg-[#1c1c1f] px-3 pr-8 text-xs font-medium text-neutral-100 focus:border-purple-500/60 focus:ring-1 focus:ring-purple-500/30 cursor-pointer transition-all"
+      className="w-full h-8.5 appearance-none rounded-lg border border-input bg-background px-3 pr-8 text-xs font-medium text-foreground focus:border-primary focus:ring-1 focus:ring-primary/30 cursor-pointer transition-all"
     >
       {options.map((opt) => (
-        <option key={opt.value} value={opt.value} className="bg-neutral-900 text-neutral-100">
+        <option key={opt.value} value={opt.value} className="bg-card text-foreground">
           {opt.label}
         </option>
       ))}
     </select>
-    <div className="absolute right-2.5 pointer-events-none text-neutral-500">
+    <div className="absolute right-2.5 pointer-events-none text-muted-foreground">
       <svg
         width="12"
         height="12"
@@ -101,7 +101,7 @@ export const NumberInputWithUnit = ({
 
   return (
     <div className="space-y-1">
-      <span className="text-[11px] text-neutral-400 font-normal">{label}</span>
+      <span className="text-[11px] text-muted-foreground font-normal">{label}</span>
       <div className="relative flex items-center">
         <input
           type={readOnly ? 'text' : 'number'}
@@ -114,13 +114,13 @@ export const NumberInputWithUnit = ({
           onFocus={() => setIsFocused(true)}
           onBlur={handleBlur}
           className={cn(
-            'w-full h-8.5 rounded-lg border border-neutral-800 bg-[#1c1c1f] px-3 pr-8 text-xs font-medium text-neutral-100 transition-all',
+            'w-full h-8.5 rounded-lg border border-input bg-background px-3 pr-8 text-xs font-medium text-foreground transition-all',
             readOnly
-              ? 'bg-neutral-900/40 text-neutral-400 cursor-default'
-              : 'focus:border-purple-500/60 focus:ring-1 focus:ring-purple-500/30',
+              ? 'bg-muted/50 text-muted-foreground cursor-default border-border'
+              : 'focus:border-primary focus:ring-1 focus:ring-primary/30',
           )}
         />
-        <span className="absolute right-2.5 text-[11px] text-neutral-500 font-medium pointer-events-none select-none">
+        <span className="absolute right-2.5 text-[11px] text-muted-foreground font-medium pointer-events-none select-none">
           {unit}
         </span>
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon, Separator } from '@office/ui-kit';
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
@@ -69,10 +70,10 @@ export const BubbleToolbar = ({ editor, onSetLink, onAddComment }: BubbleToolbar
 
   if (!visible || !editor.isEditable) return null;
 
-  return (
+  const content = (
     <div
       ref={containerRef}
-      className="pointer-events-auto z-50 flex items-center gap-0.5 rounded-lg border border-border bg-popover px-1.5 py-1 shadow-lg"
+      className="fixed z-50 flex items-center gap-0.5 rounded-xl border border-border bg-popover/95 backdrop-blur-md px-1.5 py-1 shadow-xl animate-in fade-in-0 zoom-in-95 duration-100"
       onMouseDown={(event) => event.preventDefault()}
     >
       <ToolbarButton
@@ -133,4 +134,6 @@ export const BubbleToolbar = ({ editor, onSetLink, onAddComment }: BubbleToolbar
       )}
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : content;
 };

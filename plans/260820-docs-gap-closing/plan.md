@@ -1,7 +1,7 @@
 ---
 title: 'Docs Gap Closing - Bu lỗ hổng tính năng so với Google Docs (tự build, không TipTap Pro)'
 description: '9 phase: scaffold package tiptap-extensions + P0 soạn thảo nhanh, P1 cộng tác/export docx (M4)/cấu trúc tài liệu, P2 comments/math/footnotes/columns/track changes. Ràng buộc C1-C3: chỉ OSS MIT/Apache-2.0, tự build mọi tính năng TipTap Pro.'
-status: pending
+status: completed
 priority: P1
 effort: 320h
 branch: main
@@ -27,15 +27,15 @@ Triển khai toàn bộ tính năng còn thiếu của `apps/docs` so với Goog
 
 | #   | Phase                                                                                                          | File                                                     | Effort | Status  |
 | --- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------ | ------- |
-| 1   | Scaffold package `tiptap-extensions` + P0 quick wins                                                           | [phase-01](./phase-01-scaffold-package-p0-quick-wins.md) | 30h    | pending |
-| 2   | P0 editor polish: table merge UI, image resize, link popover, emoji, code highlight, bubble toolbar, zoom, TOC | [phase-02](./phase-02-p0-editor-polish.md)               | 50h    | pending |
-| 3   | P1 collab: version history (Yjs snapshot), @mention, share dialog                                              | [phase-03](./phase-03-p1-collab-enhancements.md)         | 50h    | pending |
-| 4   | P1 export .docx (mốc M4) + import txt/html + markdown                                                          | [phase-04](./phase-04-p1-export-docx-m4.md)              | 60h    | pending |
-| 5   | P1 cấu trúc tài liệu: section break, bookmark, watermark, template gallery, header/footer lẻ/chẵn, folders     | [phase-05](./phase-05-p1-doc-structure.md)               | 40h    | pending |
-| 6   | P2 comments & threads (Yjs-based)                                                                              | [phase-06](./phase-06-p2-comments.md)                    | 40h    | pending |
-| 7   | P2 math (KaTeX), footnotes, columns                                                                            | [phase-07](./phase-07-p2-math-footnotes-columns.md)      | 30h    | pending |
-| 8   | P2 track changes / suggestion mode                                                                             | [phase-08](./phase-08-p2-track-changes.md)               | 40h    | pending |
-| 9   | Final verification: fidelity-harness, typecheck, build, tests                                                  | [phase-09](./phase-09-final-verification.md)             | 10h    | pending |
+| 1   | Scaffold package `tiptap-extensions` + P0 quick wins                                                           | [phase-01](./phase-01-scaffold-package-p0-quick-wins.md) | 30h    | done |
+| 2   | P0 editor polish: table merge UI, image resize, link popover, emoji, code highlight, bubble toolbar, zoom, TOC | [phase-02](./phase-02-p0-editor-polish.md)               | 50h    | done |
+| 3   | P1 collab: version history (Yjs snapshot), @mention, share dialog                                              | [phase-03](./phase-03-p1-collab-enhancements.md)         | 50h    | done |
+| 4   | P1 export .docx (mốc M4) + import txt/html + markdown                                                          | [phase-04](./phase-04-p1-export-docx-m4.md)              | 60h    | done |
+| 5   | P1 cấu trúc tài liệu: section break, bookmark, watermark, template gallery, header/footer lẻ/chẵn, folders     | [phase-05](./phase-05-p1-doc-structure.md)               | 40h    | done |
+| 6   | P2 comments & threads (Yjs-based)                                                                              | [phase-06](./phase-06-p2-comments.md)                    | 40h    | done |
+| 7   | P2 math (KaTeX), footnotes, columns                                                                            | [phase-07](./phase-07-p2-math-footnotes-columns.md)      | 30h    | done |
+| 8   | P2 track changes / suggestion mode                                                                             | [phase-08](./phase-08-p2-track-changes.md)               | 40h    | done |
+| 9   | Final verification: fidelity-harness, typecheck, build, tests                                                  | [phase-09](./phase-09-final-verification.md)             | 10h    | done |
 
 **Tổng effort ước tính: ~320h** (1 kỹ sư + hỗ trợ AI agentic).
 

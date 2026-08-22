@@ -115,8 +115,8 @@ export const WordCountDialog = ({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button size="sm" onClick={onClose}>
+        <DialogFooter className="border-t border-border/60 pt-4 mt-2 flex items-center justify-end">
+          <Button type="button" variant="default" size="default" className="px-5 text-xs font-semibold" onClick={onClose}>
             {t('wordCount.close')}
           </Button>
         </DialogFooter>

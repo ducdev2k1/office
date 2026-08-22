@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
-import { cn, Icon } from '@office/ui-kit';
 import { mountPopup, type SlashCommandItem } from '@office/tiptap-extensions';
+import { cn, Icon } from '@office/ui-kit';
+import type { Editor } from '@tiptap/core';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface SlashCommandSuggestProps {
   editor: Editor | null;
@@ -16,6 +17,15 @@ interface SlashState {
   query: string;
 }
 
+const CATEGORY_ORDER = ['text', 'lists', 'media', 'callouts', 'advanced'] as const;
+const CATEGORY_NAMES: Record<string, string> = {
+  text: 'Văn bản & Tiêu đề',
+  lists: 'Danh sách',
+  media: 'Bảng & Phương tiện',
+  callouts: 'Hộp ghi chú (Callout)',
+  advanced: 'Công cụ nâng cao',
+};
+
 export const SlashCommandSuggest = ({
   editor,
   onOpenImageUpload,
@@ -24,6 +34,7 @@ export const SlashCommandSuggest = ({
 }: SlashCommandSuggestProps) => {
   const { t } = useTranslation('docs');
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<SlashState | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,11 +43,10 @@ export const SlashCommandSuggest = ({
     if (!editor) return [];
 
     return [
-      // Text
       {
         id: 'paragraph',
         title: t('slash.paragraph'),
-        description: 'Đoạn văn bản thường',
+        description: 'Đoạn văn bản thông thường',
         category: 'text',
         icon: 'type',
         command: ({ editor: ed }) => ed.chain().focus().setParagraph().run(),
@@ -44,7 +54,7 @@ export const SlashCommandSuggest = ({
       {
         id: 'heading-1',
         title: t('slash.heading1'),
-        description: 'Tiêu đề cấp lớn nhất',
+        description: 'Tiêu đề cấp lớn nhất (H1)',
         category: 'text',
         icon: 'heading-1',
         command: ({ editor: ed }) => ed.chain().focus().setHeading({ level: 1 }).run(),
@@ -52,7 +62,7 @@ export const SlashCommandSuggest = ({
       {
         id: 'heading-2',
         title: t('slash.heading2'),
-        description: 'Tiêu đề phân mục',
+        description: 'Tiêu đề phân mục (H2)',
         category: 'text',
         icon: 'heading-2',
         command: ({ editor: ed }) => ed.chain().focus().setHeading({ level: 2 }).run(),
@@ -60,7 +70,7 @@ export const SlashCommandSuggest = ({
       {
         id: 'heading-3',
         title: t('slash.heading3'),
-        description: 'Tiêu đề phân mục nhỏ',
+        description: 'Tiêu đề phân mục nhỏ (H3)',
         category: 'text',
         icon: 'heading-3',
         command: ({ editor: ed }) => ed.chain().focus().setHeading({ level: 3 }).run(),
@@ -81,8 +91,6 @@ export const SlashCommandSuggest = ({
         icon: 'code',
         command: ({ editor: ed }) => ed.chain().focus().toggleCodeBlock().run(),
       },
-
-      // Lists
       {
         id: 'bullet-list',
         title: t('slash.bulletList'),
@@ -107,12 +115,10 @@ export const SlashCommandSuggest = ({
         icon: 'check-square',
         command: ({ editor: ed }) => ed.chain().focus().toggleTaskList().run(),
       },
-
-      // Media & Tables
       {
         id: 'table',
         title: t('slash.table'),
-        description: 'Chèn bảng 3x3 tùy biến',
+        description: 'Chèn bảng dữ liệu 3x3',
         category: 'media',
         icon: 'table',
         command: ({ editor: ed }) =>
@@ -135,8 +141,6 @@ export const SlashCommandSuggest = ({
         icon: 'image',
         command: () => onOpenImageUpload?.(),
       },
-
-      // Callouts
       {
         id: 'callout-info',
         title: t('slash.calloutInfo'),
@@ -169,8 +173,6 @@ export const SlashCommandSuggest = ({
         icon: 'alert-octagon',
         command: ({ editor: ed }) => ed.chain().focus().setCallout({ type: 'danger' }).run(),
       },
-
-      // Advanced
       {
         id: 'math',
         title: t('slash.math'),
@@ -201,7 +203,8 @@ export const SlashCommandSuggest = ({
         description: 'Mục lục tự động theo tiêu đề',
         category: 'advanced',
         icon: 'list-tree',
-        command: ({ editor: ed }) => ed.chain().focus().insertContent('<div data-type="toc"></div>').run(),
+        command: ({ editor: ed }) =>
+          ed.chain().focus().insertContent('<div data-type="toc"></div>').run(),
       },
       {
         id: 'page-break',
@@ -233,6 +236,21 @@ export const SlashCommandSuggest = ({
     );
   }, [commandItems, searchQuery]);
 
+  const getAnchorAtCursor = (): DOMRect | null => {
+    if (!editor) return null;
+    try {
+      const coords = editor.view.coordsAtPos(editor.state.selection.from);
+      return new DOMRect(
+        coords.left,
+        coords.bottom + 4,
+        0,
+        Math.max(16, coords.bottom - coords.top),
+      );
+    } catch {
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (!editor) return;
     const storage = editor.storage.slashCommand;
@@ -241,12 +259,11 @@ export const SlashCommandSuggest = ({
     storage.onOpen = ({ anchor }) => {
       setSearchQuery('');
       setSelectedIndex(0);
-      setState({ anchor, query: '' });
+      const actualAnchor = getAnchorAtCursor() ?? anchor;
+      setState({ anchor: actualAnchor, query: '' });
     };
 
-    storage.onClose = () => {
-      setState(null);
-    };
+    storage.onClose = () => setState(null);
 
     const handleSync = () => {
       if (!state) return;
@@ -268,6 +285,10 @@ export const SlashCommandSuggest = ({
         return;
       }
       setSearchQuery(queryText);
+      const currentAnchor = getAnchorAtCursor();
+      if (currentAnchor) {
+        setState((prev) => (prev ? { ...prev, anchor: currentAnchor, query: queryText } : prev));
+      }
     };
 
     editor.on('selectionUpdate', handleSync);
@@ -285,8 +306,9 @@ export const SlashCommandSuggest = ({
     if (!state || !containerRef.current) return;
     const controller = mountPopup(containerRef.current, {
       placement: 'bottom-start',
+      strategy: 'fixed',
       anchor: state.anchor,
-      offset: 8,
+      offset: 6,
     });
     return () => controller.destroy();
   }, [state]);
@@ -314,7 +336,9 @@ export const SlashCommandSuggest = ({
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'ArrowDown') {
         event.preventDefault();
-        setSelectedIndex((prev) => (filteredItems.length > 0 ? (prev + 1) % filteredItems.length : 0));
+        setSelectedIndex((prev) =>
+          filteredItems.length > 0 ? (prev + 1) % filteredItems.length : 0,
+        );
       } else if (event.key === 'ArrowUp') {
         event.preventDefault();
         setSelectedIndex((prev) =>
@@ -334,71 +358,112 @@ export const SlashCommandSuggest = ({
     return () => window.removeEventListener('keydown', handleKey, { capture: true });
   }, [state, filteredItems, selectedIndex]);
 
+  useEffect(() => {
+    if (!listRef.current) return;
+    const activeEl = listRef.current.querySelector('[data-active="true"]');
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest' });
+    }
+  }, [selectedIndex]);
+
   if (!state) return null;
 
-  return (
+  const content = (
     <div
       ref={containerRef}
-      className="pointer-events-auto z-50 w-72 max-h-80 overflow-hidden flex flex-col rounded-xl border border-border bg-popover shadow-xl animate-in fade-in-0 zoom-in-95 duration-100"
+      className="fixed z-50 w-76 max-h-96 overflow-hidden flex flex-col rounded-xl border border-border/90 bg-popover/95 backdrop-blur-md shadow-2xl animate-in fade-in-0 zoom-in-95 duration-100 ring-1 ring-black/5"
       onMouseDown={(e) => e.preventDefault()}
     >
-      <div className="flex items-center gap-2 border-b border-border/70 px-3 py-2 bg-muted/20">
-        <Icon name="command" size={13} className="text-muted-foreground" />
-        <span className="text-xs font-semibold text-foreground/80">{t('slash.title')}</span>
+      <div className="flex items-center gap-2 border-b border-border/60 px-3 py-2 bg-muted/40 shrink-0">
+        <div className="grid size-5 place-items-center rounded bg-primary/10 text-primary">
+          <Icon name="command" size={12} />
+        </div>
+        <span className="text-xs font-semibold text-foreground">{t('slash.title')}</span>
         {searchQuery && (
-          <span className="ml-auto rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono text-primary">
+          <span className="ml-auto rounded-sm bg-primary/15 px-1.5 py-0.5 text-[10px] font-mono font-medium text-primary">
             /{searchQuery}
           </span>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-1.5 space-y-0.5">
+      <div
+        ref={listRef}
+        className="flex-1 overflow-y-auto p-1.5 space-y-1 divide-y divide-border/30"
+      >
         {filteredItems.length === 0 ? (
-          <div className="px-3 py-4 text-center text-xs text-muted-foreground">
+          <div className="px-4 py-6 text-center text-xs text-muted-foreground">
             {t('slash.noResults')}
           </div>
         ) : (
-          filteredItems.map((item, index) => (
-            <button
-              key={item.id}
-              type="button"
-              className={cn(
-                'flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors cursor-pointer',
-                index === selectedIndex
-                  ? 'bg-primary/10 text-primary font-medium'
-                  : 'text-foreground/80 hover:bg-hover hover:text-foreground',
-              )}
-              onMouseEnter={() => setSelectedIndex(index)}
-              onClick={() => executeItem(item)}
-            >
-              <div
-                className={cn(
-                  'grid size-7 shrink-0 place-items-center rounded-md border text-xs',
-                  index === selectedIndex
-                    ? 'border-primary/30 bg-primary/15 text-primary'
-                    : 'border-border/60 bg-background text-muted-foreground',
-                )}
-              >
-                <Icon name={item.icon as any} size={14} />
-              </div>
+          CATEGORY_ORDER.map((catKey) => {
+            const itemsInCat = filteredItems.filter((it) => it.category === catKey);
+            if (itemsInCat.length === 0) return null;
 
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 text-xs font-semibold">
-                  <span className="truncate">{item.title}</span>
-                  {item.badge && (
-                    <span className="rounded-sm bg-amber-500/15 px-1 py-0.2 text-[9px] font-bold text-amber-600 dark:text-amber-400">
-                      {item.badge}
-                    </span>
-                  )}
+            return (
+              <div key={catKey} className="pt-1 first:pt-0">
+                <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  {CATEGORY_NAMES[catKey] || catKey}
                 </div>
-                <div className="truncate text-[11px] text-muted-foreground font-normal">
-                  {item.description}
+                <div className="space-y-0.5">
+                  {itemsInCat.map((item) => {
+                    const globalIdx = filteredItems.indexOf(item);
+                    const isSelected = globalIdx === selectedIndex;
+
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        data-active={isSelected ? 'true' : 'false'}
+                        className={cn(
+                          'flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left transition-all cursor-pointer',
+                          isSelected
+                            ? 'bg-primary/10 text-primary font-medium shadow-2xs'
+                            : 'text-foreground/80 hover:bg-hover hover:text-foreground',
+                        )}
+                        onMouseEnter={() => setSelectedIndex(globalIdx)}
+                        onClick={() => executeItem(item)}
+                      >
+                        <div
+                          className={cn(
+                            'grid size-7 shrink-0 place-items-center rounded-md border text-xs',
+                            isSelected
+                              ? 'border-primary/40 bg-primary/20 text-primary'
+                              : 'border-border/60 bg-background text-muted-foreground',
+                          )}
+                        >
+                          <Icon name={item.icon as any} size={14} />
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 text-xs font-medium">
+                            <span className="truncate">{item.title}</span>
+                            {item.badge && (
+                              <span className="rounded-xs bg-amber-500/15 px-1 py-0.2 text-[9px] font-bold text-amber-600 dark:text-amber-400">
+                                {item.badge}
+                              </span>
+                            )}
+                          </div>
+                          <div className="truncate text-[10.5px] text-muted-foreground font-normal">
+                            {item.description}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            </button>
-          ))
+            );
+          })
         )}
+      </div>
+
+      <div className="flex items-center justify-between border-t border-border/50 px-3 py-1.5 bg-muted/20 text-[10px] text-muted-foreground select-none shrink-0">
+        <span>↑↓ Di chuyển</span>
+        <span>↵ Chọn</span>
+        <span>Esc Đóng</span>
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : content;
 };

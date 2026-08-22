@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '@office/ui-kit';
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
@@ -94,10 +95,10 @@ export const LinkPopoverHost = ({ editor }: LinkPopoverHostProps) => {
 
   if (!link) return null;
 
-  return (
+  const content = (
     <div
       ref={containerRef}
-      className="pointer-events-auto z-50 flex min-w-[220px] max-w-sm items-center gap-1 rounded-lg border border-border bg-popover px-2 py-1.5 shadow-lg"
+      className="fixed z-50 flex min-w-[220px] max-w-sm items-center gap-1 rounded-xl border border-border bg-popover/95 backdrop-blur-md px-2 py-1.5 shadow-xl animate-in fade-in-0 zoom-in-95 duration-100"
       onMouseDown={(event) => event.preventDefault()}
     >
       {editing ? (
@@ -113,7 +114,7 @@ export const LinkPopoverHost = ({ editor }: LinkPopoverHostProps) => {
           <button
             type="button"
             aria-label={t('toolbar.linkEdit')}
-            className="grid size-6 place-items-center rounded-md text-primary hover:bg-accent"
+            className="grid size-6 place-items-center rounded-md text-primary hover:bg-accent cursor-pointer"
             onClick={saveEdit}
           >
             <Icon name="check" size={16} />
@@ -121,7 +122,7 @@ export const LinkPopoverHost = ({ editor }: LinkPopoverHostProps) => {
         </>
       ) : (
         <>
-          <span className="max-w-[180px] flex-1 truncate text-[13px] text-primary underline" title={link.url}>
+          <span className="max-w-[180px] flex-1 truncate text-[13px] text-primary underline" aria-label={link.url}>
             {link.url.replace(/^https?:\/\//, '')}
           </span>
           <ToolbarButton label={t('toolbar.linkOpen')} onClick={() => openLink(link.url)}>
@@ -140,4 +141,6 @@ export const LinkPopoverHost = ({ editor }: LinkPopoverHostProps) => {
       )}
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : content;
 };

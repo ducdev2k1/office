@@ -25,10 +25,12 @@ export interface PopupController {
 
 export const mountPopup = (
   popupEl: HTMLElement,
-  { placement = 'bottom-start', strategy = 'absolute', offset: offsetVal = 6, anchor, reference }: PopupOptions,
+  { placement = 'bottom-start', strategy = 'fixed', offset: offsetVal = 6, anchor, reference }: PopupOptions,
 ): PopupController => {
-  const refEl = reference ?? (anchor ? ({ getBoundingClientRect: () => anchor } as HTMLElement) : null);
-  if (!refEl) {
+  let currentAnchor = anchor;
+  const getRef = () => reference ?? (currentAnchor ? ({ getBoundingClientRect: () => currentAnchor } as HTMLElement) : null);
+  
+  if (!getRef()) {
     popupEl.style.display = 'none';
     return { update: () => {}, destroy: () => {} };
   }
@@ -36,26 +38,30 @@ export const mountPopup = (
   let cleanup: (() => void) | null = null;
 
   const update = (nextAnchor?: DOMRect | null) => {
-    if (!refEl) return;
-    const rect = nextAnchor ?? anchor;
-    if (!rect) {
+    if (nextAnchor !== undefined) {
+      currentAnchor = nextAnchor;
+    }
+    const ref = getRef();
+    if (!ref || !currentAnchor) {
       popupEl.style.display = 'none';
       return;
     }
-    const fakeEl = { getBoundingClientRect: () => rect } as HTMLElement;
+    const fakeEl = { getBoundingClientRect: () => currentAnchor! } as HTMLElement;
     void computePosition(fakeEl, popupEl, {
       placement,
       strategy,
-      middleware: [offset(offsetVal), flip(), shift({ padding: 8 })],
+      middleware: [offset(offsetVal), flip(), shift({ padding: 12 })],
     }).then(({ x, y }) => {
+      popupEl.style.position = strategy;
       popupEl.style.left = `${x}px`;
       popupEl.style.top = `${y}px`;
-      popupEl.style.display = 'block';
+      popupEl.style.display = 'flex';
     });
   };
 
-  if (anchor) {
-    cleanup = autoUpdate(refEl, popupEl, () => update());
+  const initialRef = getRef();
+  if (initialRef) {
+    cleanup = autoUpdate(initialRef, popupEl, () => update());
   }
 
   return {

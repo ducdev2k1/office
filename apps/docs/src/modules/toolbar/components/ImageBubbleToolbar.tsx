@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Icon, Separator, cn, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
+import { createPortal } from 'react-dom';
+import { Button, Icon, Separator, cn, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
 import { ToolbarButton } from '@/modules/toolbar/components/ToolbarButton';
@@ -101,10 +102,10 @@ export const ImageBubbleToolbar = ({ editor }: ImageBubbleToolbarProps) => {
   const wrap = attrs.wrap || 'break';
   const margin = attrs.margin ?? 16;
 
-  return (
+  const content = (
     <div
       ref={containerRef}
-      className="pointer-events-auto z-50 flex items-center gap-0.5 rounded-lg border border-border bg-popover px-1.5 py-1 shadow-lg animate-in fade-in-0 zoom-in-95 duration-100"
+      className="fixed z-50 flex items-center gap-0.5 rounded-xl border border-border bg-popover/95 backdrop-blur-md px-1.5 py-1 shadow-xl animate-in fade-in-0 zoom-in-95 duration-100"
       onMouseDown={(event) => event.preventDefault()}
     >
       {/* 4 Image Wrap Modes */}
@@ -171,16 +172,18 @@ export const ImageBubbleToolbar = ({ editor }: ImageBubbleToolbarProps) => {
             <Tooltip key={m}>
               <TooltipTrigger
                 render={
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     className={cn(
-                      'h-7 px-1 text-[11px] rounded font-medium text-foreground/80 hover:text-foreground hover:bg-hover transition-colors cursor-pointer',
+                      'px-1 text-[11px] font-medium h-7',
                       margin === m && 'bg-primary/15 text-primary font-semibold',
                     )}
                     onClick={() => editor.chain().focus().setImageMargin(m).run()}
                   >
                     {m}px
-                  </button>
+                  </Button>
                 }
               />
               <TooltipContent>{`Khoảng đệm chữ ${m}px`}</TooltipContent>
@@ -195,16 +198,18 @@ export const ImageBubbleToolbar = ({ editor }: ImageBubbleToolbarProps) => {
         <Tooltip key={sz}>
           <TooltipTrigger
             render={
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
                 className={cn(
-                  'h-7 px-1.5 text-xs rounded font-medium text-foreground/80 hover:text-foreground hover:bg-hover transition-colors cursor-pointer',
+                  'px-1.5 text-xs h-7',
                   attrs.width === sz && 'bg-primary/15 text-primary font-semibold',
                 )}
                 onClick={() => editor.chain().focus().setImageSize({ width: sz }).run()}
               >
                 {sz}
-              </button>
+              </Button>
             }
           />
           <TooltipContent>{`Đặt kích thước ${sz}`}</TooltipContent>
@@ -214,16 +219,18 @@ export const ImageBubbleToolbar = ({ editor }: ImageBubbleToolbarProps) => {
       <Tooltip>
         <TooltipTrigger
           render={
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               className={cn(
-                'h-7 px-1.5 text-xs rounded font-medium text-foreground/80 hover:text-foreground hover:bg-hover transition-colors cursor-pointer',
+                'px-1.5 text-xs h-7',
                 (attrs.width === 'auto' || !attrs.width) && 'bg-primary/15 text-primary font-semibold',
               )}
               onClick={() => editor.chain().focus().setImageSize({ width: 'auto' }).run()}
             >
               Gốc
-            </button>
+            </Button>
           }
         />
         <TooltipContent>{t('toolbar.imageSizeOriginal')}</TooltipContent>
@@ -241,4 +248,6 @@ export const ImageBubbleToolbar = ({ editor }: ImageBubbleToolbarProps) => {
       </ToolbarButton>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : content;
 };

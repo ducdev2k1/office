@@ -3,20 +3,20 @@ import * as React from 'react';
 import { cn } from '../../cn';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] cursor-pointer select-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] cursor-pointer select-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:shadow-sm active:bg-primary/95',
+          'bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 hover:shadow active:bg-emerald-800 font-semibold border border-emerald-600',
         destructive:
-          'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 hover:shadow-sm active:bg-destructive/95',
+          'bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow active:bg-red-800 font-semibold border border-red-600',
         outline:
-          'border border-input bg-background/80 shadow-2xs hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20 active:bg-accent/80',
+          'border border-border bg-background text-foreground/90 shadow-2xs hover:bg-muted hover:text-foreground active:bg-muted/80 font-medium',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-2xs hover:bg-secondary/80 active:bg-secondary/90',
-        ghost: 'hover:bg-accent hover:text-accent-foreground active:bg-accent/80',
-        link: 'text-primary underline-offset-4 hover:underline active:opacity-80',
+          'bg-secondary text-secondary-foreground shadow-2xs hover:bg-secondary/80 active:bg-secondary/90 font-medium',
+        ghost: 'hover:bg-muted hover:text-foreground active:bg-muted/80 font-medium',
+        link: 'text-emerald-600 underline-offset-4 hover:underline active:opacity-80',
       },
       size: {
         default: 'h-9 px-4 py-2',

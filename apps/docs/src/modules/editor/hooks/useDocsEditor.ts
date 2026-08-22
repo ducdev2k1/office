@@ -178,7 +178,7 @@ export const useDocsEditor = (
     {
       extensions,
       content: isCollab ? undefined : content,
-      editorProps: { attributes: { class: 'doc-editor' } },
+      editorProps: { attributes: { class: 'doc-editor', spellcheck: 'true' } },
       onUpdate: isCollab ? undefined : ({ editor }) => onUpdate(editor.getHTML()),
     },
     [docId, isCollab, collabConfig?.provider, commentsStore, suggestionStore],

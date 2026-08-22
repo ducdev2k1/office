@@ -1,5 +1,5 @@
 import { useTranslation } from '@office/i18n';
-import { Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
+import { Button, Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
 import { PAPER_SIZES, type Orientation, type PageSetup, type PaperSize } from '@/types/docs.types';
 import { NumberInputWithUnit, SelectField, type SettingsUnit } from './PageSettingsControls';
 
@@ -60,7 +60,7 @@ export const DocumentSettingsTab = ({
     <>
       {/* Section: Page format */}
       <div className="space-y-2.5">
-        <h3 className="font-semibold text-neutral-100 text-xs tracking-tight">
+        <h3 className="font-semibold text-foreground text-xs tracking-tight">
           {t('pageSetup.pageFormat')}
         </h3>
 
@@ -105,53 +105,55 @@ export const DocumentSettingsTab = ({
 
         {/* Row 3: Orientation Buttons */}
         <div className="grid grid-cols-2 gap-2 pt-0.5">
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={() => onPageSetupChange({ ...setup, orientation: 'portrait' })}
             className={cn(
-              'flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium transition-all duration-150 cursor-pointer',
+              'justify-start gap-2 px-3 py-2 text-xs font-medium transition-colors',
               setup.orientation === 'portrait'
-                ? 'border-purple-500 bg-purple-950/30 text-purple-200 ring-1 ring-purple-500/40 shadow-xs'
-                : 'border-neutral-800 bg-[#1c1c1f] text-neutral-400 hover:text-neutral-200 hover:border-neutral-700',
+                ? 'border-primary bg-primary/10 text-primary ring-1 ring-primary/40 shadow-xs'
+                : 'border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted',
             )}
           >
             <div
               className={cn(
                 'w-3.5 h-5 rounded-xs border-2 transition-colors',
                 setup.orientation === 'portrait'
-                  ? 'border-purple-400 bg-purple-500/20'
-                  : 'border-neutral-500',
+                  ? 'border-primary bg-primary/20'
+                  : 'border-muted-foreground',
               )}
             />
             <span>{t('pageSetup.portrait')}</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={() => onPageSetupChange({ ...setup, orientation: 'landscape' })}
             className={cn(
-              'flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium transition-all duration-150 cursor-pointer',
+              'justify-start gap-2 px-3 py-2 text-xs font-medium transition-colors',
               setup.orientation === 'landscape'
-                ? 'border-purple-500 bg-purple-950/30 text-purple-200 ring-1 ring-purple-500/40 shadow-xs'
-                : 'border-neutral-800 bg-[#1c1c1f] text-neutral-400 hover:text-neutral-200 hover:border-neutral-700',
+                ? 'border-primary bg-primary/10 text-primary ring-1 ring-primary/40 shadow-xs'
+                : 'border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted',
             )}
           >
             <div
               className={cn(
                 'w-5 h-3.5 rounded-xs border-2 transition-colors',
                 setup.orientation === 'landscape'
-                  ? 'border-purple-400 bg-purple-500/20'
-                  : 'border-neutral-500',
+                  ? 'border-primary bg-primary/20'
+                  : 'border-muted-foreground',
               )}
             />
             <span>{t('pageSetup.landscape')}</span>
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Section: Page margins */}
-      <div className="space-y-2.5 pt-3 border-t border-neutral-800/80">
-        <h3 className="font-semibold text-neutral-100 text-xs tracking-tight">
+      <div className="space-y-2.5 pt-3 border-t border-border">
+        <h3 className="font-semibold text-foreground text-xs tracking-tight">
           {t('pageSetup.margins')}
         </h3>
 
@@ -198,19 +200,21 @@ export const DocumentSettingsTab = ({
         <Tooltip>
           <TooltipTrigger
             render={
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="icon"
                 onClick={() => setMarginsLinked((prev) => !prev)}
                 aria-label={marginsLinked ? 'Hủy liên kết lề' : 'Đồng bộ 4 lề'}
                 className={cn(
-                  'size-8 rounded-lg border grid place-items-center transition-all cursor-pointer',
+                  'transition-colors',
                   marginsLinked
-                    ? 'border-purple-500 bg-purple-950/40 text-purple-400 ring-1 ring-purple-500/30'
-                    : 'border-neutral-800 bg-[#1c1c1f] text-neutral-400 hover:text-neutral-200',
+                    ? 'border-primary bg-primary/10 text-primary ring-1 ring-primary/30'
+                    : 'border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted',
                 )}
               >
                 <Icon name="link" size={14} />
-              </button>
+              </Button>
             }
           />
           <TooltipContent side="top">
@@ -220,8 +224,8 @@ export const DocumentSettingsTab = ({
       </div>
 
       {/* Section: Page styling */}
-      <div className="space-y-2.5 pt-3 border-t border-neutral-800/80">
-        <h3 className="font-semibold text-neutral-100 text-xs tracking-tight">
+      <div className="space-y-2.5 pt-3 border-t border-border">
+        <h3 className="font-semibold text-foreground text-xs tracking-tight">
           {t('pageSetup.pageStyling')}
         </h3>
 
@@ -229,7 +233,7 @@ export const DocumentSettingsTab = ({
           <NumberInputWithUnit label={t('pageSetup.pageGap')} value={16} unit="px" readOnly />
 
           <div className="space-y-1">
-            <span className="text-[11px] text-neutral-400 font-normal">
+            <span className="text-[11px] text-muted-foreground font-normal">
               {t('pageSetup.backgroundColor')}
             </span>
             <SelectField

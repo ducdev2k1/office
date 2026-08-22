@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkVnAdminCompliance, STANDARD_VN_ADMIN_PAGE_SETUP } from './vnAdmin.utils';
+import { checkVnAdminCompliance, STANDARD_VN_ADMIN_PAGE_SETUP } from '@/utils/vnAdmin.utils';
 
 describe('vnAdmin.utils', () => {
   it('should validate standard VN administrative page setup as compliant', () => {
@@ -11,7 +11,7 @@ describe('vnAdmin.utils', () => {
 
   it('should detect non-compliant page size and margins', () => {
     const nonCompliantSetup = {
-      paperSize: 'Letter' as const,
+      paperSize: 'letter' as const,
       orientation: 'landscape' as const,
       margins: { top: 10, right: 10, bottom: 10, left: 10 },
     };
