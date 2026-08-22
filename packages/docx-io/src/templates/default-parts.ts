@@ -1,12 +1,16 @@
 import type { DocxMediaItem, DocxRelationship } from '../types';
+import { FOOTNOTES_CONTENT_TYPE, FOOTNOTES_REL_TYPE } from '../html-to-ooxml/footnotes.utils';
 
-export const getContentTypesXml = (mediaItems: DocxMediaItem[]): string => {
+export const getContentTypesXml = (mediaItems: DocxMediaItem[], hasFootnotes = false): string => {
   const overrides = mediaItems
     .map(
       (m) =>
         `<Override PartName="/word/${m.target}" ContentType="${m.contentType}"/>`,
     )
     .join('');
+  const footnotesOverride = hasFootnotes
+    ? `<Override PartName="/word/footnotes.xml" ContentType="${FOOTNOTES_CONTENT_TYPE}"/>`
+    : '';
 
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -23,6 +27,7 @@ export const getContentTypesXml = (mediaItems: DocxMediaItem[]): string => {
   <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
   <Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/>
   ${overrides}
+  ${footnotesOverride}
 </Types>`;
 };
 
@@ -31,12 +36,16 @@ export const getRelsXml = (): string => `<?xml version="1.0" encoding="UTF-8" st
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
 </Relationships>`;
 
-export const getDocumentRelsXml = (relationships: DocxRelationship[]): string => {
+export const getDocumentRelsXml = (relationships: DocxRelationship[], hasFootnotes = false): string => {
   const defaultRels = `
   <Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
   <Relationship Id="rIdNumbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
   <Relationship Id="rIdSettings" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
-  <Relationship Id="rIdFontTable" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>`;
+  <Relationship Id="rIdFontTable" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>${
+    hasFootnotes
+      ? `\n  <Relationship Id="rIdFootnotes" Type="${FOOTNOTES_REL_TYPE}" Target="footnotes.xml"/>`
+      : ''
+  }`;
 
   const userRels = relationships
     .map(

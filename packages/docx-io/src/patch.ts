@@ -5,13 +5,19 @@ import {
   setPartText,
   unpackOoxml,
 } from '@office/ooxml-core';
-import type { DocxMediaItem, DocxRelationship } from './types';
+import {
+  buildFootnotesXml,
+  ensureFootnotesOverride,
+  ensureFootnotesRelationship,
+} from './html-to-ooxml/footnotes.utils';
+import type { DocxFootnoteItem, DocxMediaItem, DocxRelationship } from './types';
 
 export const patchDocx = async (
   originalBuffer: ArrayBuffer | Uint8Array | Blob,
   bodyXml: string,
   relationships: DocxRelationship[] = [],
   media: DocxMediaItem[] = [],
+  footnotes: DocxFootnoteItem[] = [],
 ): Promise<Uint8Array> => {
   const pkg = await unpackOoxml(originalBuffer);
 
@@ -82,17 +88,26 @@ export const patchDocx = async (
     setPartBytes(pkg, `word/${item.target}`, item.data);
   }
 
+  // Inject footnotes part when the converted body references footnotes
+  if (footnotes.length > 0) {
+    setPartText(pkg, 'word/footnotes.xml', buildFootnotesXml(footnotes));
+    const ct = getPartText(pkg, '[Content_Types].xml');
+    if (ct) setPartText(pkg, '[Content_Types].xml', ensureFootnotesOverride(ct));
+    const rels = getPartText(pkg, 'word/_rels/document.xml.rels');
+    if (rels) setPartText(pkg, 'word/_rels/document.xml.rels', ensureFootnotesRelationship(rels));
+  }
+
   // Update [Content_Types].xml for image overrides if needed
   if (media.length > 0) {
     const existingContentTypes = getPartText(pkg, '[Content_Types].xml');
     if (existingContentTypes && existingContentTypes.includes('</Types>')) {
       const overrides = media
-        .map(
-          (m) =>
-            `<Override PartName="/word/${m.target}" ContentType="${m.contentType}"/>`,
-        )
+        .map((m) => `<Override PartName="/word/${m.target}" ContentType="${m.contentType}"/>`)
         .join('\n  ');
-      const updatedContentTypes = existingContentTypes.replace('</Types>', `  ${overrides}\n</Types>`);
+      const updatedContentTypes = existingContentTypes.replace(
+        '</Types>',
+        `  ${overrides}\n</Types>`,
+      );
       setPartText(pkg, '[Content_Types].xml', updatedContentTypes);
     }
   }

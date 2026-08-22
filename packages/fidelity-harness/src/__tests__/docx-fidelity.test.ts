@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { measureDocxFidelity } from '../index';
+import { measureDocxFidelity, standardFormatChecks } from '../index';
 
 describe('fidelity-harness docx', () => {
   it('should verify high text fidelity round-trip for standard docx export', async () => {
@@ -29,5 +29,30 @@ describe('fidelity-harness docx', () => {
     expect(report.textFidelity).toBe(100);
     expect(report.parts).toContain('word/document.xml');
     expect(report.parts).toContain('word/styles.xml');
+  });
+
+  it('should measure format fidelity against element-class checks', async () => {
+    const html = `
+      <h2>Định dạng tổng hợp</h2>
+      <p style="text-align: justify;"><strong>Đậm</strong> <em>Nghiêng</em> <u>Gạch chân</u> <s>Gạch ngang</s> <span style="color: #dc2626;">Màu đỏ</span> <mark>Tô sáng</mark></p>
+      <ol><li>Mục đánh số</li></ol>
+      <table><tr><th>Hạng mục</th></tr><tr><td>Kết quả đo</td></tr></table>
+      <p><a href="https://example.com">Liên kết</a></p>
+      <div data-type="page-break"></div>
+      <p>Sau ngắt trang</p>
+    `;
+
+    const report = await measureDocxFidelity(
+      html,
+      ['Định dạng tổng hợp', 'Mục đánh số', 'Sau ngắt trang'],
+      standardFormatChecks(),
+    );
+
+    expect(report.textFidelity).toBe(100);
+    expect(report.formatFidelity).toBeGreaterThanOrEqual(90);
+    expect(report.isSuccess).toBe(true);
+
+    const failed = report.formatResults.filter((r) => !r.passed).map((r) => r.label);
+    expect(failed).toEqual([]);
   });
 });

@@ -1,4 +1,4 @@
-import type { DocxMediaItem, DocxRelationship, OoxmlConversionResult } from '../types';
+import type { DocxFootnoteItem, DocxMediaItem, DocxRelationship, OoxmlConversionResult } from '../types';
 import { parseHtmlToTree, type HtmlNode } from './html-parser';
 import { parseImageDataUrl } from './media.utils';
 import {
@@ -32,14 +32,20 @@ interface InlineContext {
 export class OoxmlMapper {
   private relationships: DocxRelationship[] = [];
   private media: DocxMediaItem[] = [];
+  private footnotes: DocxFootnoteItem[] = [];
   private nextRelId = 1;
   private nextMediaId = 1;
+  private nextFootnoteId = 1;
+  private nextBookmarkId = 1;
 
   public convert(html: string): OoxmlConversionResult {
     this.relationships = [];
     this.media = [];
+    this.footnotes = [];
     this.nextRelId = 1;
     this.nextMediaId = 1;
+    this.nextFootnoteId = 1;
+    this.nextBookmarkId = 1;
 
     const tree = parseHtmlToTree(html);
     const bodyXml = this.renderNodes(tree, 0, null);
@@ -48,7 +54,14 @@ export class OoxmlMapper {
       bodyXml,
       relationships: this.relationships,
       media: this.media,
+      footnotes: this.footnotes,
     };
+  }
+
+  private registerFootnote(content: string): number {
+    const id = this.nextFootnoteId++;
+    this.footnotes.push({ id, content });
+    return id;
   }
 
   private registerHyperlink(url: string): string {
@@ -180,6 +193,20 @@ export class OoxmlMapper {
       return `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
     }
 
+    // Section break: next-page -> page break, continuous -> skip
+    if (node.attributes['data-type'] === 'section-break' || node.attributes['data-section-type']) {
+      if ((node.attributes['data-section-type'] ?? 'next-page') === 'next-page') {
+        return `<w:p><w:pPr><w:pStyle w:val="Normal"/></w:pPr><w:r><w:br w:type="page"/></w:r></w:p>`;
+      }
+      return '';
+    }
+
+    // Math block (KaTeX) — fallback text per plan acceptance level
+    if (node.attributes['data-type'] === 'math-block') {
+      const tex = node.attributes['data-tex'] ?? '';
+      return `<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/><w:i/><w:color w:val="1E40AF"/></w:rPr><w:t xml:space="preserve">${escapeXml(tex)}</w:t></w:r></w:p>`;
+    }
+
     // Lists
     if (tag === 'ul' || tag === 'ol') {
       const isTask = node.attributes['data-type'] === 'taskList';
@@ -307,6 +334,30 @@ export class OoxmlMapper {
         const cy = pxToEmu(media.heightPx);
         return `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${this.nextMediaId}" name="Picture"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${this.nextMediaId}" name="Picture"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${media.id}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
       }
+    }
+
+    // Footnote reference — real OOXML footnote (content stored in data attribute)
+    if (node.attributes['data-type'] === 'footnote') {
+      const content = node.attributes['data-footnote-content'] ?? '';
+      if (!content) return '';
+      const fnId = this.registerFootnote(content);
+      return `<w:r><w:rPr><w:rStyle w:val="FootnoteReference"/><w:vertAlign w:val="superscript"/></w:rPr><w:footnoteReference w:id="${fnId}"/></w:r>`;
+    }
+
+    // Math inline (KaTeX) — fallback text per plan acceptance level
+    if (node.attributes['data-type'] === 'math-inline') {
+      const tex = node.attributes['data-tex'] ?? '';
+      if (!tex) return '';
+      return `<w:r><w:rPr><w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/><w:i/><w:color w:val="1E40AF"/></w:rPr><w:t xml:space="preserve">${escapeXml(tex)}</w:t></w:r>`;
+    }
+
+    // Bookmark anchor (no href)
+    if ((node.attributes['data-bookmark-id'] || node.attributes.name) && !node.attributes.href) {
+      const rawName = node.attributes['data-bookmark-name'] ?? node.attributes['data-bookmark-id'] ?? node.attributes.name ?? 'Bookmark';
+      const safeName = escapeXml(rawName.replace(/\s+/g, '_').slice(0, 40) || 'Bookmark');
+      const bmId = this.nextBookmarkId++;
+      const inner = this.renderInlines(node.children, ctx);
+      return `<w:bookmarkStart w:id="${bmId}" w:name="${safeName}"/>${inner}<w:bookmarkEnd w:id="${bmId}"/>`;
     }
 
     // Line break

@@ -1,5 +1,6 @@
 import { repackOoxml, setPartBytes, setPartText } from '@office/ooxml-core';
 import { OoxmlMapper } from './html-to-ooxml/mapper';
+import { buildFootnotesXml } from './html-to-ooxml/footnotes.utils';
 import { patchDocx } from './patch';
 import {
   getContentTypesXml,
@@ -18,10 +19,11 @@ export const exportDocx = async (
   options: DocxExportOptions = {},
 ): Promise<Uint8Array> => {
   const mapper = new OoxmlMapper();
-  const { bodyXml, relationships, media } = mapper.convert(html);
+  const { bodyXml, relationships, media, footnotes } = mapper.convert(html);
+  const hasFootnotes = footnotes.length > 0;
 
   if (options.originalDocxBuffer) {
-    return patchDocx(options.originalDocxBuffer, bodyXml, relationships, media);
+    return patchDocx(options.originalDocxBuffer, bodyXml, relationships, media, footnotes);
   }
 
   // Generate clean standalone .docx package
@@ -39,14 +41,17 @@ export const exportDocx = async (
     ],
   };
 
-  setPartText(pkg, '[Content_Types].xml', getContentTypesXml(media));
+  setPartText(pkg, '[Content_Types].xml', getContentTypesXml(media, hasFootnotes));
   setPartText(pkg, '_rels/.rels', getRelsXml());
-  setPartText(pkg, 'word/_rels/document.xml.rels', getDocumentRelsXml(relationships));
+  setPartText(pkg, 'word/_rels/document.xml.rels', getDocumentRelsXml(relationships, hasFootnotes));
   setPartText(pkg, 'word/document.xml', getDocumentXml(bodyXml));
   setPartText(pkg, 'word/styles.xml', getStylesXml());
   setPartText(pkg, 'word/numbering.xml', getNumberingXml());
   setPartText(pkg, 'word/settings.xml', getSettingsXml());
   setPartText(pkg, 'word/fontTable.xml', getFontTableXml());
+  if (hasFootnotes) {
+    setPartText(pkg, 'word/footnotes.xml', buildFootnotesXml(footnotes));
+  }
 
   for (const item of media) {
     setPartBytes(pkg, `word/${item.target}`, item.data);

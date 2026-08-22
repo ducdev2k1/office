@@ -162,4 +162,92 @@ describe('docx-io', () => {
     expect(result.bodyXml).toContain('Kế hoạch');
     expect(result.bodyXml).toContain('Q1');
   });
+
+  it('should map footnotes to real OOXML footnote references with footnotes.xml part', async () => {
+    const html = `
+      <p>Văn bản có chú thích<sup data-type="footnote" data-footnote-id="fn-1" data-footnote-content="Nguồn: Nghị định 30/2020"></sup> cuối câu.</p>
+    `;
+
+    const mapper = new OoxmlMapper();
+    const result = mapper.convert(html);
+    expect(result.footnotes).toHaveLength(1);
+    expect(result.footnotes[0]?.content).toBe('Nguồn: Nghị định 30/2020');
+    expect(result.bodyXml).toContain('<w:footnoteReference w:id="1"/>');
+    expect(result.bodyXml).not.toContain('data-footnote-content');
+
+    const buffer = await exportDocx(html);
+    const pkg = await unpackOoxml(buffer);
+    const fnXml = getPartText(pkg, 'word/footnotes.xml');
+    expect(fnXml).toBeDefined();
+    expect(fnXml).toContain('Nguồn: Nghị định 30/2020');
+    expect(fnXml).toContain('w:type="separator"');
+
+    const ctXml = getPartText(pkg, '[Content_Types].xml');
+    expect(ctXml).toContain('/word/footnotes.xml');
+    const relsXml = getPartText(pkg, 'word/_rels/document.xml.rels');
+    expect(relsXml).toContain('footnotes');
+  });
+
+  it('should map math inline and block to fallback text without katex HTML', () => {
+    const html = `
+      <p>Công thức <span data-type="math-inline" data-tex="E = mc^2"></span> nổi tiếng.</p>
+      <div data-type="math-block" data-tex="\\int_a^b f(x)dx"></div>
+    `;
+
+    const mapper = new OoxmlMapper();
+    const result = mapper.convert(html);
+
+    expect(result.bodyXml).toContain('E = mc^2');
+    expect(result.bodyXml).toContain('\\int_a^b f(x)dx');
+    expect(result.bodyXml).not.toContain('katex');
+    expect(result.bodyXml).toContain('Consolas');
+  });
+
+  it('should map bookmarks to OOXML bookmarkStart/End', () => {
+    const html = `
+      <p>Đoạn có <span data-bookmark-id="bm-abc" data-bookmark-name="Muc luc">điểm neo</span> bên trong.</p>
+    `;
+
+    const mapper = new OoxmlMapper();
+    const result = mapper.convert(html);
+
+    expect(result.bodyXml).toContain('<w:bookmarkStart w:id="1" w:name="Muc_luc"/>');
+    expect(result.bodyXml).toContain('<w:bookmarkEnd w:id="1"/>');
+    expect(result.bodyXml).toContain('điểm neo');
+  });
+
+  it('should map section break next-page to page break and skip continuous', () => {
+    const html = `
+      <p>Trang một</p>
+      <div data-type="section-break" data-section-type="next-page"></div>
+      <p>Trang hai</p>
+      <div data-type="section-break" data-section-type="continuous"></div>
+      <p>Vẫn trang hai</p>
+    `;
+
+    const mapper = new OoxmlMapper();
+    const result = mapper.convert(html);
+
+    expect(result.bodyXml).toContain('Trang một');
+    expect(result.bodyXml).toContain('Trang hai');
+    expect(result.bodyXml).toContain('Vẫn trang hai');
+    const pageBreakCount = (result.bodyXml.match(/<w:br w:type="page"\/>/g) ?? []).length;
+    expect(pageBreakCount).toBe(1);
+  });
+
+  it('should inject footnotes part when patching original docx containing footnotes', async () => {
+    const originalDocx = await exportDocx('<h1>Hợp đồng gốc</h1><p>Điều khoản bản đầu</p>');
+    const updatedHtml = '<h1>Hợp đồng sửa đổi</h1><p>Điều khoản mới<sup data-type="footnote" data-footnote-id="fn-9" data-footnote-content="Bổ sung 2026"></sup></p>';
+
+    const updatedDocx = await exportDocx(updatedHtml, { originalDocxBuffer: originalDocx });
+
+    const pkg = await unpackOoxml(updatedDocx);
+    const docXml = getPartText(pkg, 'word/document.xml');
+    expect(docXml).toContain('Hợp đồng sửa đổi');
+    expect(docXml).toContain('<w:footnoteReference w:id="1"/>');
+
+    const fnXml = getPartText(pkg, 'word/footnotes.xml');
+    expect(fnXml).toBeDefined();
+    expect(fnXml).toContain('Bổ sung 2026');
+  });
 });

@@ -20,8 +20,14 @@ export interface DocxRelationship {
   targetMode?: 'External';
 }
 
+export interface DocxFootnoteItem {
+  id: number;
+  content: string;
+}
+
 export interface OoxmlConversionResult {
   bodyXml: string;
   relationships: DocxRelationship[];
   media: DocxMediaItem[];
+  footnotes: DocxFootnoteItem[];
 }
