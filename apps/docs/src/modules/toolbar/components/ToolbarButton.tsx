@@ -29,6 +29,8 @@ export const ToolbarButton = ({
           onClick={onClick}
           className={cn(
             'h-7 min-w-7 px-1.5 rounded text-foreground/80 hover:text-foreground hover:bg-hover transition-colors',
+            // Touch target ≥40px trên mobile
+            'max-md:h-10 max-md:min-w-10 max-md:px-2',
             active && 'bg-primary/15 text-primary hover:bg-primary/20 font-medium',
             tone === 'danger' && 'text-destructive hover:bg-destructive/10',
           )}

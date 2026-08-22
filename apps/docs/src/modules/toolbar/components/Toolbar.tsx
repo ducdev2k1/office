@@ -66,7 +66,7 @@ export const Toolbar = ({
   if (!editor) {
     return (
       <div
-        className="doc-toolbar border-b border-border bg-card/80 px-3 py-1 flex items-center gap-0.5 overflow-x-auto min-h-10 shrink-0"
+        className="doc-toolbar max-md:hidden border-b border-border bg-card/80 px-3 py-1 flex items-center gap-0.5 overflow-x-auto min-h-10 shrink-0"
         role="toolbar"
         aria-label={t('toolbar.formattingToolbar')}
       >
@@ -84,7 +84,7 @@ export const Toolbar = ({
 
   return (
     <div
-      className="doc-toolbar border-b border-border bg-card/80 px-3 py-1 flex items-center gap-0.5 overflow-x-auto min-h-10 shrink-0"
+      className="doc-toolbar max-md:hidden border-b border-border bg-card/80 px-3 py-1 flex items-center gap-0.5 overflow-x-auto min-h-10 shrink-0"
       role="toolbar"
       aria-label={t('toolbar.formattingToolbar')}
     >
