@@ -7,7 +7,9 @@ import { SlashCommand } from '../slash-command';
 describe('Callout, ChartBlock, ParagraphStyle, SlashCommand Extensions', () => {
   it('should initialize Callout extension with default type info', () => {
     expect(Callout.name).toBe('callout');
-    const attrs = Callout.config.addAttributes?.call(Callout as any);
+    const attrs = Callout.config.addAttributes?.call(Callout as any) as
+      | Record<string, { default?: unknown }>
+      | undefined;
     expect(attrs?.type?.default).toBe('info');
   });
 
