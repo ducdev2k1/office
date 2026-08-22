@@ -65,5 +65,9 @@
     "generic": "An error occurred, please try again.",
     "notFound": "Data not found.",
     "storageFull": "Local storage quota is almost full."
+  },
+  "pwa": {
+    "updateReady": "A new version of Docs is available. Reload to update?",
+    "reload": "Reload"
   }
 }

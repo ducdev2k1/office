@@ -65,5 +65,9 @@
     "generic": "Đã xảy ra lỗi, vui lòng thử lại.",
     "notFound": "Không tìm thấy dữ liệu.",
     "storageFull": "Dung lượng lưu trữ cục bộ đã gần đầy."
+  },
+  "pwa": {
+    "updateReady": "Có phiên bản mới của Docs. Tải lại để cập nhật?",
+    "reload": "Tải lại"
   }
 }

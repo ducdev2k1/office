@@ -12,6 +12,9 @@ initTheme();
 
 if (import.meta.env.DEV) {
   void import('@/dev/seed-print-fixture');
+  void import('@/dev/perf-fixture');
+} else if ('serviceWorker' in navigator) {
+  void import('@/pwa/setup-pwa').then((m) => m.setupPwa());
 }
 
 const Main = () => (
