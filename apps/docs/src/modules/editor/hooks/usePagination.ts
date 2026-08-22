@@ -1,8 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { Editor } from '@tiptap/core';
 import {
-  computePageBreaks,
-  EMPTY_BREAKS,
+  analyzePagination,
   MAX_PAGES,
   PAGE_GAP,
   type PageBreaks,
@@ -15,10 +14,10 @@ import {
   type PageSetup,
 } from '@/types/docs.types';
 import type { ViewMode } from '@/modules/editor/types/editor.types';
-import {
-  computePaginationMetrics,
-  measureDocPageCount,
-} from '@/modules/editor/extensions/pagination.extension';
+import { computePaginationMetrics } from '@/modules/editor/extensions/pagination.extension';
+
+/** Debounce repagination khi gõ liên tục — chỉ chạy sau khi ngừng thay đổi doc. */
+const REPAGINATION_DEBOUNCE_MS = 300;
 
 export interface PaginationState {
   viewMode: ViewMode;
@@ -39,12 +38,14 @@ export const usePagination = (
   const [pageCount, setPageCount] = useState(1);
   const [zoom, setZoom] = useState(1);
   const rafRef = useRef<number | null>(null);
+  const debounceRef = useRef<number | null>(null);
   const latestBreaksRef = useRef<PageBreaks | null>(null);
   const activeDocRef = useRef(activeDoc);
   activeDocRef.current = activeDoc;
 
   const runPagination = (overrideSetup?: PageSetup): PageBreaks | null => {
     rafRef.current = null;
+    debounceRef.current = null;
     if (!editor || editor.isDestroyed || !editor.view) return null;
     if (editor.view.composing) {
       schedulePagination();
@@ -54,7 +55,9 @@ export const usePagination = (
     const setup = overrideSetup ?? activeDocRef.current?.pageSetup ?? DEFAULT_PAGE_SETUP();
     const docTitle = activeDocRef.current?.title ?? '';
     const metrics = computePaginationMetrics(setup, PAGE_GAP);
-    const measuredCount = measureDocPageCount(editor.view, metrics, MAX_PAGES);
+
+    // Single pass: đo block 1 lần, dùng chung cho cả page breaks lẫn pageCount.
+    const { breaks: result, measuredCount } = analyzePagination(editor.view, setup);
 
     editor.commands.setPaginationData({
       setup,
@@ -64,29 +67,38 @@ export const usePagination = (
       isPaged: viewMode === 'paged',
     });
 
-    const result = computePageBreaks(editor.view, setup);
     latestBreaksRef.current = result;
     setPageCount(measuredCount);
     return result;
   };
 
-  const schedulePagination = (immediate = false, overrideSetup?: PageSetup): PageBreaks | null => {
+  const clearScheduled = () => {
     if (rafRef.current !== null) {
       window.cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
+    if (debounceRef.current !== null) {
+      window.clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+  };
+
+  const schedulePagination = (immediate = false, overrideSetup?: PageSetup): PageBreaks | null => {
+    clearScheduled();
     if (immediate) {
       return runPagination(overrideSetup);
     }
-    rafRef.current = window.requestAnimationFrame(() => {
-      runPagination(overrideSetup);
-    });
+    debounceRef.current = window.setTimeout(() => {
+      rafRef.current = window.requestAnimationFrame(() => {
+        runPagination(overrideSetup);
+      });
+    }, REPAGINATION_DEBOUNCE_MS);
     return latestBreaksRef.current;
   };
 
   useEffect(
     () => () => {
-      if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
+      clearScheduled();
     },
     [],
   );
@@ -116,6 +128,32 @@ export const usePagination = (
     if (viewMode !== 'paged') return;
     document.fonts?.ready.then(() => schedulePagination(true)).catch(() => undefined);
   }, [viewMode, editor]);
+
+  // Mobile (<768px): tự scale trang A4 vừa chiều ngang màn hình.
+  useEffect(() => {
+    if (viewMode !== 'paged') return;
+    let wasMobile = window.innerWidth < 768;
+    const applyFitZoom = () => {
+      const width = window.innerWidth;
+      const isMobile = width < 768;
+      if (wasMobile === isMobile) return;
+      wasMobile = isMobile;
+      if (!isMobile) {
+        setZoom(1);
+        return;
+      }
+      const setup = activeDocRef.current?.pageSetup ?? DEFAULT_PAGE_SETUP();
+      const { width: paperW } = getPaperSizePx(setup);
+      setZoom(Math.max(0.35, Math.min(1, (width - 16) / paperW)));
+    };
+    if (wasMobile) {
+      const setup = activeDocRef.current?.pageSetup ?? DEFAULT_PAGE_SETUP();
+      const { width: paperW } = getPaperSizePx(setup);
+      setZoom(Math.max(0.35, Math.min(1, (window.innerWidth - 16) / paperW)));
+    }
+    window.addEventListener('resize', applyFitZoom);
+    return () => window.removeEventListener('resize', applyFitZoom);
+  }, [viewMode]);
 
   const pageStyle = useMemo<CSSProperties>(() => {
     const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();

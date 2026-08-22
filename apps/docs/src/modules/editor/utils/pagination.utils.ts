@@ -198,8 +198,7 @@ export const resolveContentOffsets = (
   return out;
 };
 
-const measureBlocks = (view: EditorView, metrics: PageMetrics): BlockMeasurement[] => {
-  const out: BlockMeasurement[] = [];
+const measureBlocks = (view: EditorView, metrics: PageMetrics): BlockMeasurement[] => {  const out: BlockMeasurement[] = [];
   let simulatedY = 0;
   let prevMb = 0;
   let pageTop = 0;
@@ -239,9 +238,16 @@ const measureBlocks = (view: EditorView, metrics: PageMetrics): BlockMeasurement
   return out;
 };
 
-export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreaks => {
+/**
+ * Single-pass analysis: đo toàn bộ block một lần duy nhất rồi vừa tính page breaks
+ * vừa suy ra tổng chiều cao nội dung (dùng cho pageCount) — thay vì quét DOM 2 lần.
+ */
+export const analyzePagination = (
+  view: EditorView,
+  setup: PageSetup,
+): { breaks: PageBreaks; measuredCount: number } => {
   const root = view.dom as HTMLElement;
-  if (!root.offsetHeight) return EMPTY_BREAKS;
+  if (!root.offsetHeight) return { breaks: EMPTY_BREAKS, measuredCount: 1 };
 
   const metrics = computeMetrics(setup);
   const blocks = measureBlocks(view, metrics);
@@ -257,16 +263,43 @@ export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreak
     widgetIdx += 1;
     return el.getBoundingClientRect().bottom - rootTop;
   };
+
   return {
-    ...result,
-    contentOffsets: resolveContentOffsets(
-      result.breaks,
-      result.contentOffsets,
-      domTopOf,
-      metrics.paperH,
-    ),
+    breaks: {
+      ...result,
+      contentOffsets: resolveContentOffsets(
+        result.breaks,
+        result.contentOffsets,
+        domTopOf,
+        metrics.paperH,
+      ),
+    },
+    measuredCount: derivePageCount(blocks, metrics.usable),
   };
 };
+
+/** Suy ra pageCount từ phép đo block đã có (cùng công thức với measureDocPageCount cũ). */
+export const derivePageCount = (
+  blocks: BlockMeasurement[],
+  usableH: number,
+  maxPages: number = MAX_PAGES,
+): number => {
+  let totalContentH = 0;
+  let hasValidBlock = false;
+
+  for (const block of blocks) {
+    if (block.height > 0) hasValidBlock = true;
+    totalContentH += block.height + Math.max(block.marginTop, block.marginBottom);
+  }
+
+  if (!hasValidBlock || totalContentH <= 0) return 1;
+
+  const calculated = Math.ceil(totalContentH / usableH);
+  return Math.min(maxPages, Math.max(1, calculated));
+};
+
+export const computePageBreaks = (view: EditorView, setup: PageSetup): PageBreaks =>
+  analyzePagination(view, setup).breaks;
 
 const paginationPlugin = new Plugin<PageBreaks>({
   key,
