@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: pending | **Effort**: 40h
+- **Priority**: P1 | **Status**: done | **Effort**: 40h
 - Nâng chất lượng export .docx đo được qua `packages/fidelity-harness`: các element class còn mất/sai khi mở lại bằng Word. Đây là mảng D trong brainstorm — "lỗ hổng chiến lược", mốc M4 đã có nền (ooxml-core unpack/repack + docx mapper/patcher), nay hardening.
 
 ## Context

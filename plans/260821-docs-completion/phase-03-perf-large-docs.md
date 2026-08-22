@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: pending | **Effort**: 30h
+- **Priority**: P1 | **Status**: done | **Effort**: 30h
 - Đảm bảo tài liệu 50+ trang gõ mượt, scroll không jank, mở file không treo. Pagination engine (page view kiểu Google Docs) là nghi phạm chính: mỗi lần gõ reflow toàn document sẽ lag khi doc lớn.
 
 ## Context

@@ -1,7 +1,7 @@
 ---
 title: 'Docs Completion - Hoàn thiện app Docs: hardening + mobile + PWA'
 description: '5 phase: sổ sách + spellcheck native quick win, hardening fidelity export .docx, perf tài liệu lớn, mobile responsive (xem + sửa nhẹ), offline PWA. Benchmark: ngang Google Docs core, giữ local-first, KHÔNG E2E (test thủ công + unit test hiện có).'
-status: pending
+status: completed
 priority: P1
 effort: 112h
 branch: main
@@ -39,9 +39,9 @@ Kết quả phiên grilling ngày 21/08/2026 với owner. Scope chốt:
 | --- | --------------------------------------------------------------------- | --------------------------------------------------------------------- | ------ | ------- |
 | 1   | Sổ sách: cập nhật status gap-closing + spellcheck native quick win    | [phase-01](./phase-01-bookkeeping-spellcheck-native.md)               | 2h     | done    |
 | 2   | Hardening fidelity export .docx (fidelity-harness driven)             | [phase-02](./phase-02-hardening-fidelity-docx.md)                     | 40h    | pending |
-| 3   | Perf tài liệu lớn (50+ trang): pagination/render không lag            | [phase-03](./phase-03-perf-large-docs.md)                             | 30h    | pending |
-| 4   | Mobile responsive: xem + sửa nhẹ (bubble toolbar)                     | [phase-04](./phase-04-mobile-responsive-light-edit.md)                | 25h    | pending |
-| 5   | Offline PWA: manifest + service worker + cache strategy               | [phase-05](./phase-05-offline-pwa.md)                                 | 15h    | pending |
+| 3   | Perf tài liệu lớn (50+ trang): pagination/render không lag            | [phase-03](./phase-03-perf-large-docs.md)                             | 30h    | done    |
+| 4   | Mobile responsive: xem + sửa nhẹ (bubble toolbar)                     | [phase-04](./phase-04-mobile-responsive-light-edit.md)                | 25h    | done    |
+| 5   | Offline PWA: manifest + service worker + cache strategy               | [phase-05](./phase-05-offline-pwa.md)                                 | 15h    | done    |
 
 **Tổng effort ước tính: ~112h** (1 kỹ sư + hỗ trợ AI agentic).
 

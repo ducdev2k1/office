@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P2 | **Status**: pending | **Effort**: 15h
+- **Priority**: P2 | **Status**: done | **Effort**: 15h
 - Biến docs app thành PWA cài đặt được: mở không cần mạng, soạn thảo offline hoàn toàn. Hợp tự nhiên với kiến trúc local-first (IndexedDB + Yjs offline sync sẵn có).
 
 ## Context

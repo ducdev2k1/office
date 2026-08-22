@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P2 | **Status**: pending | **Effort**: 25h
+- **Priority**: P2 | **Status**: done | **Effort**: 25h
 - Viewport < 768px: đọc tài liệu thoải mái, sửa nội dung + định dạng nhanh qua bubble toolbar khi bôi đen. KHÔNG full toolbar/menu desktop. Quyết định grilling 21/08: "Sửa nhẹ".
 
 ## Context
