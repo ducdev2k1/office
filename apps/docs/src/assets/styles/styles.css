@@ -138,7 +138,7 @@ textarea:focus-visible {
   right: 0;
   display: grid;
   align-content: start;
-  gap: 24px;
+  gap: 16px;
 }
 
 .is-paged .page {
@@ -603,6 +603,14 @@ textarea:focus-visible {
 }
 
 .is-paged [data-type='page-break'] {
+  display: none;
+}
+
+.is-paged .page-break-marker {
+  border-top: none;
+}
+
+.is-paged .page-break-marker::after {
   display: none;
 }
 

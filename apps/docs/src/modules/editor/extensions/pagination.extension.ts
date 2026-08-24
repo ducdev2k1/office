@@ -7,6 +7,7 @@ import type {
   PaginationPluginState,
 } from '@/modules/editor/types/pagination.types';
 import { resolveContentNodeDom } from '@/modules/editor/utils/pagination-measure.utils';
+import { EMPTY_BREAKS, paginationPlugin } from '@/modules/editor/utils/pagination.utils';
 
 export const PAGINATION_PLUGIN_KEY = new PluginKey<PaginationPluginState>('tiptap-pagination');
 
@@ -133,6 +134,9 @@ export const Pagination = Extension.create<PaginationOptions>({
         ({ tr, dispatch }) => {
           if (dispatch) {
             tr.setMeta(PAGINATION_PLUGIN_KEY, { isPaged });
+            if (!isPaged) {
+              tr.setMeta('paginationBreaks', EMPTY_BREAKS);
+            }
           }
           return true;
         },
@@ -147,6 +151,9 @@ export const Pagination = Extension.create<PaginationOptions>({
               ...data,
               ...(metrics ? { metrics } : {}),
             });
+            if (data.breaks) {
+              tr.setMeta('paginationBreaks', data.breaks);
+            }
           }
           return true;
         },
@@ -180,6 +187,7 @@ export const Pagination = Extension.create<PaginationOptions>({
           },
         },
       }),
+      paginationPlugin,
     ];
   },
 });

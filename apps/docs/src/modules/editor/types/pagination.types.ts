@@ -1,4 +1,5 @@
 import type { PageSetup, HeaderFooterSlot } from '@/types/docs.types';
+import type { PageBreaks } from '@/modules/editor/utils/pagination.utils';
 
 export interface PaginationOptions {
   pageSetup: PageSetup;
@@ -35,4 +36,5 @@ export interface PaginationPluginState {
   setup: PageSetup;
   docTitle: string;
   isPaged: boolean;
+  breaks?: PageBreaks;
 }

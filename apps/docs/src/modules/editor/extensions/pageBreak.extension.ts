@@ -22,14 +22,31 @@ export const PageBreak = Node.create({
     return {
       setPageBreak:
         () =>
-        ({ chain }) =>
-          chain().insertContent({ type: 'pageBreak' }).run(),
+        ({ chain, state }) => {
+          const { selection } = state;
+          const isAtEndOfBlock = selection.$to.parentOffset === selection.$to.parent.content.size;
+          const isLastBlock = selection.$to.after() === state.doc.content.size;
+
+          if (isAtEndOfBlock || isLastBlock) {
+            return chain()
+              .insertContent({ type: this.name })
+              .createParagraphNear()
+              .focus()
+              .run();
+          }
+
+          return chain()
+            .insertContent({ type: this.name })
+            .focus()
+            .run();
+        },
     };
   },
 
   addKeyboardShortcuts() {
     return {
       'Mod-Enter': () => this.editor.commands.setPageBreak(),
+      'Ctrl-Enter': () => this.editor.commands.setPageBreak(),
     };
   },
 });

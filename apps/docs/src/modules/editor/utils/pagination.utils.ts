@@ -23,7 +23,7 @@ export {
   type DirtyRange,
 } from '@/modules/editor/utils/pagination-dirty.utils';
 
-export const PAGE_GAP = 24;
+export const PAGE_GAP = 16;
 export const MAX_PAGES = 300;
 
 const key = new PluginKey<PageBreaks>('pagination');
@@ -313,7 +313,10 @@ export const analyzePagination = (
         metrics.paperH,
       ),
     },
-    measuredCount: derivePageCount(blocks, metrics.usable),
+    measuredCount: Math.min(
+      MAX_PAGES,
+      Math.max(result.contentOffsets.length, derivePageCount(blocks, metrics.usable)),
+    ),
   };
 };
 
@@ -343,7 +346,7 @@ export const computePageBreaks = (
   dirtyRanges: DirtyRange[] = EMPTY_DIRTY,
 ): PageBreaks => analyzePagination(view, setup, dirtyRanges).breaks;
 
-const paginationPlugin = new Plugin<PageBreaks>({
+export const paginationPlugin = new Plugin<PageBreaks>({
   key,
   state: {
     init: (): PageBreaks => EMPTY_BREAKS,

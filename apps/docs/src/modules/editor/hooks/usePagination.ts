@@ -5,6 +5,7 @@ import {
   analyzePagination,
   bumpBlockCache,
   collectTrDirtyRanges,
+  EMPTY_BREAKS,
   MAX_PAGES,
   PAGE_GAP,
   type DirtyRange,
@@ -119,6 +120,7 @@ export const usePagination = (
       docTitle,
       pageCount: measuredCount,
       isPaged: viewMode === 'paged',
+      breaks: viewMode === 'paged' ? result : EMPTY_BREAKS,
     });
 
     latestBreaksRef.current = result;

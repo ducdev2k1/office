@@ -36,7 +36,7 @@ export const pageBreakBlock = (offset: number): BlockMeasurement =>
 
 const P = PAGE_METRICS;
 const PAPER_H = P.paperH;
-const STEP = PAPER_H + 24;
+const STEP = PAPER_H + 16;
 
 export const PAGINATION_CASES: PaginationCase[] = [
   {
@@ -55,13 +55,13 @@ export const PAGINATION_CASES: PaginationCase[] = [
     name: 'overflows-by-one-px',
     blocks: [block(1, 500), block(3, 401)],
     metrics: P,
-    expected: { breaks: [3], spacers: [524], forced: [false], contentOffsets: [0, STEP] },
+    expected: { breaks: [3], spacers: [516], forced: [false], contentOffsets: [0, STEP] },
   },
   {
     name: 'margin-collapse-max',
     blocks: [block(1, 400, { marginBottom: 200 }), block(3, 400, { marginTop: 50 })],
     metrics: P,
-    expected: { breaks: [3], spacers: [424], forced: [false], contentOffsets: [0, STEP] },
+    expected: { breaks: [3], spacers: [416], forced: [false], contentOffsets: [0, STEP] },
   },
   {
     name: 'first-block-does-not-collapse',
@@ -73,7 +73,7 @@ export const PAGINATION_CASES: PaginationCase[] = [
     name: 'forced-page-break',
     blocks: [block(1, 300), pageBreakBlock(5), block(9, 300)],
     metrics: P,
-    expected: { breaks: [5], spacers: [724], forced: [true], contentOffsets: [0, STEP] },
+    expected: { breaks: [5], spacers: [716], forced: [true], contentOffsets: [0, STEP] },
   },
   {
     name: 'consecutive-page-breaks',
@@ -119,7 +119,7 @@ export const PAGINATION_CASES: PaginationCase[] = [
     metrics: P,
     expected: {
       breaks: [35],
-      spacers: [124],
+      spacers: [116],
       forced: [false],
       contentOffsets: [0, STEP],
     },
@@ -138,7 +138,7 @@ export const PAGINATION_CASES: PaginationCase[] = [
     metrics: P,
     expected: {
       breaks: [5],
-      spacers: [134],
+      spacers: [126],
       forced: [false],
       contentOffsets: [0, STEP],
     },
@@ -157,7 +157,7 @@ export const PAGINATION_CASES: PaginationCase[] = [
     metrics: P,
     expected: {
       breaks: [100, 200],
-      spacers: [174, 174],
+      spacers: [166, 166],
       forced: [false, false],
       contentOffsets: [0, STEP, 2 * STEP],
     },

@@ -128,7 +128,7 @@ const PageStackImpl = ({ pageCount, setup, docTitle, onEditBand }: PageStackProp
   return (
     <div className="page-stack pointer-events-none absolute inset-0 z-0" aria-hidden="true">
       {/* Background paper pages & watermark */}
-      <div className="page-bg-stack absolute inset-0 z-0 grid gap-6 pointer-events-none">
+      <div className="page-bg-stack absolute inset-0 z-0 grid gap-4 pointer-events-none">
         {pages.map((p) => (
           <div key={p.key} className="page relative">
             {setup.watermark?.enabled && setup.watermark.text && (
@@ -152,7 +152,7 @@ const PageStackImpl = ({ pageCount, setup, docTitle, onEditBand }: PageStackProp
       </div>
 
       {/* Header and Footer interactive overlay */}
-      <div className="page-hf-stack absolute inset-0 z-10 grid gap-6 pointer-events-none">
+      <div className="page-hf-stack absolute inset-0 z-10 grid gap-4 pointer-events-none">
         {pages.map((p) => {
           const isHeaderEmpty = !p.header.left && !p.header.center && !p.header.right;
           const isFooterEmpty = !p.footer.left && !p.footer.center && !p.footer.right;
