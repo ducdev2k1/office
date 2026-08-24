@@ -9,3 +9,4 @@ coverage
 .mcp.json
 *.tsbuildinfo
 .data
+/corpus/
