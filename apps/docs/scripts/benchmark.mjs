@@ -114,11 +114,12 @@ const runOnce = async (browser, baseUrl, pages) => {
 
   const didSettle = await page
     .waitForFunction(
-      () => {
+      (quietMs) => {
         const b = window.__bench;
-        return performance.now() - Math.max(b.lastLongTaskAt, b.readyAt) > SETTLE_QUIET_MS;
+        return performance.now() - Math.max(b.lastLongTaskAt, b.readyAt) > quietMs;
       },
       { timeout: 30_000, polling: 250 },
+      SETTLE_QUIET_MS,
     )
     .then(() => true)
     .catch(() => false);

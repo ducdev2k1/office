@@ -36,7 +36,7 @@ interface EditorDialogsHostProps {
   onMoveToFolder: (docId: string, folderId: string | null) => void;
   onInsertMath?: (tex: string, isBlock: boolean) => void;
   onInsertChart?: (attrs: any) => void;
-  pageCount?: number;
+  pageCount?: number | null;
   selectedSuggestion?: TrackSuggestion | null;
   onAcceptSuggestion?: (id: string) => void;
   onRejectSuggestion?: (id: string) => void;

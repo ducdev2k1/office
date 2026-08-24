@@ -8,7 +8,12 @@ import { PageStack } from '@/modules/editor/components/PageStack';
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
-import { DEFAULT_PAGE_SETUP, type DocRecord, type HeaderFooterSlot, type PageSetup } from '@/types/docs.types';
+import {
+  DEFAULT_PAGE_SETUP,
+  type DocRecord,
+  type HeaderFooterSlot,
+  type PageSetup,
+} from '@/types/docs.types';
 
 interface EditorCanvasProps {
   editor: Editor | null;
@@ -46,15 +51,16 @@ export const EditorCanvas = ({
     const wrap = paperWrapRef.current;
     if (!wrap || viewMode !== 'paged') return;
 
+    const safePageCount = Math.max(1, pageCount ?? 1);
     const currentScrollTop = wrap.scrollTop;
     setScrollTop(currentScrollTop);
 
     const clientHeight = wrap.clientHeight;
     const scrollHeight = wrap.scrollHeight;
 
-    const pageHeightWithGap = (scrollHeight - 104) / Math.max(1, pageCount);
+    const pageHeightWithGap = (scrollHeight - 104) / safePageCount;
     const currentPage = Math.min(
-      pageCount,
+      safePageCount,
       Math.max(1, Math.floor((currentScrollTop + clientHeight / 2) / pageHeightWithGap) + 1),
     );
 
@@ -94,7 +100,9 @@ export const EditorCanvas = ({
     ) as HTMLElement | null;
 
     if (td && headerOrFooter) {
-      const isHeader = headerOrFooter.classList.contains('page-header') || headerOrFooter.classList.contains('tiptap-page-header');
+      const isHeader =
+        headerOrFooter.classList.contains('page-header') ||
+        headerOrFooter.classList.contains('tiptap-page-header');
       const band: 'header' | 'footer' = isHeader ? 'header' : 'footer';
       const cellIndex = (td as HTMLTableCellElement).cellIndex;
       const slots: Array<keyof HeaderFooterSlot> = ['left', 'center', 'right'];
@@ -140,9 +148,9 @@ export const EditorCanvas = ({
 
       <PageScrollIndicator
         currentPage={scrollIndicator.currentPage}
-        totalPages={pageCount}
+        totalPages={pageCount ?? 0}
         topPx={scrollIndicator.topPx}
-        visible={scrollIndicator.visible}
+        visible={scrollIndicator.visible && pageCount != null}
       />
 
       <div
@@ -164,7 +172,7 @@ export const EditorCanvas = ({
         >
           {viewMode === 'paged' && (
             <PageStack
-              pageCount={pageCount}
+              pageCount={pageCount ?? 1}
               setup={activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP()}
               docTitle={activeDoc?.title ?? ''}
             />

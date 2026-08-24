@@ -13,6 +13,8 @@ export * from '@/modules/editor/extensions/headerFooterTokens.extension';
 export * from '@/modules/editor/hooks/useDocsEditor';
 export * from '@/modules/editor/hooks/useCollabEditor';
 export * from '@/modules/editor/hooks/usePagination';
+export * from '@/modules/editor/hooks/useDocStats';
+export * from '@/modules/editor/hooks/useDocumentOutline';
 export * from '@/modules/editor/hooks/useEditorActions';
 export * from '@/modules/editor/print/use-print-document';
 export * from '@/modules/editor/print/print-document.utils';
@@ -31,4 +33,3 @@ export * from '@/modules/editor/components/WordCountFloatingBadge';
 export * from '@/modules/editor/components/ChartEditorDialog';
 export * from '@/modules/editor/components/VnAdminStandardDialog';
 export * from '@/modules/editor/components/SlashCommandSuggest';
-

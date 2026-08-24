@@ -1,11 +1,16 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { Editor } from '@tiptap/core';
+import type { Transaction } from '@tiptap/pm/state';
 import {
   analyzePagination,
+  bumpBlockCache,
+  collectTrDirtyRanges,
   MAX_PAGES,
   PAGE_GAP,
+  type DirtyRange,
   type PageBreaks,
 } from '@/modules/editor/utils/pagination.utils';
+import { MAX_DIRTY_RANGES } from '@/modules/editor/utils/pagination-dirty.utils';
 import {
   DEFAULT_PAGE_SETUP,
   getPaperSizePx,
@@ -18,10 +23,27 @@ import { computePaginationMetrics } from '@/modules/editor/extensions/pagination
 
 /** Debounce repagination khi gõ liên tục — chỉ chạy sau khi ngừng thay đổi doc. */
 const REPAGINATION_DEBOUNCE_MS = 300;
+const IDLE_TIMEOUT_MS = 500;
+
+const scheduleIdle = (callback: () => void): number => {
+  if (typeof window.requestIdleCallback === 'function') {
+    return window.requestIdleCallback(callback, { timeout: IDLE_TIMEOUT_MS });
+  }
+  return window.setTimeout(callback, 50) as unknown as number;
+};
+
+const cancelIdle = (handle: number): void => {
+  if (typeof window.cancelIdleCallback === 'function') {
+    window.cancelIdleCallback(handle);
+  } else {
+    window.clearTimeout(handle);
+  }
+};
 
 export interface PaginationState {
   viewMode: ViewMode;
-  pageCount: number;
+  /** null = đang chờ phân trang nền (chưa đo xong lần đầu). */
+  pageCount: number | null;
   isOverLimit: boolean;
   zoom: number;
   viewportStyle: CSSProperties;
@@ -35,17 +57,37 @@ export const usePagination = (
   activeDoc: DocRecord | undefined,
 ): PaginationState => {
   const [viewMode, setViewMode] = useState<ViewMode>('paged');
-  const [pageCount, setPageCount] = useState(1);
+  const [pageCount, setPageCount] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
   const rafRef = useRef<number | null>(null);
   const debounceRef = useRef<number | null>(null);
+  const idleRef = useRef<number | null>(null);
   const latestBreaksRef = useRef<PageBreaks | null>(null);
   const activeDocRef = useRef(activeDoc);
   activeDocRef.current = activeDoc;
+  const pendingDirtyRef = useRef<DirtyRange[]>([]);
+  const lastSetupKeyRef = useRef<string | null>(null);
+  const prevDocIdRef = useRef<string | undefined>(undefined);
+
+  const clearScheduled = () => {
+    if (rafRef.current !== null) {
+      window.cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    if (debounceRef.current !== null) {
+      window.clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+    if (idleRef.current !== null) {
+      cancelIdle(idleRef.current);
+      idleRef.current = null;
+    }
+  };
 
   const runPagination = (overrideSetup?: PageSetup): PageBreaks | null => {
     rafRef.current = null;
     debounceRef.current = null;
+    idleRef.current = null;
     if (!editor || editor.isDestroyed || !editor.view) return null;
     if (editor.view.composing) {
       schedulePagination();
@@ -56,8 +98,20 @@ export const usePagination = (
     const docTitle = activeDocRef.current?.title ?? '';
     const metrics = computePaginationMetrics(setup, PAGE_GAP);
 
-    // Single pass: đo block 1 lần, dùng chung cho cả page breaks lẫn pageCount.
-    const { breaks: result, measuredCount } = analyzePagination(editor.view, setup);
+    // Đổi khổ giấy/margins làm rewrap toàn bộ nội dung — phải đo lại từ đầu.
+    const setupKey = JSON.stringify(setup);
+    if (lastSetupKeyRef.current !== null && lastSetupKeyRef.current !== setupKey) {
+      bumpBlockCache();
+    }
+    lastSetupKeyRef.current = setupKey;
+
+    // Single pass: block đã cache và không nằm trong vùng dirty được tái dùng.
+    const { breaks: result, measuredCount } = analyzePagination(
+      editor.view,
+      setup,
+      pendingDirtyRef.current,
+    );
+    pendingDirtyRef.current = [];
 
     editor.commands.setPaginationData({
       setup,
@@ -70,17 +124,6 @@ export const usePagination = (
     latestBreaksRef.current = result;
     setPageCount(measuredCount);
     return result;
-  };
-
-  const clearScheduled = () => {
-    if (rafRef.current !== null) {
-      window.cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    }
-    if (debounceRef.current !== null) {
-      window.clearTimeout(debounceRef.current);
-      debounceRef.current = null;
-    }
   };
 
   const schedulePagination = (immediate = false, overrideSetup?: PageSetup): PageBreaks | null => {
@@ -96,6 +139,15 @@ export const usePagination = (
     return latestBreaksRef.current;
   };
 
+  const scheduleIdlePagination = () => {
+    clearScheduled();
+    idleRef.current = scheduleIdle(() => {
+      rafRef.current = window.requestAnimationFrame(() => {
+        runPagination();
+      });
+    });
+  };
+
   useEffect(
     () => () => {
       clearScheduled();
@@ -105,8 +157,20 @@ export const usePagination = (
 
   useEffect(() => {
     if (!editor) return;
-    const onTransaction = ({ transaction }: { transaction: { docChanged: boolean } }) => {
+    const onTransaction = ({ transaction }: { transaction: Transaction }) => {
       if (!transaction.docChanged) return;
+      const mapped = pendingDirtyRef.current.map((range) => ({
+        from: transaction.mapping.map(range.from, -1),
+        to: transaction.mapping.map(range.to, 1),
+      }));
+      const merged = [...mapped, ...collectTrDirtyRanges(transaction)];
+      // Tràn ngân sách range: giữ an toàn bằng cách đo lại toàn bộ thay vì cắt cụt.
+      if (merged.length > MAX_DIRTY_RANGES) {
+        bumpBlockCache();
+        pendingDirtyRef.current = [];
+      } else {
+        pendingDirtyRef.current = merged;
+      }
       if (viewMode === 'paged') schedulePagination();
     };
     editor.on('transaction', onTransaction);
@@ -117,16 +181,42 @@ export const usePagination = (
 
   useLayoutEffect(() => {
     if (!editor) return;
+    if (prevDocIdRef.current !== undefined && prevDocIdRef.current !== activeDoc?.id) {
+      setPageCount(null);
+      latestBreaksRef.current = null;
+      pendingDirtyRef.current = [];
+    }
+    prevDocIdRef.current = activeDoc?.id;
     if (viewMode === 'paged') {
-      schedulePagination(true);
+      bumpBlockCache();
+      scheduleIdlePagination();
     } else {
+      bumpBlockCache();
       editor.commands.setPagedMode(false);
     }
-  }, [activeDoc?.id, activeDoc?.pageSetup, activeDoc?.title, viewMode, editor]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDoc?.id, activeDoc?.pageSetup, viewMode, editor]);
+
+  // Title đổi không ảnh hưởng chiều cao block — chỉ cần cập nhật token header/footer.
+  useEffect(() => {
+    if (!editor || viewMode !== 'paged') return;
+    schedulePagination();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDoc?.title]);
 
   useEffect(() => {
     if (viewMode !== 'paged') return;
-    document.fonts?.ready.then(() => schedulePagination(true)).catch(() => undefined);
+    let cancelled = false;
+    document.fonts?.ready
+      .then(() => {
+        if (cancelled) return;
+        bumpBlockCache();
+        scheduleIdlePagination();
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
   }, [viewMode, editor]);
 
   // Mobile (<768px): tự scale trang A4 vừa chiều ngang màn hình.
@@ -177,7 +267,8 @@ export const usePagination = (
     const setup = activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP();
     if (viewMode !== 'paged') return { ...pageStyle };
     const { width, height } = getPaperSizePx(setup);
-    const stackHeight = pageCount * height + (pageCount - 1) * PAGE_GAP + 48;
+    const pages = pageCount ?? 1;
+    const stackHeight = pages * height + (pages - 1) * PAGE_GAP + 48;
     return {
       ...pageStyle,
       '--stack-h': `${stackHeight}px`,
@@ -195,7 +286,7 @@ export const usePagination = (
   return {
     viewMode,
     pageCount,
-    isOverLimit: pageCount >= MAX_PAGES,
+    isOverLimit: pageCount != null && pageCount >= MAX_PAGES,
     zoom,
     viewportStyle,
     setViewMode,

@@ -5,7 +5,8 @@ import type { ViewMode } from '@/modules/editor/types/editor.types';
 interface StatusbarProps {
   wordCount: number;
   charCount: number;
-  pageCount: number;
+  /** null = đang chờ phân trang nền. */
+  pageCount: number | null;
   viewMode: ViewMode;
   storageUsage: number;
   saveState?: 'loading' | 'saving' | 'saved';
@@ -37,7 +38,7 @@ export const Statusbar = ({
       </span>
       {viewMode === 'paged' && (
         <span className="inline-flex items-center gap-1">
-          {t('statusbar.pages', { count: pageCount })}
+          {pageCount == null ? '—' : t('statusbar.pages', { count: pageCount })}
         </span>
       )}
       <span

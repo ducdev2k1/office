@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from '@office/i18n';
 import { useDocs } from '@/hooks/useDocs';
@@ -12,6 +12,8 @@ import {
   Statusbar,
   WordCountFloatingBadge,
   useCollabEditor,
+  useDocStats,
+  useDocumentOutline,
   useEditorActions,
   useEditorModals,
   usePagination,
@@ -34,7 +36,6 @@ import { ImageBubbleToolbar } from '@/modules/toolbar/components/ImageBubbleTool
 import { LinkPopoverHost } from '@/modules/toolbar/components/LinkPopoverHost';
 import { Toolbar } from '@/modules/toolbar';
 import type { PageSetup } from '@/types/docs.types';
-import { getOutline } from '@/utils/outline.utils';
 
 export const EditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -149,14 +150,9 @@ export const EditorPage = () => {
     }
   }, [id, setActiveId, markOpened]);
 
-  useEffect(() => {
-    schedulePagination(true);
-  }, [activeDoc?.pageSetup, schedulePagination]);
-
-  const outline = useMemo(() => getOutline(editor?.getHTML() ?? ''), [editor]);
+  const outline = useDocumentOutline(editor);
   const canDelete = docs.filter((doc) => !doc.deletedAt).length > 1;
-  const wordCount = editor?.storage.characterCount?.words?.() ?? 0;
-  const charCount = editor?.storage.characterCount?.characters?.() ?? 0;
+  const { wordCount, charCount } = useDocStats(editor);
   const { printDocument } = usePrintDocument(editor, activeDoc, paginationState);
 
   useGlobalShortcuts(modals.toggleFind, modals.closeAllModals);

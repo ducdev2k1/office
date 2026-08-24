@@ -3,17 +3,12 @@ import type { LineMeasurement } from './pagination.utils';
 
 const MAX_MEASURED_LINES = 500;
 
-export const resolveContentNodeDom = (
-  view: EditorView,
-  offset: number,
-): HTMLElement | null => {
+export const resolveContentNodeDom = (view: EditorView, offset: number): HTMLElement | null => {
   try {
     const pos = Math.min(offset + 1, view.state.doc.content.size);
     const domInfo = view.domAtPos(pos);
     let candidate = (
-      domInfo.node.nodeType === Node.ELEMENT_NODE
-        ? domInfo.node
-        : domInfo.node.parentElement
+      domInfo.node.nodeType === Node.ELEMENT_NODE ? domInfo.node : domInfo.node.parentElement
     ) as HTMLElement | null;
 
     while (candidate && candidate.parentElement && candidate.parentElement !== view.dom) {
@@ -44,10 +39,7 @@ export const resolveContentNodeDom = (
   return null;
 };
 
-export const measureLines = (
-  view: EditorView,
-  nodeDom: HTMLElement,
-): LineMeasurement[] => {
+export const measureLines = (view: EditorView, nodeDom: HTMLElement): LineMeasurement[] => {
   const rects: { top: number; bottom: number; left: number; height: number }[] = [];
   const walker = document.createTreeWalker(nodeDom, NodeFilter.SHOW_TEXT);
   let textNode = walker.nextNode();
@@ -98,4 +90,53 @@ export const measureLines = (
   }
 
   return lines;
+};
+
+export interface CachedBlockMetrics {
+  height: number;
+  marginTop: number;
+  marginBottom: number;
+  lines?: LineMeasurement[];
+}
+
+interface CacheEntry extends CachedBlockMetrics {
+  epoch: number;
+}
+
+const blockCache = new WeakMap<HTMLElement, CacheEntry>();
+let measurementEpoch = 0;
+
+/** Vô hiệu hoá toàn bộ cache đo block — gọi khi font/page setup/viewMode đổi. */
+export const bumpBlockCache = (): void => {
+  measurementEpoch += 1;
+};
+
+export const getCachedBlockMetrics = (el: HTMLElement | null): CachedBlockMetrics | null => {
+  if (!el || !el.isConnected) return null;
+  const entry = blockCache.get(el);
+  if (!entry || entry.epoch !== measurementEpoch) return null;
+  return {
+    height: entry.height,
+    marginTop: entry.marginTop,
+    marginBottom: entry.marginBottom,
+    lines: entry.lines,
+  };
+};
+
+export const measureBlockDom = (el: HTMLElement): CachedBlockMetrics => {
+  const style = getComputedStyle(el);
+  const metrics = {
+    height: el.offsetHeight,
+    marginTop: parseFloat(style.marginTop) || 0,
+    marginBottom: parseFloat(style.marginBottom) || 0,
+  };
+  blockCache.set(el, { ...metrics, lines: undefined, epoch: measurementEpoch });
+  return metrics;
+};
+
+export const setCachedBlockLines = (el: HTMLElement, lines: LineMeasurement[]): void => {
+  const entry = blockCache.get(el);
+  if (entry && entry.epoch === measurementEpoch) {
+    entry.lines = lines;
+  }
 };
