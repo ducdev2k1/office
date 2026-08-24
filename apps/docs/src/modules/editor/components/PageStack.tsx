@@ -1,4 +1,4 @@
-import { useMemo, type MouseEvent } from 'react';
+import { memo, useMemo, type MouseEvent } from 'react';
 import { useTranslation } from '@office/i18n';
 import { Icon, Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
 import type { HFAlign, HeaderFooterSlot, PageSetup } from '@/types/docs.types';
@@ -46,7 +46,7 @@ const getEffectiveSlot = (
   return setup.footer;
 };
 
-export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackProps) => {
+const PageStackImpl = ({ pageCount, setup, docTitle, onEditBand }: PageStackProps) => {
   const { t } = useTranslation('docs');
   const tokenDate = useMemo(() => new Date(), []);
   const tokenCtx = useMemo(
@@ -249,3 +249,5 @@ export const PageStack = ({ pageCount, setup, docTitle, onEditBand }: PageStackP
     </div>
   );
 };
+
+export const PageStack = memo(PageStackImpl);

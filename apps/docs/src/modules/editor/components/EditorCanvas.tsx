@@ -1,9 +1,8 @@
-import { useState, useRef, type MouseEvent } from 'react';
+import { useCallback, useEffect, useRef, type MouseEvent } from 'react';
 import type { Editor } from '@tiptap/core';
 import { EditorContent } from '@tiptap/react';
 import { useTranslation } from '@office/i18n';
 import { Icon, Tooltip, TooltipContent, TooltipTrigger, cn } from '@office/ui-kit';
-import { PageScrollIndicator } from '@/modules/editor/components/PageScrollIndicator';
 import { PageStack } from '@/modules/editor/components/PageStack';
 import { DocVerticalRuler } from '@/components/ruler';
 import type { PaginationState } from '@/modules/editor/hooks/usePagination';
@@ -25,6 +24,10 @@ interface EditorCanvasProps {
   onPageSetupChange?: (setup: PageSetup) => void;
 }
 
+// Hằng số module-level để memo(PageStack) so sánh tham chiếu ổn định khi doc
+// chưa có pageSetup riêng (object mới mỗi render sẽ vô hiệu hoá memo).
+const FALLBACK_PAGE_SETUP = DEFAULT_PAGE_SETUP();
+
 export const EditorCanvas = ({
   editor,
   paginationState,
@@ -37,54 +40,69 @@ export const EditorCanvas = ({
   const { t } = useTranslation('docs');
   const paperWrapRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
-  const [scrollTop, setScrollTop] = useState(0);
-  const [scrollIndicator, setScrollIndicator] = useState({
-    currentPage: 1,
-    topPx: 0,
-    visible: false,
-  });
-  const scrollTimerRef = useRef<number | null>(null);
+  const indicatorRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const hideTimerRef = useRef<number | null>(null);
 
   const { viewMode, pageCount, isOverLimit, viewportStyle, schedulePagination } = paginationState;
 
-  const handleScroll = () => {
-    const wrap = paperWrapRef.current;
-    if (!wrap || viewMode !== 'paged') return;
+  /**
+   * Cuộn được xử lý hoàn toàn bằng DOM trực tiếp (indicator + ruler) — không setState
+   * trong frame để tránh re-render PageStack/ruler hàng trăm band mỗi khung hình.
+   */
+  const handleScroll = useCallback(() => {
+    if (rafRef.current !== null) return;
+    rafRef.current = window.requestAnimationFrame(() => {
+      rafRef.current = null;
+      const wrap = paperWrapRef.current;
+      const indicator = indicatorRef.current;
+      if (!wrap || viewMode !== 'paged') return;
 
-    const safePageCount = Math.max(1, pageCount ?? 1);
-    const currentScrollTop = wrap.scrollTop;
-    setScrollTop(currentScrollTop);
+      const safePageCount = Math.max(1, pageCount ?? 1);
+      const currentScrollTop = wrap.scrollTop;
+      const clientHeight = wrap.clientHeight;
+      const scrollHeight = wrap.scrollHeight;
 
-    const clientHeight = wrap.clientHeight;
-    const scrollHeight = wrap.scrollHeight;
+      window.dispatchEvent(
+        new CustomEvent('doc-vruler-scroll', { detail: { scrollTop: currentScrollTop } }),
+      );
 
-    const pageHeightWithGap = (scrollHeight - 104) / safePageCount;
-    const currentPage = Math.min(
-      safePageCount,
-      Math.max(1, Math.floor((currentScrollTop + clientHeight / 2) / pageHeightWithGap) + 1),
-    );
+      if (!indicator) return;
 
-    const indicatorTop = Math.max(
-      30,
-      Math.min(
-        clientHeight - 30,
-        (currentScrollTop / (scrollHeight - clientHeight)) * clientHeight,
-      ),
-    );
+      const pageHeightWithGap = (scrollHeight - 104) / safePageCount;
+      const currentPage = Math.min(
+        safePageCount,
+        Math.max(1, Math.floor((currentScrollTop + clientHeight / 2) / pageHeightWithGap) + 1),
+      );
+      const indicatorTop = Math.max(
+        30,
+        Math.min(
+          clientHeight - 30,
+          (currentScrollTop / Math.max(1, scrollHeight - clientHeight)) * clientHeight,
+        ),
+      );
 
-    setScrollIndicator({
-      currentPage,
-      topPx: indicatorTop,
-      visible: true,
+      indicator.style.top = `${indicatorTop}px`;
+      indicator.textContent = `${currentPage} / ${safePageCount}`;
+      indicator.style.opacity = '1';
+
+      if (hideTimerRef.current !== null) {
+        window.clearTimeout(hideTimerRef.current);
+      }
+      hideTimerRef.current = window.setTimeout(() => {
+        hideTimerRef.current = null;
+        if (indicatorRef.current) indicatorRef.current.style.opacity = '0';
+      }, 1200);
     });
+  }, [viewMode, pageCount]);
 
-    if (scrollTimerRef.current !== null) {
-      window.clearTimeout(scrollTimerRef.current);
-    }
-    scrollTimerRef.current = window.setTimeout(() => {
-      setScrollIndicator((prev) => ({ ...prev, visible: false }));
-    }, 1200);
-  };
+  useEffect(
+    () => () => {
+      if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
+      if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
+    },
+    [],
+  );
 
   const handleContextMenuEvent = (event: MouseEvent) => {
     if (event.shiftKey) return;
@@ -142,15 +160,14 @@ export const EditorCanvas = ({
           activeDoc={activeDoc}
           onPageSetupChange={onPageSetupChange}
           onPaginationUpdate={schedulePagination}
-          scrollTop={scrollTop}
         />
       )}
 
-      <PageScrollIndicator
-        currentPage={scrollIndicator.currentPage}
-        totalPages={pageCount ?? 0}
-        topPx={scrollIndicator.topPx}
-        visible={scrollIndicator.visible && pageCount != null}
+      <div
+        ref={indicatorRef}
+        className="page-scroll-indicator absolute right-4.5 z-30 px-2.5 py-1 rounded-full bg-black/85 text-white text-xs font-medium pointer-events-none -translate-y-1/2 shadow"
+        style={{ top: '30px', opacity: '0', transition: 'opacity 150ms ease-out' }}
+        aria-hidden="true"
       />
 
       <div
@@ -173,7 +190,7 @@ export const EditorCanvas = ({
           {viewMode === 'paged' && (
             <PageStack
               pageCount={pageCount ?? 1}
-              setup={activeDoc?.pageSetup ?? DEFAULT_PAGE_SETUP()}
+              setup={activeDoc?.pageSetup ?? FALLBACK_PAGE_SETUP}
               docTitle={activeDoc?.title ?? ''}
             />
           )}

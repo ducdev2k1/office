@@ -64,6 +64,11 @@ declare global {
   }
 }
 
-if (import.meta.env.DEV) {
+// Dev luôn có; prod chỉ bật khi URL chứa ?perfSeed=1 phục vụ benchmark production.
+const allowSeed =
+  import.meta.env.DEV ||
+  (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('perfSeed'));
+
+if (allowSeed) {
   window.__seedPerfDoc = seedPerfDoc;
 }

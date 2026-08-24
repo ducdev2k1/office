@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from '@office/i18n';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@office/ui-kit';
 import { generateVerticalTicks, mmToPx, type RulerUnit } from './ruler.utils';
@@ -14,22 +14,33 @@ interface VerticalRulerProps {
   };
   unit: RulerUnit;
   rulerHook: ReturnType<typeof useRuler>;
-  scrollTop?: number;
 }
 
-export const VerticalRuler = ({
-  paperHeightMm,
-  margins,
-  unit,
-  rulerHook,
-  scrollTop = 0,
-}: VerticalRulerProps) => {
+export const VerticalRuler = ({ paperHeightMm, margins, unit, rulerHook }: VerticalRulerProps) => {
   const { t } = useTranslation('docs');
   const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const paperHeightPx = mmToPx(paperHeightMm);
   const topMarginPx = mmToPx(margins.top);
   const bottomMarginPx = mmToPx(margins.bottom);
   const usableHeightPx = paperHeightPx - topMarginPx - bottomMarginPx;
+
+  // Ruler theo cuộn canvas qua event từ EditorCanvas — ghi transform trực tiếp,
+  // không đi qua React state để không re-render mỗi khung hình khi cuộn.
+  useEffect(() => {
+    const onScroll = (event: Event) => {
+      const detail = (event as CustomEvent<{ scrollTop: number }>).detail;
+      if (!detail || !trackRef.current) return;
+      trackRef.current.style.transform = `translateY(${24 - detail.scrollTop}px)`;
+    };
+    window.addEventListener('doc-vruler-scroll', onScroll);
+    // Đồng bộ ngay lúc mount (ruler có thể gắn vào khi canvas đã cuộn sẵn).
+    const wrap = document.querySelector<HTMLElement>('.paper-wrap');
+    if (wrap && trackRef.current) {
+      trackRef.current.style.transform = `translateY(${24 - wrap.scrollTop}px)`;
+    }
+    return () => window.removeEventListener('doc-vruler-scroll', onScroll);
+  }, []);
 
   const ticks = useMemo(() => {
     return generateVerticalTicks(paperHeightMm, unit);
@@ -44,10 +55,11 @@ export const VerticalRuler = ({
     >
       {/* Scrollable inner track aligned with paper top (24px initial top padding) */}
       <div
+        ref={trackRef}
         className="absolute left-0 right-0 transition-transform duration-75 ease-out"
         style={{
           top: 0,
-          transform: `translateY(${24 - scrollTop}px)`,
+          transform: 'translateY(24px)',
           height: `${paperHeightPx}px`,
         }}
       >

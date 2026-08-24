@@ -21,8 +21,10 @@ const args = Object.fromEntries(
 const BASE_URL = args.url ?? 'http://localhost:20011';
 const PAGE_CONFIGS = (args.pages ?? '50,150,300').split(',').map(Number);
 const RUNS = Number(args.runs ?? '3');
+const PREVIEW = Boolean(args.preview);
 const SETTLE_QUIET_MS = 1200;
 const OPEN_TIMEOUT_MS = 120_000;
+const MODE_LABEL = PREVIEW ? 'production preview' : 'dev';
 
 const resolveChromePath = () => {
   const found = CHROME_CANDIDATES.find((p) => p && existsSync(p));
@@ -45,21 +47,24 @@ const waitForServer = async (url, timeoutMs) => {
 
 const ensureServer = async () => {
   if (await waitForServer(BASE_URL, 3_000)) {
-    console.log(`✔ Dev server đang chạy tại ${BASE_URL}`);
+    console.log(`✔ Server đang chạy tại ${BASE_URL}`);
     return null;
   }
-  console.log('… Đang khởi động vite dev server …');
   const port = new URL(BASE_URL).port || '20011';
-  const child = spawn('pnpm', ['exec', 'vite', '--port', port, '--strictPort'], {
+  const cmdArgs = PREVIEW
+    ? ['exec', 'vite', 'preview', '--port', port, '--strictPort']
+    : ['exec', 'vite', '--port', port, '--strictPort'];
+  console.log(`… Đang khởi động ${MODE_LABEL} server …`);
+  const child = spawn('pnpm', cmdArgs, {
     cwd: new URL('../', import.meta.url).pathname,
     stdio: ['ignore', 'ignore', 'pipe'],
   });
   child.stderr.on('data', (chunk) => process.stderr.write(`[vite] ${chunk}`));
   if (!(await waitForServer(BASE_URL, 60_000))) {
     child.kill('SIGTERM');
-    throw new Error('Dev server không khởi động được trong 60s');
+    throw new Error('Server không khởi động được trong 60s');
   }
-  console.log(`✔ Dev server đã sẵn sàng tại ${BASE_URL}`);
+  console.log(`✔ Server đã sẵn sàng tại ${BASE_URL}`);
   return child;
 };
 
@@ -94,7 +99,8 @@ const runOnce = async (browser, baseUrl, pages) => {
   await page.setViewport({ width: 1280, height: 800 });
   await page.evaluateOnNewDocument(OBSERVER_BOOTSTRAP);
 
-  await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  const homeUrl = PREVIEW ? `${baseUrl}/?perfSeed=1` : `${baseUrl}/`;
+  await page.goto(homeUrl, { waitUntil: 'domcontentloaded', timeout: 60_000 });
   await page.waitForFunction(() => typeof window.__seedPerfDoc === 'function', { timeout: 60_000 });
   const docId = await page.evaluate(async (p) => window.__seedPerfDoc(p), pages);
 
@@ -210,7 +216,9 @@ const runOnce = async (browser, baseUrl, pages) => {
 
 const cleanupPerfDocs = async (browser, baseUrl) => {
   const page = await browser.newPage();
-  await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded' });
+  // Dùng perfSeed để không kích hoạt PWA service worker giữa session đo.
+  const homeUrl = PREVIEW ? `${baseUrl}/?perfSeed=1` : `${baseUrl}/`;
+  await page.goto(homeUrl, { waitUntil: 'domcontentloaded' });
   await page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
       const req = indexedDB.open('one-office');
@@ -251,6 +259,10 @@ const main = async () => {
   const chromePath = resolveChromePath();
   console.log(`✔ Chrome: ${chromePath}`);
 
+  if (PREVIEW && !existsSync(new URL('../dist/index.html', import.meta.url).pathname)) {
+    throw new Error('Chưa có build production — chạy "pnpm build" trước khi dùng --preview');
+  }
+
   const serverProc = await ensureServer();
   const browser = await puppeteer.launch({
     executablePath: chromePath,
@@ -281,7 +293,7 @@ const main = async () => {
       };
     }
 
-    console.log(`\n===== BASELINE DOCS BENCHMARK — dev mode — median/${RUNS} runs =====\n`);
+    console.log(`\n===== DOCS BENCHMARK — ${MODE_LABEL} — median/${RUNS} runs =====\n`);
     for (const [pages, m] of Object.entries(report)) {
       console.log(`--- ${pages} trang ---`);
       console.table({

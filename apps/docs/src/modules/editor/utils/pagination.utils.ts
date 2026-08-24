@@ -380,7 +380,10 @@ const paginationPlugin = new Plugin<PageBreaks>({
             },
             {
               side: -1,
-              key: `page-break-${pos}:${spacerHeight}`,
+              // Key theo ordinal + variant + chiều cao: giữa các lần repagination
+              // (positions được map, spacers giữ nguyên) key bất biến -> PM dời node
+              // thay vì xoá/tạo lại; khi nội dung đổi thì chỉ đúng widget đó recreate.
+              key: `pb-${i}:${value.forced[i] ? 'f' : 's'}:${Math.round(spacerHeight)}`,
             },
           );
         })

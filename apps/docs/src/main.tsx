@@ -10,8 +10,14 @@ import '@/assets/styles/styles.css';
 
 initTheme();
 
-if (import.meta.env.DEV) {
-  void import('@/dev/seed-print-fixture');
+// Dev luôn bật fixture; prod chỉ khi URL có ?perfSeed=1 (dùng cho benchmark production).
+const perfSeedRequested =
+  typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('perfSeed');
+
+if (import.meta.env.DEV || perfSeedRequested) {
+  if (import.meta.env.DEV) {
+    void import('@/dev/seed-print-fixture');
+  }
   void import('@/dev/perf-fixture');
 } else if ('serviceWorker' in navigator) {
   void import('@/pwa/setup-pwa').then((m) => m.setupPwa());

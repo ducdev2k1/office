@@ -6,7 +6,6 @@ export * from '@/modules/editor/components/PageHeaderFooterPanel';
 export * from '@/modules/editor/components/HelpModal';
 export * from '@/modules/editor/components/Ruler';
 export * from '@/modules/editor/components/Statusbar';
-export * from '@/modules/editor/components/PageScrollIndicator';
 export * from '@/modules/editor/components/PageStack';
 export * from '@/modules/editor/components/HeaderFooterInlineEditor';
 export * from '@/modules/editor/extensions/headerFooterTokens.extension';
