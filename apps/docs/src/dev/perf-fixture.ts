@@ -53,6 +53,8 @@ export const seedPerfDoc = async (pages: number): Promise<string> => {
     },
   };
   await documentStore.put(doc);
+  const { seedDocYjsState } = await import('@/dev/perf-y-seed.utils');
+  await seedDocYjsState(doc.id, doc.content);
   return doc.id;
 };
 
