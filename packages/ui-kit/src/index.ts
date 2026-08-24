@@ -28,3 +28,7 @@ export * from './components/ui/textarea';
 export * from './components/toolbar/ToolbarButton';
 export * from './components/toolbar/ColorPalettePopover';
 export * from './components/toolbar/FontSizePicker';
+export * from './components/toolbar/TableGridPicker';
+export * from './components/toolbar/ListStylePicker';
+
+
