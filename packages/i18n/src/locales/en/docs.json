@@ -338,6 +338,7 @@
     "cut": "Cut",
     "copy": "Copy",
     "paste": "Paste",
+    "comment": "Comment",
     "selectAll": "Select all",
     "paragraph": "Paragraph",
     "heading1": "Heading 1",

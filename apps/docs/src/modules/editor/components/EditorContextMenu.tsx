@@ -174,7 +174,7 @@ export const EditorContextMenu = ({
         ...(hasSelection && onAddComment
           ? [
               {
-                label: 'Bình luận',
+                label: t('contextMenu.comment'),
                 icon: 'message-square',
                 onClick: () => runAndClose(onAddComment),
               },
