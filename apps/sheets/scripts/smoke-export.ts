@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer-core';
 
 const CHROME = '/usr/bin/google-chrome';
-const URL = 'http://localhost:2012/';
+const URL = 'http://localhost:20012/';
 const FILE = '/home/ducnd/my_project/office/apps/sheets/public/sample-med.xlsx';
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -47,7 +47,7 @@ const main = async () => {
     return true;
   });
   if (!clicked) throw new Error('export button not found');
-  await sleep(3000);
+  await sleep(9000);
 
   const fs = await import('fs');
   const dir = '/tmp/opencode/downloads';

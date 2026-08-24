@@ -2,7 +2,8 @@
 
 ## Overview
 
-- **Priority**: P1 | **Status**: planned | **Effort**: 17h
+- **Priority**: P1 | **Status**: completed | **Effort**: 17h
+- Report: `docs/report-sheets-completion-p1.md`
 - Mục tiêu: sửa lỗi thật đầu tiên của trục file (formula mất cached value khi export), kiểm kê độ phủ hàm của engine-formula OSS, dựng **harness fidelity corpus tổng hợp** phủ Lớp A (.xlsx) và đưa **perf smoke** vào quy trình để không thoái hoá.
 
 ## Requirements

@@ -87,6 +87,8 @@ export const compareWorkbooks = (
 
   const aSheets = Object.values(original.sheets);
   const bSheets = Object.values(roundtrip.sheets);
+  const originalCells = collectCells(original);
+  const roundtripCells = collectCells(roundtrip);
   const aOrder = original.sheetOrder?.map((id) => original.sheets[id]?.name) ?? [];
   const bOrder = roundtrip.sheetOrder?.map((id) => roundtrip.sheets[id]?.name) ?? [];
 
@@ -96,9 +98,8 @@ export const compareWorkbooks = (
     if (!bSheet) return;
 
     const bName = bSheet.name ?? '';
-    const bCells = collectCells(roundtrip).get(bName) ?? new Map();
-    const aCells =
-      collectCells(original).get(aSheet.name ?? '') ?? new Map();
+    const bCells = roundtripCells.get(bName) ?? new Map<string, ICellData>();
+    const aCells = originalCells.get(aSheet.name ?? '') ?? new Map<string, ICellData>();
 
     for (const [key, aCell] of aCells) {
       const bCell = bCells.get(key);

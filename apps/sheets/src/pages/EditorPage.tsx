@@ -315,7 +315,8 @@ export const EditorPage = () => {
       const blob = await exportXlsxFile(snapshot, charts);
       const filename = `${activeSheet?.title || 'workbook'}.xlsx`;
       downloadBlob(blob, filename);
-    } catch {
+    } catch (error) {
+      console.error('[sheets] export failed:', error);
       window.alert(t('exportError'));
     } finally {
       setExporting(false);

@@ -39,7 +39,7 @@ Hiện thực hóa thuật ngữ **Đầy đủ tính năng (Sheets)** đã ch�
 
 | # | Phase | File | Effort | Status |
 |---|---|---|---|---|
-| 1 | Formula depth + harness corpus tổng hợp + perf smoke CI | `phase-01-formula-harness-perf.md` | 17h | planned |
+| 1 | Formula depth + harness corpus tổng hợp + perf smoke CI | `phase-01-formula-harness-perf.md` | 17h | completed |
 | 2 | UX parity (freeze/status bar/context menu/paste special/fill handle/shortcuts) | viết khi bắt đầu phase | ~14h | pending |
 | 3 | Data tools sâu (filter/sort nâng cao, validation UI, conditional formatting UI, named ranges) | viết khi bắt đầu phase | ~16h | pending |
 | 4 | Print chuẩn khổ giấy + hybrid zip-merge Lớp B (ADR-0001, sidecar zip gốc) | viết khi bắt đầu phase | ~14h | pending |

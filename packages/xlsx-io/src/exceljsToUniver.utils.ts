@@ -13,6 +13,9 @@ import {
   type IWorksheetData,
 } from '@univerjs/core';
 import type ExcelJS from 'exceljs';
+import { resolveExcelColor } from './exceljs-color.utils';
+import { enrichSheetCells } from './exceljs-enrichment.utils';
+import { colLetterToNumber } from './exceljs-range.utils';
 
 const BORDER_STYLE_MAP: Record<string, BorderStyleTypes> = {
   thin: BorderStyleTypes.THIN,
@@ -41,166 +44,7 @@ const V_ALIGN_MAP: Record<string, VerticalAlign> = {
   bottom: VerticalAlign.BOTTOM,
 };
 
-const DEFAULT_THEME_COLORS = [
-  '#FFFFFF', // 0: Background 1 (Light 1)
-  '#000000', // 1: Text 1 (Dark 1)
-  '#E7E6E6', // 2: Background 2 (Light 2)
-  '#44546A', // 3: Text 2 (Dark 2)
-  '#4472C4', // 4: Accent 1 (Blue)
-  '#ED7D31', // 5: Accent 2 (Orange)
-  '#A5A5A5', // 6: Accent 3 (Gray)
-  '#FFC000', // 7: Accent 4 (Gold/Yellow)
-  '#5B9BD5', // 8: Accent 5 (Light Blue)
-  '#70AD47', // 9: Accent 6 (Green)
-  '#0563C1', // 10: Hyperlink
-  '#954F72', // 11: Followed Hyperlink
-];
-
-const INDEXED_COLORS: Record<number, string> = {
-  0: '#000000',
-  1: '#FFFFFF',
-  2: '#FF0000',
-  3: '#00FF00',
-  4: '#0000FF',
-  5: '#FFFF00',
-  6: '#FF00FF',
-  7: '#00FFFF',
-  8: '#000000',
-  9: '#FFFFFF',
-  10: '#FF0000',
-  11: '#00FF00',
-  12: '#0000FF',
-  13: '#FFFF00',
-  14: '#FF00FF',
-  15: '#00FFFF',
-  16: '#800000',
-  17: '#008000',
-  18: '#000080',
-  19: '#808000',
-  20: '#800080',
-  21: '#008080',
-  22: '#C0C0C0',
-  23: '#808080',
-  24: '#9999FF',
-  25: '#993366',
-  26: '#FFFFCC',
-  27: '#CCFFFF',
-  28: '#660066',
-  29: '#FF8080',
-  30: '#0066CC',
-  31: '#CCCCFF',
-  32: '#000080',
-  33: '#FF00FF',
-  34: '#FFFF00',
-  35: '#00FFFF',
-  36: '#800080',
-  37: '#800000',
-  38: '#008080',
-  39: '#0000FF',
-  40: '#00CCFF',
-  41: '#CCFFFF',
-  42: '#CCFFCC',
-  43: '#FFFF99',
-  44: '#99CCFF',
-  45: '#FF99CC',
-  46: '#CC99FF',
-  47: '#FFCC99',
-  48: '#3366FF',
-  49: '#33CCCC',
-  50: '#99CC00',
-  51: '#FFCC00',
-  52: '#FF9900',
-  53: '#FF6600',
-  54: '#666699',
-  55: '#969696',
-  56: '#003366',
-  57: '#339966',
-  58: '#003300',
-  59: '#333300',
-  60: '#993300',
-  61: '#993366',
-  62: '#333399',
-  63: '#333333',
-  64: '#000000',
-  65: '#FFFFFF',
-};
-
-const DEFAULT_STATUS_STYLES: Record<string, { bg: string; cl: string; bl?: number }> = {
-  'chờ fix': { bg: '#ffd5d5', cl: '#c00000', bl: 1 },
-  done: { bg: '#ffeb9c', cl: '#9c6500', bl: 1 },
-  doing: { bg: '#e1d5e7', cl: '#674ea7', bl: 1 },
-  new: { bg: '#d5e8d4', cl: '#27500a', bl: 1 },
-  retest: { bg: '#fce5cd', cl: '#a64d79', bl: 1 },
-  'done testcase': { bg: '#deeaf1', cl: '#1f4e79', bl: 1 },
-  confirmed: { bg: '#fce4d6', cl: '#791f1f', bl: 1 },
-  fixing: { bg: '#fff2cc', cl: '#633806', bl: 1 },
-  resolved: { bg: '#e1f5ee', cl: '#085041', bl: 1 },
-  critical: { bg: '#ffd5d5', cl: '#c00000', bl: 1 },
-  high: { bg: '#fff2cc', cl: '#c55a11', bl: 1 },
-  medium: { bg: '#deeaf1', cl: '#1f4e79', bl: 1 },
-  low: { bg: '#e2efda', cl: '#27500a', bl: 1 },
-};
-
 const genId = () => `s_${Math.random().toString(36).slice(2, 10)}`;
-
-const applyTint = (rgbHex: string, tint?: number): string => {
-  if (tint === undefined || tint === 0) return rgbHex;
-  const hex = rgbHex.replace('#', '');
-  let r = parseInt(hex.substring(0, 2), 16);
-  let g = parseInt(hex.substring(2, 4), 16);
-  let b = parseInt(hex.substring(4, 6), 16);
-
-  if (tint > 0) {
-    r = Math.round(r + (255 - r) * tint);
-    g = Math.round(g + (255 - g) * tint);
-    b = Math.round(b + (255 - b) * tint);
-  } else {
-    r = Math.round(r * (1 + tint));
-    g = Math.round(g * (1 + tint));
-    b = Math.round(b * (1 + tint));
-  }
-
-  const toHex = (n: number) => Math.min(255, Math.max(0, n)).toString(16).padStart(2, '0');
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-};
-
-const toRgb = (argb: string): string => {
-  if (!argb) return '#000000';
-  const clean = argb.replace('#', '');
-  if (clean.length === 8) {
-    return `#${clean.slice(2)}`;
-  }
-  if (clean.length === 6) {
-    return `#${clean}`;
-  }
-  return `#${clean}`;
-};
-
-interface ExtendedExcelColor {
-  argb?: string;
-  theme?: number;
-  tint?: number;
-  indexed?: number;
-}
-
-const resolveExcelColor = (
-  colorObj?: Partial<ExcelJS.Color> | ExtendedExcelColor,
-): string | undefined => {
-  if (!colorObj) return undefined;
-  const c = colorObj as ExtendedExcelColor;
-  if (c.argb) {
-    return toRgb(c.argb);
-  }
-  if (c.theme !== undefined) {
-    const baseColor = DEFAULT_THEME_COLORS[c.theme] || '#000000';
-    return applyTint(baseColor, c.tint);
-  }
-  if (c.indexed !== undefined) {
-    const baseColor = INDEXED_COLORS[c.indexed] || '#000000';
-    return applyTint(baseColor, c.tint);
-  }
-  return undefined;
-};
 
 const convertCellValue = (
   value: ExcelJS.CellValue,
@@ -347,21 +191,6 @@ const buildStyle = (cell: ExcelJS.Cell): IStyleData | undefined => {
   return hasStyle ? style : undefined;
 };
 
-const colLetterToNumber = (col: string): number =>
-  col.split('').reduce((acc, ch) => acc * 26 + (ch.charCodeAt(0) - 64), 0);
-
-const parseRangeRef = (
-  ref: string,
-): { startRow: number; startCol: number; endRow: number; endCol: number } | null => {
-  const match = /^([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?$/i.exec(ref.trim());
-  if (!match) return null;
-  const startCol = colLetterToNumber(match[1]!.toUpperCase()) - 1;
-  const startRow = Number(match[2]) - 1;
-  const endCol = match[3] ? colLetterToNumber(match[3].toUpperCase()) - 1 : startCol;
-  const endRow = match[4] ? Number(match[4]) - 1 : startRow;
-  return { startRow, startCol, endRow, endCol };
-};
-
 export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
   const styleMap: Record<string, IStyleData> = {};
   const getStyleId = (style: IStyleData | undefined): string | undefined => {
@@ -417,97 +246,7 @@ export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
       }
     });
 
-    // 1. Evaluate explicit conditional formatting rules from Excel model if any
-    try {
-      const condFormattings =
-        (
-          ws.model as {
-            conditionalFormattings?: Array<{
-              ref?: string;
-              rules?: Array<{
-                type?: string;
-                operator?: string;
-                formulae?: string[];
-                text?: string;
-                style?: unknown;
-              }>;
-            }>;
-          }
-        )?.conditionalFormattings ?? [];
-      for (const cf of condFormattings) {
-        if (!cf.ref || !cf.rules) continue;
-        const range = parseRangeRef(cf.ref);
-        if (!range) continue;
-
-        for (const rule of cf.rules) {
-          if (!rule.style) continue;
-          const targetValue = (rule.formulae?.[0] ?? rule.text ?? '').replace(/^"|"$/g, '');
-          const ruleStyle = rule.style as { font?: Partial<ExcelJS.Font>; fill?: ExcelJS.Fill };
-          const fontColor = resolveExcelColor(ruleStyle.font?.color);
-          const fgFill =
-            ruleStyle.fill && ruleStyle.fill.type === 'pattern'
-              ? (ruleStyle.fill as ExcelJS.FillPattern).fgColor
-              : undefined;
-          const fillColor = resolveExcelColor(fgFill);
-
-          for (let r = range.startRow; r <= range.endRow; r++) {
-            for (let c = range.startCol; c <= range.endCol; c++) {
-              const cell = cellData[r]?.[c];
-              if (!cell) continue;
-              const cellStr = cell.v !== undefined ? String(cell.v).trim() : '';
-              const matches =
-                rule.operator === 'equal' || rule.type === 'containsText'
-                  ? cellStr.toLowerCase() === targetValue.toLowerCase() ||
-                    (rule.type === 'containsText' &&
-                      cellStr.toLowerCase().includes(targetValue.toLowerCase()))
-                  : false;
-
-              if (matches) {
-                const existingStyle: IStyleData =
-                  (cell.s && typeof cell.s === 'string' ? styleMap[cell.s] : undefined) || {};
-                const mergedStyle: IStyleData = {
-                  ...existingStyle,
-                  ...(fontColor ? { cl: { rgb: fontColor } } : {}),
-                  ...(fillColor ? { bg: { rgb: fillColor } } : {}),
-                  ...(ruleStyle.font?.bold ? { bl: 1 } : {}),
-                  ...(ruleStyle.font?.italic ? { it: 1 } : {}),
-                };
-                const newStyleId = getStyleId(mergedStyle);
-                if (newStyleId) cell.s = newStyleId;
-              }
-            }
-          }
-        }
-      }
-    } catch {
-      // ignore
-    }
-
-    // 2. Intelligent status color badge fallback for Google Sheets / Excel dropdown badges without embedded CF
-    for (const [rStr, rowObj] of Object.entries(cellData)) {
-      const r = Number(rStr);
-      for (const [cStr, cell] of Object.entries(rowObj)) {
-        const c = Number(cStr);
-        if (cell.v === undefined || cell.v === null) continue;
-        const textKey = String(cell.v).trim().toLowerCase();
-        const badge = DEFAULT_STATUS_STYLES[textKey];
-        if (badge) {
-          const curStyle: IStyleData =
-            (cell.s && typeof cell.s === 'string' ? styleMap[cell.s] : undefined) || {};
-          // Only apply status colors if no custom background color was explicitly defined
-          if (!curStyle.bg?.rgb) {
-            const mergedStyle: IStyleData = {
-              ...curStyle,
-              bg: { rgb: badge.bg },
-              cl: { rgb: badge.cl },
-              bl: badge.bl ?? 1,
-            };
-            const newId = getStyleId(mergedStyle);
-            if (newId) cell.s = newId;
-          }
-        }
-      }
-    }
+    enrichSheetCells(ws, cellData, styleMap, getStyleId);
 
     const mergeData: IRange[] = (ws.model.merges ?? [])
       .map((m) => {

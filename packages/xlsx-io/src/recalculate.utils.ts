@@ -36,11 +36,14 @@ export const prepareExportSnapshot = async (
     const applied = formula.onCalculationResultApplied?.();
     if (isPromise(applied)) {
       let timer: ReturnType<typeof setTimeout> | undefined;
-      const timeout = new Promise<void>((resolve) => {
-        timer = setTimeout(resolve, EXPORT_RECALC_TIMEOUT_MS);
-      });
-      await Promise.race([applied.then(() => undefined), timeout]);
-      if (timer) clearTimeout(timer);
+      try {
+        const timeout = new Promise<void>((resolve) => {
+          timer = setTimeout(resolve, EXPORT_RECALC_TIMEOUT_MS);
+        });
+        await Promise.race([applied.then(() => undefined), timeout]);
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
     }
   } catch {
     // Best-effort recalc: export proceeds with whatever cached values exist.

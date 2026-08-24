@@ -9,6 +9,7 @@ import {
   type IStyleData,
 } from '@univerjs/core';
 import ExcelJS from 'exceljs';
+import type { XlsxChartSpec } from './types';
 
 const REVERSE_BORDER_STYLE_MAP: Record<number, string> = {
   [BorderStyleTypes.THIN]: 'thin',
@@ -143,7 +144,7 @@ const toColumnLetter = (col1Based: number): string => {
 
 export const univerToExceljs = async (
   data: IWorkbookData,
-  charts?: import('./types').XlsxChartSpec[],
+  charts?: XlsxChartSpec[],
 ): Promise<ArrayBuffer> => {
   const workbook = new ExcelJS.Workbook();
   workbook.title = data.name ?? 'Sheet';
