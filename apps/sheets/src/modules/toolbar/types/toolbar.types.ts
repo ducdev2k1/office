@@ -83,4 +83,7 @@ export interface SheetsToolbarProps {
   univerAPI: FUniver | null;
   onPrint?: () => void;
   onInsertChart?: () => void;
+  onInsertImage?: () => void;
+  onAddComment?: () => void;
+  onOpenCommentsSidebar?: () => void;
 }

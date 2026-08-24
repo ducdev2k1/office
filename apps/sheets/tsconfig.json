@@ -6,7 +6,11 @@
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@office/collab-core": ["../../packages/collab-core/src/index.ts"],
+      "@office/collab-core/*": ["../../packages/collab-core/src/*"],
+      "yjs": ["../../packages/collab-core/node_modules/yjs"],
+      "yjs/*": ["../../packages/collab-core/node_modules/yjs/*"]
     }
   },
   "include": ["src", "vite.config.ts"]

@@ -15,7 +15,14 @@ const Sep = () => (
   <Separator orientation="vertical" className="mx-1 h-5 w-px shrink-0 bg-border/60" />
 );
 
-export const SheetsToolbar = ({ univerAPI, onPrint, onInsertChart }: SheetsToolbarProps) => {
+export const SheetsToolbar = ({
+  univerAPI,
+  onPrint,
+  onInsertChart,
+  onInsertImage,
+  onAddComment,
+  onOpenCommentsSidebar,
+}: SheetsToolbarProps) => {
   const { t } = useTranslation('sheets');
   const { state, actions } = useSheetsToolbarState(univerAPI);
 
@@ -104,9 +111,12 @@ export const SheetsToolbar = ({ univerAPI, onPrint, onInsertChart }: SheetsToolb
 
       <Sep />
 
-      {/* 7. Insert Tools (Chart, Link, Checkbox, Filter) */}
+      {/* 7. Insert Tools (Chart, Image, Comment, Link, Checkbox, Filter) */}
       <InsertTools
         onInsertChart={onInsertChart}
+        onInsertImage={onInsertImage}
+        onAddComment={onAddComment}
+        onOpenCommentsSidebar={onOpenCommentsSidebar}
         onInsertLink={actions.insertLink}
         onInsertCheckbox={actions.insertCheckbox}
         onCreateFilter={actions.createFilter}

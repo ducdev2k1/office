@@ -8,10 +8,11 @@
     "build": "tsc -p tsconfig.json && vite build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "tsc -p tsconfig.json --noEmit",
-    "test": "tsx src/modules/charts/__tests__/coordinates.test.ts && tsx src/modules/charts/__tests__/dataRangeParser.test.ts"
+    "test": "tsx src/modules/charts/__tests__/coordinates.test.ts && tsx src/modules/charts/__tests__/dataRangeParser.test.ts && tsx src/modules/collab/__tests__/selectionBounds.test.ts && tsx src/modules/collab/__tests__/sheetYjsSync.test.ts && tsx src/modules/print/__tests__/pdfGenerator.test.ts && tsx src/modules/comments/__tests__/comments.test.ts"
   },
   "dependencies": {
     "@office/app-shell": "workspace:*",
+    "@office/collab-core": "workspace:*",
     "@office/file-home": "workspace:*",
     "@office/fonts": "workspace:*",
     "@office/i18n": "workspace:*",
@@ -24,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "echarts": "^6.1.0",
+    "jspdf": "^2.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.18.2",

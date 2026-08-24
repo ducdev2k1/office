@@ -6,6 +6,9 @@ export interface InsertToolsProps {
   onInsertCheckbox: () => void;
   onCreateFilter: () => void;
   onInsertChart?: () => void;
+  onInsertImage?: () => void;
+  onAddComment?: () => void;
+  onOpenCommentsSidebar?: () => void;
 }
 
 export const InsertTools = ({
@@ -13,6 +16,9 @@ export const InsertTools = ({
   onInsertCheckbox,
   onCreateFilter,
   onInsertChart,
+  onInsertImage,
+  onAddComment,
+  onOpenCommentsSidebar,
 }: InsertToolsProps) => {
   const { t } = useTranslation('sheets');
 
@@ -22,6 +28,27 @@ export const InsertTools = ({
       {onInsertChart && (
         <ToolbarButton label={t('toolbar.insert.chart')} onClick={onInsertChart}>
           <Icon name="bar-chart-2" size={16} />
+        </ToolbarButton>
+      )}
+
+      {/* Insert Image */}
+      {onInsertImage && (
+        <ToolbarButton label={t('images.insertTitle')} onClick={onInsertImage}>
+          <Icon name="image" size={16} />
+        </ToolbarButton>
+      )}
+
+      {/* Add Comment */}
+      {onAddComment && (
+        <ToolbarButton label={t('comments.addComment')} onClick={onAddComment}>
+          <Icon name="message-square-plus" size={16} />
+        </ToolbarButton>
+      )}
+
+      {/* Open Comments Sidebar */}
+      {onOpenCommentsSidebar && (
+        <ToolbarButton label={t('comments.sidebarTitle')} onClick={onOpenCommentsSidebar}>
+          <Icon name="message-square" size={16} />
         </ToolbarButton>
       )}
 
