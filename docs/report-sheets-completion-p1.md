@@ -53,7 +53,7 @@ Kết quả: **PASS toàn bộ** — formulas/styles/merges/freeze 100%; điểm
 
 ## 5. Perf smoke
 
-`scripts/perf-check.ts`: median 3 runs, threshold 2× baseline, **tách 2 chỉ số** (baseline cũ chỉ đo import):
+`scripts/perf-check.ts`: **best-of-5 runs** (min — ít nhiễu nhất cho wall-clock timing; máy bận chỉ cộng thêm thời gian), threshold 2× baseline, **tách 2 chỉ số** (baseline cũ chỉ đo import). Lý do chọn min: khi thử nghiệm thực tế, sample-large import dao động 1701↔2831ms giữa các lần do tải máy — median 3 runs gây FAIL giả.
 
 | File | Import (limit) | Export (limit) |
 | --- | --- | --- |

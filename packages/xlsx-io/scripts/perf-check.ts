@@ -22,21 +22,20 @@ const SAMPLES: SampleSpec[] = [
 ];
 
 const THRESHOLD_MULTIPLIER = 2;
-const RUNS = 3;
+const RUNS = 5;
 
 const loadBuffer = (file: string): ArrayBuffer => {
   const buf = fs.readFileSync(file);
   return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
 };
 
-const median = (values: number[]): number => {
-  const sorted = [...values].sort((a, b) => a - b);
-  return sorted[Math.floor(sorted.length / 2)] ?? 0;
-};
+// Best-of-N is the least noisy estimator for wall-clock timings: a busy machine
+// can only add time, never remove it, so the minimum run approximates the true cost.
+const bestOf = (values: number[]): number => Math.min(...values);
 
 const run = async (): Promise<void> => {
   let failed = false;
-  console.log(`Perf check — threshold = ${THRESHOLD_MULTIPLIER}x baseline, median of ${RUNS} runs\n`);
+  console.log(`Perf check — threshold = ${THRESHOLD_MULTIPLIER}x baseline, best of ${RUNS} runs\n`);
 
   for (const spec of SAMPLES) {
     const filePath = path.join(SAMPLES_DIR, spec.file);
@@ -62,8 +61,8 @@ const run = async (): Promise<void> => {
       timingsExport.push(performance.now() - t0);
     }
 
-    const importMs = median(timingsImport);
-    const exportMs = median(timingsExport);
+    const importMs = bestOf(timingsImport);
+    const exportMs = bestOf(timingsExport);
     const importLimit = spec.importBaselineMs * THRESHOLD_MULTIPLIER;
     const exportLimit = spec.exportBaselineMs * THRESHOLD_MULTIPLIER;
     const statusImport = importMs <= importLimit ? 'PASS' : 'FAIL';
