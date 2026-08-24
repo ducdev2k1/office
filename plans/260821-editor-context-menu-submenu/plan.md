@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Priority**: P0 (foundation cho phase-02) | **Status**: pending | **Effort**: ~4h
+- **Priority**: P0 (foundation cho phase-02) | **Status**: completed (commit `be5f54c` — đã implement từ trước, sổ sách cập nhật ngày 24/08/2026; bổ sung i18n key `contextMenu.comment`) | **Effort**: ~4h
 - Refactor `EditorContextMenu.tsx`: gộp các nhóm vào submenu, đồng thời migrate từ custom DOM sang `@office/ui-kit` ContextMenu primitives.
 
 ## Context
