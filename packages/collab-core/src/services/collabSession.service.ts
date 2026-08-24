@@ -3,6 +3,10 @@ import { IndexeddbPersistence } from 'y-indexeddb';
 import * as Y from 'yjs';
 import type { CollabRoomConfig, CollabSessionInstance, CollabStatus } from '../types/collab.types';
 import { sanitizeCollabUser } from '../utils/sanitize.utils';
+import { compactYjsUpdateLog } from './yjsCompaction.service';
+
+/** Trì hoãn compaction sau synced để không cạnh tranh main thread lúc vừa mở doc. */
+const COMPACTION_DELAY_MS = 4000;
 
 export const createCollabSession = (config: CollabRoomConfig): CollabSessionInstance => {
   const { docId, user, serverUrl, token, enableIndexedDB = true } = config;
@@ -19,12 +23,19 @@ export const createCollabSession = (config: CollabRoomConfig): CollabSessionInst
   };
 
   let indexeddbProvider: IndexeddbPersistence | null = null;
+  let compactionTimer: ReturnType<typeof setTimeout> | null = null;
   if (enableIndexedDB && typeof window !== 'undefined' && 'indexedDB' in window) {
     try {
       indexeddbProvider = new IndexeddbPersistence(docId, doc);
       indexeddbProvider.on('synced', () => {
         isLocalLoaded = true;
         notify();
+        if (compactionTimer === null) {
+          compactionTimer = setTimeout(() => {
+            compactionTimer = null;
+            void compactYjsUpdateLog(docId, doc).catch(() => undefined);
+          }, COMPACTION_DELAY_MS);
+        }
       });
     } catch (err) {
       console.warn('[CollabSession] IndexedDB persistence failed to initialize:', err);
@@ -106,6 +117,10 @@ export const createCollabSession = (config: CollabRoomConfig): CollabSessionInst
       if (session.teardownTimer) {
         clearTimeout(session.teardownTimer);
         session.teardownTimer = null;
+      }
+      if (compactionTimer !== null) {
+        clearTimeout(compactionTimer);
+        compactionTimer = null;
       }
       listeners.clear();
       try {
