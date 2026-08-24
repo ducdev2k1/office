@@ -1,8 +1,20 @@
 import { ToolbarButton } from '@/modules/toolbar/components/ToolbarButton';
 import { useTranslation } from '@office/i18n';
-import { Icon, Separator } from '@office/ui-kit';
+import {
+  Button,
+  Icon,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Separator,
+  TableGridPicker,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  cn,
+} from '@office/ui-kit';
 import type { Editor } from '@tiptap/core';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { EmojiPicker } from '@/modules/toolbar/components/EmojiPicker';
 import { TableProperties } from '@/modules/toolbar/components/TableProperties';
 import { CodeLanguagePicker } from '@/modules/toolbar/components/CodeLanguagePicker';
@@ -10,7 +22,7 @@ import { CodeLanguagePicker } from '@/modules/toolbar/components/CodeLanguagePic
 interface InsertToolsProps {
   editor: Editor;
   onInsertImage: (file: File) => void;
-  onInsertTable: () => void;
+  onInsertTable: (rows?: number, cols?: number) => void;
   onInsertPageBreak: () => void;
   onInsertMath?: () => void;
 }
@@ -23,6 +35,7 @@ export const InsertTools = ({
   onInsertMath,
 }: InsertToolsProps) => {
   const { t } = useTranslation('docs');
+  const [tablePickerOpen, setTablePickerOpen] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const inTable = editor.isActive('table');
   const insertImage = (file: File | undefined) => {
@@ -50,9 +63,43 @@ export const InsertTools = ({
           event.target.value = '';
         }}
       />
-      <ToolbarButton label={t('toolbar.insertTable')} onClick={onInsertTable}>
-        <Icon name="table" />
-      </ToolbarButton>
+      <Popover open={tablePickerOpen} onOpenChange={setTablePickerOpen}>
+        <Tooltip>
+          <TooltipTrigger render={<span className="inline-flex" />}>
+            <PopoverTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label={t('toolbar.insertTable')}
+                  className={cn(
+                    'inline-flex items-center justify-center size-7 p-0 rounded text-foreground/80 hover:text-foreground hover:bg-hover transition-colors',
+                    tablePickerOpen && 'bg-primary/15 text-primary',
+                  )}
+                >
+                  <Icon name="table" size={16} />
+                </Button>
+              }
+            />
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={4}>
+            {t('toolbar.insertTable')}
+          </TooltipContent>
+        </Tooltip>
+        <PopoverContent
+          side="bottom"
+          align="start"
+          sideOffset={4}
+          className="p-1 rounded-lg border border-border bg-popover text-popover-foreground shadow-lg"
+        >
+          <TableGridPicker
+            onSelect={(rows, cols) => {
+              onInsertTable(rows, cols);
+              setTablePickerOpen(false);
+            }}
+          />
+        </PopoverContent>
+      </Popover>
       <ToolbarButton
         label={t('toolbar.insertHorizontalRule')}
         onClick={() => editor.chain().focus().setHorizontalRule().run()}

@@ -15,7 +15,7 @@ export interface EditorActions {
   exportHtml: () => void;
   exportText: () => void;
   handleImageUpload: (file: File) => void;
-  handleInsertTable: () => void;
+  handleInsertTable: (rows?: number, cols?: number) => void;
   handleInsertPageBreak: () => void;
   handleInsertSectionBreak: (type?: 'next-page' | 'continuous') => void;
   handleInsertBookmark: () => void;
@@ -76,8 +76,8 @@ export const useEditorActions = (
     reader.readAsDataURL(file);
   };
 
-  const handleInsertTable = (): void => {
-    editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+  const handleInsertTable = (rows = 3, cols = 3): void => {
+    editor?.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
   };
 
   const handleInsertPageBreak = (): void => {

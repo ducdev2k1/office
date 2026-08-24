@@ -131,6 +131,7 @@ export const EditorDialogsHost = ({
           open={shareOpen}
           onClose={() => setShareOpen(false)}
           docId={activeDoc.id}
+          currentUserId={currentUserId}
         />
       )}
 

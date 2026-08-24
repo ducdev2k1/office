@@ -26,7 +26,7 @@ export interface ToolbarProps {
   onDelete: () => void;
   onToggleFind: () => void;
   onInsertImage: (file: File) => void;
-  onInsertTable: () => void;
+  onInsertTable: (rows?: number, cols?: number) => void;
   onInsertPageBreak: () => void;
   onInsertMath?: () => void;
   onPageSetup: () => void;

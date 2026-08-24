@@ -27,12 +27,13 @@
       "openFromDeviceError": "Không mở được file. Vui lòng chọn file hợp lệ.",
       "openList": "Mở danh sách tài liệu",
       "pageSetup": "Cấu hình trang",
-      "print": "In tài liệu",
-      "exportDocx": "Xuất Microsoft Word (.docx)",
-      "exportMarkdown": "Xuất Markdown (.md)",
-      "exportPdf": "Tải tài liệu PDF (.pdf)",
-      "exportHtml": "Xuất HTML (.html)",
-      "exportTxt": "Xuất văn bản (.txt)",
+      "print": "In",
+      "download": "Tải xuống",
+      "exportDocx": "Microsoft Word (.docx)",
+      "exportMarkdown": "Markdown (.md)",
+      "exportPdf": "Tài liệu PDF (.pdf)",
+      "exportHtml": "Trang web (.html)",
+      "exportTxt": "Văn bản thuần (.txt)",
       "deleteDoc": "Xóa tài liệu"
     },
     "edit": {
@@ -42,12 +43,14 @@
       "cut": "Cắt",
       "copy": "Sao chép",
       "paste": "Dán",
+      "selectAll": "Chọn tất cả",
       "findAndReplace": "Tìm kiếm và thay thế"
     },
     "view": {
       "label": "Xem",
-      "continuousMode": "Chế độ xem liên tục",
-      "pagedMode": "Chế độ xem phân trang",
+      "mode": "Chế độ xem",
+      "continuousMode": "Chế độ liên tục",
+      "pagedMode": "Chế độ phân trang",
       "showRuler": "Hiện thước kẻ",
       "showOutline": "Hiện mục lục"
     },
@@ -55,42 +58,58 @@
       "label": "Chèn",
       "image": "Hình ảnh",
       "table": "Bảng",
+      "chart": "Biểu đồ",
       "horizontalRule": "Đường kẻ ngang",
+      "breaks": "Ngắt",
       "pageBreak": "Ngắt trang",
-      "sectionBreak": "Ngắt phần (Section Break)",
-      "bookmark": "Dấu trang (Bookmark)",
-      "math": "Công thức toán (LaTeX)",
-      "footnote": "Chú thích cuối trang (Footnote)",
-      "columns": "Bố cục nhiều cột",
-      "watermark": "Hình nền mờ (Watermark)",
-      "headerFooter": "Đầu trang, chân trang & số trang",
+      "sectionBreak": "Ngắt phân đoạn",
+      "bookmark": "Dấu trang",
+      "math": "Công thức toán",
+      "footnote": "Chú thích cuối trang",
+      "columns": "Bố cục cột",
+      "column1": "1 cột",
+      "column2": "2 cột",
+      "column3": "3 cột",
+      "callouts": "Hộp ghi chú",
+      "watermark": "Hình nền mờ",
+      "headerFooter": "Đầu trang & chân trang",
       "link": "Đường dẫn liên kết"
     },
     "format": {
       "label": "Định dạng",
+      "text": "Văn bản",
       "bold": "In đậm",
       "italic": "In nghiêng",
       "underline": "Gạch chân",
       "strikethrough": "Gạch ngang",
       "subscript": "Chỉ số dưới",
       "superscript": "Chỉ số trên",
-      "clearFormatting": "Xóa định dạng",
+      "paragraphStyles": "Kiểu đoạn",
+      "normalText": "Văn bản thường",
+      "heading1": "Tiêu đề 1",
+      "heading2": "Tiêu đề 2",
+      "heading3": "Tiêu đề 3",
+      "alignAndIndent": "Căn chỉnh & thụt lề",
       "alignLeft": "Căn trái",
       "alignCenter": "Căn giữa",
       "alignRight": "Căn phải",
       "alignJustify": "Căn đều hai bên",
+      "lists": "Danh sách",
       "bulletList": "Danh sách dấu đầu dòng",
-      "orderedList": "Danh sách đánh số"
+      "orderedList": "Danh sách đánh số",
+      "taskList": "Danh sách công việc",
+      "clearFormatting": "Xóa định dạng"
     },
     "tools": {
       "label": "Công cụ",
-      "wordCount": "Số lượng từ",
+      "wordCount": "Thống kê từ",
+      "vnAdmin": "Chuẩn văn bản hành chính",
       "characterCount": "Số lượng ký tự",
       "shortcuts": "Phím tắt bàn phím"
     },
     "help": {
       "label": "Trợ giúp",
-      "shortcuts": "Phím tắt",
+      "shortcuts": "Phím tắt bàn phím",
       "about": "Thông tin OneMail Docs"
     }
   },
@@ -441,7 +460,8 @@
     "roles": {
       "view": "Xem",
       "comment": "Bình luận",
-      "edit": "Chỉnh sửa"
+      "edit": "Chỉnh sửa",
+      "owner": "Chủ sở hữu"
     },
     "linkLabel": "Liên kết chia sẻ",
     "copy": "Sao chép",
@@ -449,7 +469,10 @@
     "addPeople": "Thêm người",
     "emailPlaceholder": "Nhập tên hoặc email...",
     "add": "Thêm",
-    "backendNote": "Demo: người dùng và quyền được lưu tạm ở phía trình duyệt. Khi có backend sẽ đồng bộ với danh sách cộng tác."
+    "you": "Bạn",
+    "remove": "Thu hồi quyền truy cập",
+    "ownerOnlyNote": "Chỉ chủ sở hữu mới được thay đổi phân quyền.",
+    "backendNote": "Phân quyền đang được lưu trên thiết bị này. Sẽ đồng bộ giữa các cộng tác viên khi kết nối backend đám mây."
   },
   "mention": {
     "selectUser": "Chọn người để nhắc đến",

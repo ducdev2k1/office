@@ -3,14 +3,23 @@ import type { Editor } from '@tiptap/core';
 
 export interface MenuAction {
   label: string;
+  icon?: string;
   shortcut?: string;
   danger?: boolean;
   checked?: boolean;
   disabled?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
-export type MenuItem = MenuAction | 'separator';
+export interface SubmenuSpec {
+  label: string;
+  icon?: string;
+  items?: MenuItem[];
+  tablePicker?: boolean;
+  disabled?: boolean;
+}
+
+export type MenuItem = MenuAction | SubmenuSpec | 'separator';
 
 export interface MenuSpec {
   label: string;
@@ -37,7 +46,8 @@ export interface HeaderMenuActions {
   onExportText: () => void;
   onDelete: () => void;
   onInsertImage: (file: File) => void;
-  onInsertTable: () => void;
+  onInsertTable: (rows?: number, cols?: number) => void;
+
   onInsertPageBreak: () => void;
   onInsertSectionBreak?: () => void;
   onInsertBookmark?: () => void;

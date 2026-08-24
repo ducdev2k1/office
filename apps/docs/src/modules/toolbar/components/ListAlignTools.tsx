@@ -1,6 +1,13 @@
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from '@office/i18n';
-import { Icon } from '@office/ui-kit';
+import {
+  BulletListDropdown,
+  ChecklistDropdown,
+  Icon,
+  NumberedListDropdown,
+  type BulletPreset,
+  type NumberPreset,
+} from '@office/ui-kit';
 import { ToolbarButton } from '@/modules/toolbar/components/ToolbarButton';
 
 interface ListAlignToolsProps {
@@ -38,22 +45,45 @@ export const ListAlignTools = ({ editor }: ListAlignToolsProps) => {
     }
   };
 
+  const handleSelectBulletPreset = (_preset: BulletPreset) => {
+    if (!editor.isActive('bulletList')) {
+      editor.chain().focus().toggleBulletList().run();
+    }
+  };
+
+  const handleSelectNumberPreset = (_preset: NumberPreset) => {
+    if (!editor.isActive('orderedList')) {
+      editor.chain().focus().toggleOrderedList().run();
+    }
+  };
+
+  const handleSelectChecklistStyle = (_strikethrough: boolean) => {
+    if (!editor.isActive('taskList')) {
+      editor.chain().focus().toggleTaskList().run();
+    }
+  };
+
   return (
     <>
-      <ToolbarButton
+      <ChecklistDropdown
+        active={editor.isActive('taskList')}
+        label={t('toolbar.taskList')}
+        onToggle={() => editor.chain().focus().toggleTaskList().run()}
+        onSelectStyle={handleSelectChecklistStyle}
+      />
+      <BulletListDropdown
         active={editor.isActive('bulletList')}
         label={t('toolbar.bulletList')}
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-      >
-        <Icon name="list" />
-      </ToolbarButton>
-      <ToolbarButton
+        onToggle={() => editor.chain().focus().toggleBulletList().run()}
+        onSelectPreset={handleSelectBulletPreset}
+        onSelectChecklist={handleSelectChecklistStyle}
+      />
+      <NumberedListDropdown
         active={editor.isActive('orderedList')}
         label={t('toolbar.orderedList')}
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-      >
-        <Icon name="list-ordered" />
-      </ToolbarButton>
+        onToggle={() => editor.chain().focus().toggleOrderedList().run()}
+        onSelectPreset={handleSelectNumberPreset}
+      />
       <ToolbarButton
         active={isAlignLeft}
         label={t('toolbar.alignLeft')}
@@ -83,13 +113,7 @@ export const ListAlignTools = ({ editor }: ListAlignToolsProps) => {
       >
         <Icon name="align-justify" />
       </ToolbarButton>
-      <ToolbarButton
-        active={editor.isActive('taskList')}
-        label={t('toolbar.taskList')}
-        onClick={() => editor.chain().focus().toggleTaskList().run()}
-      >
-        <Icon name="check-square" />
-      </ToolbarButton>
     </>
   );
 };
+

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from '@office/i18n';
 import { useDocs } from '@/hooks/useDocs';
+import { useDocPermissions } from '@/hooks/useDocPermissions';
 import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -23,11 +24,13 @@ import { EditorDialogsHost } from '@/modules/editor/components/EditorDialogsHost
 import { TrackChangesBar } from '@/modules/editor/components/track-changes/TrackChangesBar';
 import { useEditorComments } from '@/modules/editor/hooks/useEditorComments';
 import { useTrackChanges } from '@/modules/editor/hooks/useTrackChanges';
-import { FollowBanner, useFollowCollaborator } from '@/modules/collab';
+import { FollowBanner, useFollowCollaborator, useCurrentUserProfile } from '@/modules/collab';
 import { AccessModeBanner } from '@/modules/collab/components/AccessModeBanner';
 import { MentionPopover } from '@/modules/collab/components/MentionPopover';
 import { MentionSuggest } from '@/modules/collab/components/MentionSuggest';
 import { useAccessMode } from '@/modules/collab/hooks/useAccessMode';
+import { ensureOwnerGrant } from '@/services/docGrants.service';
+import { restrictAccessMode } from '@/utils/permissions.utils';
 import { useVersionHistory } from '@/modules/collab/hooks/useVersionHistory';
 import { Header } from '@/modules/header';
 import { DocsSidebar } from '@/modules/sidebar';
@@ -61,7 +64,18 @@ export const EditorPage = () => {
     markOpened,
   } = useDocs();
 
-  const accessMode = useAccessMode();
+  const profile = useCurrentUserProfile().profile;
+  const urlAccessMode = useAccessMode();
+  const { grants, can: canDo } = useDocPermissions(activeDoc?.id ?? null, profile.id);
+
+  useEffect(() => {
+    if (!activeDoc) return;
+    void ensureOwnerGrant(activeDoc.id, profile).catch((err) =>
+      console.warn('[EditorPage] Failed to ensure owner grant:', err),
+    );
+  }, [activeDoc?.id]);
+
+  const accessMode = restrictAccessMode(urlAccessMode, grants, profile.id);
   const isReadOnly = accessMode === 'view';
   const modals = useEditorModals();
   const fontPickerRef = useRef<HTMLButtonElement>(null);
@@ -101,7 +115,9 @@ export const EditorPage = () => {
     (sugId) => trackChanges.handleSelectSuggestion(sugId),
   );
 
-  const comments = useEditorComments(editor, commentsStore, currentUser, () => modals.setCommentsOpen(true));
+  const comments = useEditorComments(editor, commentsStore, currentUser, () =>
+    modals.setCommentsOpen(true),
+  );
   const trackChanges = useTrackChanges(suggestionStore, suggestions);
   const { followedUser, followedClientId, stopFollow, toggleFollow } = useFollowCollaborator({
     editor,
@@ -225,7 +241,7 @@ export const EditorPage = () => {
             onVnAdmin: () => modals.setVnAdminOpen(true),
             onHelp: () => modals.setHelpOpen(true),
             onVersionHistory: () => modals.setVersionHistoryOpen(true),
-            onShare: () => modals.setShareOpen(true),
+            onShare: canDo('share') ? () => modals.setShareOpen(true) : undefined,
           }}
         />
 
@@ -296,14 +312,22 @@ export const EditorPage = () => {
             onPageSetupChange={handlePageSetupChange}
           />
 
-          {editor && <BubbleToolbar editor={editor} onSetLink={setLink} onAddComment={comments.handleStartAddComment} />}
+          {editor && (
+            <BubbleToolbar
+              editor={editor}
+              onSetLink={setLink}
+              onAddComment={comments.handleStartAddComment}
+            />
+          )}
           {editor && <ImageBubbleToolbar editor={editor} />}
           {editor && <LinkPopoverHost editor={editor} />}
           {editor && <MentionPopover editor={editor} />}
           {editor && (
             <MentionSuggest
               editor={editor}
-              users={() => collaborators.filter((c) => c.name).map((c) => ({ id: c.id, name: c.name }))}
+              users={() =>
+                collaborators.filter((c) => c.name).map((c) => ({ id: c.id, name: c.name }))
+              }
               getMentionedIds={() => {
                 if (!editor) return [];
                 const ids: string[] = [];

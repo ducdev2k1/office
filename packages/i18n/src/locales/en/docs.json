@@ -28,11 +28,12 @@
       "openList": "Open document list",
       "pageSetup": "Page setup",
       "print": "Print",
-      "exportDocx": "Export Microsoft Word (.docx)",
-      "exportMarkdown": "Export Markdown (.md)",
-      "exportPdf": "Download as PDF (.pdf)",
-      "exportHtml": "Export HTML (.html)",
-      "exportTxt": "Export Text (.txt)",
+      "download": "Download",
+      "exportDocx": "Microsoft Word (.docx)",
+      "exportMarkdown": "Markdown (.md)",
+      "exportPdf": "PDF Document (.pdf)",
+      "exportHtml": "Web page (.html)",
+      "exportTxt": "Plain text (.txt)",
       "deleteDoc": "Delete document"
     },
     "edit": {
@@ -42,10 +43,12 @@
       "cut": "Cut",
       "copy": "Copy",
       "paste": "Paste",
+      "selectAll": "Select all",
       "findAndReplace": "Find and replace"
     },
     "view": {
       "label": "View",
+      "mode": "Mode",
       "continuousMode": "Continuous mode",
       "pagedMode": "Paged mode",
       "showRuler": "Show ruler",
@@ -55,42 +58,58 @@
       "label": "Insert",
       "image": "Image",
       "table": "Table",
+      "chart": "Chart",
       "horizontalRule": "Horizontal line",
+      "breaks": "Break",
       "pageBreak": "Page break",
       "sectionBreak": "Section break",
       "bookmark": "Bookmark",
-      "math": "Math equation (LaTeX)",
+      "math": "Math equation",
       "footnote": "Footnote",
-      "columns": "Columns layout",
+      "columns": "Columns",
+      "column1": "1 column",
+      "column2": "2 columns",
+      "column3": "3 columns",
+      "callouts": "Callout box",
       "watermark": "Watermark",
-      "headerFooter": "Header, footer & page numbers",
+      "headerFooter": "Header & footer",
       "link": "Link"
     },
     "format": {
       "label": "Format",
+      "text": "Text",
       "bold": "Bold",
       "italic": "Italic",
       "underline": "Underline",
       "strikethrough": "Strikethrough",
       "subscript": "Subscript",
       "superscript": "Superscript",
-      "clearFormatting": "Clear formatting",
+      "paragraphStyles": "Paragraph styles",
+      "normalText": "Normal text",
+      "heading1": "Heading 1",
+      "heading2": "Heading 2",
+      "heading3": "Heading 3",
+      "alignAndIndent": "Align & indent",
       "alignLeft": "Align left",
       "alignCenter": "Align center",
       "alignRight": "Align right",
       "alignJustify": "Justify",
+      "lists": "Lists",
       "bulletList": "Bulleted list",
-      "orderedList": "Numbered list"
+      "orderedList": "Numbered list",
+      "taskList": "Task list",
+      "clearFormatting": "Clear formatting"
     },
     "tools": {
       "label": "Tools",
       "wordCount": "Word count",
+      "vnAdmin": "VN Admin Standard",
       "characterCount": "Character count",
       "shortcuts": "Keyboard shortcuts"
     },
     "help": {
       "label": "Help",
-      "shortcuts": "Shortcuts",
+      "shortcuts": "Keyboard shortcuts",
       "about": "About OneMail Docs"
     }
   },
@@ -441,7 +460,8 @@
     "roles": {
       "view": "View",
       "comment": "Comment",
-      "edit": "Edit"
+      "edit": "Edit",
+      "owner": "Owner"
     },
     "linkLabel": "Share link",
     "copy": "Copy",
@@ -449,7 +469,10 @@
     "addPeople": "Add people",
     "emailPlaceholder": "Enter name or email...",
     "add": "Add",
-    "backendNote": "Demo: users and permissions are stored temporarily in the browser. Will sync with collaborators when a backend exists."
+    "you": "You",
+    "remove": "Remove access",
+    "ownerOnlyNote": "Only the document owner can change permissions.",
+    "backendNote": "Permissions are saved on this device. They will sync across collaborators once the cloud backend is connected."
   },
   "mention": {
     "selectUser": "Select a user to mention",

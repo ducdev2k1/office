@@ -1,44 +1,59 @@
 import { useState } from 'react';
 import { useTranslation } from '@office/i18n';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Icon, Input, cn } from '@office/ui-kit';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Icon,
+  Input,
+  Skeleton,
+  cn,
+} from '@office/ui-kit';
+import { useDocPermissions } from '@/hooks/useDocPermissions';
+import { addGrant, removeGrant, updateGrantRole } from '@/services/docGrants.service';
+import type { DocRole } from '@/types/permissions.types';
 
-type AccessRole = 'view' | 'comment' | 'edit';
+const ROLE_ORDER: readonly DocRole[] = ['viewer', 'commenter', 'editor', 'owner'];
 
-const ROLE_LABELS: Record<AccessRole, string> = {
-  view: 'view',
-  comment: 'comment',
-  edit: 'edit',
+const ROLE_LABEL_KEY: Record<DocRole, string> = {
+  viewer: 'view',
+  commenter: 'comment',
+  editor: 'edit',
+  owner: 'owner',
 };
 
-interface SharedUser {
-  id: string;
-  name: string;
-  role: AccessRole;
-}
+const ROLE_URL_PARAM: Record<DocRole, string> = {
+  viewer: 'view',
+  commenter: 'comment',
+  editor: 'edit',
+  owner: 'edit',
+};
 
 interface ShareDialogProps {
   open: boolean;
   onClose: () => void;
   docId: string;
+  currentUserId?: string;
 }
 
-const MOCK_USERS: SharedUser[] = [
-  { id: 'user-nguyen-van-a', name: 'Nguyễn Văn A', role: 'edit' },
-  { id: 'user-tran-thi-b', name: 'Trần Thị B', role: 'comment' },
-  { id: 'user-le-van-c', name: 'Lê Văn C', role: 'view' },
-];
-
-export const ShareDialog = ({ open, onClose, docId }: ShareDialogProps) => {
+export const ShareDialog = ({ open, onClose, docId, currentUserId }: ShareDialogProps) => {
   const { t } = useTranslation('docs');
   const { t: tCommon } = useTranslation('common');
-  const [role, setRole] = useState<AccessRole>('edit');
   const [copied, setCopied] = useState(false);
-  const [users, setUsers] = useState<SharedUser[]>(MOCK_USERS);
   const [email, setEmail] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const { grants, myRole, can } = useDocPermissions(open ? docId : null, currentUserId);
+
+  const canManage = can('share');
 
   const shareUrl = () => {
+    const roleParam = myRole ? ROLE_URL_PARAM[myRole] : 'view';
     const base = window.location.origin + window.location.pathname.replace(/\/edit\/.*$/, '');
-    return `${base}/edit/${docId}?access=${role}`;
+    return `${base}/edit/${docId}?access=${roleParam}`;
   };
 
   const handleCopy = async () => {
@@ -54,17 +69,27 @@ export const ShareDialog = ({ open, onClose, docId }: ShareDialogProps) => {
 
   const handleAddUser = () => {
     const trimmed = email.trim();
-    if (!trimmed) return;
+    if (!trimmed || !canManage) return;
     const name = trimmed.includes('@') ? trimmed.split('@')[0]! : trimmed;
-    setUsers((prev) => [
-      ...prev,
-      { id: `user-${Date.now()}`, name, role: 'view' },
-    ]);
-    setEmail('');
+    const userId = trimmed.includes('@') ? trimmed : `user-${crypto.randomUUID()}`;
+    setError(null);
+    void addGrant(docId, { userId, userName: name, role: 'viewer' })
+      .then(() => setEmail(''))
+      .catch(() => setError(t('share.ownerOnlyNote')));
   };
 
-  const handleRoleChange = (userId: string, nextRole: AccessRole) => {
-    setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, role: nextRole } : user)));
+  const handleRoleChange = (grantId: string, nextRole: DocRole) => {
+    if (!canManage) return;
+    setError(null);
+    void updateGrantRole(docId, grantId, nextRole).catch(() =>
+      setError(t('share.ownerOnlyNote')),
+    );
+  };
+
+  const handleRemove = (grantId: string) => {
+    if (!canManage) return;
+    setError(null);
+    void removeGrant(docId, grantId).catch(() => setError(t('share.ownerOnlyNote')));
   };
 
   return (
@@ -76,26 +101,9 @@ export const ShareDialog = ({ open, onClose, docId }: ShareDialogProps) => {
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t('share.accessLabel')}</label>
-            <div className="flex gap-1 rounded-lg bg-muted/60 p-1">
-              {(['view', 'comment', 'edit'] as AccessRole[]).map((r) => (
-                <Button
-                  key={r}
-                  type="button"
-                  variant="ghost"
-                  className={cn(
-                    'flex-1 rounded-md px-2 py-1.5 text-xs font-medium',
-                    role === r ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
-                  )}
-                  onClick={() => setRole(r)}
-                >
-                  {t(`share.roles.${ROLE_LABELS[r]}`)}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t('share.linkLabel')}</label>
+            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+              {t('share.linkLabel')}
+            </label>
             <div className="flex gap-2">
               <Input
                 readOnly
@@ -109,55 +117,107 @@ export const ShareDialog = ({ open, onClose, docId }: ShareDialogProps) => {
               </Button>
             </div>
           </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t('share.addPeople')}</label>
-            <div className="flex gap-2">
-              <Input
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                onKeyDown={(event) => event.key === 'Enter' && handleAddUser()}
-                placeholder={t('share.emailPlaceholder')}
-                className="min-w-0 flex-1 text-sm"
-              />
-              <Button
-                size="sm"
-                variant="default"
-                className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs px-3.5 cursor-pointer shadow-xs"
-                onClick={handleAddUser}
-              >
-                {t('share.add')}
-              </Button>
+          {canManage ? (
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                {t('share.addPeople')}
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  onKeyDown={(event) => event.key === 'Enter' && handleAddUser()}
+                  placeholder={t('share.emailPlaceholder')}
+                  className="min-w-0 flex-1 text-sm"
+                />
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs px-3.5 cursor-pointer shadow-xs"
+                  onClick={handleAddUser}
+                >
+                  {t('share.add')}
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+              {t('share.ownerOnlyNote')}
+            </p>
+          )}
           <div>
             <ul className="space-y-1.5">
-              {users.map((user) => (
-                <li key={user.id} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
-                  <span className="grid size-7 place-items-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                    {user.name.slice(0, 1).toUpperCase()}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-sm">{user.name}</span>
-                  <div className="flex gap-1 rounded-md bg-muted/60 p-0.5">
-                    {(['view', 'comment', 'edit'] as AccessRole[]).map((r) => (
-                      <Button
-                        key={r}
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                          'px-1.5 py-0.5 text-[10px] font-medium h-auto',
-                          user.role === r ? 'bg-background text-foreground shadow-sm font-semibold' : 'text-muted-foreground hover:text-foreground',
+              {grants.map((grant) => {
+                const isMine = grant.userId === currentUserId;
+                return (
+                  <li
+                    key={grant.id}
+                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-2"
+                  >
+                    <span className="grid size-7 place-items-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                      {grant.userName.slice(0, 1).toUpperCase()}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm">
+                      {grant.userName}
+                      {isMine && (
+                        <span className="ml-1.5 rounded bg-muted px-1 py-0.5 text-[10px] font-medium text-muted-foreground">
+                          {t('share.you')}
+                        </span>
+                      )}
+                    </span>
+                    {canManage ? (
+                      <>
+                        <div className="flex gap-1 rounded-md bg-muted/60 p-0.5">
+                          {ROLE_ORDER.map((role) => (
+                            <Button
+                              key={role}
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className={cn(
+                                'px-1.5 py-0.5 text-[10px] font-medium h-auto',
+                                grant.role === role
+                                  ? 'bg-background text-foreground shadow-sm font-semibold'
+                                  : 'text-muted-foreground hover:text-foreground',
+                              )}
+                              onClick={() => handleRoleChange(grant.id, role)}
+                            >
+                              {t(`share.roles.${ROLE_LABEL_KEY[role]}`)}
+                            </Button>
+                          ))}
+                        </div>
+                        {grant.role !== 'owner' && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={t('share.remove')}
+                            className="shrink-0 text-muted-foreground hover:text-destructive"
+                            onClick={() => handleRemove(grant.id)}
+                          >
+                            <Icon name="trash" size={14} />
+                          </Button>
                         )}
-                        onClick={() => handleRoleChange(user.id, r)}
-                      >
-                        {t(`share.roles.${ROLE_LABELS[r]}`)}
-                      </Button>
-                    ))}
-                  </div>
-                </li>
-              ))}
+                      </>
+                    ) : (
+                      <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                        {t(`share.roles.${ROLE_LABEL_KEY[grant.role]}`)}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+              {grants.length === 0 && (
+                <>
+                  <Skeleton className="h-11 w-full" />
+                  <Skeleton className="h-11 w-full" />
+                </>
+              )}
             </ul>
           </div>
+          {error && (
+            <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</p>
+          )}
           <p className="rounded-md bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
             {t('share.backendNote')}
           </p>
