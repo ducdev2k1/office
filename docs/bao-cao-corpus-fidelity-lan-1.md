@@ -30,11 +30,30 @@
 - **Đường mở file .docx vào editor**: mọi văn bản dùng gạch chân/màu/highlight/căn lề/ngắt trang sẽ hiển thị thiếu định dạng. Đây là định dạng cực phổ biến trong văn bản hành chính VN (Nghị định 30/2020).
 - **Đường lưu có nguồn (`docx-sources`, patch T1)**: phần KHÔNG bị sửa vẫn giữ byte gốc an toàn; nhưng vùng bị chạm sẽ tái tạo từ HTML đã mất format → lỗi dần theo từng lần lưu.
 
-## Khuyến nghị xử lý (chưa thực thi — cần quyết định)
+## Khuyến nghị xử lý (đã chọn Hướng B cải tiến)
 
-1. **Hướng A — tự viết mapper `ooxml→html` cho tập Lớp A** thay thế mammoth ở bước import: kiểm soát đầy đủ `w:rPr`/`w:pPr`. Khớp định hướng roadmap M3–M4 (chuỗi phân giải kiểu + direct formatting). Effort lớn (~vài chục giờ), là công việc thật của M4.
-2. **Hướng B — hậu xử lý đầu ra mammoth**: tự đọc `document.xml` và bù format còn thiếu vào HTML mammoth (khớp run theo thứ tự). Rủi ro lệch vị trí khi văn bản phức tạp.
-3. Không thể đạt tiêu chí nghiệm thu MVP (round-trip ≥95% trên bộ mẫu có định dạng) nếu không xử lý một trong hai hướng trên.
+~~1. **Hướng A — tự viết mapper `ooxml→html` cho tập Lớp A**...~~
+~~2. **Hướng B — hậu xử lý đầu ra mammoth**: khớp run theo thứ tự, rủi ro lệch vị trí...~~
+
+## Kết quả xử lý
+
+Đã triển khai **hậu xử lý theo offset ký tự** (không phải khớp-run naïve):
+
+- Module mới `packages/docx-io/src/ooxml-to-html/document-formatting.utils.ts` — đọc thẳng `document.xml`, trích xuất per-paragraph: align (`w:jc`), segments định dạng ký tự (`w:u`/`w:strike`/`w:color`/`w:shd`) theo offset, vị trí page break (`w:br w:type="page"`); bỏ qua runs trong `w:hyperlink` (tránh bồi formatting link), hỗ trợ `w:ins`.
+- Module mới `packages/docx-io/src/ooxml-to-html/inject-formatting.utils.ts` — parse HTML mammoth bằng `parseHtmlToTree` (có fallback tokenizer cho Node), khớp block `p/h1-h6/li` theo thứ tự tài liệu, tách text node tại ranh giới segment rồi wrap `<u>/<span style=color>/<mark>`; chèn `<div data-type="page-break">`; **an toàn thất bại**: số block lệch → trả nguyên HTML gốc.
+- Nối vào `convertDocxToHtml` (`src/index.ts`) với try/catch nuốt lỗi — xấu nhất trở lại như cũ, không bao giờ tệ hơn.
+
+**Kết quả kiểm chứng:**
+
+| Hạng mục | Kết quả |
+|---|---|
+| Unit test mới (`direct-formatting.test.ts`) | 8/8 pass |
+| docx-io toàn bộ | 19/19 pass |
+| Corpus gate (3 file tổng hợp) | 6/6 pass — **0 format mất** |
+| apps/docs test | 51/51 pass |
+| Browser thật (importDocxFile qua Vite module) | 137ms, đủ u/mark/color/align/page-break, không double-strike |
+
+Giới hạn còn lại: chưa đo khác biệt render pixel; các phần tử ngoài tập trên (vd `w:tabs`, spacing) chưa bù.
 
 ## Ghi chú vận hành
 

@@ -1,5 +1,8 @@
 /// <reference path="./mammoth.d.ts" />
 import type { MammothApi } from './mammoth.types';
+import { getPartText, unpackOoxml } from '@office/ooxml-core';
+import { extractBodyFormatPlan } from './ooxml-to-html/document-formatting.utils';
+import { injectDirectFormatting } from './ooxml-to-html/inject-formatting.utils';
 
 export type { MammothApi, MammothConvertInput, MammothConvertResult } from './mammoth.types';
 export * from './types';
@@ -7,6 +10,8 @@ export * from './writer';
 export * from './patch';
 export * from './markdown';
 export * from './import';
+export * from './ooxml-to-html/document-formatting.utils';
+export * from './ooxml-to-html/inject-formatting.utils';
 export * from './html-to-ooxml/mapper';
 export * from './html-to-ooxml/xml.utils';
 export * from './html-to-ooxml/media.utils';
@@ -39,11 +44,23 @@ export const convertDocxToHtml = async (
 ): Promise<string> => {
   const mammoth = await getMammoth();
   try {
-    const result = await mammoth.convertToHtml({ arrayBuffer: await toArrayBuffer(input) });
-    return result.value;
+    const arrayBuffer = await toArrayBuffer(input);
+    const result = await mammoth.convertToHtml({ arrayBuffer });
+    return withDirectFormatting(result.value, arrayBuffer);
   } catch (error) {
     console.error('[docx-io] convertDocxToHtml failed:', error);
     throw error;
+  }
+};
+
+const withDirectFormatting = async (html: string, arrayBuffer: ArrayBuffer): Promise<string> => {
+  try {
+    const pkg = await unpackOoxml(new Uint8Array(arrayBuffer));
+    const documentXml = getPartText(pkg, 'word/document.xml') ?? '';
+    if (!documentXml) return html;
+    return injectDirectFormatting(html, extractBodyFormatPlan(documentXml));
+  } catch {
+    return html;
   }
 };
 
