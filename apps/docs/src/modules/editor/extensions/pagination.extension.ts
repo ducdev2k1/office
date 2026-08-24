@@ -41,7 +41,7 @@ export const computePaginationMetrics = (setup: PageSetup, gapHeight = 16): Pagi
 export const measureDocPageCount = (
   view: { dom: HTMLElement; state: { doc: { content: { size: number }; forEach: (cb: (node: unknown, offset: number) => void) => void } } },
   metrics: PaginationMetrics,
-  maxPages = 50,
+  maxPages = 300,
 ): number => {
   const root = view.dom as HTMLElement;
   if (!root || !root.offsetHeight) return 1;
@@ -88,7 +88,7 @@ export const Pagination = Extension.create<PaginationOptions>({
     return {
       pageSetup: DEFAULT_PAGE_SETUP(),
       gapHeight: 16,
-      maxPages: 50,
+      maxPages: 300,
       docTitle: '',
     };
   },

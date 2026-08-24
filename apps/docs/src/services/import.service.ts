@@ -1,5 +1,6 @@
-import { convertDocxToHtml, importHtml, importText } from '@office/docx-io';
+import { importHtml, importText } from '@office/docx-io';
 import { saveDocxSource } from '@/services/docs.service';
+import { convertDocxInWorker } from '@/services/docxConvert.service';
 import { DEFAULT_PAGE_SETUP, type DocRecord } from '@/types/docs.types';
 
 const stripExtension = (name: string): string => name.replace(/\.[^/.]+$/, '');
@@ -10,7 +11,7 @@ const stripExtension = (name: string): string => name.replace(/\.[^/.]+$/, '');
  */
 export const importDocxFile = async (file: File): Promise<DocRecord> => {
   try {
-    const html = await convertDocxToHtml(file);
+    const html = await convertDocxInWorker(file);
     const content = html.trim() ? html : '<p></p>';
     const now = new Date().toISOString();
     const doc: DocRecord = {

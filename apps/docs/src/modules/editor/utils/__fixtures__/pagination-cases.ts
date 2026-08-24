@@ -1,4 +1,4 @@
-import type { BlockMeasurement, PageMetrics } from '../pagination.utils';
+import { MAX_PAGES, type BlockMeasurement, type PageMetrics } from '../pagination.utils';
 
 export interface PaginationCase {
   name: string;
@@ -166,13 +166,13 @@ export const PAGINATION_CASES: PaginationCase[] = [
 
 export const MAX_PAGES_CASE: PaginationCase = {
   name: 'max-pages-caps-breaks-but-counts-laid-out-pages',
-  blocks: Array.from({ length: 59 }, (_, i) => pageBreakBlock(1 + 2 * i)),
+  blocks: Array.from({ length: MAX_PAGES + 5 }, (_, i) => pageBreakBlock(1 + 2 * i)),
   metrics: P,
   expected: {
-    breaks: Array.from({ length: 49 }, (_, i) => 1 + 2 * i),
-    spacers: Array.from({ length: 49 }, () => 0),
-    forced: Array.from({ length: 49 }, () => true),
-    contentOffsets: Array.from({ length: 50 }, (_, i) => i * STEP),
+    breaks: Array.from({ length: MAX_PAGES - 1 }, (_, i) => 1 + 2 * i),
+    spacers: Array.from({ length: MAX_PAGES - 1 }, () => 0),
+    forced: Array.from({ length: MAX_PAGES - 1 }, () => true),
+    contentOffsets: Array.from({ length: MAX_PAGES }, (_, i) => i * STEP),
   },
 };
 

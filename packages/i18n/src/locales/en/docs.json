@@ -403,7 +403,7 @@
     "saving": "Saving..."
   },
   "pagination": {
-    "maxPagesWarning": "Document is too long for page view (maximum 50 pages)."
+    "maxPagesWarning": "Document exceeds 300 pages — further pages stay editable but are not paginated."
   },
   "collab": {
     "connected": "Live connected",

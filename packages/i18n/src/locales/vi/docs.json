@@ -403,7 +403,7 @@
     "saving": "Đang lưu..."
   },
   "pagination": {
-    "maxPagesWarning": "Tài liệu quá dài cho chế độ xem phân trang (tối đa 50 trang)."
+    "maxPagesWarning": "Tài liệu vượt 300 trang — các trang tiếp theo vẫn chỉnh sửa được nhưng không hiển thị phân trang."
   },
   "collab": {
     "connected": "Đã kết nối trực tiếp",

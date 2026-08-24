@@ -24,7 +24,7 @@ export {
 } from '@/modules/editor/utils/pagination-dirty.utils';
 
 export const PAGE_GAP = 24;
-export const MAX_PAGES = 50;
+export const MAX_PAGES = 300;
 
 const key = new PluginKey<PageBreaks>('pagination');
 

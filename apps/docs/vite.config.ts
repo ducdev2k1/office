@@ -15,7 +15,8 @@ export default defineConfig({
       manifest: {
         name: 'OneMail Docs — Soạn thảo văn bản',
         short_name: 'Docs',
-        description: 'Ứng dụng soạn thảo văn bản web với cộng tác thời gian thực, hoạt động offline.',
+        description:
+          'Ứng dụng soạn thảo văn bản web với cộng tác thời gian thực, hoạt động offline.',
         lang: 'vi',
         start_url: '/',
         scope: '/',
@@ -26,8 +27,18 @@ export default defineConfig({
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icons/maskable-icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
-          { src: '/icons/maskable-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          {
+            src: '/icons/maskable-icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: '/icons/maskable-icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
         ],
       },
       workbox: {
@@ -45,6 +56,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  worker: {
+    format: 'es',
   },
   server: {
     port: 20011,
