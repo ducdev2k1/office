@@ -18,9 +18,9 @@ export const TableGridPicker = ({
   const totalCells = maxRows * maxCols;
 
   return (
-    <div className={cn('p-2.5 select-none flex flex-col items-center gap-2 bg-popover', className)}>
+    <div className={cn('p-2.5 select-none flex flex-col items-center gap-2 bg-popover text-popover-foreground', className)}>
       <div
-        className="grid gap-[3px] p-0.5"
+        className="grid gap-[3px] p-1.5 rounded-md bg-muted/40 dark:bg-muted/20 border border-border/60"
         style={{
           gridTemplateColumns: `repeat(${maxCols}, 18px)`,
         }}
@@ -36,11 +36,15 @@ export const TableGridPicker = ({
               key={`${row}-${col}`}
               type="button"
               className={cn(
-                'w-[18px] h-[18px] rounded-[2px] border transition-colors cursor-pointer block',
+                'size-[18px] rounded-[2px] transition-colors cursor-pointer block',
                 isSelected
                   ? 'border-primary bg-primary/20 dark:bg-primary/30 ring-1 ring-primary/60'
-                  : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 hover:border-primary/50',
+                  : 'border-border/90 bg-card hover:border-primary/50 hover:bg-primary/5',
               )}
+              style={{
+                borderWidth: '1px',
+                borderStyle: 'solid',
+              }}
               onMouseEnter={() => setHovered({ rows: row, cols: col })}
               onClick={(event) => {
                 event.stopPropagation();
@@ -51,7 +55,7 @@ export const TableGridPicker = ({
           );
         })}
       </div>
-      <div className="text-xs font-medium text-muted-foreground tracking-wide">
+      <div className="text-xs font-medium text-muted-foreground tracking-wide px-2 py-0.5 rounded bg-muted/50">
         {hovered.rows} x {hovered.cols}
       </div>
     </div>
