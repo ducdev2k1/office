@@ -653,6 +653,27 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0
     devDependencies:
+      '@univerjs/docs':
+        specifier: 0.23.0
+        version: 0.23.0(react@19.2.8)(rxjs@7.8.2)
+      '@univerjs/engine-formula':
+        specifier: 0.23.0
+        version: 0.23.0(react@19.2.8)(rxjs@7.8.2)
+      '@univerjs/presets':
+        specifier: 0.23.0
+        version: 0.23.0(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rxjs@7.8.2)
+      '@univerjs/sheets':
+        specifier: 0.23.0
+        version: 0.23.0(react@19.2.8)(rxjs@7.8.2)
+      '@univerjs/sheets-formula':
+        specifier: 0.23.0
+        version: 0.23.0(react@19.2.8)(rxjs@7.8.2)
+      '@univerjs/sheets-numfmt':
+        specifier: 0.23.0
+        version: 0.23.0(react@19.2.8)(rxjs@7.8.2)
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
       tsx:
         specifier: ^4.23.12
         version: 4.23.12

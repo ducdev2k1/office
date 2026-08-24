@@ -562,6 +562,12 @@ export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
       }
     }
 
+    const frozenView = (ws.views ?? []).find((v) => v.state === 'frozen') as
+      | { xSplit?: number; ySplit?: number }
+      | undefined;
+    const xSplit = Math.max(0, Math.floor(frozenView?.xSplit ?? 0));
+    const ySplit = Math.max(0, Math.floor(frozenView?.ySplit ?? 0));
+
     sheets[sheetId] = {
       id: sheetId,
       name: ws.name,
@@ -572,7 +578,12 @@ export const exceljsToUniver = (workbook: ExcelJS.Workbook): IWorkbookData => {
       rowData: rowData as IWorksheetData['rowData'],
       columnData: columnData as IWorksheetData['columnData'],
       hidden: 0,
-      freeze: { xSplit: 0, ySplit: 0, startRow: -1, startColumn: -1 },
+      freeze: {
+        xSplit,
+        ySplit,
+        startRow: ySplit > 0 ? ySplit : -1,
+        startColumn: xSplit > 0 ? xSplit : -1,
+      },
     };
   });
 

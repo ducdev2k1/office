@@ -103,29 +103,42 @@ const applyStyle = (cell: ExcelJS.Cell, style: IStyleData | undefined): void => 
   if (style.n?.pattern) cell.numFmt = style.n.pattern;
 };
 
-const setCellValue = (cell: ExcelJS.Cell, data: ICellData | undefined): void => {
-  if (!data) return;
+const setCellValue = (cell: ExcelJS.Cell, data: ICellData | undefined): boolean => {
+  if (!data) return false;
   const { v, f, t } = data;
   if (f) {
     const formulaText = f.startsWith('=') ? f.slice(1) : f;
+    const hasResult = v !== undefined && v !== null;
     cell.value = (
-      v === undefined || v === null ? { formula: formulaText } : { formula: formulaText, result: v }
+      hasResult ? { formula: formulaText, result: v } : { formula: formulaText }
     ) as ExcelJS.CellValue;
-    return;
+    return !hasResult;
   }
   if (t === CellValueType.BOOLEAN) {
     cell.value = typeof v === 'boolean' ? v : Boolean(v);
-    return;
+    return false;
   }
   if (t === CellValueType.NUMBER) {
     cell.value = typeof v === 'number' ? v : Number(v);
-    return;
+    return false;
   }
   if (v === undefined || v === null) {
     cell.value = '';
-    return;
+    return false;
   }
   cell.value = v as ExcelJS.CellValue;
+  return false;
+};
+
+const toColumnLetter = (col1Based: number): string => {
+  let n = col1Based;
+  let out = '';
+  while (n > 0) {
+    const rem = (n - 1) % 26;
+    out = String.fromCharCode(65 + rem) + out;
+    n = Math.floor((n - 1) / 26);
+  }
+  return out;
 };
 
 export const univerToExceljs = async (
@@ -147,18 +160,41 @@ export const univerToExceljs = async (
     if (sheet.hidden) ws.state = 'hidden';
     if (sheet.tabColor) ws.properties.tabColor = { argb: sheet.tabColor };
 
+    const freeze = sheet.freeze;
+    if (freeze && ((freeze.xSplit ?? 0) > 0 || (freeze.ySplit ?? 0) > 0)) {
+      const xSplit = Math.max(0, Math.floor(freeze.xSplit ?? 0));
+      const ySplit = Math.max(0, Math.floor(freeze.ySplit ?? 0));
+      ws.views = [
+        {
+          state: 'frozen',
+          xSplit,
+          ySplit,
+          topLeftCell: `${toColumnLetter(xSplit + 1)}${ySplit + 1}`,
+        },
+      ];
+    }
+
+    let missingFormulaResults = 0;
     for (const [rowKey, rowCells] of Object.entries(sheet.cellData ?? {})) {
       const rowNum = Number(rowKey) + 1; // 0-based Univer to 1-based ExcelJS
       const cells = rowCells as Record<string, ICellData> | undefined;
       for (const [colKey, cellData] of Object.entries(cells ?? {})) {
         const colNum = Number(colKey) + 1; // 0-based Univer to 1-based ExcelJS
         const cell = ws.getCell(rowNum, colNum);
-        setCellValue(cell, cellData);
+        if (setCellValue(cell, cellData)) missingFormulaResults += 1;
         if (cellData?.s) {
           const style = typeof cellData.s === 'string' ? data.styles?.[cellData.s] : cellData.s;
           if (style) applyStyle(cell, style);
         }
       }
+    }
+
+    if (missingFormulaResults > 0) {
+      // ExcelJS never serializes calcPr (fullCalcOnLoad) to the file; instead it
+      // omits <v> for these cells, which makes Excel/LibreOffice recalculate on open.
+      console.warn(
+        `[xlsx-io] ${missingFormulaResults} formula cell(s) exported without cached result in sheet "${sheet.name}" — consumers recalculate them on open.`,
+      );
     }
 
     for (const merge of sheet.mergeData ?? []) {
