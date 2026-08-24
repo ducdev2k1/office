@@ -1,4 +1,4 @@
-import type { PageSetup } from '@/types/docs.types';
+import { DEFAULT_PAGE_SETUP, type PageSetup } from '@/types/docs.types';
 
 export interface VnAdminComplianceReport {
   isPaperSizeCompliant: boolean;
@@ -47,6 +47,7 @@ export const checkVnAdminCompliance = (setup?: PageSetup): VnAdminComplianceRepo
 // Standard margins per NĐ 30/2020: Top 20mm, Bottom 20mm, Left 30mm, Right 15mm (converted to pt)
 // 1 mm ≈ 2.83465 pt
 export const STANDARD_VN_ADMIN_PAGE_SETUP: PageSetup = {
+  ...DEFAULT_PAGE_SETUP(),
   paperSize: 'a4',
   orientation: 'portrait',
   margins: {
