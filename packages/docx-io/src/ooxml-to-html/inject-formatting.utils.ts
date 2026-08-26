@@ -1,4 +1,5 @@
 import { parseHtmlToTree, type HtmlNode } from '../html-to-ooxml/html-parser';
+import { IGNORABLE_SHD_FILLS } from './document-formatting.utils';
 import type { BodyFormatPlan, ParagraphFormatInfo, RunSegment } from './document-formatting.utils';
 
 interface TextSlot {
@@ -49,7 +50,9 @@ const collectBlocks = (nodes: HtmlNode[], out: BlockMatch[]): void => {
       if (isBlockTag(child.tagName)) {
         const isListItem = child.tagName === 'li';
         const { slots, length } = collectTextSlots(child, 0, isListItem);
-        out.push({ node: child, parent: container, index, slots, length });
+        if (length > 0) {
+          out.push({ node: child, parent: container, index, slots, length });
+        }
         if (isListItem) {
           child.children.forEach((nested) => {
             if (nested.type === 'element' && (nested.tagName === 'ul' || nested.tagName === 'ol')) {
@@ -160,6 +163,16 @@ const applyAlignToBlock = (node: HtmlNode, align: NonNullable<ParagraphFormatInf
   node.attributes.style = merged;
 };
 
+const applyBoxToBlock = (node: HtmlNode, info: ParagraphFormatInfo): void => {
+  if (info.shading) {
+    node.attributes['data-bg-color'] = `#${info.shading}`;
+  }
+  if (info.borderLeftColor) {
+    node.attributes['data-border'] = 'left';
+    node.attributes['data-border-color'] = `#${info.borderLeftColor}`;
+  }
+};
+
 const escapeHtmlText = (text: string): string =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -189,6 +202,7 @@ export const injectDirectFormatting = (html: string, plan: BodyFormatPlan): stri
     const info = plan.blocks[i];
     if (!info) return;
     if (info.align) applyAlignToBlock(block.node, info.align);
+    applyBoxToBlock(block.node, info);
     if (block.length === info.textLength) applySegmentsToBlock(block, info);
   });
 
@@ -204,5 +218,50 @@ export const injectDirectFormatting = (html: string, plan: BodyFormatPlan): stri
     }
   }
 
+  return tree.map(nodeToHtml).join('');
+};
+
+const extractTableCellFills = (documentXml: string): (string | null)[] => {
+  const fills: (string | null)[] = [];
+  const cellRegex = /<w:tc\b[^>]*>([\s\S]*?)<\/w:tc>/g;
+  let match: RegExpExecArray | null;
+  while ((match = cellRegex.exec(documentXml)) !== null) {
+    const tcPrMatch = /<w:tcPr>([\s\S]*?)<\/w:tcPr>/.exec(match[1] ?? '');
+    const shdMatch = /<w:shd [^>]*w:fill="([0-9A-Fa-f]{6})"/.exec(tcPrMatch?.[1] ?? '');
+    const fill = shdMatch?.[1]?.toUpperCase() ?? null;
+    fills.push(fill && !IGNORABLE_SHD_FILLS.has(fill) ? fill : null);
+  }
+  return fills;
+};
+
+const collectTableCells = (nodes: HtmlNode[], out: HtmlNode[]): void => {
+  const visit = (node: HtmlNode): void => {
+    if (node.type !== 'element') return;
+    if (node.tagName === 'td' || node.tagName === 'th') {
+      out.push(node);
+      return;
+    }
+    node.children.forEach(visit);
+  };
+  nodes.forEach(visit);
+};
+
+export const injectTableCellShading = (html: string, documentXml: string): string => {
+  if (!documentXml.includes('<w:tbl>')) return html;
+  const fills = extractTableCellFills(documentXml);
+  if (!fills.some(Boolean)) return html;
+  const tree = parseHtmlToTree(html);
+  const cells: HtmlNode[] = [];
+  collectTableCells(tree, cells);
+  if (cells.length !== fills.length) return html;
+  cells.forEach((cell, i) => {
+    const fill = fills[i];
+    if (!fill) return;
+    const existing = cell.attributes.style ?? '';
+    const cleaned = existing.replace(/background-color\s*:\s*[^;]+;?/gi, '').trim();
+    cell.attributes.style = cleaned
+      ? `${cleaned.replace(/;$/, '')}; background-color: #${fill}`
+      : `background-color: #${fill}`;
+  });
   return tree.map(nodeToHtml).join('');
 };

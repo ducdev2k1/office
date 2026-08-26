@@ -2,7 +2,10 @@
 import type { MammothApi } from './mammoth.types';
 import { getPartText, unpackOoxml } from '@office/ooxml-core';
 import { extractBodyFormatPlan } from './ooxml-to-html/document-formatting.utils';
-import { injectDirectFormatting } from './ooxml-to-html/inject-formatting.utils';
+import {
+  injectDirectFormatting,
+  injectTableCellShading,
+} from './ooxml-to-html/inject-formatting.utils';
 
 export type { MammothApi, MammothConvertInput, MammothConvertResult } from './mammoth.types';
 export * from './types';
@@ -58,7 +61,8 @@ const withDirectFormatting = async (html: string, arrayBuffer: ArrayBuffer): Pro
     const pkg = await unpackOoxml(new Uint8Array(arrayBuffer));
     const documentXml = getPartText(pkg, 'word/document.xml') ?? '';
     if (!documentXml) return html;
-    return injectDirectFormatting(html, extractBodyFormatPlan(documentXml));
+    const withBlocks = injectDirectFormatting(html, extractBodyFormatPlan(documentXml));
+    return injectTableCellShading(withBlocks, documentXml);
   } catch {
     return html;
   }

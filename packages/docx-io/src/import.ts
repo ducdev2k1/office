@@ -15,12 +15,23 @@ export const importText = (text: string): string => {
   return paragraphs.join('') || '<p></p>';
 };
 
+const PAIRED_DANGEROUS_TAGS_REGEX =
+  /<(iframe|object|form|script|style)\b[^>]*>[\s\S]*?<\/\1>/gi;
+const VOID_DANGEROUS_TAGS_REGEX = /<(base|meta|link|embed)\b[^>]*\/?>/gi;
+const EVENT_HANDLER_ATTR_REGEX = /\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi;
+const QUOTED_BAD_URL_ATTR_REGEX =
+  /(\s(?:href|src|xlink:href))\s*=\s*(["'])\s*(?:javascript:|vbscript:|data:text\/html)[^"']*\2/gi;
+const UNQUOTED_BAD_URL_ATTR_REGEX = /(\s(?:href|src))\s*=\s*(?:javascript:|vbscript:)[^\s>]*/gi;
+
 export const importHtml = (html: string): string => {
   let cleaned = html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
     .replace(/<!doctype[^>]*>/gi, '')
-    .replace(/<!--[\s\S]*?-->/g, '');
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(PAIRED_DANGEROUS_TAGS_REGEX, '')
+    .replace(VOID_DANGEROUS_TAGS_REGEX, '')
+    .replace(EVENT_HANDLER_ATTR_REGEX, '')
+    .replace(QUOTED_BAD_URL_ATTR_REGEX, '')
+    .replace(UNQUOTED_BAD_URL_ATTR_REGEX, '');
 
   const bodyMatch = cleaned.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   if (bodyMatch && bodyMatch[1]) {

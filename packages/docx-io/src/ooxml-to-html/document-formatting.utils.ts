@@ -12,6 +12,8 @@ export interface ParagraphFormatInfo {
   align?: 'center' | 'right' | 'justify';
   textLength: number;
   segments: RunSegment[];
+  shading?: string;
+  borderLeftColor?: string;
 }
 
 export interface PageBreakPosition {
@@ -99,6 +101,22 @@ const mergeSegment = (segments: RunSegment[], segment: RunSegment): void => {
   segments.push(segment);
 };
 
+export const IGNORABLE_SHD_FILLS = new Set(['FFFFFF', 'F1F5F9']);
+
+const readParagraphBox = (paragraphXml: string): { shading?: string; borderLeftColor?: string } => {
+  const pPrMatch = /<w:pPr>([\s\S]*?)<\/w:pPr>/.exec(paragraphXml);
+  const pPr = pPrMatch?.[1] ?? '';
+  const shdMatch = /<w:shd [^>]*w:fill="([0-9A-Fa-f]{6})"/.exec(pPr);
+  const shadingRaw = shdMatch?.[1]?.toUpperCase();
+  const shading =
+    shadingRaw && !IGNORABLE_SHD_FILLS.has(shadingRaw) ? shadingRaw : undefined;
+  const borderMatch = /<w:left [^>]*w:color="([0-9A-Fa-f]{6})"/.exec(pPr);
+  return {
+    shading,
+    borderLeftColor: borderMatch?.[1]?.toUpperCase() || undefined,
+  };
+};
+
 const parseParagraph = (
   paragraphXml: string,
 ): { info: ParagraphFormatInfo; pageBreaks: number } => {
@@ -130,12 +148,18 @@ const parseParagraph = (
   }
 
   return {
-    info: { align, textLength: cursor, segments },
+    info: {
+      align,
+      textLength: cursor,
+      segments,
+      ...readParagraphBox(paragraphXml),
+    },
     pageBreaks,
   };
 };
 
-/** Đọc direct formatting (align, u/strike/color/highlight, page break) theo thứ tự đoạn trong document.xml. */
+/** Đọc direct formatting (align, u/strike/color/highlight, page break) theo thứ tự đoạn trong document.xml.
+ * Chỉ tính các đoạn có ít nhất 1 ký tự text — bất đồng bộ với collectBlocks phía HTML (cùng quy tắc lọc). */
 export const extractBodyFormatPlan = (documentXml: string): BodyFormatPlan => {
   const blocks: ParagraphFormatInfo[] = [];
   const breaks: PageBreakPosition[] = [];
@@ -146,7 +170,7 @@ export const extractBodyFormatPlan = (documentXml: string): BodyFormatPlan => {
   while ((match = paragraphRegex.exec(documentXml)) !== null) {
     const { info, pageBreaks } = parseParagraph(match[0]);
     pendingBreakCount += pageBreaks;
-    if (info.textLength > 0 || info.align) {
+    if (info.textLength > 0) {
       blocks.push(info);
       if (pendingBreakCount > 0) {
         breaks.push({ nextBlockIndex: blocks.length - 1, count: pendingBreakCount });
