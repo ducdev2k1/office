@@ -26,6 +26,7 @@ import {
   Toc,
   TrackChanges,
 } from '@office/tiptap-extensions';
+import { CharacterCount } from '@tiptap/extensions';
 import Collaboration from '@tiptap/extension-collaboration';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Color from '@tiptap/extension-color';
@@ -171,6 +172,7 @@ export const useDocsEditor = (
       users: mentionUsers,
       getMentionedIds: mentionedIds,
     }),
+    CharacterCount,
     keyboardShortcuts,
   ];
 

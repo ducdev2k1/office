@@ -21,6 +21,7 @@ import {
   usePrintDocument,
 } from '@/modules/editor';
 import { EditorDialogsHost } from '@/modules/editor/components/EditorDialogsHost';
+import { PdfExportHint } from '@/modules/editor/components/PdfExportHint';
 import { TrackChangesBar } from '@/modules/editor/components/track-changes/TrackChangesBar';
 import { useEditorComments } from '@/modules/editor/hooks/useEditorComments';
 import { useTrackChanges } from '@/modules/editor/hooks/useTrackChanges';
@@ -39,6 +40,9 @@ import { ImageBubbleToolbar } from '@/modules/toolbar/components/ImageBubbleTool
 import { LinkPopoverHost } from '@/modules/toolbar/components/LinkPopoverHost';
 import { Toolbar } from '@/modules/toolbar';
 import type { PageSetup } from '@/types/docs.types';
+
+const PDF_HINT_MS = 6000;
+const PRINT_DELAY_MS = 400;
 
 export const EditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -129,7 +133,7 @@ export const EditorPage = () => {
   const { viewMode, setViewMode, schedulePagination, zoom, setZoom } = paginationState;
   const versionHistory = useVersionHistory(activeDoc, collabRoom.doc);
 
-  const actions = useEditorActions(editor, activeDoc);
+  const actions = useEditorActions(editor, activeDoc, modals.requestTextInput);
   const {
     setLink,
     exportDocx,
@@ -170,6 +174,26 @@ export const EditorPage = () => {
   const canDelete = docs.filter((doc) => !doc.deletedAt).length > 1;
   const { wordCount, charCount } = useDocStats(editor);
   const { printDocument } = usePrintDocument(editor, activeDoc, paginationState);
+
+  const [pdfHintOpen, setPdfHintOpen] = useState(false);
+  const pdfHintTimerRef = useRef<number | null>(null);
+  const printDelayTimerRef = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (pdfHintTimerRef.current !== null) window.clearTimeout(pdfHintTimerRef.current);
+      if (printDelayTimerRef.current !== null) window.clearTimeout(printDelayTimerRef.current);
+    },
+    [],
+  );
+
+  const handleExportPdf = () => {
+    setPdfHintOpen(true);
+    if (pdfHintTimerRef.current !== null) window.clearTimeout(pdfHintTimerRef.current);
+    pdfHintTimerRef.current = window.setTimeout(() => setPdfHintOpen(false), PDF_HINT_MS);
+    if (printDelayTimerRef.current !== null) window.clearTimeout(printDelayTimerRef.current);
+    printDelayTimerRef.current = window.setTimeout(() => void printDocument(), PRINT_DELAY_MS);
+  };
 
   useGlobalShortcuts(modals.toggleFind, modals.closeAllModals);
 
@@ -221,7 +245,7 @@ export const EditorPage = () => {
             onPrint: () => void printDocument(),
             onExportDocx: () => void exportDocx(),
             onExportMarkdown: exportMarkdown,
-            onExportPdf: () => void printDocument(),
+            onExportPdf: handleExportPdf,
             onExportHtml: exportHtml,
             onExportText: exportText,
             onDelete: handleDeleteDoc,
@@ -376,6 +400,8 @@ export const EditorPage = () => {
           saveState={saveState}
           lastSavedAt={activeDoc ? new Date(activeDoc.updatedAt) : null}
         />
+
+        <PdfExportHint open={pdfHintOpen} />
 
         <EditorDialogsHost
           editor={editor}

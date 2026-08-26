@@ -90,6 +90,36 @@ export const importHtmlFile = async (file: File): Promise<DocRecord> => {
 };
 
 /**
+ * Mo file Markdown (.md / .markdown): parse sang HTML bang marked roi lam sach
+ * qua importHtml de dam bao chi con markup tuong thich TipTap.
+ */
+export const importMarkdownFile = async (file: File): Promise<DocRecord> => {
+  try {
+    const text = await file.text();
+    const { marked } = await import('marked');
+    const rawHtml = marked.parse(text, { async: false });
+    const content = importHtml(rawHtml);
+    const now = new Date().toISOString();
+    return {
+      id: `doc-${crypto.randomUUID()}`,
+      title: stripExtension(file.name) || 'Tai lieu Markdown',
+      kind: 'docs',
+      createdAt: now,
+      updatedAt: now,
+      lastOpenedAt: now,
+      starred: false,
+      deletedAt: null,
+      content,
+      pageSetup: DEFAULT_PAGE_SETUP(),
+      sourceType: 'markdown',
+    };
+  } catch (error) {
+    console.error('[import] importMarkdownFile failed:', error);
+    throw error;
+  }
+};
+
+/**
  * Tu dong nhan dien duoi file va goi ham import tuong ung.
  */
 export const importAnySupportedFile = async (file: File): Promise<DocRecord> => {
@@ -99,6 +129,9 @@ export const importAnySupportedFile = async (file: File): Promise<DocRecord> => 
   }
   if (name.endsWith('.html') || name.endsWith('.htm')) {
     return importHtmlFile(file);
+  }
+  if (name.endsWith('.md') || name.endsWith('.markdown')) {
+    return importMarkdownFile(file);
   }
   return importTextFile(file);
 };

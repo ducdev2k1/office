@@ -1,5 +1,6 @@
 import type { Editor } from '@tiptap/core';
 import { compressImage, MAX_IMAGE_DATA_URL_LENGTH } from '@/modules/editor/utils/image.utils';
+import type { TextInputKind } from '@/modules/editor/hooks/useEditorModals';
 import {
   exportDocxDocument,
   exportHtmlDocument,
@@ -7,6 +8,11 @@ import {
   exportTextDocument,
 } from '@/services/export.service';
 import type { DocRecord } from '@/types/docs.types';
+
+export type RequestTextInput = (
+  kind: TextInputKind,
+  defaultValue?: string,
+) => Promise<string | null>;
 
 export interface EditorActions {
   setLink: () => void;
@@ -29,11 +35,12 @@ export interface EditorActions {
 export const useEditorActions = (
   editor: Editor | null,
   activeDoc: DocRecord | undefined,
+  requestTextInput: RequestTextInput,
 ): EditorActions => {
-  const setLink = (): void => {
+  const setLink = async (): Promise<void> => {
     if (!editor) return;
     const previousUrl = editor.getAttributes('link').href as string | undefined;
-    const url = window.prompt('Nhập URL', previousUrl ?? 'https://');
+    const url = await requestTextInput('link', previousUrl ?? 'https://');
     if (url === null) return;
     if (!url.trim()) editor.chain().focus().extendMarkRange('link').unsetLink().run();
     else editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
@@ -90,9 +97,9 @@ export const useEditorActions = (
       ?.run();
   };
 
-  const handleInsertBookmark = (): void => {
-    const name = window.prompt('Nhập tên dấu trang (Bookmark)', 'Dấu trang 1');
-    if (name === null) return;
+  const handleInsertBookmark = async (): Promise<void> => {
+    const name = await requestTextInput('bookmark');
+    if (name === null || !name.trim()) return;
     (editor?.chain().focus() as unknown as { setBookmark: (name?: string) => { run: () => boolean } })
       ?.setBookmark(name)
       ?.run();
@@ -110,9 +117,9 @@ export const useEditorActions = (
     }
   };
 
-  const handleInsertFootnote = (content?: string): void => {
-    const note = content || window.prompt('Nhập nội dung chú thích cuối trang (Footnote)', 'Chú thích...');
-    if (note === null) return;
+  const handleInsertFootnote = async (content?: string): Promise<void> => {
+    const note = content ?? (await requestTextInput('footnote'));
+    if (note === null || !note.trim()) return;
     (editor?.chain().focus() as unknown as { setFootnote: (opts: { content: string }) => { run: () => boolean } })
       ?.setFootnote({ content: note })
       ?.run();

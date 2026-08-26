@@ -1,5 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ContextMenuPosition } from '@/modules/editor/types/editor.types';
+
+export type TextInputKind = 'link' | 'bookmark' | 'footnote';
+
+export interface TextInputRequest {
+  kind: TextInputKind;
+  defaultValue: string;
+}
 
 export const useEditorModals = () => {
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -26,6 +33,16 @@ export const useEditorModals = () => {
     const saved = localStorage.getItem('docs-floating-word-count');
     return saved === 'true';
   });
+  const [textInput, setTextInput] = useState<TextInputRequest | null>(null);
+  const textInputResolverRef = useRef<((value: string | null) => void) | null>(null);
+
+  useEffect(
+    () => () => {
+      textInputResolverRef.current?.(null);
+      textInputResolverRef.current = null;
+    },
+    [],
+  );
 
   useEffect(() => {
     const handleOpenHf = (event: Event) => {
@@ -69,6 +86,23 @@ export const useEditorModals = () => {
   const toggleFind = () => setFindOpen((prev) => !prev);
   const toggleComments = () => setCommentsOpen((prev) => !prev);
 
+  const resolveTextInput = (value: string | null) => {
+    textInputResolverRef.current?.(value);
+    textInputResolverRef.current = null;
+    setTextInput(null);
+  };
+
+  const requestTextInput = (
+    kind: TextInputKind,
+    defaultValue = '',
+  ): Promise<string | null> => {
+    textInputResolverRef.current?.(null);
+    return new Promise<string | null>((resolve) => {
+      textInputResolverRef.current = resolve;
+      setTextInput({ kind, defaultValue });
+    });
+  };
+
   const toggleFloatingWordCount = (val: boolean) => {
     setShowFloatingWordCount(val);
     localStorage.setItem('docs-floating-word-count', String(val));
@@ -85,6 +119,7 @@ export const useEditorModals = () => {
     setChartEditorOpen(false);
     setWordCountOpen(false);
     setVnAdminOpen(false);
+    resolveTextInput(null);
   };
 
   return {
@@ -106,6 +141,7 @@ export const useEditorModals = () => {
     wordCountOpen,
     vnAdminOpen,
     showFloatingWordCount,
+    textInput,
     setFindOpen,
     setDocSettingsOpen,
     setDocSettingsTab,
@@ -124,6 +160,8 @@ export const useEditorModals = () => {
     setVnAdminOpen,
     setShowFloatingWordCount,
     toggleFloatingWordCount,
+    requestTextInput,
+    resolveTextInput,
     handleToggleSidebar,
     handleCloseSidebar,
     openPageSetup,

@@ -589,5 +589,18 @@
     "inFrontText": "In Front of Text",
     "margin": "Text Buffer Margin",
     "marginPixels": "{px}px"
+  },
+  "export": {
+    "pdfHint": "Choose Save as PDF in the print dialog to save a PDF file"
+  },
+  "inputDialog": {
+    "linkTitle": "Insert Link",
+    "linkLabel": "URL address",
+    "bookmarkTitle": "Bookmark",
+    "bookmarkLabel": "Bookmark name",
+    "footnoteTitle": "Footnote",
+    "footnoteLabel": "Footnote content",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   }
 }

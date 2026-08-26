@@ -8,6 +8,7 @@ import { MathEditorDialog } from '@/modules/editor/components/MathEditorDialog';
 import { ChartEditorDialog } from '@/modules/editor/components/ChartEditorDialog';
 import { WordCountDialog } from '@/modules/editor/components/WordCountDialog';
 import { VnAdminStandardDialog } from '@/modules/editor/components/VnAdminStandardDialog';
+import { TextInputDialog } from '@/modules/editor/components/TextInputDialog';
 import { SuggestionCard } from '@/modules/editor/components/track-changes/SuggestionCard';
 import { CommentsPanel } from '@/modules/editor/components/comments/CommentsPanel';
 import { ShareDialog } from '@/modules/collab/components/ShareDialog';
@@ -211,6 +212,8 @@ export const EditorDialogsHost = ({
         onClose={() => modals.setVnAdminOpen(false)}
         onApplyPageSetup={onPageSetupChange}
       />
+
+      <TextInputDialog request={modals.textInput} onResolve={modals.resolveTextInput} />
 
       {selectedSuggestion && onAcceptSuggestion && onRejectSuggestion && onCloseSuggestion && (
         <div className="fixed bottom-14 right-6 z-50 animate-in fade-in slide-in-from-bottom-3 duration-200">

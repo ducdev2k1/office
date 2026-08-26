@@ -589,5 +589,18 @@
     "inFrontText": "Trên chữ (In front of text)",
     "margin": "Khoảng đệm chữ",
     "marginPixels": "{px}px"
+  },
+  "export": {
+    "pdfHint": "Chọn Save as PDF trong hộp thoại In để lưu thành file PDF"
+  },
+  "inputDialog": {
+    "linkTitle": "Chèn liên kết",
+    "linkLabel": "Địa chỉ URL",
+    "bookmarkTitle": "Dấu trang (Bookmark)",
+    "bookmarkLabel": "Tên dấu trang",
+    "footnoteTitle": "Chú thích cuối trang",
+    "footnoteLabel": "Nội dung chú thích",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận"
   }
 }
