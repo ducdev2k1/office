@@ -1,33 +1,25 @@
 import { SheetEditor, type GetWorkbookData } from '@/components/SheetEditor';
 import { SheetsHeader } from '@/components/SheetsHeader';
+import { SheetsStatusbar } from '@/components/SheetsStatusbar';
+import { useCellComments } from '@/hooks/useCellComments';
+import { useFloatingImagesState } from '@/hooks/useFloatingImagesState';
+import { useSelectionAggregate } from '@/hooks/useSelectionAggregate';
+import { useSheetChartsState } from '@/hooks/useSheetChartsState';
 import { useSheets } from '@/hooks/useSheets';
 import { useTheme } from '@/hooks/useTheme';
-import {
-  ChartInspector,
-  createDefaultChartSpec,
-  type ChartPosition,
-  type ChartSpec,
-} from '@/modules/charts';
-import { indexToColumnLetter } from '@/modules/charts/utils/dataRangeParser.utils';
+import { ChartInspector } from '@/modules/charts';
 import { ShareDialog, useCollabSheet } from '@/modules/collab';
-import {
-  CellCommentPopover,
-  CommentsSidebar,
-  type SheetCommentThread,
-} from '@/modules/comments';
-import {
-  InsertImageDialog,
-  type FloatingImageSpec,
-  type ImagePosition,
-} from '@/modules/images';
+import type { SheetCellRange } from '@/modules/collab/types/collab.types';
+import { CellCommentPopover, CommentsSidebar } from '@/modules/comments';
+import { InsertImageDialog } from '@/modules/images';
 import { PrintPreviewModal } from '@/modules/print';
 import { SheetsToolbar } from '@/modules/toolbar';
 import { exportXlsxFile } from '@/services/xlsx.service';
-import { prepareExportSnapshot } from '@office/xlsx-io';
-import { useTranslation } from '@office/i18n';
+import { getStoredLocale, useTranslation } from '@office/i18n';
 import { Button, Skeleton } from '@office/ui-kit';
-import type { FUniver, IWorkbookData } from '@univerjs/presets';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { prepareExportSnapshot } from '@office/xlsx-io';
+import { LocaleType, type FUniver, type IWorkbookData } from '@univerjs/presets';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 const downloadBlob = (blob: Blob, filename: string): void => {
@@ -65,21 +57,12 @@ export const EditorPage = () => {
   const [isInsertImageDialogOpen, setIsInsertImageDialogOpen] = useState(false);
   const [isCommentsSidebarOpen, setIsCommentsSidebarOpen] = useState(false);
   const [univerAPI, setUniverAPI] = useState<FUniver | null>(null);
+  const [selectionRange, setSelectionRange] = useState<SheetCellRange | null>(null);
   const getWorkbookDataRef = useRef<GetWorkbookData | null>(null);
-
-  // Charts State
-  const [charts, setCharts] = useState<ChartSpec[]>([]);
-  const [selectedChartId, setSelectedChartId] = useState<string | null>(null);
-  const [isInspectorOpen, setIsInspectorOpen] = useState(false);
-
-  // Floating Images State
-  const [images, setImages] = useState<FloatingImageSpec[]>([]);
-  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
-
-  // Comments State
-  const [threads, setThreads] = useState<SheetCommentThread[]>([]);
-  const [activeThread, setActiveThread] = useState<SheetCommentThread | null>(null);
-  const [isCommentPopoverOpen, setIsCommentPopoverOpen] = useState(false);
+  const univerLocale = useMemo(
+    () => (getStoredLocale() === 'vi' ? LocaleType.VI_VN : LocaleType.EN_US),
+    [],
+  );
 
   useEffect(() => {
     if (id) {
@@ -88,30 +71,18 @@ export const EditorPage = () => {
     }
   }, [id, setActiveId, markOpened]);
 
-  // Sync charts from activeSheet when loaded
-  useEffect(() => {
-    if (activeSheet?.charts) {
-      setCharts(activeSheet.charts);
-    } else {
-      setCharts([]);
-    }
-  }, [activeSheet?.id, activeSheet?.charts]);
-
   const activeWorksheetId =
     univerAPI?.getActiveWorkbook()?.getActiveSheet()?.getSheetId() ||
     activeSheet?.data?.sheetOrder?.[0] ||
     'sheet-01';
 
-  // Remote change handler for CRDT
   const handleRemoteDataChange = useCallback(
-    (workbook: IWorkbookData, remoteCharts: ChartSpec[]) => {
+    (workbook: IWorkbookData) => {
       updateData(workbook);
-      setCharts(remoteCharts);
     },
     [updateData],
   );
 
-  // Collab Room Hook
   const {
     collabStatus,
     collaborators,
@@ -129,6 +100,21 @@ export const EditorPage = () => {
     onRemoteDataChange: handleRemoteDataChange,
   });
 
+  const chartsState = useSheetChartsState({
+    activeWorksheetId,
+    updateCharts,
+    syncLocalCharts,
+  });
+  const imagesState = useFloatingImagesState({ activeWorksheetId });
+  const commentsState = useCellComments({ univerAPI, activeWorksheetId, currentUser });
+
+  const aggregate = useSelectionAggregate(univerAPI, selectionRange);
+
+  const { replaceCharts } = chartsState;
+  useEffect(() => {
+    replaceCharts(activeSheet?.charts);
+  }, [activeSheet?.id, activeSheet?.charts, replaceCharts]);
+
   const handleInternalDataChange = useCallback(
     (data: IWorkbookData) => {
       updateData(data);
@@ -137,160 +123,15 @@ export const EditorPage = () => {
     [updateData, syncLocalWorkbook],
   );
 
-  const selectedChart = charts.find((c) => c.id === selectedChartId) || null;
-
-  // Chart handlers
-  const handleInsertChart = useCallback(() => {
-    const defaultRange = 'A1:C6';
-    const newChart = createDefaultChartSpec(activeWorksheetId, defaultRange, 'column');
-    const nextCharts = [...charts, newChart];
-    setCharts(nextCharts);
-    setSelectedChartId(newChart.id);
-    setIsInspectorOpen(true);
-    updateCharts(nextCharts);
-    syncLocalCharts(nextCharts);
-  }, [activeWorksheetId, charts, updateCharts, syncLocalCharts]);
-
-  const handleUpdateChartPosition = useCallback(
-    (chartId: string, newPos: ChartPosition) => {
-      const nextCharts = charts.map((c) => (c.id === chartId ? { ...c, position: newPos } : c));
-      setCharts(nextCharts);
-      updateCharts(nextCharts);
-      syncLocalCharts(nextCharts);
+  const handleSelectionChange = useCallback(
+    (sheetId: string, range: SheetCellRange) => {
+      setSelectionRange(range);
+      broadcastSelection(sheetId, range);
     },
-    [charts, updateCharts, syncLocalCharts],
+    [broadcastSelection],
   );
 
-  const handleUpdateChartSpec = useCallback(
-    (partial: Partial<ChartSpec>) => {
-      if (!selectedChartId) return;
-      const nextCharts = charts.map((c) => (c.id === selectedChartId ? { ...c, ...partial } : c));
-      setCharts(nextCharts);
-      updateCharts(nextCharts);
-      syncLocalCharts(nextCharts);
-    },
-    [charts, selectedChartId, updateCharts, syncLocalCharts],
-  );
-
-  const handleDeleteChart = useCallback(
-    (chartId: string) => {
-      const nextCharts = charts.filter((c) => c.id !== chartId);
-      setCharts(nextCharts);
-      if (selectedChartId === chartId) {
-        setSelectedChartId(null);
-        setIsInspectorOpen(false);
-      }
-      updateCharts(nextCharts);
-      syncLocalCharts(nextCharts);
-    },
-    [charts, selectedChartId, updateCharts, syncLocalCharts],
-  );
-
-  // Floating Image handlers
-  const handleInsertImage = useCallback(
-    (url: string, title?: string) => {
-      const newImg: FloatingImageSpec = {
-        id: `img-${Date.now()}`,
-        url,
-        title,
-        sheetId: activeWorksheetId,
-        position: {
-          offsetX: 80,
-          offsetY: 100,
-          width: 260,
-          height: 180,
-        },
-        createdAt: new Date().toISOString(),
-      };
-      setImages((prev) => [...prev, newImg]);
-      setSelectedImageId(newImg.id);
-    },
-    [activeWorksheetId],
-  );
-
-  const handleUpdateImagePosition = useCallback((id: string, newPos: ImagePosition) => {
-    setImages((prev) => prev.map((img) => (img.id === id ? { ...img, position: newPos } : img)));
-  }, []);
-
-  const handleDeleteImage = useCallback((id: string) => {
-    setImages((prev) => prev.filter((img) => img.id !== id));
-    setSelectedImageId(null);
-  }, []);
-
-  // Comment Handlers
-  const handleOpenAddComment = useCallback(() => {
-    const activeSheet = univerAPI?.getActiveWorkbook()?.getActiveSheet();
-    const selection = activeSheet?.getSelection()?.getActiveRange();
-    const range = selection
-      ? selection.getRange()
-      : { startRow: 0, endRow: 0, startColumn: 0, endColumn: 0 };
-    const cellAddress = `${indexToColumnLetter(range.startColumn)}${range.startRow + 1}`;
-
-    const newThread: SheetCommentThread = {
-      id: `thread-${Date.now()}`,
-      sheetId: activeWorksheetId,
-      cellAddress,
-      range: {
-        startRow: range.startRow,
-        endRow: range.endRow,
-        startColumn: range.startColumn,
-        endColumn: range.endColumn,
-      },
-      resolved: false,
-      comments: [
-        {
-          id: `c-${Date.now()}`,
-          author: currentUser,
-          content: 'Bình luận trên ô này.',
-          createdAt: new Date().toISOString(),
-        },
-      ],
-      createdAt: new Date().toISOString(),
-    };
-
-    setThreads((prev) => [...prev, newThread]);
-    setActiveThread(newThread);
-    setIsCommentPopoverOpen(true);
-  }, [univerAPI, activeWorksheetId, currentUser]);
-
-  const handleAddReply = useCallback(
-    (threadId: string, content: string) => {
-      const replyItem = {
-        id: `reply-${Date.now()}`,
-        author: currentUser,
-        content,
-        createdAt: new Date().toISOString(),
-      };
-      setThreads((prev) =>
-        prev.map((th) =>
-          th.id === threadId ? { ...th, comments: [...th.comments, replyItem] } : th,
-        ),
-      );
-      setActiveThread((prev) =>
-        prev && prev.id === threadId
-          ? { ...prev, comments: [...prev.comments, replyItem] }
-          : prev,
-      );
-    },
-    [currentUser],
-  );
-
-  const handleToggleResolve = useCallback((threadId: string) => {
-    setThreads((prev) =>
-      prev.map((th) => (th.id === threadId ? { ...th, resolved: !th.resolved } : th)),
-    );
-    setActiveThread((prev) =>
-      prev && prev.id === threadId ? { ...prev, resolved: !prev.resolved } : prev,
-    );
-  }, []);
-
-  const handleDeleteThread = useCallback((threadId: string) => {
-    setThreads((prev) => prev.filter((th) => th.id !== threadId));
-    setIsCommentPopoverOpen(false);
-    setActiveThread(null);
-  }, []);
-
-  // Global shortcuts
+  const { handleOpenAddComment } = commentsState;
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
@@ -312,7 +153,7 @@ export const EditorPage = () => {
       const data = univerAPI ? await prepareExportSnapshot(univerAPI) : getWorkbookDataRef.current?.();
       const snapshot = data ?? activeSheet?.data;
       if (!snapshot) return;
-      const blob = await exportXlsxFile(snapshot, charts);
+      const blob = await exportXlsxFile(snapshot, chartsState.charts);
       const filename = `${activeSheet?.title || 'workbook'}.xlsx`;
       downloadBlob(blob, filename);
     } catch (error) {
@@ -376,79 +217,78 @@ export const EditorPage = () => {
       <SheetsToolbar
         univerAPI={univerAPI}
         onPrint={() => setIsPrintModalOpen(true)}
-        onInsertChart={handleInsertChart}
+        onInsertChart={chartsState.handleInsertChart}
         onInsertImage={() => setIsInsertImageDialogOpen(true)}
-        onAddComment={handleOpenAddComment}
+        onAddComment={commentsState.handleOpenAddComment}
         onOpenCommentsSidebar={() => setIsCommentsSidebarOpen(true)}
       />
       <main className="relative flex min-h-0 flex-1 overflow-hidden">
         <div className="relative min-h-0 flex-1 overflow-hidden">
           <SheetEditor
-            key={activeSheet.id}
+            key={`${activeSheet.id}:${univerLocale}`}
             initialData={activeSheet.data}
             onDataChange={handleInternalDataChange}
-            onSelectionChange={broadcastSelection}
+            onSelectionChange={handleSelectionChange}
             onReady={setUniverAPI}
             getWorkbookDataRef={getWorkbookDataRef}
-            charts={charts}
-            selectedChartId={selectedChartId}
-            images={images}
-            selectedImageId={selectedImageId}
-            threads={threads}
+            locale={univerLocale}
+            charts={chartsState.charts}
+            selectedChartId={chartsState.selectedChartId}
+            images={imagesState.images}
+            selectedImageId={imagesState.selectedImageId}
+            threads={commentsState.threads}
             activeSheetId={activeWorksheetId}
             isDark={false}
             presences={presences}
             currentUserId={currentUser.id}
-            onSelectChart={(id) => {
-              setSelectedChartId(id);
-              if (!id) setIsInspectorOpen(false);
+            onSelectChart={chartsState.handleSelectChart}
+            onDoubleClickChart={(chartId) => {
+              chartsState.handleSelectChart(chartId);
+              chartsState.setIsInspectorOpen(true);
             }}
-            onDoubleClickChart={(id) => {
-              setSelectedChartId(id);
-              setIsInspectorOpen(true);
-            }}
-            onUpdateChartPosition={handleUpdateChartPosition}
-            onDeleteChart={handleDeleteChart}
-            onInsertChart={handleInsertChart}
-            onSelectImage={setSelectedImageId}
-            onUpdateImagePosition={handleUpdateImagePosition}
-            onDeleteImage={handleDeleteImage}
+            onUpdateChartPosition={chartsState.handleUpdateChartPosition}
+            onDeleteChart={chartsState.handleDeleteChart}
+            onInsertChart={chartsState.handleInsertChart}
+            onSelectImage={imagesState.setSelectedImageId}
+            onUpdateImagePosition={imagesState.handleUpdateImagePosition}
+            onDeleteImage={imagesState.handleDeleteImage}
             onSelectCommentThread={(thread) => {
-              setActiveThread(thread);
-              setIsCommentPopoverOpen(true);
+              commentsState.setActiveThread(thread);
+              commentsState.setIsCommentPopoverOpen(true);
             }}
           />
         </div>
 
-        {/* Right Sidebar Chart Inspector */}
         <ChartInspector
-          spec={selectedChart}
-          isOpen={isInspectorOpen}
-          onClose={() => setIsInspectorOpen(false)}
-          onUpdateSpec={handleUpdateChartSpec}
-          onDeleteChart={() => selectedChartId && handleDeleteChart(selectedChartId)}
+          spec={chartsState.selectedChart}
+          isOpen={chartsState.isInspectorOpen}
+          onClose={() => chartsState.setIsInspectorOpen(false)}
+          onUpdateSpec={chartsState.handleUpdateChartSpec}
+          onDeleteChart={() =>
+            chartsState.selectedChartId &&
+            chartsState.handleDeleteChart(chartsState.selectedChartId)
+          }
         />
 
-        {/* Right Sidebar Comments */}
         <CommentsSidebar
-          threads={threads}
+          threads={commentsState.threads}
           isOpen={isCommentsSidebarOpen}
           onClose={() => setIsCommentsSidebarOpen(false)}
           onSelectThread={(thread) => {
-            setActiveThread(thread);
-            setIsCommentPopoverOpen(true);
+            commentsState.setActiveThread(thread);
+            commentsState.setIsCommentPopoverOpen(true);
           }}
         />
       </main>
 
-      {/* Share Dialog */}
+      <SheetsStatusbar aggregate={aggregate} />
+
       <ShareDialog
         open={isShareDialogOpen}
         onClose={() => setIsShareDialogOpen(false)}
         sheetId={activeSheet.id}
       />
 
-      {/* Print Preview & PDF Export Modal */}
       <PrintPreviewModal
         open={isPrintModalOpen}
         onClose={() => setIsPrintModalOpen(false)}
@@ -457,22 +297,20 @@ export const EditorPage = () => {
         documentTitle={activeSheet.title}
       />
 
-      {/* Insert Floating Image Dialog */}
       <InsertImageDialog
         open={isInsertImageDialogOpen}
         onClose={() => setIsInsertImageDialogOpen(false)}
-        onInsertImage={handleInsertImage}
+        onInsertImage={imagesState.handleInsertImage}
       />
 
-      {/* Cell Comment Thread Popover */}
       <CellCommentPopover
-        thread={activeThread}
+        thread={commentsState.activeThread}
         currentUser={currentUser}
-        isOpen={isCommentPopoverOpen}
-        onClose={() => setIsCommentPopoverOpen(false)}
-        onAddReply={handleAddReply}
-        onToggleResolve={handleToggleResolve}
-        onDeleteThread={handleDeleteThread}
+        isOpen={commentsState.isCommentPopoverOpen}
+        onClose={() => commentsState.setIsCommentPopoverOpen(false)}
+        onAddReply={commentsState.handleAddReply}
+        onToggleResolve={commentsState.handleToggleResolve}
+        onDeleteThread={commentsState.handleDeleteThread}
       />
     </div>
   );

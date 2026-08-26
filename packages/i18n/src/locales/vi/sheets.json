@@ -400,5 +400,11 @@
     "noComments": "Chưa có bình luận nào trong bảng tính.",
     "active": "Đang mở",
     "resolved": "Đã xong"
+  },
+  "statusbar": {
+    "selected": "Đã chọn {count} ô",
+    "count": "Số",
+    "sum": "Tổng",
+    "avg": "Trung bình"
   }
 }

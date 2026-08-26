@@ -16,7 +16,7 @@ import {
   type FloatingImageSpec,
   type ImagePosition,
 } from '@/modules/images';
-import type { FUniver, IWorkbookData } from '@univerjs/presets';
+import type { FUniver, IWorkbookData, LocaleType } from '@univerjs/presets';
 import { useEffect, useState, type MutableRefObject } from 'react';
 
 export type GetWorkbookData = () => IWorkbookData | undefined;
@@ -34,6 +34,7 @@ export interface SheetEditorProps {
   threads?: SheetCommentThread[];
   activeSheetId?: string;
   isDark?: boolean;
+  locale?: LocaleType;
   presences?: SheetCollaboratorPresence[];
   currentUserId?: string;
   onSelectChart?: (id: string | null) => void;
@@ -60,6 +61,7 @@ export const SheetEditor = ({
   threads = [],
   activeSheetId = 'sheet-01',
   isDark = false,
+  locale,
   presences = [],
   currentUserId,
   onSelectChart = () => {},
@@ -87,6 +89,7 @@ export const SheetEditor = ({
     onSelectionChange,
     onReady,
     isDark,
+    locale,
   });
 
   const {

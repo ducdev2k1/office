@@ -13,6 +13,7 @@
     "build": "turbo build",
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",
+    "perf": "turbo perf",
     "test": "turbo test",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

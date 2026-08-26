@@ -19,6 +19,11 @@
     "test": {
       "dependsOn": ["^test"],
       "outputs": []
+    },
+    "perf": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "outputs": []
     }
   }
 }

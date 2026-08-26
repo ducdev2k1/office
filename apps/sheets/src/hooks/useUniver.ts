@@ -2,6 +2,7 @@ import { createDefaultWorkbookData } from '@/constants/sheets.constants';
 import type { SheetCellRange } from '@/modules/collab/types/collab.types';
 import { UniverSheetsCorePreset } from '@univerjs/preset-sheets-core';
 import UniverPresetSheetsCoreEnUS from '@univerjs/preset-sheets-core/locales/en-US';
+import UniverPresetSheetsCoreViVN from '@univerjs/preset-sheets-core/locales/vi-VN';
 import {
   createUniver,
   LocaleType,
@@ -19,6 +20,7 @@ export interface UseUniverOptions {
   onSelectionChange?: (sheetId: string, range: SheetCellRange) => void;
   onReady?: (api: FUniver) => void;
   isDark?: boolean;
+  locale?: LocaleType;
 }
 
 export const useUniver = ({
@@ -27,6 +29,7 @@ export const useUniver = ({
   onSelectionChange,
   onReady,
   isDark = false,
+  locale = LocaleType.EN_US,
 }: UseUniverOptions = {}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<FUniver | null>(null);
@@ -51,10 +54,11 @@ export const useUniver = ({
     if (!containerRef.current || instanceRef.current) return;
 
     const { univerAPI } = createUniver({
-      locale: LocaleType.EN_US,
+      locale,
       darkMode: isDark,
       locales: {
         [LocaleType.EN_US]: mergeLocales(UniverPresetSheetsCoreEnUS),
+        [LocaleType.VI_VN]: mergeLocales(UniverPresetSheetsCoreViVN),
       },
       presets: [
         UniverSheetsCorePreset({

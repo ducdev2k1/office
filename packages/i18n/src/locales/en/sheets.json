@@ -400,5 +400,11 @@
     "noComments": "No comments in this spreadsheet yet.",
     "active": "Active",
     "resolved": "Resolved"
+  },
+  "statusbar": {
+    "selected": "{count} cells selected",
+    "count": "Count",
+    "sum": "Sum",
+    "avg": "Avg"
   }
 }
