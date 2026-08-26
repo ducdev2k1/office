@@ -76,4 +76,6 @@ export const standardFormatChecks = (): FormatCheck[] => [
   { label: 'table', pattern: /<w:tbl>/ },
   { label: 'hyperlink', pattern: /<w:hyperlink [^>]*r:id=/ },
   { label: 'page-break', pattern: /<w:br w:type="page"\/>/ },
+  { label: 'image', pattern: /<w:drawing>/ },
+  { label: 'grid-span', pattern: /<w:gridSpan / },
 ];

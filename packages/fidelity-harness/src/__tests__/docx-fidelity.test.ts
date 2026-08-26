@@ -36,7 +36,8 @@ describe('fidelity-harness docx', () => {
       <h2>Định dạng tổng hợp</h2>
       <p style="text-align: justify;"><strong>Đậm</strong> <em>Nghiêng</em> <u>Gạch chân</u> <s>Gạch ngang</s> <span style="color: #dc2626;">Màu đỏ</span> <mark>Tô sáng</mark></p>
       <ol><li>Mục đánh số</li></ol>
-      <table><tr><th>Hạng mục</th></tr><tr><td>Kết quả đo</td></tr></table>
+      <table><tr><th colspan="2">Hạng mục gộp</th></tr><tr><td>Kết quả đo</td><td>Đạt chuẩn</td></tr></table>
+      <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" width="64" height="64"></p>
       <p><a href="https://example.com">Liên kết</a></p>
       <div data-type="page-break"></div>
       <p>Sau ngắt trang</p>
