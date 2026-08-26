@@ -9,7 +9,7 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "tsc -p tsconfig.json --noEmit",
-    "test": "tsx src/__tests__/import.test.ts && tsx src/__tests__/export.test.ts && tsx src/__tests__/export-formula.test.ts && tsx src/__tests__/freeze.test.ts && tsx src/__tests__/node/recalc-export.test.ts && tsx src/__tests__/roundtrip.test.ts && tsx src/__tests__/chart-roundtrip.test.ts && tsx src/__tests__/fidelity.test.ts",
+    "test": "tsx src/__tests__/import.test.ts && tsx src/__tests__/export.test.ts && tsx src/__tests__/export-formula.test.ts && tsx src/__tests__/freeze.test.ts && tsx src/__tests__/hybrid-merge.test.ts && tsx src/__tests__/node/recalc-export.test.ts && tsx src/__tests__/roundtrip.test.ts && tsx src/__tests__/chart-roundtrip.test.ts && tsx src/__tests__/fidelity.test.ts",
     "perf": "tsx scripts/perf-check.ts",
     "corpus": "tsx scripts/gen-corpus.ts"
   },

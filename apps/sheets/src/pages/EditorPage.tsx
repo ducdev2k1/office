@@ -148,12 +148,13 @@ export const EditorPage = () => {
   }, [handleOpenAddComment]);
 
   const handleExport = async () => {
+    if (!activeSheet) return;
     setExporting(true);
     try {
       const data = univerAPI ? await prepareExportSnapshot(univerAPI) : getWorkbookDataRef.current?.();
       const snapshot = data ?? activeSheet?.data;
       if (!snapshot) return;
-      const blob = await exportXlsxFile(snapshot, chartsState.charts);
+      const blob = await exportXlsxFile(activeSheet.id, snapshot, chartsState.charts);
       const filename = `${activeSheet?.title || 'workbook'}.xlsx`;
       downloadBlob(blob, filename);
     } catch (error) {

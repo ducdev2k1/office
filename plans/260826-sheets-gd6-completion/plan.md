@@ -42,11 +42,13 @@ nhưng thực tế code đã xây xong hầu hết (có báo cáo hoàn thành) 
 
 Verification: sheets typecheck ✓ · build ✓ · test chuỗi tsx ✓ · i18n parity ✓ · turbo 9/9 ✓
 
-### Phase B — Zip-merge ADR 0001 (tuần 3–5)
-- [ ] Thuật toán merge: rebuild part hiểu (sheet/style/merge/size) + copy byte part Lớp B từ zip gốc
-- [ ] Xử lý rId/content-types khi merge
-- [ ] Harness assert byte-equal từng part Lớp B sau round-trip
-- [ ] Sidecar đã có sẵn (`xlsxSourceStore('sheets-sources')`, `saveXlsxSource` gọi lúc import)
+### Phase B — Zip-merge ADR 0001 ✅ Done 26/08/2026
+- [x] Thuật toán merge: `packages/xlsx-io/src/hybrid-merge.utils.ts` — `mergeOpaqueParts` copy byte part Lớp B (charts/drawings/media/pivotCache/pivotTables/embeddings) từ zip gốc vào file rebuild qua ExcelJS
+- [x] Xử lý rId/content-types: cấp rId MỚI cho rels chép sang (không đụng rId cũ của sheet), wire `<drawing r:id>` vào sheet XML, ensure Override + Default trong [Content_Types].xml
+- [x] Byte-assert harness: `__tests__/hybrid-merge.test.ts` 5 test (copy nguyên byte / wiring / CT / mở lại bằng ExcelJS / rebuild thuần không mang part) — đã nối vào chuỗi `pnpm --filter @office/xlsx-io test`
+- [x] App wiring: `exportXlsxFile(docId, ...)` → `getXlsxSourceBuffer` (sidecar `sheets-sources`) → `exportWorkbookHybrid`; guard an toàn khi thiếu source (fallback rebuild thuần)
+
+Verification: xlsx-io test chuỗi pass (fidelity PASS ≥95%) · sheets typecheck/build ✓ · turbo 9/9 ✓
 
 ### Phase C — Đóng băng + tối ưu (sau khi tính năng đóng băng)
 - [ ] Bundle ≤1.2 MB gzip (lazy-load Univer + manualChunks + trim locale)

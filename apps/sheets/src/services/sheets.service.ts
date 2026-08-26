@@ -324,6 +324,16 @@ export const saveXlsxSource = async (
   });
 };
 
+export const getXlsxSourceBuffer = async (id: string): Promise<Uint8Array | null> => {
+  try {
+    const record = await xlsxSourceStore.get(id);
+    if (!record?.blob) return null;
+    return new Uint8Array(await record.blob.arrayBuffer());
+  } catch {
+    return null;
+  }
+};
+
 export const importSheetFile = async (file: File): Promise<SheetDocRecord> => {
   const data = await parseXlsxFile(file);
   const now = new Date().toISOString();
