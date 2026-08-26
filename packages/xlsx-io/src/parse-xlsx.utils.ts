@@ -1,8 +1,8 @@
-import ExcelJS from 'exceljs';
 import { exceljsToUniver } from './exceljsToUniver.utils';
 import type { XlsxChartSpec, XlsxWorkbookData } from './types';
 
 export const parseXlsxBuffer = async (buffer: ArrayBuffer): Promise<XlsxWorkbookData> => {
+  const ExcelJS = (await import('exceljs')).default;
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(buffer);
   const data: XlsxWorkbookData = exceljsToUniver(workbook);

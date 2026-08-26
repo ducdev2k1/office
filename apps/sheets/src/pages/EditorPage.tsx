@@ -12,15 +12,18 @@ import { ShareDialog, useCollabSheet } from '@/modules/collab';
 import type { SheetCellRange } from '@/modules/collab/types/collab.types';
 import { CellCommentPopover, CommentsSidebar } from '@/modules/comments';
 import { InsertImageDialog } from '@/modules/images';
-import { PrintPreviewModal } from '@/modules/print';
 import { SheetsToolbar } from '@/modules/toolbar';
 import { exportXlsxFile } from '@/services/xlsx.service';
 import { getStoredLocale, useTranslation } from '@office/i18n';
 import { Button, Skeleton } from '@office/ui-kit';
 import { prepareExportSnapshot } from '@office/xlsx-io';
 import { LocaleType, type FUniver, type IWorkbookData } from '@univerjs/presets';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+
+const PrintPreviewModal = lazy(() =>
+  import('@/modules/print').then((m) => ({ default: m.PrintPreviewModal })),
+);
 
 const downloadBlob = (blob: Blob, filename: string): void => {
   const url = URL.createObjectURL(blob);
@@ -290,13 +293,15 @@ export const EditorPage = () => {
         sheetId={activeSheet.id}
       />
 
-      <PrintPreviewModal
-        open={isPrintModalOpen}
-        onClose={() => setIsPrintModalOpen(false)}
-        workbookData={getWorkbookDataRef.current?.() ?? activeSheet.data}
-        activeSheetId={activeWorksheetId}
-        documentTitle={activeSheet.title}
-      />
+      <Suspense fallback={null}>
+        <PrintPreviewModal
+          open={isPrintModalOpen}
+          onClose={() => setIsPrintModalOpen(false)}
+          workbookData={getWorkbookDataRef.current?.() ?? activeSheet.data}
+          activeSheetId={activeWorksheetId}
+          documentTitle={activeSheet.title}
+        />
+      </Suspense>
 
       <InsertImageDialog
         open={isInsertImageDialogOpen}

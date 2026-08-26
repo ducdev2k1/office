@@ -1,7 +1,7 @@
 import { useTranslation } from '@office/i18n';
-import * as echarts from 'echarts';
 import { useEffect, useRef } from 'react';
 import type { ChartSpec, ParsedDataMatrix } from '../types/charts.types';
+import { loadEcharts, type ECharts } from '../utils/echartsLoader.utils';
 import { buildEChartsOption } from '../utils/echartsOptions.utils';
 
 export interface ChartRendererProps {
@@ -9,7 +9,7 @@ export interface ChartRendererProps {
   data: ParsedDataMatrix;
   isDark?: boolean;
   className?: string;
-  onInstanceReady?: (instance: echarts.ECharts) => void;
+  onInstanceReady?: (instance: ECharts) => void;
 }
 
 export const ChartRenderer = ({
@@ -21,34 +21,42 @@ export const ChartRenderer = ({
 }: ChartRendererProps) => {
   const { t } = useTranslation('sheets');
   const containerRef = useRef<HTMLDivElement>(null);
-  const chartInstanceRef = useRef<echarts.ECharts | null>(null);
+  const chartInstanceRef = useRef<ECharts | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    if (!chartInstanceRef.current) {
-      const chart = echarts.init(containerRef.current, undefined, {
-        renderer: 'canvas',
-      });
-      chartInstanceRef.current = chart;
-      onInstanceReady?.(chart);
-    }
-
-    const chart = chartInstanceRef.current;
-    const option = buildEChartsOption(spec, data, isDark, {
-      noData: t('chart.noData'),
-      seriesFallback: t('chart.seriesFallback'),
-      categoryFallback: t('chart.fallback.category'),
-      radarIndicator: t('chart.fallback.radarIndicator'),
-    });
-    chart.setOption(option, true);
+    let cancelled = false;
 
     const resizeObserver = new ResizeObserver(() => {
-      chart.resize();
+      chartInstanceRef.current?.resize();
     });
-    resizeObserver.observe(containerRef.current);
+    resizeObserver.observe(container);
+
+    void loadEcharts().then((echarts) => {
+      if (cancelled || !containerRef.current) return;
+
+      if (!chartInstanceRef.current) {
+        chartInstanceRef.current = echarts.init(containerRef.current, undefined, {
+          renderer: 'canvas',
+        });
+        onInstanceReady?.(chartInstanceRef.current);
+      }
+
+      const chart = chartInstanceRef.current;
+      if (!chart) return;
+      const option = buildEChartsOption(spec, data, isDark, {
+        noData: t('chart.noData'),
+        seriesFallback: t('chart.seriesFallback'),
+        categoryFallback: t('chart.fallback.category'),
+        radarIndicator: t('chart.fallback.radarIndicator'),
+      });
+      chart.setOption(option, true);
+    });
 
     return () => {
+      cancelled = true;
       resizeObserver.disconnect();
     };
   }, [spec, data, isDark, onInstanceReady, t]);

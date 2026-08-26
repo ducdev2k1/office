@@ -50,10 +50,10 @@ Verification: sheets typecheck ✓ · build ✓ · test chuỗi tsx ✓ · i18n 
 
 Verification: xlsx-io test chuỗi pass (fidelity PASS ≥95%) · sheets typecheck/build ✓ · turbo 9/9 ✓
 
-### Phase C — Đóng băng + tối ưu (sau khi tính năng đóng băng)
-- [ ] Bundle ≤1.2 MB gzip (lazy-load Univer + manualChunks + trim locale)
-- [ ] Chạy bộ mẫu thật (khi owner nộp) → gate ≥95% mỗi nhóm
-- [ ] Cập nhật báo cáo nghiệm thu
+### Phase C — Đóng băng + tối ưu
+- [x] Bundle tối ưu (26/08/2026): route-split `EditorPage` lazy + dynamic import echarts/exceljs/jspdf-html2canvas. Kết quả đo (`apps/sheets/scripts/bundle-report.mjs`): **entry ban đầu 326KB gzip** (~510KB cùng icons+css — đạt mục tiêu ≤1.2MB); locale Univer/dayjs tách chunk theo ngôn ngữ, chỉ tải ngôn ngữ hiện hành. Lưu ý trung thực: route chunk `/edit` nặng 1517KB gzip do lõi Univer OSS — muốn xuống ≤1.2MB cần trim preset (bỏ filter/validation/conditional-formatting) → follow-up cần quyết định product vì ảnh hưởng tính năng
+- [ ] Chạy bộ mẫu thật xlsx 30–50 file → gate ≥95% mỗi nhóm (**chờ owner thu thập**)
+- [ ] Cập nhật báo cáo nghiệm thu cuối (sau bộ mẫu thật)
 
 ## Trung thực với khách
 

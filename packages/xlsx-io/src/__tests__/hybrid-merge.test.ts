@@ -16,6 +16,12 @@ const bytesEqual = (a: Uint8Array | undefined, b: Uint8Array | undefined): boole
   return a.every((byte, i) => byte === b[i]);
 };
 
+const readText = (files: Record<string, Uint8Array>, name: string): string => {
+  const bytes = files[name];
+  assert.ok(bytes, `missing zip entry: ${name}`);
+  return strFromU8(bytes);
+};
+
 const buildOriginalWithOpaqueParts = async (): Promise<Uint8Array> => {
   const workbook = new ExcelJS.Workbook();
   const ws = workbook.addWorksheet('Du lieu');
@@ -30,13 +36,13 @@ const buildOriginalWithOpaqueParts = async (): Promise<Uint8Array> => {
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart1.xml"/></Relationships>',
   );
   files['[Content_Types].xml'] = new TextEncoder().encode(
-    strFromU8(files['[Content_Types].xml']).replace(
+    readText(files, '[Content_Types].xml').replace(
       '</Types>',
       '<Override PartName="/xl/charts/chart1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/></Types>',
     ),
   );
 
-  const sheetXml = strFromU8(files['xl/worksheets/sheet1.xml']);
+  const sheetXml = readText(files, 'xl/worksheets/sheet1.xml');
   assert.ok(sheetXml.includes('xmlns:r='), 'ExcelJS sheet xml phải khai báo namespace r');
   files['xl/worksheets/sheet1.xml'] = new TextEncoder().encode(
     sheetXml.replace('</worksheet>', '<drawing r:id="rIdDrw1"/></worksheet>'),
@@ -71,16 +77,16 @@ const run = async () => {
   console.log('✓ Passed');
 
   console.log('Test 3: Sheet XML rebuilt phải có <drawing r:id> trỏ về rels mới');
-  const outSheet = strFromU8(out['xl/worksheets/sheet1.xml']);
+  const outSheet = readText(out, 'xl/worksheets/sheet1.xml');
   assert.ok(/<drawing r:id="(rId\d+)"\/>/.test(outSheet), 'sheet phải tham chiếu drawing');
   const drawingId = /<drawing r:id="(rId\d+)"\/>/.exec(outSheet)?.[1];
-  const outRels = strFromU8(out['xl/worksheets/_rels/sheet1.xml.rels']);
+  const outRels = readText(out, 'xl/worksheets/_rels/sheet1.xml.rels');
   assert.ok(outRels.includes(`Id="${drawingId}"`), 'rels phải chứa id vừa cấp');
   assert.ok(outRels.includes('../drawings/drawing1.xml'), 'rels phải trỏ đúng target gốc');
   console.log('✓ Passed');
 
   console.log('Test 4: Content types override + default đầy đủ trong file merge');
-  const outCt = strFromU8(out['[Content_Types].xml']);
+  const outCt = readText(out, '[Content_Types].xml');
   assert.ok(outCt.includes('/xl/charts/chart1.xml'), 'CT thiếu override chart');
   assert.ok(outCt.includes('/xl/drawings/drawing1.xml'), 'CT thiếu override drawing');
   console.log('✓ Passed');
