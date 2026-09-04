@@ -6,7 +6,8 @@
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@office/*": ["../../packages/*/src"]
     }
   },
   "include": ["src", "vite.config.ts", "vitest.config.ts"]

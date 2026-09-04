@@ -1,5 +1,6 @@
 import App from '@/App';
 import { I18nProvider } from '@office/i18n';
+import { AuthProvider } from '@office/auth-sdk';
 import { initTheme } from '@office/ui-kit';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -27,7 +28,9 @@ const Main = () => (
   <React.StrictMode>
     <BrowserRouter>
       <I18nProvider>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </I18nProvider>
     </BrowserRouter>
   </React.StrictMode>

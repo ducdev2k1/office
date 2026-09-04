@@ -593,6 +593,20 @@
   "export": {
     "pdfHint": "Chọn Save as PDF trong hộp thoại In để lưu thành file PDF"
   },
+  "auth": {
+    "login": "Đăng nhập",
+    "loggingIn": "Đang đăng nhập...",
+    "email": "Email",
+    "emailPlaceholder": "Nhập email",
+    "password": "Mật khẩu",
+    "passwordPlaceholder": "Nhập mật khẩu",
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "forgotPassword": "Quên mật khẩu?",
+    "loginError": "Email hoặc mật khẩu không chính xác",
+    "noAccount": "Chưa có tài khoản? ",
+    "register": "Đăng ký",
+    "loginSubtitle": "Đăng nhập để truy cập tài liệu của bạn"
+  },
   "inputDialog": {
     "linkTitle": "Chèn liên kết",
     "linkLabel": "Địa chỉ URL",

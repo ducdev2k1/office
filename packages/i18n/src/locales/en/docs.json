@@ -593,6 +593,20 @@
   "export": {
     "pdfHint": "Choose Save as PDF in the print dialog to save a PDF file"
   },
+  "auth": {
+    "login": "Sign in",
+    "loggingIn": "Signing in...",
+    "email": "Email",
+    "emailPlaceholder": "Enter email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "loginError": "Invalid email or password",
+    "noAccount": "Don't have an account? ",
+    "register": "Sign up",
+    "loginSubtitle": "Sign in to access your documents"
+  },
   "inputDialog": {
     "linkTitle": "Insert Link",
     "linkLabel": "URL address",
